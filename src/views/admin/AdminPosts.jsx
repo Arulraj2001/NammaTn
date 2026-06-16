@@ -80,6 +80,17 @@ export default function AdminPosts() {
     toast({ description: `Post ${action}.` });
   };
 
+  const handleRemove = async (postId, note = "") => {
+    try {
+      await deletePost(postId);
+      await logModerationAction({ target_type: "post", target_id: postId, action: "removed_db", note, admin_email: "admin" });
+      refresh();
+      toast({ description: "Post permanently removed from database." });
+    } catch (err) {
+      toast({ variant: "destructive", description: `Failed to remove post: ${err.message}` });
+    }
+  };
+
   const bulkAct = async (status, action) => {
     await bulkModeratePost(Array.from(selected), status, "admin");
     setSelected(new Set());
@@ -224,6 +235,7 @@ export default function AdminPosts() {
                     onReject={(note) => act(post.id, "removed", "deleted", note)}
                     onFlag={(note) => act(post.id, "flagged", "flagged", note)}
                     onDelete={(note) => act(post.id, "removed", "deleted", note)}
+                    onRemove={(note) => handleRemove(post.id, note)}
                   />
                 </AdminTd>
               </AdminTr>
@@ -295,7 +307,18 @@ export default function AdminPosts() {
                   onClick={() => { act(preview.id, "removed", "deleted"); setPreview(null); }}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-lg transition-colors"
                 >
-                  <Trash2 className="w-3.5 h-3.5" /> Remove
+                  <Trash2 className="w-3.5 h-3.5" /> Delete
+                </button>
+                <button
+                  onClick={() => {
+                    if (window.confirm("Are you sure you want to permanently delete this post from the database? This action cannot be undone.")) {
+                      handleRemove(preview.id);
+                      setPreview(null);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium rounded-lg transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Remove from DB
                 </button>
               </div>
             </div>

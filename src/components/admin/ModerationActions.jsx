@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle, XCircle, Trash2, Flag } from "lucide-react";
 
-export default function ModerationActions({ onApprove, onReject, onDelete, onFlag, showFlag = false }) {
+export default function ModerationActions({ onApprove, onReject, onDelete, onFlag, onRemove, showFlag = false }) {
   const [dialog, setDialog] = useState(null); // {type, note}
 
   const actions = [
@@ -12,6 +12,7 @@ export default function ModerationActions({ onApprove, onReject, onDelete, onFla
     { type: "reject", label: "Reject", icon: XCircle, variant: "outline", color: "border-orange-300 text-orange-600 hover:bg-orange-50" },
     ...(showFlag ? [{ type: "flag", label: "Flag", icon: Flag, color: "border-yellow-300 text-yellow-600 hover:bg-yellow-50" }] : []),
     { type: "delete", label: "Delete", icon: Trash2, color: "border-red-300 text-red-600 hover:bg-red-50" },
+    ...(onRemove ? [{ type: "remove", label: "Remove", icon: Trash2, color: "bg-red-600 hover:bg-red-700 text-white border-transparent" }] : []),
   ];
 
   const handleConfirm = () => {
@@ -21,6 +22,7 @@ export default function ModerationActions({ onApprove, onReject, onDelete, onFla
     if (dialog.type === "reject") onReject?.(note);
     if (dialog.type === "delete") onDelete?.(note);
     if (dialog.type === "flag") onFlag?.(note);
+    if (dialog.type === "remove") onRemove?.(note);
     setDialog(null);
   };
 
@@ -45,7 +47,9 @@ export default function ModerationActions({ onApprove, onReject, onDelete, onFla
       <Dialog open={!!dialog} onOpenChange={() => setDialog(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="capitalize">{dialog?.type} — Add a note (optional)</DialogTitle>
+            <DialogTitle className="capitalize">
+              {dialog?.type === "remove" ? "Remove from List & DB (Permanent)" : `${dialog?.type} — Add a note (optional)`}
+            </DialogTitle>
           </DialogHeader>
           <Textarea
             placeholder="Moderation note..."
@@ -55,7 +59,7 @@ export default function ModerationActions({ onApprove, onReject, onDelete, onFla
           />
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialog(null)}>Cancel</Button>
-            <Button onClick={handleConfirm} className={dialog?.type === "delete" ? "bg-red-600 hover:bg-red-700" : ""}>
+            <Button onClick={handleConfirm} className={dialog?.type === "delete" || dialog?.type === "remove" ? "bg-red-600 hover:bg-red-700" : ""}>
               Confirm
             </Button>
           </DialogFooter>
