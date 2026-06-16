@@ -30,14 +30,18 @@ export default function ContactForm() {
     setError("");
     setLoading(true);
     // Save to DB for admin management
-    await base44.entities.ContactMessage.create({
-      name: form.name,
-      email: form.email,
-      topic: form.topic,
-      subject: form.subject,
-      message: form.message,
-      status: "new",
-    });
+    try {
+      await base44.entities.ContactMessage.create({
+        name: form.name,
+        email: form.email,
+        topic: form.topic,
+        subject: form.subject,
+        message: form.message,
+        status: "new",
+      });
+    } catch (dbError) {
+      console.error("Failed to save contact message to DB, sending email anyway:", dbError);
+    }
     // Also send email notification
     await base44.integrations.Core.SendEmail({
       to: "support@tnvoice.in",

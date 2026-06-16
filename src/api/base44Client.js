@@ -222,6 +222,31 @@ const integrationsMock = {
         file_url = file_url.replace('/storage/v1/object/media/', '/storage/v1/object/public/media/');
       }
       return { file_url };
+    },
+
+    async SendEmail({ to, subject, body, from_name }) {
+      try {
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: to,
+            subject: subject,
+            text: body,
+          }),
+        });
+        if (!response.ok) {
+          const errData = await response.json();
+          console.error("Failed to send email via API:", errData);
+          throw new Error(errData.error?.message || "Failed to send email");
+        }
+        return await response.json();
+      } catch (err) {
+        console.error("Error sending email in SendEmail integration:", err);
+        throw err;
+      }
     }
   }
 };
