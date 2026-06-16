@@ -31,3 +31,8 @@ dist-ssr
 .vite
 .next
 out
+
+# DB & Backup files
+*.sql
+backup/
+import_backup.cjs

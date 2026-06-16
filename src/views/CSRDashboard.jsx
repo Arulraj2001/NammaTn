@@ -7,6 +7,8 @@ import { formatDistanceToNow } from "date-fns";
 import SponsorRegisterModal from "@/components/sponsors/SponsorRegisterModal";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import { Navigate } from "react-router-dom";
+import { getSettingsMap } from "@/services/admin/settings";
 
 const CAMPAIGN_TYPES = [
   { key: "clean_street", icon: "🧹", label: "Clean Street Awareness", allowed: true },
@@ -137,6 +139,17 @@ function SponsorCard({ s }) {
 export default function CSRDashboard() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
+
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
+
+  if (settings.csr_enabled === "false") {
+    return <Navigate to="/" replace />;
+  }
+
   const { isAuthenticated } = useAuth();
   const { requireAuth } = useAuthModal();
   const [showRegister, setShowRegister] = useState(false);

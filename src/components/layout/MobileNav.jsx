@@ -9,6 +9,8 @@ import {
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import UserMenu from "@/components/auth/UserMenu";
+import { useQuery } from "@tanstack/react-query";
+import { getSettingsMap } from "@/services/admin/settings";
 
 const BOTTOM_TABS = [
   { path: "/", icon: Home, en: "Home", ta: "முகப்பு" },
@@ -73,6 +75,13 @@ export default function MobileNav() {
   const location = useLocation();
   const { lang } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
+
   const T = (en, ta) => lang === "ta" ? ta : en;
 
   return (
@@ -186,7 +195,13 @@ export default function MobileNav() {
                       {T(group.en_title, group.ta_title)}
                     </p>
                     <div className="grid grid-cols-2 gap-2">
-                      {group.items.map((item) => {
+                      {group.items
+                        .filter((item) => {
+                          if (item.path === "/rwa" && settings.rwa_enabled === "false") return false;
+                          if (item.path === "/csr" && settings.csr_enabled === "false") return false;
+                          return true;
+                        })
+                        .map((item) => {
                         const Icon = item.icon;
                         const active = location.pathname === item.path;
                         return (

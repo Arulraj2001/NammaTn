@@ -83,6 +83,8 @@ const SECTIONS = [
       { key: "office_reports_enabled", label: "Office Reports Enabled (true/false)", placeholder: "true" },
       { key: "qa_enabled", label: "Q&A (Ask Local) Enabled (true/false)", placeholder: "true" },
       { key: "situations_enabled", label: "Situations Enabled (true/false)", placeholder: "true" },
+      { key: "rwa_enabled", label: "RWA Dashboard Enabled (true/false)", placeholder: "true" },
+      { key: "csr_enabled", label: "CSR Dashboard Enabled (true/false)", placeholder: "true" },
     ],
   },
   {

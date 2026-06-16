@@ -4,7 +4,7 @@ export const getPublicDashboard = async () => {
   const [postsRes, commentsRes, reportsRes] = await Promise.all([
     supabase.from("post").select("*").eq("status", "active").order("created_date", { ascending: false }).limit(300),
     supabase.from("comment").select("*").eq("status", "active").order("created_date", { ascending: false }).limit(100),
-    supabase.from("report").select("*").eq("status", "pending").order("created_date", { ascending: false }).limit(50).catch(() => ({ data: [] })),
+    supabase.from("report").select("*").eq("status", "pending").order("created_date", { ascending: false }).limit(50),
   ]);
 
   const allPosts = postsRes.data || [];

@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { getSettingsMap } from "@/services/admin/settings";
 import {
   Building2, CheckCircle, FileText, Shield, Clock, Users,
   TrendingUp, AlertTriangle, Plus, ChevronRight, BarChart3, X
@@ -223,6 +224,17 @@ function PlanCard({ plan }) {
 export default function RWADashboard() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
+
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
+
+  if (settings.rwa_enabled === "false") {
+    return <Navigate to="/" replace />;
+  }
+
   const { isAuthenticated } = useAuth();
   const { requireAuth } = useAuthModal();
   const [selectedDistrict, setSelectedDistrict] = useState("");

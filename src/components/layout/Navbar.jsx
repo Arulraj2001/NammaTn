@@ -9,6 +9,8 @@ import {
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import UserMenu from "@/components/auth/UserMenu";
+import { useQuery } from "@tanstack/react-query";
+import { getSettingsMap } from "@/services/admin/settings";
 
 const MAIN_NAV = [
   { path: "/", en: "Home", ta: "முகப்பு" },
@@ -68,6 +70,12 @@ export default function Navbar({ theme, toggleTheme }) {
   const { lang, setLang } = useLanguage();
   const location = useLocation();
   const megaRef = useRef(null);
+
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
 
   const T = (en, ta) => lang === "ta" ? ta : en;
 
@@ -153,7 +161,13 @@ export default function Navbar({ theme, toggleTheme }) {
                               {T(group.en_title, group.ta_title)}
                             </p>
                             <div className="space-y-1">
-                              {group.items.map((item) => {
+                              {group.items
+                                .filter((item) => {
+                                  if (item.path === "/rwa" && settings.rwa_enabled === "false") return false;
+                                  if (item.path === "/csr" && settings.csr_enabled === "false") return false;
+                                  return true;
+                                })
+                                .map((item) => {
                                 const Icon = item.icon;
                                 return (
                                   <Link
