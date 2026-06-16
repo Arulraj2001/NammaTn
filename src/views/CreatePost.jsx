@@ -450,7 +450,7 @@ export default function CreatePost() {
               ? T("Before Photos (proof)", "முன்பு புகைப்படங்கள் (ஆதாரம்)")
               : T("Add Media (optional)", "மீடியா சேர்க்கவும் (விருப்பத்தேர்வு)")}
           </Label>
-          {isCivicType && (
+          {isCivicType ? (
             <div className="mb-2">
               <p className="text-xs text-slate-500">{T("Upload photos showing the current state of the issue.", "சிக்கலின் தற்போதைய நிலையை காட்டும் புகைப்படங்களை பதிவேற்றவும்.")}</p>
               {mediaUrls.length === 0 && (
@@ -459,8 +459,8 @@ export default function CreatePost() {
                 </p>
               )}
             </div>
-          )}
-          <MediaUploader onUrlsChange={setMediaUrls} />
+          ) : null}
+          <MediaUploader key="post-media-uploader" onUrlsChange={setMediaUrls} />
         </div>
 
         {/* Anonymous */}
