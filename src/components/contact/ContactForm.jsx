@@ -39,18 +39,13 @@ export default function ContactForm() {
         message: form.message,
         status: "new",
       });
+      setLoading(false);
+      setSent(true);
     } catch (dbError) {
-      console.error("Failed to save contact message to DB, sending email anyway:", dbError);
+      console.error("Failed to save contact message to DB:", dbError);
+      setError(T("Failed to send message. Please try again.", "செய்தியை அனுப்ப முடியவில்லை. மீண்டும் முயலவும்."));
+      setLoading(false);
     }
-    // Also send email notification
-    await base44.integrations.Core.SendEmail({
-      to: "support@tnvoice.in",
-      subject: `[TN Voice Contact] ${form.subject || "General Inquiry"} from ${form.name}`,
-      body: `Name: ${form.name}\nEmail: ${form.email}\nTopic: ${form.topic}\nSubject: ${form.subject}\n\nMessage:\n${form.message}`,
-      from_name: "TN Voice Contact Form",
-    });
-    setLoading(false);
-    setSent(true);
   };
 
   if (sent) {

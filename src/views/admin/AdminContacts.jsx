@@ -69,16 +69,10 @@ export default function AdminContacts() {
   const handleReply = async () => {
     if (!replyText.trim()) return;
     setReplyLoading(true);
-    await base44.integrations.Core.SendEmail({
-      to: selected.email,
-      subject: `Re: ${selected.subject || "Your message to TN Voice"}`,
-      body: replyText,
-      from_name: "TN Voice Support",
-    });
     await update(selected.id, { status: "replied", admin_reply: replyText });
     setReplyLoading(false);
     setSelected(null);
-    toast({ description: "Reply sent successfully." });
+    toast({ description: "Reply saved successfully." });
   };
 
   const handleDelete = async (id) => {
