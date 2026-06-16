@@ -1,3 +1,0 @@
-"role","id","created_date","updated_date","email","full_name","disabled","disabled_reason","is_verified","force_password_reset","app_id","is_service","collaborator_role","_app_role"
-"admin","6a056bc43e85a088a136e181","2026-05-14T06:29:24.927000","2026-05-14T06:29:24.927000","divyak252026@gmail.com","DIvya K","","","true","false","6a056bc43e85a088a136e180","false","editor","admin"
-"user","6a180563962be002e0e07641","2026-05-28T09:05:39.426000","2026-05-28T09:09:05.970000","arulraj8637@gmail.com","arulraj8637","","","true","false","6a056bc43e85a088a136e180","false","","user"
