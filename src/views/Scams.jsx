@@ -152,13 +152,20 @@ export default function Scams() {
               <option value="high">High Warning</option>
               <option value="critical">Critical Warning</option>
             </select>
-            <select value={form.area_slug} onChange={(e) => {
-              const a = areas.find(a => a.slug === e.target.value);
-              setForm(f => ({ ...f, area_slug: e.target.value, area_name: a?.name_en || "" }));
-            }} className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none col-span-2">
-              <option value="">{T("Area (optional)", "பகுதி (விருப்பத்தேர்வு)")}</option>
-              {areas.map(a => <option key={a.slug} value={a.slug}>{T(a.name_en, a.name_ta)}</option>)}
-            </select>
+            {areas.length > 0 ? (
+              <select value={form.area_slug} onChange={(e) => {
+                const a = areas.find(a => a.slug === e.target.value);
+                setForm(f => ({ ...f, area_slug: e.target.value, area_name: a?.name_en || "" }));
+              }} className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none col-span-2">
+                <option value="">{T("Area (optional)", "பகுதி (விருப்பத்தேர்வு)")}</option>
+                {areas.map(a => <option key={a.slug} value={a.slug}>{T(a.name_en, a.name_ta)}</option>)}
+              </select>
+            ) : (
+              <input value={form.area_name || ""} onChange={(e) => {
+                setForm(f => ({ ...f, area_slug: "", area_name: e.target.value }));
+              }} placeholder={T("Area (optional)", "பகுதி (விருப்பத்தேர்வு)")}
+              className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none col-span-2" />
+            )}
           </div>
           {formError && <p className="text-red-500 text-xs">{formError}</p>}
           <button type="submit" disabled={mutation.isPending}

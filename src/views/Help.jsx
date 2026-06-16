@@ -147,13 +147,20 @@ export default function Help() {
               <option value="high">Urgent</option>
               <option value="critical">Critical</option>
             </select>
-            <select value={form.area_slug} onChange={(e) => {
-              const a = areas.find(a => a.slug === e.target.value);
-              setForm(f => ({ ...f, area_slug: e.target.value, area_name: a?.name_en || "" }));
-            }} className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none col-span-2">
-              <option value="">{T("Area (optional)", "பகுதி (விருப்பத்தேர்வு)")}</option>
-              {areas.map(a => <option key={a.slug} value={a.slug}>{T(a.name_en, a.name_ta)}</option>)}
-            </select>
+            {areas.length > 0 ? (
+              <select value={form.area_slug} onChange={(e) => {
+                const a = areas.find(a => a.slug === e.target.value);
+                setForm(f => ({ ...f, area_slug: e.target.value, area_name: a?.name_en || "" }));
+              }} className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none col-span-2">
+                <option value="">{T("Area (optional)", "பகுதி (விருப்பத்தேர்வு)")}</option>
+                {areas.map(a => <option key={a.slug} value={a.slug}>{T(a.name_en, a.name_ta)}</option>)}
+              </select>
+            ) : (
+              <input value={form.area_name || ""} onChange={(e) => {
+                setForm(f => ({ ...f, area_slug: "", area_name: e.target.value }));
+              }} placeholder={T("Area (optional)", "பகுதி (விருப்பத்தேர்வு)")}
+              className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none col-span-2" />
+            )}
           </div>
           <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
             <input type="checkbox" checked={form.contact_visible} onChange={(e) => setForm(f => ({ ...f, contact_visible: e.target.checked }))} className="accent-red-600" />
