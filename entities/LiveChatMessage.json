@@ -1,0 +1,79 @@
+{
+  "name": "LiveChatMessage",
+  "type": "object",
+  "properties": {
+    "channel": {
+      "type": "string",
+      "enum": [
+        "general",
+        "nearby",
+        "emergency",
+        "questions",
+        "alerts"
+      ],
+      "default": "general"
+    },
+    "content": {
+      "type": "string"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "update",
+        "question",
+        "alert",
+        "help",
+        "confirmation"
+      ],
+      "default": "update"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "author_session": {
+      "type": "string"
+    },
+    "author_id": {
+      "type": "string",
+      "description": "user.id if authenticated"
+    },
+    "author_label": {
+      "type": "string",
+      "default": "Community Member"
+    },
+    "is_supporter": {
+      "type": "boolean",
+      "default": false
+    },
+    "report_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "hidden",
+        "removed"
+      ],
+      "default": "active"
+    },
+    "hidden_by": {
+      "type": "string"
+    },
+    "hidden_reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "channel",
+    "content",
+    "author_session"
+  ]
+}

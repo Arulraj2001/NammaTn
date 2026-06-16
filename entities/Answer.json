@@ -1,0 +1,40 @@
+{
+  "name": "Answer",
+  "type": "object",
+  "properties": {
+    "question_id": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": true
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_accepted": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "flagged",
+        "removed"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "question_id",
+    "content"
+  ]
+}

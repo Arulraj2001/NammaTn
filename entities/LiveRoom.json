@@ -1,0 +1,71 @@
+{
+  "name": "LiveRoom",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "room_type": {
+      "type": "string",
+      "enum": [
+        "situation",
+        "emergency",
+        "community",
+        "admin_created"
+      ],
+      "default": "community"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived",
+        "locked"
+      ],
+      "default": "active"
+    },
+    "pinned_notice": {
+      "type": "string"
+    },
+    "is_emergency": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_resolved": {
+      "type": "boolean",
+      "default": false
+    },
+    "linked_situation_id": {
+      "type": "string"
+    },
+    "linked_emergency_id": {
+      "type": "string"
+    },
+    "message_count": {
+      "type": "number",
+      "default": 0
+    },
+    "participant_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

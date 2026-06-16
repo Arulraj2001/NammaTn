@@ -1,0 +1,50 @@
+{
+  "name": "DiscussionReply",
+  "type": "object",
+  "properties": {
+    "discussion_id": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "reply_type": {
+      "type": "string",
+      "enum": [
+        "update",
+        "confirmation",
+        "question",
+        "help",
+        "resolution"
+      ],
+      "default": "update"
+    },
+    "author_session": {
+      "type": "string"
+    },
+    "author_label": {
+      "type": "string",
+      "default": "Community Member"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": true
+    },
+    "helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "removed"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "discussion_id",
+    "content"
+  ]
+}

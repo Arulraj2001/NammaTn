@@ -1,0 +1,66 @@
+{
+  "name": "Report",
+  "type": "object",
+  "properties": {
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment",
+        "chat_message",
+        "stay_listing",
+        "local_listing",
+        "job_alert",
+        "scam_alert"
+      ],
+      "description": "What is being reported"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of the reported content"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "spam",
+        "fake_issue",
+        "personal_attack",
+        "private_info",
+        "hate_speech",
+        "scam_fraud",
+        "wrong_category",
+        "misinformation",
+        "inappropriate",
+        "harassment",
+        "other"
+      ],
+      "default": "other"
+    },
+    "details": {
+      "type": "string",
+      "description": "Additional details from reporter"
+    },
+    "reporter_session": {
+      "type": "string",
+      "description": "Session ID or user ID of reporter"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "dismissed",
+        "actioned"
+      ],
+      "default": "pending"
+    },
+    "reviewed_note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "target_type",
+    "target_id",
+    "reason"
+  ]
+}

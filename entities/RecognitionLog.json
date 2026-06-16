@@ -1,0 +1,41 @@
+{
+  "name": "RecognitionLog",
+  "type": "object",
+  "properties": {
+    "session_ref": {
+      "type": "string",
+      "description": "Anonymous session identifier"
+    },
+    "recognition_type": {
+      "type": "string",
+      "enum": [
+        "helpful_community_member",
+        "verified_local_source",
+        "emergency_helper"
+      ],
+      "default": "helpful_community_member"
+    },
+    "granted_by_admin": {
+      "type": "string"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "session_ref",
+    "recognition_type",
+    "expires_at"
+  ]
+}

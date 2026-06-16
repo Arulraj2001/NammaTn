@@ -1,0 +1,45 @@
+{
+  "name": "ContributorActivity",
+  "type": "object",
+  "properties": {
+    "session_ref": {
+      "type": "string",
+      "description": "Anonymous session identifier"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "useful_update",
+        "verified_update",
+        "helpful_answer",
+        "emergency_help",
+        "scam_alert",
+        "situation_update",
+        "spam_post"
+      ],
+      "default": "useful_update"
+    },
+    "target_type": {
+      "type": "string"
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "negative",
+        "neutral"
+      ],
+      "default": "positive"
+    }
+  },
+  "required": [
+    "session_ref",
+    "activity_type"
+  ]
+}

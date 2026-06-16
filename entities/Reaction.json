@@ -1,0 +1,40 @@
+{
+  "name": "Reaction",
+  "type": "object",
+  "properties": {
+    "target_id": {
+      "type": "string",
+      "description": "ID of the post/comment being reacted to"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment"
+      ],
+      "default": "post"
+    },
+    "reaction_type": {
+      "type": "string",
+      "enum": [
+        "like",
+        "dislike"
+      ],
+      "default": "like"
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "user.id if logged in, else session ID"
+    },
+    "is_authenticated": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "target_id",
+    "target_type",
+    "reaction_type",
+    "actor_id"
+  ]
+}

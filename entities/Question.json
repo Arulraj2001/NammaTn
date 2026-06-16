@@ -1,0 +1,64 @@
+{
+  "name": "Question",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Question title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Optional details"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "category_slug": {
+      "type": "string"
+    },
+    "category_name": {
+      "type": "string"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": true
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "answered",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "answer_count": {
+      "type": "number",
+      "default": 0
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_trending": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "district_slug"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "name": "SupporterMembership",
+  "type": "object",
+  "properties": {
+    "session_ref": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "razorpay",
+        "stripe",
+        "upi",
+        "qr",
+        "buymecoffee"
+      ],
+      "default": "upi"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "default": "INR"
+    },
+    "transaction_ref": {
+      "type": "string"
+    },
+    "payment_submission_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "expired",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_ref",
+    "payment_method",
+    "amount"
+  ]
+}

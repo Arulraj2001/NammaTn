@@ -1,0 +1,47 @@
+{
+  "name": "SpamFlag",
+  "type": "object",
+  "properties": {
+    "session_ref": {
+      "type": "string"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "live_room_message",
+        "live_chat_message",
+        "discussion_reply"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "spam",
+        "abuse",
+        "duplicate",
+        "flood",
+        "unsafe_link",
+        "hate_speech",
+        "other"
+      ],
+      "default": "spam"
+    },
+    "auto_flagged": {
+      "type": "boolean",
+      "default": false
+    },
+    "resolved": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "session_ref",
+    "target_type",
+    "target_id",
+    "reason"
+  ]
+}

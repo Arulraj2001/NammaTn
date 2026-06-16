@@ -1,0 +1,134 @@
+{
+  "name": "LocalListing",
+  "type": "object",
+  "properties": {
+    "business_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "plumber",
+        "electrician",
+        "cleaning",
+        "water_can",
+        "legal_help",
+        "esevai",
+        "tuition",
+        "clinic",
+        "hostel_pg",
+        "repair",
+        "job_provider",
+        "rental_stay",
+        "other"
+      ],
+      "default": "other"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "free",
+        "verified",
+        "featured",
+        "district_sponsor"
+      ],
+      "default": "free"
+    },
+    "description": {
+      "type": "string"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "service_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_whatsapp": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "photo_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_community_recommended": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_sponsored": {
+      "type": "boolean",
+      "default": false
+    },
+    "rating_sum": {
+      "type": "number",
+      "default": 0
+    },
+    "rating_count": {
+      "type": "number",
+      "default": 0
+    },
+    "report_count": {
+      "type": "number",
+      "default": 0
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0
+    },
+    "session_ref": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "rejected",
+        "removed"
+      ],
+      "default": "pending"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "admin_note": {
+      "type": "string"
+    },
+    "payment_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "business_name",
+    "category",
+    "district_slug"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "ModerationLog",
+  "type": "object",
+  "properties": {
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment",
+        "report",
+        "ad"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "rejected",
+        "deleted",
+        "flagged",
+        "dismissed",
+        "actioned",
+        "created",
+        "updated"
+      ]
+    },
+    "note": {
+      "type": "string"
+    },
+    "admin_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "target_type",
+    "target_id",
+    "action"
+  ]
+}

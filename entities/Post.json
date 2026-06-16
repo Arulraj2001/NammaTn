@@ -1,0 +1,230 @@
+{
+  "name": "Post",
+  "type": "object",
+  "properties": {
+    "title_en": {
+      "type": "string",
+      "description": "Title in English"
+    },
+    "title_ta": {
+      "type": "string",
+      "description": "Title in Tamil"
+    },
+    "content_en": {
+      "type": "string",
+      "description": "Content in English"
+    },
+    "content_ta": {
+      "type": "string",
+      "description": "Content in Tamil"
+    },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "complaint",
+        "appreciation",
+        "local_update",
+        "alert",
+        "discussion"
+      ],
+      "default": "discussion"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "category_slug": {
+      "type": "string"
+    },
+    "category_name": {
+      "type": "string"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": false
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0
+    },
+    "downvotes": {
+      "type": "number",
+      "default": 0
+    },
+    "comment_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "flagged",
+        "removed"
+      ],
+      "default": "active"
+    },
+    "civic_receipt_id": {
+      "type": "string",
+      "description": "Public ID like TN-000001"
+    },
+    "location_text": {
+      "type": "string",
+      "description": "Exact landmark or location text"
+    },
+    "urgency_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "civic_status": {
+      "type": "string",
+      "enum": [
+        "reported",
+        "community_verified",
+        "complaint_needed",
+        "complaint_filed",
+        "under_followup",
+        "claimed_fixed",
+        "citizen_verified_fixed",
+        "unresolved_escalated",
+        "community_solved",
+        "duplicate_invalid"
+      ],
+      "default": "reported"
+    },
+    "verification_count": {
+      "type": "number",
+      "default": 0
+    },
+    "duplicate_count": {
+      "type": "number",
+      "default": 0
+    },
+    "citizen_fixed_count": {
+      "type": "number",
+      "default": 0
+    },
+    "still_not_fixed_count": {
+      "type": "number",
+      "default": 0
+    },
+    "official_complaint_id": {
+      "type": "string"
+    },
+    "complaint_filed_date": {
+      "type": "string",
+      "description": "Date complaint was filed (ISO date)"
+    },
+    "complaint_notes": {
+      "type": "string",
+      "description": "Notes about the complaint process"
+    },
+    "complaint_link": {
+      "type": "string",
+      "description": "URL link to official complaint portal"
+    },
+    "complaint_screenshot_url": {
+      "type": "string",
+      "description": "Screenshot URL of filed complaint"
+    },
+    "assigned_department": {
+      "type": "string"
+    },
+    "escalation_level": {
+      "type": "number",
+      "default": 0,
+      "description": "0-5 escalation level"
+    },
+    "timeline_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "event_type": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "by": {
+            "type": "string"
+          },
+          "actor_type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "before_photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "claimed_fixed_photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "final_resolution_photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "is_community_solved": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_publicly_visible": {
+      "type": "boolean",
+      "default": true
+    },
+    "moderation_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "hidden"
+      ],
+      "default": "approved"
+    },
+    "admin_note": {
+      "type": "string",
+      "description": "Admin-only internal note"
+    }
+  },
+  "required": [
+    "title_en",
+    "district_slug",
+    "category_slug",
+    "post_type"
+  ]
+}

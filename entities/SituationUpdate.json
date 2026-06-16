@@ -1,0 +1,83 @@
+{
+  "name": "SituationUpdate",
+  "type": "object",
+  "properties": {
+    "situation_type": {
+      "type": "string",
+      "enum": [
+        "eb_shutdown",
+        "water_shortage",
+        "traffic",
+        "flooding",
+        "internet_outage",
+        "office_closed",
+        "protest",
+        "transport_issue",
+        "local_emergency",
+        "service_disruption",
+        "other"
+      ],
+      "default": "other"
+    },
+    "title": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "info",
+        "moderate",
+        "urgent",
+        "critical"
+      ],
+      "default": "info"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_resolved": {
+      "type": "boolean",
+      "default": false
+    },
+    "confirm_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "resolved",
+        "removed"
+      ],
+      "default": "active"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "situation_type",
+    "title",
+    "district_slug"
+  ]
+}

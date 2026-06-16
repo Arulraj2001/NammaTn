@@ -1,0 +1,41 @@
+{
+  "name": "Area",
+  "type": "object",
+  "properties": {
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "name_en": {
+      "type": "string"
+    },
+    "name_ta": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "zone": {
+      "type": "string",
+      "description": "Zone/taluk name"
+    },
+    "post_count": {
+      "type": "number",
+      "default": 0
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "district_slug",
+    "name_en",
+    "slug"
+  ]
+}

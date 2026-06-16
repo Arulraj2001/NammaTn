@@ -1,0 +1,139 @@
+{
+  "name": "CivicSponsor",
+  "type": "object",
+  "properties": {
+    "sponsor_name": {
+      "type": "string"
+    },
+    "sponsor_type": {
+      "type": "string",
+      "enum": [
+        "business",
+        "csr",
+        "rwa",
+        "individual",
+        "ngo"
+      ],
+      "default": "business"
+    },
+    "sponsor_logo_url": {
+      "type": "string"
+    },
+    "sponsor_website": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "area_dashboard",
+        "district_dashboard",
+        "issue_campaign",
+        "csr_impact",
+        "custom"
+      ],
+      "default": "area_dashboard"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "sponsor_note": {
+      "type": "string"
+    },
+    "campaign_title": {
+      "type": "string"
+    },
+    "campaign_type": {
+      "type": "string",
+      "enum": [
+        "clean_street",
+        "streetlight_mapping",
+        "school_zone",
+        "garbage_hotspot",
+        "flood_documentation",
+        "awareness",
+        "other"
+      ]
+    },
+    "budget_inr": {
+      "type": "number"
+    },
+    "before_photo_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "after_photo_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "linked_post_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "issues_supported_count": {
+      "type": "number",
+      "default": 0
+    },
+    "community_reach": {
+      "type": "number",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "completed",
+        "rejected",
+        "removed"
+      ],
+      "default": "pending"
+    },
+    "payment_ref": {
+      "type": "string"
+    },
+    "admin_note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "sponsor_name",
+    "plan"
+  ]
+}

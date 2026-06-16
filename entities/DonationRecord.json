@@ -1,0 +1,54 @@
+{
+  "name": "DonationRecord",
+  "type": "object",
+  "properties": {
+    "session_ref": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "default": "INR"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "razorpay",
+        "stripe",
+        "upi",
+        "qr",
+        "buymecoffee"
+      ],
+      "default": "upi"
+    },
+    "transaction_ref": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "rejected"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "session_ref",
+    "amount",
+    "payment_method"
+  ]
+}

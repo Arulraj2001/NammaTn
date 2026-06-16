@@ -1,0 +1,95 @@
+{
+  "name": "RWAGroup",
+  "type": "object",
+  "properties": {
+    "group_name": {
+      "type": "string"
+    },
+    "group_type": {
+      "type": "string",
+      "enum": [
+        "rwa",
+        "apartment",
+        "traders",
+        "volunteers",
+        "other"
+      ],
+      "default": "rwa"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "free_community",
+        "basic_rwa",
+        "pro_rwa",
+        "federation"
+      ],
+      "default": "free_community"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "admin_session": {
+      "type": "string"
+    },
+    "admin_email": {
+      "type": "string"
+    },
+    "member_count": {
+      "type": "number",
+      "default": 0
+    },
+    "description": {
+      "type": "string"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "issue_count": {
+      "type": "number",
+      "default": 0
+    },
+    "resolved_count": {
+      "type": "number",
+      "default": 0
+    },
+    "payment_ref": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "suspended"
+      ],
+      "default": "pending"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "group_name",
+    "group_type",
+    "district_slug"
+  ]
+}

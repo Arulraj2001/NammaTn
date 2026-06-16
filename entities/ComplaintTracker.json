@@ -1,0 +1,55 @@
+{
+  "name": "ComplaintTracker",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "Reference to the Post entity"
+    },
+    "civic_receipt_id": {
+      "type": "string"
+    },
+    "official_complaint_id": {
+      "type": "string",
+      "description": "Complaint ID given by the government portal"
+    },
+    "complaint_filed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "department_name": {
+      "type": "string"
+    },
+    "complaint_link": {
+      "type": "string"
+    },
+    "screenshot_url": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "session_ref": {
+      "type": "string"
+    },
+    "follow_up_count": {
+      "type": "number",
+      "default": 0
+    },
+    "last_follow_up": {
+      "type": "string",
+      "format": "date"
+    },
+    "response_received": {
+      "type": "boolean",
+      "default": false
+    },
+    "response_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "post_id",
+    "civic_receipt_id"
+  ]
+}

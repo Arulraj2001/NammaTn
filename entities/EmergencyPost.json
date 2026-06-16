@@ -1,0 +1,80 @@
+{
+  "name": "EmergencyPost",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "emergency_type": {
+      "type": "string",
+      "enum": [
+        "blood_requirement",
+        "ambulance_help",
+        "flood_assistance",
+        "medicine_support",
+        "missing_person",
+        "community_help",
+        "other"
+      ],
+      "default": "community_help"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium"
+      ],
+      "default": "high"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "contact_info": {
+      "type": "string"
+    },
+    "contact_visible": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_resolved": {
+      "type": "boolean",
+      "default": false
+    },
+    "confirm_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "resolved",
+        "removed"
+      ],
+      "default": "active"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "emergency_type",
+    "district_slug"
+  ]
+}

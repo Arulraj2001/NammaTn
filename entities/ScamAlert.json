@@ -1,0 +1,75 @@
+{
+  "name": "ScamAlert",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "description": "Neutral factual description of the pattern"
+    },
+    "scam_type": {
+      "type": "string",
+      "enum": [
+        "fake_agent",
+        "fake_job",
+        "fraud_call",
+        "online_scam",
+        "fake_document",
+        "local_cheating",
+        "other"
+      ],
+      "default": "other"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "warning_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "confirm_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "removed"
+      ],
+      "default": "pending"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "scam_type",
+    "district_slug"
+  ]
+}

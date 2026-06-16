@@ -1,0 +1,124 @@
+{
+  "name": "CommunityDiscussion",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "discussion_type": {
+      "type": "string",
+      "enum": [
+        "civic",
+        "awareness",
+        "local_concern",
+        "positive",
+        "question",
+        "live_event"
+      ],
+      "default": "civic"
+    },
+    "topic": {
+      "type": "string",
+      "enum": [
+        "water",
+        "traffic",
+        "offices",
+        "jobs",
+        "emergency",
+        "transport",
+        "internet",
+        "development",
+        "education",
+        "healthcare",
+        "general"
+      ],
+      "default": "general"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "author_session": {
+      "type": "string"
+    },
+    "author_label": {
+      "type": "string",
+      "default": "Community Member"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_live": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false
+    },
+    "reply_count": {
+      "type": "number",
+      "default": 0
+    },
+    "confirm_count": {
+      "type": "number",
+      "default": 0
+    },
+    "helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "same_issue_count": {
+      "type": "number",
+      "default": 0
+    },
+    "nearby_affected_count": {
+      "type": "number",
+      "default": 0
+    },
+    "resolved_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_resolved": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived",
+        "removed"
+      ],
+      "default": "active"
+    },
+    "linked_emergency_id": {
+      "type": "string"
+    },
+    "linked_situation_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "discussion_type"
+  ]
+}

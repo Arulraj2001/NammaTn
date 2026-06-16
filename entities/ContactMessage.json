@@ -1,0 +1,50 @@
+{
+  "name": "ContactMessage",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "topic": {
+      "type": "string",
+      "enum": [
+        "general",
+        "content_report",
+        "support",
+        "advertising",
+        "other"
+      ],
+      "default": "general"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "read",
+        "replied",
+        "archived"
+      ],
+      "default": "new"
+    },
+    "admin_reply": {
+      "type": "string"
+    },
+    "admin_note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "message"
+  ]
+}

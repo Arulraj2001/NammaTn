@@ -1,0 +1,58 @@
+{
+  "name": "PaymentSubmission",
+  "type": "object",
+  "properties": {
+    "submission_type": {
+      "type": "string",
+      "enum": [
+        "supporter",
+        "donation"
+      ],
+      "default": "supporter"
+    },
+    "session_ref": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "upi",
+        "qr"
+      ],
+      "default": "upi"
+    },
+    "transaction_ref": {
+      "type": "string"
+    },
+    "screenshot_url": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "admin_note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "submission_type",
+    "session_ref",
+    "amount",
+    "transaction_ref"
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "name": "ContentAnalysis",
+  "type": "object",
+  "properties": {
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment"
+      ],
+      "description": "Type of content analyzed"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of the post or comment"
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "complaint",
+        "appreciation",
+        "local_update",
+        "alert",
+        "discussion",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "classification_confidence": {
+      "type": "number",
+      "description": "AI confidence 0.0-1.0"
+    },
+    "toxicity_score": {
+      "type": "number",
+      "description": "Toxicity level 0.0-1.0"
+    },
+    "spam_score": {
+      "type": "number",
+      "description": "Spam probability 0.0-1.0"
+    },
+    "trust_score": {
+      "type": "number",
+      "description": "Content trust score 0-100"
+    },
+    "needs_review": {
+      "type": "boolean",
+      "default": false
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of detected issues"
+    },
+    "sensitive_findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Types of sensitive data found"
+    },
+    "analysis_source": {
+      "type": "string",
+      "enum": [
+        "ai",
+        "local",
+        "local_fallback",
+        "manual"
+      ],
+      "default": "local"
+    },
+    "reviewed_by_admin": {
+      "type": "boolean",
+      "default": false
+    },
+    "admin_override": {
+      "type": "string",
+      "description": "Admin manual classification override"
+    }
+  },
+  "required": [
+    "target_type",
+    "target_id"
+  ]
+}

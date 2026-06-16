@@ -1,0 +1,41 @@
+{
+  "name": "StayReport",
+  "type": "object",
+  "properties": {
+    "listing_id": {
+      "type": "string"
+    },
+    "session_ref": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "fake_listing",
+        "spam",
+        "harassment",
+        "incorrect_info",
+        "suspicious_activity",
+        "other"
+      ],
+      "default": "spam"
+    },
+    "details": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "dismissed"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "listing_id",
+    "session_ref",
+    "reason"
+  ]
+}

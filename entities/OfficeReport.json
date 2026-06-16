@@ -1,0 +1,106 @@
+{
+  "name": "OfficeReport",
+  "type": "object",
+  "properties": {
+    "office_slug": {
+      "type": "string"
+    },
+    "office_name": {
+      "type": "string"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "visit_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "waiting_time": {
+      "type": "string",
+      "enum": [
+        "less_30min",
+        "30_60min",
+        "1_2hrs",
+        "2_3hrs",
+        "more_3hrs",
+        "not_served"
+      ],
+      "description": "Approximate waiting time"
+    },
+    "service_speed": {
+      "type": "string",
+      "enum": [
+        "very_fast",
+        "normal",
+        "slow",
+        "very_slow"
+      ],
+      "description": "Overall service speed"
+    },
+    "office_status": {
+      "type": "string",
+      "enum": [
+        "open_normal",
+        "open_slow",
+        "partial",
+        "closed",
+        "system_down"
+      ],
+      "default": "open_normal"
+    },
+    "staff_behavior": {
+      "type": "string",
+      "enum": [
+        "excellent",
+        "good",
+        "average",
+        "poor"
+      ]
+    },
+    "cleanliness": {
+      "type": "string",
+      "enum": [
+        "clean",
+        "average",
+        "unclean"
+      ]
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional neutral notes (max 500 chars)"
+    },
+    "purpose_of_visit": {
+      "type": "string"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": true
+    },
+    "helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "flagged",
+        "removed"
+      ],
+      "default": "active"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "office_slug",
+    "district_slug",
+    "waiting_time",
+    "service_speed"
+  ]
+}

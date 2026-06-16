@@ -1,0 +1,70 @@
+{
+  "name": "JobAlert",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "job_type": {
+      "type": "string",
+      "enum": [
+        "part_time",
+        "temporary",
+        "local_hiring",
+        "delivery",
+        "helper",
+        "urgent_manpower",
+        "other"
+      ],
+      "default": "local_hiring"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "contact_visible": {
+      "type": "boolean",
+      "default": false
+    },
+    "contact_info": {
+      "type": "string"
+    },
+    "salary_info": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "closed",
+        "removed"
+      ],
+      "default": "pending"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "district_slug",
+    "job_type"
+  ]
+}

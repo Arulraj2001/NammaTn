@@ -1,0 +1,164 @@
+{
+  "name": "StayListing",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "listing_type": {
+      "type": "string",
+      "enum": [
+        "pg_available",
+        "shared_room",
+        "roommate_needed",
+        "temporary_stay",
+        "hostel"
+      ],
+      "default": "pg_available"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "area_slug": {
+      "type": "string"
+    },
+    "area_name": {
+      "type": "string"
+    },
+    "landmark": {
+      "type": "string"
+    },
+    "rent_amount": {
+      "type": "number"
+    },
+    "rent_period": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "weekly",
+        "daily"
+      ],
+      "default": "monthly"
+    },
+    "gender_preference": {
+      "type": "string",
+      "enum": [
+        "boys",
+        "girls",
+        "co_living",
+        "any"
+      ],
+      "default": "any"
+    },
+    "occupancy_type": {
+      "type": "string",
+      "enum": [
+        "single",
+        "double",
+        "triple",
+        "dormitory"
+      ],
+      "default": "single"
+    },
+    "available_from": {
+      "type": "string",
+      "format": "date"
+    },
+    "amenities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "image_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contact_preference": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "phone",
+        "telegram",
+        "message_only"
+      ],
+      "default": "message_only"
+    },
+    "whatsapp": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "telegram": {
+      "type": "string"
+    },
+    "author_session": {
+      "type": "string"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "expired",
+        "removed",
+        "archived"
+      ],
+      "default": "pending"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_trusted": {
+      "type": "boolean",
+      "default": false
+    },
+    "report_count": {
+      "type": "number",
+      "default": 0
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0
+    },
+    "contact_reveals": {
+      "type": "number",
+      "default": 0
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "nearby_college": {
+      "type": "string"
+    },
+    "nearby_office": {
+      "type": "string"
+    },
+    "nearby_metro": {
+      "type": "string"
+    },
+    "nearby_railway": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "listing_type",
+    "district_slug"
+  ]
+}

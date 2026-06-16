@@ -1,0 +1,29 @@
+{
+  "name": "SiteSettings",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Setting key identifier"
+    },
+    "value": {
+      "type": "string",
+      "description": "Setting value"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "seo",
+        "social",
+        "homepage",
+        "moderation"
+      ],
+      "default": "general"
+    }
+  },
+  "required": [
+    "key",
+    "value"
+  ]
+}

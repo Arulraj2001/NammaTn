@@ -1,0 +1,59 @@
+{
+  "name": "LiveRoomMessage",
+  "type": "object",
+  "properties": {
+    "room_id": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "update",
+        "alert",
+        "question",
+        "help",
+        "confirmation",
+        "resolution"
+      ],
+      "default": "update"
+    },
+    "author_session": {
+      "type": "string"
+    },
+    "author_label": {
+      "type": "string",
+      "default": "Community Member"
+    },
+    "district_slug": {
+      "type": "string"
+    },
+    "district_name": {
+      "type": "string"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_admin": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "removed",
+        "spam"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "room_id",
+    "content",
+    "author_session"
+  ]
+}

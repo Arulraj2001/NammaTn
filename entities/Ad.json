@@ -1,0 +1,68 @@
+{
+  "name": "Ad",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "redirect_url": {
+      "type": "string"
+    },
+    "placement": {
+      "type": "string",
+      "enum": [
+        "homepage",
+        "feed",
+        "district",
+        "category",
+        "footer"
+      ],
+      "default": "feed"
+    },
+    "ad_type": {
+      "type": "string",
+      "enum": [
+        "banner",
+        "native"
+      ],
+      "default": "banner"
+    },
+    "targeting": {
+      "type": "string",
+      "enum": [
+        "all",
+        "mobile",
+        "desktop"
+      ],
+      "default": "all"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "click_count": {
+      "type": "number",
+      "default": 0
+    },
+    "impression_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "redirect_url",
+    "placement"
+  ]
+}

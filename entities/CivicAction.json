@@ -1,0 +1,37 @@
+{
+  "name": "CivicAction",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "ID of the civic post/receipt"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "verify",
+        "duplicate",
+        "still_not_fixed",
+        "citizen_verified_fixed",
+        "claim_fixed"
+      ]
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "user.id if logged in, else session ID"
+    },
+    "is_authenticated": {
+      "type": "boolean",
+      "default": false
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Extra data: photo URLs, complaint ID, notes"
+    }
+  },
+  "required": [
+    "post_id",
+    "action_type",
+    "actor_id"
+  ]
+}

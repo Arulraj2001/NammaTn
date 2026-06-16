@@ -1,0 +1,30 @@
+{
+  "name": "CommunityConfirmation",
+  "type": "object",
+  "properties": {
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "situation_update",
+        "emergency_post",
+        "scam_alert",
+        "office_report",
+        "post"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "district_slug": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "target_type",
+    "target_id",
+    "session_id"
+  ]
+}

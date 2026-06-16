@@ -1,0 +1,75 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "civic_receipt_created",
+        "issue_verified",
+        "complaint_id_needed",
+        "complaint_id_added",
+        "follow_up_needed",
+        "escalation_recommended",
+        "claimed_fixed",
+        "citizen_verified_fixed",
+        "still_not_fixed_reported",
+        "comment_reply",
+        "post_reported",
+        "moderation_update",
+        "job_pending_review",
+        "job_approved",
+        "job_rejected",
+        "stay_approved",
+        "stay_rejected",
+        "listing_verified",
+        "listing_rejected",
+        "rwa_approved",
+        "rwa_rejected",
+        "sponsor_approved",
+        "sponsor_rejected",
+        "system_announcement"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "target_type": {
+      "type": "string"
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "urgent"
+      ],
+      "default": "normal"
+    },
+    "read_at": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "user_id",
+    "type",
+    "title"
+  ]
+}
