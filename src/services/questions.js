@@ -74,15 +74,41 @@ export const createAnswer = async (data) => {
   return created;
 };
 
-export const markAnswerHelpful = async (id, currentCount) => {
-  const { data, error } = await supabase
-    .from("answer")
-    .update({ helpful_count: (currentCount || 0) + 1 })
-    .eq("id", id)
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+export const markAnswerHelpful = async (answerId, actorId) => {
+  // Check if user already marked this answer as helpful
+  const { data: existing, error: fetchError } = await supabase
+    .from("reaction")
+    .select("id")
+    .eq("target_id", answerId)
+    .eq("target_type", "answer")
+    .eq("reaction_type", "helpful")
+    .eq("actor_id", actorId)
+    .maybeSingle();
+
+  if (fetchError) throw fetchError;
+
+  if (existing) {
+    // Toggle off: Delete the reaction (database trigger will decrement count)
+    const { error: deleteError } = await supabase
+      .from("reaction")
+      .delete()
+      .eq("id", existing.id);
+    if (deleteError) throw deleteError;
+    return { action: "removed" };
+  } else {
+    // Toggle on: Insert the reaction (database trigger will increment count)
+    const { error: insertError } = await supabase
+      .from("reaction")
+      .insert({
+        target_id: answerId,
+        target_type: "answer",
+        reaction_type: "helpful",
+        actor_id: actorId,
+        is_authenticated: true,
+      });
+    if (insertError) throw insertError;
+    return { action: "added" };
+  }
 };
 
 export const acceptAnswer = async (answerId, questionId) => {
@@ -100,12 +126,6 @@ export const acceptAnswer = async (answerId, questionId) => {
 };
 
 export const updateAnswerCount = async (questionId, count) => {
-  const { data, error } = await supabase
-    .from("question")
-    .update({ answer_count: count })
-    .eq("id", questionId)
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  // Handled automatically by database trigger on answer table
+  return { id: questionId, answer_count: count };
 };

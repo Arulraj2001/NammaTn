@@ -135,12 +135,6 @@ export const updatePostReactions = async (id, upvotes, downvotes) => {
 };
 
 export const updateCommentCount = async (id, comment_count) => {
-  const { data, error } = await supabase
-    .from("post")
-    .update({ comment_count })
-    .eq("id", id)
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  // Handled automatically by database trigger on comment table
+  return { id, comment_count };
 };

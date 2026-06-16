@@ -47,8 +47,10 @@ export default function QuestionDetail() {
   });
 
   const helpfulMutation = useMutation({
-    mutationFn: ({ answerId, count }) => markAnswerHelpful(answerId, count),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["answers", id] }),
+    mutationFn: ({ answerId, actorId }) => markAnswerHelpful(answerId, actorId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["answers", id] });
+    },
   });
 
   const handleAnswer = () => {
@@ -123,7 +125,7 @@ export default function QuestionDetail() {
                   requireAuth(() => {}, T("Sign in to vote", "வாக்களிக்க உள்நுழையுங்கள்"));
                   return;
                 }
-                helpfulMutation.mutate({ answerId: ans.id, count: ans.helpful_count });
+                helpfulMutation.mutate({ answerId: ans.id, actorId: user?.id });
               }}
               className="flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 transition-colors">
               <ThumbsUp className="w-3.5 h-3.5" /> {T("Helpful", "உதவியாக இருந்தது")} ({ans.helpful_count || 0})

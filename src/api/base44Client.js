@@ -16,13 +16,34 @@ const entityProxy = new Proxy({}, {
     
     return {
       async create(data) {
-        const { data: created, error } = await supabase
-          .from(tableName)
-          .insert(data)
-          .select()
-          .single();
-        if (error) throw error;
-        return created;
+        try {
+          const { data: created, error } = await supabase
+            .from(tableName)
+            .insert(data)
+            .select()
+            .single();
+          if (error) {
+            // Fallback for tables that don't allow public SELECT (e.g. contact_message, stay_report)
+            if (error.code === '42501' || error.message?.includes('violates row-level security')) {
+              const { error: insertError } = await supabase
+                .from(tableName)
+                .insert(data);
+              if (insertError) throw insertError;
+              return null;
+            }
+            throw error;
+          }
+          return created;
+        } catch (err) {
+          if (err.code === '42501' || err.message?.includes('violates row-level security')) {
+            const { error: insertError } = await supabase
+              .from(tableName)
+              .insert(data);
+            if (insertError) throw insertError;
+            return null;
+          }
+          throw err;
+        }
       },
 
       async update(id, data) {
@@ -73,6 +94,40 @@ const entityProxy = new Proxy({}, {
           if ('role' in data) {
             const { error } = await supabase.rpc('update_user_role', { user_id: id, new_role: data.role });
             if (error) throw error;
+            return { id, ...data };
+          }
+        } else if (tableName === 'discussion_reply') {
+          if ('helpful_count' in data) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) {
+              return { id, ...data };
+            }
+            const actorId = session.user.id;
+            const { data: existing } = await supabase
+              .from("reaction")
+              .select("id")
+              .eq("target_id", id)
+              .eq("target_type", "discussion_reply")
+              .eq("reaction_type", "helpful")
+              .eq("actor_id", actorId)
+              .maybeSingle();
+
+            if (existing) {
+              await supabase.from("reaction").delete().eq("id", existing.id);
+            } else {
+              await supabase.from("reaction").insert({
+                target_id: id,
+                target_type: "discussion_reply",
+                reaction_type: "helpful",
+                actor_id: actorId,
+                is_authenticated: true
+              });
+            }
+            return { id, ...data };
+          }
+        } else if (tableName === 'community_discussion') {
+          if ('reply_count' in data) {
+            // Handled by database trigger on discussion_reply table
             return { id, ...data };
           }
         }
