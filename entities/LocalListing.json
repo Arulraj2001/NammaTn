@@ -64,6 +64,12 @@
     "contact_email": {
       "type": "string"
     },
+    "admin_phone": {
+      "type": "string"
+    },
+    "admin_email": {
+      "type": "string"
+    },
     "photo_urls": {
       "type": "array",
       "items": {

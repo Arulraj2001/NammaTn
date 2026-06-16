@@ -95,6 +95,16 @@ const SECTIONS = [
       { key: "announcement_type", label: "Announcement Type (info/warning/error)", placeholder: "info" },
     ],
   },
+  {
+    title: "📋 Local Listing Plans (Pricing)",
+    category: "monetization",
+    fields: [
+      { key: "plan_free_price", label: "Free Listing Price (₹) — Set > 0 for minimum cost mode", placeholder: "0", type: "number" },
+      { key: "plan_verified_price", label: "Verified Listing Price (₹)", placeholder: "299", type: "number" },
+      { key: "plan_featured_price", label: "Featured Listing Price (₹)", placeholder: "799", type: "number" },
+      { key: "plan_district_sponsor_price", label: "District Sponsor Listing Price (₹)", placeholder: "2499", type: "number" },
+    ],
+  },
 ];
 
 const DEFAULT_SETTINGS = {};

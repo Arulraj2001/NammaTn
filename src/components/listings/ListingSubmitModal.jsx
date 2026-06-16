@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { X, CheckCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { LISTING_CATEGORIES, LISTING_PLANS } from "@/lib/listingCategories";
 import { DISTRICTS } from "@/lib/districts";
 import { useLanguage } from "@/context/LanguageContext";
 import { useNotify } from "@/hooks/useNotify";
+import { useQuery } from "@tanstack/react-query";
+import { getSettingsMap } from "@/services/admin/settings";
 
 export default function ListingSubmitModal({ onClose }) {
   const { lang } = useLanguage();
@@ -16,9 +18,32 @@ export default function ListingSubmitModal({ onClose }) {
     business_name: "", category: "plumber", plan: "free",
     description: "", district_slug: "", area_name: "",
     contact_phone: "", contact_whatsapp: "", contact_email: "",
+    admin_phone: "", admin_email: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Fetch dynamic plans pricing configuration from site settings
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
+
+  // Calculate pricing dynamically. Admin can set minimum cost on free or modify other prices
+  const plans = useMemo(() => {
+    return LISTING_PLANS.map((p) => {
+      const dbPrice = settings[`plan_${p.key}_price`];
+      return {
+        ...p,
+        price: dbPrice !== undefined ? Number(dbPrice) : p.price,
+      };
+    });
+  }, [settings]);
+
+  const selectedPlan = useMemo(() => {
+    return plans.find((p) => p.key === form.plan) || plans[0];
+  }, [plans, form.plan]);
 
   const session = (() => {
     let s = localStorage.getItem("tn_session");
@@ -29,7 +54,7 @@ export default function ListingSubmitModal({ onClose }) {
   const district = DISTRICTS.find((d) => d.slug === form.district_slug);
 
   const handleSubmit = async () => {
-    if (!form.business_name.trim() || !form.district_slug) return;
+    if (!form.business_name.trim() || !form.district_slug || !form.contact_phone.trim() || !form.admin_email.trim() || !form.admin_phone.trim()) return;
     setLoading(true);
     const created = await base44.entities.LocalListing.create({
       ...form,
@@ -49,6 +74,11 @@ export default function ListingSubmitModal({ onClose }) {
   };
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const isSubmitDisabled = loading || 
+    !form.contact_phone.trim() || 
+    !form.admin_email.trim() || 
+    !form.admin_phone.trim();
 
   if (submitted) {
     return (
@@ -125,24 +155,48 @@ export default function ListingSubmitModal({ onClose }) {
 
           {step === 2 && (
             <>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">{T("Phone Number", "தொலைபேசி எண்")}</label>
-                <input value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)}
-                  type="tel" placeholder="+91 98765 43210"
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+              {/* Contact Information (Public vs Admin) */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">{T("Contact Info (Public Display)", "தொடர்பு தகவல் (பொது காட்சி)")}</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">{T("Phone Number *", "தொலைபேசி எண் *")}</label>
+                    <input value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)}
+                      type="tel" placeholder="+91 98765 43210" required
+                      className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-600 rounded-xl text-xs bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">{T("WhatsApp (optional)", "WhatsApp (விருப்பம்)")}</label>
+                    <input value={form.contact_whatsapp} onChange={(e) => set("contact_whatsapp", e.target.value)}
+                      type="tel" placeholder="+91 98765 43210"
+                      className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-600 rounded-xl text-xs bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">{T("WhatsApp Number", "WhatsApp எண்")}</label>
-                <input value={form.contact_whatsapp} onChange={(e) => set("contact_whatsapp", e.target.value)}
-                  type="tel" placeholder="+91 98765 43210"
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+
+              <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-700">
+                <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">{T("Administrative Info (Private/Payment)", "நிர்வாகத் தகவல் (தனியார்/கட்டணம்)")}</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">{T("Admin Email *", "நிர்வாக மின்னஞ்சல் *")}</label>
+                    <input value={form.admin_email} onChange={(e) => set("admin_email", e.target.value)}
+                      type="email" placeholder="owner@business.com" required
+                      className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-600 rounded-xl text-xs bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">{T("Admin Phone *", "நிர்வாக தொலைபேசி *")}</label>
+                    <input value={form.admin_phone} onChange={(e) => set("admin_phone", e.target.value)}
+                      type="tel" placeholder="+91 98765 43210" required
+                      className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-600 rounded-xl text-xs bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+                  </div>
+                </div>
               </div>
 
               {/* Plan selection */}
-              <div>
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">{T("Listing Plan", "பட்டியல் திட்டம்")}</label>
                 <div className="space-y-2">
-                  {LISTING_PLANS.map((plan) => (
+                  {plans.map((plan) => (
                     <label key={plan.key} className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${form.plan === plan.key ? "border-blue-500 bg-blue-50 dark:bg-blue-900/10" : "border-slate-200 dark:border-slate-600 hover:border-blue-300"}`}>
                       <input type="radio" name="plan" value={plan.key} checked={form.plan === plan.key} onChange={() => set("plan", plan.key)} className="mt-0.5" />
                       <div className="flex-1">
@@ -150,7 +204,7 @@ export default function ListingSubmitModal({ onClose }) {
                           <span className="text-sm font-semibold text-slate-800 dark:text-white">{plan.label}</span>
                           {plan.badge && <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full text-white ${plan.badgeColor}`}>{plan.badge}</span>}
                         </div>
-                        <p className="text-xs text-blue-600 font-bold mt-0.5">{plan.price === 0 ? "Free" : `₹${plan.price}/${plan.billing}`}</p>
+                        <p className="text-xs text-blue-600 font-bold mt-0.5">{plan.price === 0 ? T("Free", "இலவசம்") : `₹${plan.price}/${plan.billing}`}</p>
                         <p className="text-xs text-slate-500 mt-0.5">{plan.features[0]}</p>
                       </div>
                     </label>
@@ -158,7 +212,7 @@ export default function ListingSubmitModal({ onClose }) {
                 </div>
               </div>
 
-              {form.plan !== "free" && (
+              {selectedPlan && selectedPlan.price > 0 && (
                 <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 rounded-xl p-3 text-xs text-amber-700 dark:text-amber-400">
                   {T("After submission, our team will contact you for payment and verification within 24 hours.", "சமர்ப்பிப்பிற்கு பிறகு, 24 மணி நேரத்தில் கட்டண மற்றும் சரிபார்ப்பிற்கு எங்கள் குழு தொடர்புகொள்ளும்.")}
                 </div>
@@ -168,7 +222,7 @@ export default function ListingSubmitModal({ onClose }) {
                 <button onClick={() => setStep(1)} className="flex-1 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-medium hover:bg-slate-50">
                   {T("Back", "பின்")}
                 </button>
-                <button onClick={handleSubmit} disabled={loading}
+                <button onClick={handleSubmit} disabled={isSubmitDisabled}
                   className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
                   {loading ? T("Submitting...", "சமர்ப்பிக்கிறது...") : T("Submit Listing", "பட்டியல் சமர்ப்பி")}
                 </button>
