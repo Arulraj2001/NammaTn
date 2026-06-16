@@ -75,15 +75,9 @@ export async function toggleReaction(targetId, targetType, reactionType, actorId
     action = "switched";
   }
 
-  // Update post counts safely (floor at 0)
+  // Calculate new counts locally to return to the UI immediately, while the DB trigger handles backend synchronization.
   const newUpvotes = Math.max(0, (post.upvotes || 0) + upvotesDelta);
   const newDownvotes = Math.max(0, (post.downvotes || 0) + downvotesDelta);
-  
-  const { error: postError } = await supabase
-    .from("post")
-    .update({ upvotes: newUpvotes, downvotes: newDownvotes })
-    .eq("id", targetId);
-  if (postError) throw postError;
 
   return { action, reactionType: action === "removed" ? null : reactionType, newUpvotes, newDownvotes };
 }
