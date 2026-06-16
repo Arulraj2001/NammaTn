@@ -242,7 +242,7 @@ export default function CreatePost() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Post Type */}
-        <div>
+        <div key="post-type-selector">
           <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 block">
             {T("Post Type", "பதிவு வகை")} *
           </Label>
@@ -271,7 +271,7 @@ export default function CreatePost() {
 
         {/* Civic Receipt Banner — shown for complaint/alert types */}
         {isCivicType && (
-          <>
+          <div key="civic-banner-disclaimer-container" className="space-y-6">
             <CivicReceiptBanner lang={lang} />
             {/* Disclaimer acknowledgement */}
             <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl p-4">
@@ -295,12 +295,13 @@ export default function CreatePost() {
                 </div>
               </label>
             </div>
-          </>
+          </div>
         )}
 
         {/* Duplicate detection */}
         {isCivicType && showDuplicateWarning && selectedDistrict && selectedCategory && (
           <DuplicateSuggestion
+            key="duplicate-suggestion"
             districtSlug={selectedDistrict}
             categorySlug={selectedCategory}
             onContinueNew={() => setShowDuplicateWarning(false)}
@@ -309,7 +310,7 @@ export default function CreatePost() {
         )}
 
         {/* District + Category */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div key="district-category-selector" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
               {T("District", "மாவட்டம்")} *
@@ -344,7 +345,7 @@ export default function CreatePost() {
 
         {/* Area selection (shown when district is chosen) */}
         {selectedDistrict && (
-          <div>
+          <div key="area-selector-container">
             <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
               {T("Area / Locality", "பகுதி / ஊர்")}
             </Label>
@@ -375,7 +376,7 @@ export default function CreatePost() {
         )}
 
         {/* Title */}
-        <div>
+        <div key="title-container">
           <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
             {isCivicType ? T("Issue Title", "சிக்கல் தலைப்பு") : T("Title", "தலைப்பு")} *
           </Label>
@@ -391,7 +392,7 @@ export default function CreatePost() {
 
         {/* Location (civic only) */}
         {isCivicType && (
-          <div>
+          <div key="location-container">
             <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
               {T("Exact Location / Landmark", "சரியான இடம் / அடையாளம்")}
             </Label>
@@ -404,7 +405,7 @@ export default function CreatePost() {
         )}
 
         {/* Content */}
-        <div>
+        <div key="content-container">
           <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
             {isCivicType ? T("Issue Description", "சிக்கல் விவரம்") : T("Details", "விவரங்கள்")} *
           </Label>
@@ -420,7 +421,7 @@ export default function CreatePost() {
 
         {/* Urgency (civic only) */}
         {isCivicType && (
-          <div>
+          <div key="urgency-container">
             <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">
               {T("Urgency Level", "அவசர நிலை")}
             </Label>
@@ -444,7 +445,7 @@ export default function CreatePost() {
         )}
 
         {/* Media Upload */}
-        <div>
+        <div key="media-upload-container">
           <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
             {isCivicType
               ? T("Before Photos (proof)", "முன்பு புகைப்படங்கள் (ஆதாரம்)")
@@ -464,7 +465,7 @@ export default function CreatePost() {
         </div>
 
         {/* Anonymous */}
-        <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4">
+        <div key="anonymous-container" className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4">
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
@@ -493,7 +494,7 @@ export default function CreatePost() {
 
         {/* Sensitive data warning */}
         {sensitiveWarning && (
-          <div className="space-y-2">
+          <div key="sensitive-warning" className="space-y-2">
             <SensitiveDataWarning findings={sensitiveWarning} />
             <p className="text-xs text-slate-600 bg-amber-50 border border-amber-200 rounded-lg p-3">
               {T(
@@ -505,13 +506,14 @@ export default function CreatePost() {
         )}
 
         {(spamError || rateLimitMsg) && (
-          <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-600 dark:text-red-400">
+          <div key="spam-rate-error-banner" className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-600 dark:text-red-400">
             <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <span>{spamError || rateLimitMsg}</span>
           </div>
         )}
 
         <Button
+          key="submit-button"
           type="submit"
           disabled={isSubmitting}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-semibold rounded-xl"
