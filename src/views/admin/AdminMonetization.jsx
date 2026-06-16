@@ -222,8 +222,18 @@ export default function AdminMonetization() {
                     <tr key={l.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30">
                       <td className="py-2.5 px-3">
                         <p className="text-sm font-medium text-slate-800 dark:text-white">{l.business_name}</p>
-                        {l.district_name && <p className="text-xs text-slate-400">{l.district_name}</p>}
-                        {l.admin_note && <p className="text-xs text-amber-600 italic mt-0.5 max-w-[140px] truncate" title={l.admin_note}>📝 {l.admin_note}</p>}
+                        {l.district_name && <p className="text-xs text-slate-500 font-semibold">{l.district_name}</p>}
+                        
+                        <div className="text-[11px] text-slate-400 mt-1 space-y-0.5 border-t border-slate-100 dark:border-slate-700/50 pt-1">
+                          <p><span className="font-semibold text-slate-600 dark:text-slate-300">Public Phone:</span> {l.contact_phone || "—"}</p>
+                          {(l.admin_email || l.admin_phone) && (
+                            <p className="text-blue-600 dark:text-blue-400">
+                              <span className="font-semibold text-slate-600 dark:text-slate-300">Admin/Billing:</span> {l.admin_email || "—"} / {l.admin_phone || "—"}
+                            </p>
+                          )}
+                        </div>
+
+                        {l.admin_note && <p className="text-xs text-amber-600 italic mt-1.5 max-w-[140px] truncate" title={l.admin_note}>📝 {l.admin_note}</p>}
                       </td>
                       <td className="py-2.5 px-3 text-xs text-slate-500">{cat.icon} {cat.label}</td>
                       <td className="py-2.5 px-3">
@@ -247,6 +257,20 @@ export default function AdminMonetization() {
                           <button onClick={() => updateListing(l.id, { is_featured: true, status: "active" }, "Featured.")} title="Feature listing" className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg"><Star className="w-3.5 h-3.5" /></button>
                           <button onClick={() => updateListing(l.id, { is_sponsored: true, status: "active" }, "Marked Sponsored (paid).")} title="Mark Sponsored" className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg"><Eye className="w-3.5 h-3.5" /></button>
                           <button onClick={() => updateListing(l.id, { status: "rejected", is_verified: false, is_featured: false, is_sponsored: false }, "Rejected.")} title="Reject" className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><XCircle className="w-3.5 h-3.5" /></button>
+                        </div>
+                        {/* Plan selection for admin */}
+                        <div className="mt-1 flex items-center gap-1">
+                          <label className="text-[10px] text-slate-500 font-semibold">Plan:</label>
+                          <select
+                            value={l.plan || "free"}
+                            onChange={(e) => updateListing(l.id, { plan: e.target.value }, `Plan updated to ${e.target.value}`)}
+                            className="text-[11px] px-1 py-0.5 border border-slate-200 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-700 dark:text-white focus:outline-none"
+                          >
+                            <option value="free">Free</option>
+                            <option value="verified">Verified</option>
+                            <option value="featured">Featured</option>
+                            <option value="district_sponsor">Sponsored</option>
+                          </select>
                         </div>
                         {/* Admin note inline */}
                         <div className="flex gap-1 mt-1">
