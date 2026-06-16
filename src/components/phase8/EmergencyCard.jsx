@@ -5,6 +5,10 @@ import { MapPin, Phone, CheckCircle } from "lucide-react";
 import UrgencyBadge from "./UrgencyBadge";
 import VerifiedBadge from "./VerifiedBadge";
 import ConfirmButton from "./ConfirmButton";
+import dynamic from "next/dynamic";
+
+const LocationDisplayMap = dynamic(() => import("@/components/media/LocationDisplayMap"), { ssr: false });
+
 
 const TYPE_LABELS = {
   blood_requirement: { label: "🩸 Blood Required", color: "text-red-600" },
@@ -51,6 +55,19 @@ export default function EmergencyCard({ item, compact = false }) {
         <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center gap-2">
           <Phone className="w-4 h-4 text-green-600" />
           <span className="text-sm font-medium text-green-700 dark:text-green-400">{item.contact_info}</span>
+        </div>
+      )}
+      {!compact && item.latitude && item.longitude && (
+        <div className="mt-2.5">
+          <LocationDisplayMap latitude={item.latitude} longitude={item.longitude} />
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 hover:text-red-700 hover:underline transition-all mt-1"
+          >
+            <MapPin className="w-3.5 h-3.5" /> Directions on Google Maps
+          </a>
         </div>
       )}
       {!compact && (

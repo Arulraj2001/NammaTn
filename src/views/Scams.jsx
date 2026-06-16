@@ -12,6 +12,10 @@ import ScamCard from "@/components/phase8/ScamCard";
 import { checkRateLimit, sanitizeText } from "@/lib/security";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import dynamic from "next/dynamic";
+
+const LocationPickerMap = dynamic(() => import("@/components/media/LocationPickerMap"), { ssr: false });
+
 
 const SCAM_TYPES = [
   { value: "fake_agent", label: "🕵️ Fake Agent" },
@@ -35,6 +39,7 @@ export default function Scams() {
     title: "", description: "", scam_type: "fake_job",
     district_slug: "", district_name: "", area_slug: "", area_name: "",
     warning_level: "medium", is_anonymous: true,
+    latitude: null, longitude: null,
   });
   const [formError, setFormError] = useState(null);
 
@@ -67,7 +72,7 @@ export default function Scams() {
       qc.invalidateQueries({ queryKey: ["scams"] });
       qc.invalidateQueries({ queryKey: ["admin-scams"] });
       setShowForm(false);
-      setForm({ title: "", description: "", scam_type: "fake_job", district_slug: "", district_name: "", area_slug: "", area_name: "", warning_level: "medium", is_anonymous: true });
+      setForm({ title: "", description: "", scam_type: "fake_job", district_slug: "", district_name: "", area_slug: "", area_name: "", warning_level: "medium", is_anonymous: true, latitude: null, longitude: null });
     },
   });
 
@@ -167,6 +172,12 @@ export default function Scams() {
               className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none col-span-2" />
             )}
           </div>
+          <LocationPickerMap
+            districtSlug={form.district_slug}
+            latitude={form.latitude}
+            longitude={form.longitude}
+            onChange={(lat, lng) => setForm(f => ({ ...f, latitude: lat, longitude: lng }))}
+          />
           {formError && <p className="text-red-500 text-xs">{formError}</p>}
           <button type="submit" disabled={mutation.isPending}
             className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold text-sm transition-colors disabled:opacity-60">

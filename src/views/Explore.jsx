@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams, Link } from "react-router-dom";
 import { Search, SlidersHorizontal, X, FileText, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -41,6 +41,11 @@ const SORT_OPTIONS = [
 
 const PAGE_SIZE = 18;
 
+const getNextCursor = (lastPage) => {
+  if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;
+  return lastPage[lastPage.length - 1]?.created_date;
+};
+
 export default function Explore() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
@@ -58,13 +63,42 @@ export default function Explore() {
   const [civicStatusFilter, setCivicStatusFilter] = useState("all");
   const [sort, setSort] = useState("-created_date");
   const [showFilters, setShowFilters] = useState(false);
-  const [page, setPage] = useState(1);
+  const loadMoreRef = useRef(null);
 
-  const { data: posts = [], isLoading, isError, refetch } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["posts", "explore"],
-    queryFn: () => getActivePosts(300, "-created_date"),
+    queryFn: ({ pageParam = null }) => getActivePosts({ limit: PAGE_SIZE, cursor: pageParam }),
+    initialPageParam: null,
+    getNextPageParam: getNextCursor,
     staleTime: 60_000,
   });
+
+  const posts = useMemo(() => data?.pages.flatMap((page) => page) || [], [data]);
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "600px 0px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const filtered = useMemo(() => {
     return posts.filter((p) => {
@@ -102,18 +136,15 @@ export default function Explore() {
     });
   }, [posts, typeFilter, districtFilter, categoryFilter, civicStatusFilter, search, sort]);
 
-  const paginated = filtered.slice(0, page * PAGE_SIZE);
-  const hasMore = filtered.length > paginated.length;
-
   const activeFilterCount = [typeFilter !== "all", districtFilter !== "all", categoryFilter !== "all", civicStatusFilter !== "all"].filter(Boolean).length;
 
   const clearFilters = useCallback(() => {
     setTypeFilter("all"); setDistrictFilter("all"); setCategoryFilter("all");
     setCivicStatusFilter("all"); setSort("-created_date"); setSearch("");
-    setPage(1); setSearchParams({});
+    setSearchParams({});
   }, [setSearchParams]);
 
-  const handleTypeChange = (val) => { setTypeFilter(val); setPage(1); };
+  const handleTypeChange = (val) => { setTypeFilter(val); };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -133,12 +164,12 @@ export default function Explore() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder={T("Search posts, civic receipts...", "பதிவுகள், குடிமை ரசீதுகள் தேடுங்கள்...")}
             className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {search && (
-            <button onClick={() => { setSearch(""); setPage(1); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -174,9 +205,9 @@ export default function Explore() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
                 { label: T("Sort by", "வரிசைப்படுத்து"), value: sort, onChange: setSort, opts: SORT_OPTIONS.map((o) => ({ value: o.value, label: T(o.en, o.ta) })) },
-                { label: T("District", "மாவட்டம்"), value: districtFilter, onChange: (v) => { setDistrictFilter(v); setPage(1); }, opts: [{ value: "all", label: T("All Districts", "அனைத்து மாவட்டங்கள்") }, ...DISTRICTS.map((d) => ({ value: d.slug, label: T(d.name_en, d.name_ta) }))] },
-                { label: T("Category", "வகை"), value: categoryFilter, onChange: (v) => { setCategoryFilter(v); setPage(1); }, opts: [{ value: "all", label: T("All Categories", "அனைத்து வகைகளும்") }, ...CATEGORIES.map((c) => ({ value: c.slug, label: `${c.icon} ${T(c.name_en, c.name_ta)}` }))] },
-                { label: T("Civic Status", "குடிமை நிலை"), value: civicStatusFilter, onChange: (v) => { setCivicStatusFilter(v); setPage(1); }, opts: CIVIC_STATUS_FILTERS.map((o) => ({ value: o.value, label: T(o.en, o.ta) })) },
+                { label: T("District", "மாவட்டம்"), value: districtFilter, onChange: setDistrictFilter, opts: [{ value: "all", label: T("All Districts", "அனைத்து மாவட்டங்கள்") }, ...DISTRICTS.map((d) => ({ value: d.slug, label: T(d.name_en, d.name_ta) }))] },
+                { label: T("Category", "வகை"), value: categoryFilter, onChange: setCategoryFilter, opts: [{ value: "all", label: T("All Categories", "அனைத்து வகைகளும்") }, ...CATEGORIES.map((c) => ({ value: c.slug, label: `${c.icon} ${T(c.name_en, c.name_ta)}` }))] },
+                { label: T("Civic Status", "குடிமை நிலை"), value: civicStatusFilter, onChange: setCivicStatusFilter, opts: CIVIC_STATUS_FILTERS.map((o) => ({ value: o.value, label: T(o.en, o.ta) })) },
               ].map((f) => (
                 <div key={f.label}>
                   <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">{f.label}</label>
@@ -227,11 +258,17 @@ export default function Explore() {
           <Link to="/create" className="inline-flex items-center gap-1 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">
             {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு")}
           </Link>
+          <div ref={loadMoreRef} className="h-10" aria-hidden="true" />
+          {isFetchingNextPage && (
+            <div className="flex justify-center mt-4">
+              <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
+            </div>
+          )}
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {paginated.map((post, i) => (
+            {filtered.map((post, i) => (
               <div key={post.id} className="contents">
                 <PostCard post={post} />
                 {i === 8 && (
@@ -242,12 +279,10 @@ export default function Explore() {
               </div>
             ))}
           </div>
-          {hasMore && (
-            <div className="text-center mt-8">
-              <button onClick={() => setPage((p) => p + 1)}
-                className="px-8 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                {T("Load more", "மேலும் ஏற்று")} ({filtered.length - paginated.length} {T("remaining", "மீதம்")})
-              </button>
+          <div ref={loadMoreRef} className="h-10" aria-hidden="true" />
+          {isFetchingNextPage && (
+            <div className="flex justify-center mt-6">
+              <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
             </div>
           )}
         </>

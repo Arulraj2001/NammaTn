@@ -1,5 +1,17 @@
 import { supabase } from "@/api/supabaseClient";
 
+const normalizePostPageArgs = (limitOrOptions = 100, sort = "-created_date", cursor = null) => {
+  if (typeof limitOrOptions === "object" && limitOrOptions !== null) {
+    return {
+      limit: limitOrOptions.limit ?? 100,
+      sort: limitOrOptions.sort ?? "-created_date",
+      cursor: limitOrOptions.cursor ?? null,
+    };
+  }
+
+  return { limit: limitOrOptions, sort, cursor };
+};
+
 export const getDashboardStats = async () => {
   const { data: all, error } = await supabase
     .from("post")
@@ -15,16 +27,23 @@ export const getDashboardStats = async () => {
   };
 };
 
-export const getAllPosts = async (limit = 100, sort = "-created_date") => {
-  const orderCol = sort.startsWith("-") ? sort.substring(1) : sort;
-  const ascending = !sort.startsWith("-");
-  const { data, error } = await supabase
+export const getAllPosts = async (limitOrOptions = 100, sort = "-created_date", cursor = null) => {
+  const { limit, sort: resolvedSort, cursor: pageCursor } = normalizePostPageArgs(limitOrOptions, sort, cursor);
+  const orderCol = pageCursor ? "created_date" : resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
+  const ascending = pageCursor ? false : !resolvedSort.startsWith("-");
+  let query = supabase
     .from("post")
     .select("*")
     .order(orderCol, { ascending })
     .limit(limit);
+
+  if (pageCursor) {
+    query = query.lt("created_date", pageCursor);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
-  return data;
+  return data || [];
 };
 
 export const getPostsByStatus = async (status, limit = 100) => {

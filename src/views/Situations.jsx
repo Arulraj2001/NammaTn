@@ -12,6 +12,10 @@ import SituationCard from "@/components/phase8/SituationCard";
 import { checkRateLimit } from "@/lib/security";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import dynamic from "next/dynamic";
+
+const LocationPickerMap = dynamic(() => import("@/components/media/LocationPickerMap"), { ssr: false });
+
 
 const SITUATION_TYPES = [
   { value: "eb_shutdown", label: "⚡ EB Shutdown" },
@@ -38,7 +42,7 @@ export default function Situations() {
   const [form, setForm] = useState({
     situation_type: "eb_shutdown", title: "", details: "",
     district_slug: "", district_name: "", area_slug: "", area_name: "",
-    urgency: "moderate",
+    urgency: "moderate", latitude: null, longitude: null,
   });
   const [formError, setFormError] = useState(null);
 
@@ -71,7 +75,7 @@ export default function Situations() {
       qc.invalidateQueries({ queryKey: ["situations"] });
       qc.invalidateQueries({ queryKey: ["admin-situations"] });
       setShowForm(false);
-      setForm({ situation_type: "eb_shutdown", title: "", details: "", district_slug: "", district_name: "", area_slug: "", area_name: "", urgency: "moderate" });
+      setForm({ situation_type: "eb_shutdown", title: "", details: "", district_slug: "", district_name: "", area_slug: "", area_name: "", urgency: "moderate", latitude: null, longitude: null });
     },
   });
 
@@ -160,6 +164,12 @@ export default function Situations() {
               className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none" />
             )}
           </div>
+          <LocationPickerMap
+            districtSlug={form.district_slug}
+            latitude={form.latitude}
+            longitude={form.longitude}
+            onChange={(lat, lng) => setForm(f => ({ ...f, latitude: lat, longitude: lng }))}
+          />
           <select value={form.urgency} onChange={(e) => setForm(f => ({ ...f, urgency: e.target.value }))}
             className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
             <option value="info">ℹ Info</option>

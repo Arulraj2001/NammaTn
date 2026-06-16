@@ -1,29 +1,76 @@
-import React, { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
-import { Search, Star, MapPin, CheckCircle, BadgeCheck, Sparkles, Building2, Plus } from "lucide-react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { supabase } from "@/api/supabaseClient";
+import { Search, BadgeCheck, Sparkles, Plus } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
-import { useNotify } from "@/hooks/useNotify";
 import { LISTING_CATEGORIES } from "@/lib/listingCategories";
 import { DISTRICTS } from "@/lib/districts";
 import ListingCard from "@/components/listings/ListingCard";
 import ListingSubmitModal from "@/components/listings/ListingSubmitModal";
+
+const PAGE_SIZE = 24;
+
+const isVisibleLocalListing = (listing) =>
+  listing?.moderation_status !== "hidden" &&
+  listing?.is_publicly_visible !== false &&
+  (listing?.report_count || 0) < 5;
+
+const getNextCursor = (lastPage) => {
+  if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;
+  return lastPage[lastPage.length - 1]?.created_date;
+};
+
+const getPublicLocalListings = async ({ cursor = null, limit = PAGE_SIZE }) => {
+  const page = [];
+  let nextCursor = cursor;
+  let exhausted = false;
+  let scans = 0;
+  const scanLimit = Math.max(limit * 2, limit);
+
+  while (page.length < limit && !exhausted && scans < 5) {
+    let query = supabase
+      .from("local_listing")
+      .select("*")
+      .eq("status", "active")
+      .or("moderation_status.is.null,moderation_status.neq.hidden")
+      .or("is_publicly_visible.is.null,is_publicly_visible.eq.true")
+      .or("report_count.is.null,report_count.lt.5")
+      .order("created_date", { ascending: false })
+      .limit(scanLimit);
+
+    if (nextCursor) {
+      query = query.lt("created_date", nextCursor);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const rows = data || [];
+    if (rows.length === 0) break;
+
+    page.push(...rows.filter(isVisibleLocalListing));
+    nextCursor = rows[rows.length - 1]?.created_date || nextCursor;
+    exhausted = rows.length < scanLimit;
+    scans += 1;
+  }
+
+  return page.slice(0, limit);
+};
 
 export default function LocalListings() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const { isAuthenticated } = useAuth();
   const { requireAuth } = useAuthModal();
-  const { notify } = useNotify();
 
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [districtFilter, setDistrictFilter] = useState("");
   const [planFilter, setPlanFilter] = useState("");
   const [showSubmit, setShowSubmit] = useState(false);
+  const loadMoreRef = useRef(null);
 
   const handleOpenSubmit = () => {
     if (!isAuthenticated) {
@@ -33,19 +80,39 @@ export default function LocalListings() {
     setShowSubmit(true);
   };
 
-  const { data: listings = [], isLoading, refetch } = useQuery({
+  const {
+    data,
+    isLoading,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["local-listings-public"],
-    queryFn: async () => {
-      const items = await base44.entities.LocalListing.filter({ status: "active" }, "-created_date", 200);
-      // Exclude hidden/scam/high-report items
-      return items.filter((l) =>
-        l.moderation_status !== "hidden" &&
-        l.is_publicly_visible !== false &&
-        (l.report_count || 0) < 5
-      );
-    },
+    queryFn: ({ pageParam = null }) => getPublicLocalListings({ cursor: pageParam, limit: PAGE_SIZE }),
+    initialPageParam: null,
+    getNextPageParam: getNextCursor,
     staleTime: 60_000,
   });
+
+  const listings = useMemo(() => data?.pages.flatMap((page) => page) || [], [data]);
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "600px 0px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -202,6 +269,12 @@ export default function LocalListings() {
                 </div>
               )}
             </div>
+            <div ref={loadMoreRef} className="h-10" aria-hidden="true" />
+            {isFetchingNextPage && (
+              <div className="flex justify-center mt-6">
+                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
           </>
         )}
 

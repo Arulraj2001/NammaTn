@@ -4,6 +4,10 @@ import { formatDistanceToNow } from "date-fns";
 import { MapPin, ShieldAlert } from "lucide-react";
 import VerifiedBadge from "./VerifiedBadge";
 import ConfirmButton from "./ConfirmButton";
+import dynamic from "next/dynamic";
+
+const LocationDisplayMap = dynamic(() => import("@/components/media/LocationDisplayMap"), { ssr: false });
+
 
 const TYPE_LABELS = {
   fake_agent:       "Fake Agent",
@@ -57,6 +61,19 @@ export default function ScamCard({ item, compact = false }) {
             <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{item.area_name ? `${item.area_name}, ` : ""}{item.district_name}</span>
             <span>{item.created_date ? formatDistanceToNow(new Date(item.created_date), { addSuffix: true }) : ""}</span>
           </div>
+          {!compact && item.latitude && item.longitude && (
+            <div className="mt-2.5">
+              <LocationDisplayMap latitude={item.latitude} longitude={item.longitude} />
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 hover:text-red-700 hover:underline transition-all mt-1"
+              >
+                <MapPin className="w-3.5 h-3.5" /> Directions on Google Maps
+              </a>
+            </div>
+          )}
           {!compact && (
             <div className="mt-3">
               <ConfirmButton

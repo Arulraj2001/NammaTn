@@ -12,6 +12,10 @@ import EmergencyCard from "@/components/phase8/EmergencyCard";
 import { checkRateLimit, sanitizeText } from "@/lib/security";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import dynamic from "next/dynamic";
+
+const LocationPickerMap = dynamic(() => import("@/components/media/LocationPickerMap"), { ssr: false });
+
 
 const EMERGENCY_TYPES = [
   { value: "blood_requirement", label: "🩸 Blood Required" },
@@ -36,6 +40,7 @@ export default function Help() {
     title: "", description: "", emergency_type: "community_help",
     urgency: "high", district_slug: "", district_name: "",
     area_slug: "", area_name: "", contact_info: "", contact_visible: true,
+    latitude: null, longitude: null,
   });
   const [formError, setFormError] = useState(null);
 
@@ -71,7 +76,7 @@ export default function Help() {
       qc.invalidateQueries({ queryKey: ["emergencies"] });
       qc.invalidateQueries({ queryKey: ["admin-emergency"] });
       setShowForm(false);
-      setForm({ title: "", description: "", emergency_type: "community_help", urgency: "high", district_slug: "", district_name: "", area_slug: "", area_name: "", contact_info: "", contact_visible: true });
+      setForm({ title: "", description: "", emergency_type: "community_help", urgency: "high", district_slug: "", district_name: "", area_slug: "", area_name: "", contact_info: "", contact_visible: true, latitude: null, longitude: null });
     },
   });
 
@@ -162,6 +167,12 @@ export default function Help() {
               className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none col-span-2" />
             )}
           </div>
+          <LocationPickerMap
+            districtSlug={form.district_slug}
+            latitude={form.latitude}
+            longitude={form.longitude}
+            onChange={(lat, lng) => setForm(f => ({ ...f, latitude: lat, longitude: lng }))}
+          />
           <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
             <input type="checkbox" checked={form.contact_visible} onChange={(e) => setForm(f => ({ ...f, contact_visible: e.target.checked }))} className="accent-red-600" />
             {T("Show contact publicly", "தொடர்பை பகிரங்கமாக காட்டு")}

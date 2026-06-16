@@ -1,6 +1,55 @@
 import { supabase } from "@/api/supabaseClient";
 import { isPubliclyVisible } from "@/lib/visibility";
 
+const normalizePostPageArgs = (limitOrOptions = 20, sort = "-created_date", cursor = null) => {
+  if (typeof limitOrOptions === "object" && limitOrOptions !== null) {
+    return {
+      limit: limitOrOptions.limit ?? 20,
+      sort: limitOrOptions.sort ?? "-created_date",
+      cursor: limitOrOptions.cursor ?? null,
+    };
+  }
+
+  return { limit: limitOrOptions, sort, cursor };
+};
+
+const fetchVisiblePostPage = async ({ limit, cursor = null, filter = isPubliclyVisible, configure }) => {
+  const page = [];
+  let nextCursor = cursor;
+  let exhausted = false;
+  let scans = 0;
+  const scanLimit = Math.max(limit * 2, limit);
+
+  while (page.length < limit && !exhausted && scans < 5) {
+    let query = supabase
+      .from("post")
+      .select("*")
+      .order("created_date", { ascending: false })
+      .limit(scanLimit);
+
+    if (nextCursor) {
+      query = query.lt("created_date", nextCursor);
+    }
+
+    if (configure) {
+      query = configure(query);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const rows = data || [];
+    if (rows.length === 0) break;
+
+    page.push(...rows.filter(filter));
+    nextCursor = rows[rows.length - 1]?.created_date || nextCursor;
+    exhausted = rows.length < scanLimit;
+    scans += 1;
+  }
+
+  return page.slice(0, limit);
+};
+
 export const createPost = async (data) => {
   const { data: created, error } = await supabase
     .from("post")
@@ -9,6 +58,25 @@ export const createPost = async (data) => {
     .single();
   if (error) throw error;
   return created;
+};
+
+export const getAllPosts = async (limitOrOptions = 20, sort = "-created_date", cursor = null) => {
+  const { limit, sort: resolvedSort, cursor: pageCursor } = normalizePostPageArgs(limitOrOptions, sort, cursor);
+  const orderCol = pageCursor ? "created_date" : resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
+  const ascending = pageCursor ? false : !resolvedSort.startsWith("-");
+  let query = supabase
+    .from("post")
+    .select("*")
+    .order(orderCol, { ascending })
+    .limit(limit);
+
+  if (pageCursor) {
+    query = query.lt("created_date", pageCursor);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data || [];
 };
 
 export const getPosts = async (limit = 20, sort = "-created_date") => {
@@ -34,9 +102,19 @@ export const getPostById = async (id) => {
   return data[0] || null;
 };
 
-export const getActivePosts = async (limit = 20, sort = "-created_date") => {
-  const orderCol = sort.startsWith("-") ? sort.substring(1) : sort;
-  const ascending = !sort.startsWith("-");
+export const getActivePosts = async (limitOrOptions = 20, sort = "-created_date", cursor = null) => {
+  const { limit, sort: resolvedSort, cursor: pageCursor } = normalizePostPageArgs(limitOrOptions, sort, cursor);
+
+  if (pageCursor || resolvedSort === "-created_date") {
+    return fetchVisiblePostPage({
+      limit,
+      cursor: pageCursor,
+      configure: (query) => query.eq("status", "active"),
+    });
+  }
+
+  const orderCol = resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
+  const ascending = !resolvedSort.startsWith("-");
   const { data, error } = await supabase
     .from("post")
     .select("*")
@@ -47,9 +125,20 @@ export const getActivePosts = async (limit = 20, sort = "-created_date") => {
   return data.filter(isPubliclyVisible).slice(0, limit);
 };
 
-export const getActiveCivicPosts = async (limit = 20, sort = "-created_date") => {
-  const orderCol = sort.startsWith("-") ? sort.substring(1) : sort;
-  const ascending = !sort.startsWith("-");
+export const getActiveCivicPosts = async (limitOrOptions = 20, sort = "-created_date", cursor = null) => {
+  const { limit, sort: resolvedSort, cursor: pageCursor } = normalizePostPageArgs(limitOrOptions, sort, cursor);
+
+  if (pageCursor || resolvedSort === "-created_date") {
+    return fetchVisiblePostPage({
+      limit,
+      cursor: pageCursor,
+      configure: (query) => query.eq("status", "active").eq("post_type", "complaint"),
+      filter: (p) => p.civic_receipt_id && isPubliclyVisible(p),
+    });
+  }
+
+  const orderCol = resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
+  const ascending = !resolvedSort.startsWith("-");
   const { data, error } = await supabase
     .from("post")
     .select("*")
