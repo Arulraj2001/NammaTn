@@ -5,12 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthModal } from "@/context/AuthModalContext";
 import GoogleIcon from "@/components/GoogleIcon";
-import { Mail, Lock, ArrowLeft, Loader2, KeyRound } from "lucide-react";
+import { Mail, Lock, Loader2 } from "lucide-react";
 
 const TABS = [
   { id: "google", label: "Google" },
-  { id: "email_otp", label: "Email OTP" },
-  { id: "password", label: "Password" },
+  { id: "password", label: "Email / Password" },
 ];
 
 function GoogleTab() {
@@ -38,123 +37,6 @@ function GoogleTab() {
   );
 }
 
-function EmailOTPTab() {
-  const [step, setStep] = useState("email"); // email | otp
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSendOTP = async (e) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setLoading(true);
-    setError("");
-    try {
-      const { error: otpError } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: true
-        }
-      });
-      if (otpError) throw otpError;
-      setStep("otp");
-    } catch (err) {
-      setError(err.message || "Could not send OTP. Please check your email.");
-    }
-    setLoading(false);
-  };
-
-  const handleVerifyOTP = async (e) => {
-    e.preventDefault();
-    if (!otp.trim()) return;
-    setLoading(true);
-    setError("");
-    try {
-      const { error: verifyError } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: "email"
-      });
-      if (verifyError) throw verifyError;
-      window.location.reload();
-    } catch (err) {
-      setError(err.message || "Invalid or expired code. Please try again.");
-    }
-    setLoading(false);
-  };
-
-  const handleResend = async () => {
-    setError("");
-    try {
-      const { error: otpError } = await supabase.auth.signInWithOtp({ email });
-      if (otpError) throw otpError;
-    } catch (err) {
-      setError("Failed to resend code.");
-    }
-  };
-
-  if (step === "email") {
-    return (
-      <form onSubmit={handleSendOTP} className="space-y-4">
-        <p className="text-sm text-slate-500 text-center">We'll send a one-time code to your email</p>
-        {error && <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            type="email"
-            placeholder="your@email.com"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="pl-10 h-12"
-            autoFocus
-            required
-          />
-        </div>
-        <Button type="submit" className="w-full h-12" disabled={loading}>
-          {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sending...</> : "Send Code →"}
-        </Button>
-      </form>
-    );
-  }
-
-  return (
-    <form onSubmit={handleVerifyOTP} className="space-y-4">
-      <button type="button" onClick={() => setStep("email")} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
-        <ArrowLeft className="w-3 h-3" /> Back
-      </button>
-      <p className="text-sm text-slate-600 text-center">
-        Enter the 6-digit code sent to <strong>{email}</strong>
-      </p>
-      {error && <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
-      <div className="relative">
-        <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <Input
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={6}
-          placeholder="6-digit code"
-          value={otp}
-          onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
-          className="pl-10 h-12 text-center tracking-widest font-mono text-lg"
-          autoFocus
-          required
-        />
-      </div>
-      <Button type="submit" className="w-full h-12" disabled={loading}>
-        {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Verifying...</> : "Verify & Join"}
-      </Button>
-      <button
-        type="button"
-        onClick={handleResend}
-        className="text-xs text-blue-600 hover:underline w-full text-center"
-      >
-        Resend code
-      </button>
-    </form>
-  );
-}
 
 function PasswordTab() {
   const [mode, setMode] = useState("login"); // login | register
@@ -281,7 +163,6 @@ export default function AuthModal() {
           </div>
 
           {activeTab === "google" && <GoogleTab />}
-          {activeTab === "email_otp" && <EmailOTPTab />}
           {activeTab === "password" && <PasswordTab />}
 
           <p className="text-xs text-slate-400 text-center mt-4">
