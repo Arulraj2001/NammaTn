@@ -351,9 +351,9 @@ export default function FeatureHub() {
                         <Icon className={`w-5 h-5 ${card.iconColor}`} />
                       </div>
                       <div className="flex-1">
-                        <h4 className={`font-bold text-sm mb-1 ${card.textColor}`}>
+                        <p className={`font-bold text-sm mb-1 ${card.textColor}`}>
                           {T(card.en, card.ta)}
-                        </h4>
+                        </p>
                         <p className={`text-xs leading-relaxed ${card.descColor}`}>
                           {T(card.desc_en, card.desc_ta)}
                         </p>

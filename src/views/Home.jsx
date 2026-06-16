@@ -131,7 +131,7 @@ export default function Home() {
                   <Icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                     {T("Step", "படி")} {i + 1}
                   </span>
                   <h3 className="font-bold text-slate-900 dark:text-white text-sm mt-0.5">{T(step.en_title, step.ta_title)}</h3>
@@ -189,9 +189,9 @@ export default function Home() {
                     <span className="text-xs font-mono font-bold text-blue-600">{post.civic_receipt_id}</span>
                     <CivicStatusBadge status={post.civic_status} size="xs" />
                   </div>
-                  <h4 className="font-semibold text-slate-900 dark:text-white text-sm line-clamp-2 mb-2">
+                  <h3 className="font-semibold text-slate-900 dark:text-white text-sm line-clamp-2 mb-2">
                     {lang === "ta" ? post.title_ta || post.title_en : post.title_en}
-                  </h4>
+                  </h3>
                   <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                     {post.area_name && (
                       <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {post.area_name}</span>
@@ -318,7 +318,7 @@ export default function Home() {
                     <Icon className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">{T(item.en_t, item.ta_t)}</h4>
+                    <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-1">{T(item.en_t, item.ta_t)}</h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{T(item.en_d, item.ta_d)}</p>
                   </div>
                   <Link to={item.path} className="mt-auto">
