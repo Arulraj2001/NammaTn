@@ -5,19 +5,44 @@ import { getSessionId } from "@/lib/security";
  * Create a new report. Automatically flags the target post if report threshold is reached.
  */
 export const createReport = async ({ target_type, target_id, reason, details = "", reporter_session }) => {
-  const { data: report, error } = await supabase
-    .from("report")
-    .insert({
-      target_type,
-      target_id,
-      reason,
-      details,
-      reporter_session: reporter_session || getSessionId(),
-      status: "pending",
-    })
-    .select()
-    .single();
-  if (error) throw error;
+  const payload = {
+    target_type,
+    target_id,
+    reason,
+    details,
+    reporter_session: reporter_session || getSessionId(),
+    status: "pending",
+  };
+
+  let report = null;
+  try {
+    const { data, error } = await supabase
+      .from("report")
+      .insert(payload)
+      .select()
+      .single();
+    if (error) {
+      if (error.code === '42501' || error.message?.includes('violates row-level security')) {
+        const { error: insertError } = await supabase
+          .from("report")
+          .insert(payload);
+        if (insertError) throw insertError;
+      } else {
+        throw error;
+      }
+    } else {
+      report = data;
+    }
+  } catch (err) {
+    if (err.code === '42501' || err.message?.includes('violates row-level security')) {
+      const { error: insertError } = await supabase
+        .from("report")
+        .insert(payload);
+      if (insertError) throw insertError;
+    } else {
+      throw err;
+    }
+  }
 
   // Auto-flag post if it hits the threshold (3+ pending reports)
   if (target_type === "post") {
