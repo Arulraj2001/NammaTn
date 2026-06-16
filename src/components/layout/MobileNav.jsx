@@ -118,6 +118,7 @@ export default function MobileNav() {
           {/* Menu tab */}
           <button
             onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
             className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-all ${
               menuOpen ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"
             }`}
@@ -162,6 +163,7 @@ export default function MobileNav() {
                   <button
                     onClick={() => setMenuOpen(false)}
                     className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500"
+                    aria-label="Close menu"
                   >
                     <X className="w-4 h-4" />
                   </button>

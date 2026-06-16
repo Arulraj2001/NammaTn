@@ -36,11 +36,14 @@ export default function UserMenu() {
     <div className="relative">
       <button
         onClick={() => setOpen(o => !o)}
+        aria-label="User menu"
+        aria-expanded={open}
+        aria-haspopup="true"
         className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
       >
         <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
           {user?.profile_image ? (
-            <img src={user.profile_image} alt="" className="w-full h-full rounded-full object-cover" />
+            <img src={user.profile_image} alt={`${displayName}'s profile`} className="w-full h-full rounded-full object-cover" />
           ) : initials}
         </div>
         <span className="text-xs font-medium text-slate-700 dark:text-slate-300 hidden sm:block max-w-[80px] truncate">

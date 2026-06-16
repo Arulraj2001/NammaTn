@@ -89,9 +89,9 @@ export default function Footer() {
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-6 flex-1">
             {FOOTER_GROUPS.map((group, i) => (
               <div key={i}>
-                <h4 className="font-semibold text-white mb-3 text-xs uppercase tracking-wider">
+                <h3 className="font-semibold text-white mb-3 text-xs uppercase tracking-wider">
                   {T(group.en_title, group.ta_title)}
-                </h4>
+                </h3>
                 <ul className="space-y-2">
                   {group.links.map((link) => (
                     <li key={link.path}>
@@ -116,7 +116,7 @@ export default function Footer() {
               )}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-400">
             <p>© 2026 NammaTN. {T("Built for Tamil Nadu citizens.", "தமிழ்நாடு குடிமக்களுக்காக கட்டமைக்கப்பட்டது.")}</p>
             <p>{T("People-powered civic documentation.", "மக்களால் இயக்கப்படும் குடிமை ஆவணப்படுத்தல்.")}</p>
           </div>

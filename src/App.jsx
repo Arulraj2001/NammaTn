@@ -1,8 +1,8 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useState, useEffect, lazy } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -14,59 +14,59 @@ import ErrorBoundary from '@/lib/errorBoundary';
 import OfflineBanner from '@/components/common/OfflineBanner';
 
 // Pages
-import Home from '@/pages/Home';
-import Explore from '@/pages/Explore';
-import Districts from '@/pages/Districts';
-import DistrictDetail from '@/pages/DistrictDetail';
-import CategoryDetail from '@/pages/CategoryDetail';
-import CreatePost from '@/pages/CreatePost';
-import PostDetail from '@/pages/PostDetail';
+const Home = lazy(() => import('@/pages/Home'));
+const Explore = lazy(() => import('@/pages/Explore'));
+const Districts = lazy(() => import('@/pages/Districts'));
+const DistrictDetail = lazy(() => import('@/pages/DistrictDetail'));
+const CategoryDetail = lazy(() => import('@/pages/CategoryDetail'));
+const CreatePost = lazy(() => import('@/pages/CreatePost'));
+const PostDetail = lazy(() => import('@/pages/PostDetail'));
 
 // Admin Pages
-import AdminLogin from '@/pages/admin/AdminLogin';
+const AdminLogin = lazy(() => import('@/pages/admin/AdminLogin'));
 import AdminLayout from '@/components/admin/AdminLayout';
-import AdminDashboard from '@/pages/admin/AdminDashboard';
-import AdminPosts from '@/pages/admin/AdminPosts';
-import AdminComments from '@/pages/admin/AdminComments';
-import AdminReports from '@/pages/admin/AdminReports';
-import AdminAds from '@/pages/admin/AdminAds';
-import AdminCategories from '@/pages/admin/AdminCategories';
-import AdminDistricts from '@/pages/admin/AdminDistricts';
-import AdminMedia from '@/pages/admin/AdminMedia';
-import AdminSettings from '@/pages/admin/AdminSettings';
-import AdminModeration from '@/pages/admin/AdminModeration';
-import AdminModerationSettings from '@/pages/admin/AdminModerationSettings';
-import Dashboard from '@/pages/Dashboard';
-import Search from '@/pages/Search';
-import Bookmarks from '@/pages/Bookmarks';
-import Trending from '@/pages/Trending';
-import Contact from '@/pages/Contact';
-import Awareness from '@/pages/Awareness';
-import Areas from '@/pages/Areas';
-import AreaDetail from '@/pages/AreaDetail';
-import Situations from '@/pages/Situations';
-import AskLocal from '@/pages/AskLocal';
-import QuestionDetail from '@/pages/QuestionDetail';
-import Offices from '@/pages/Offices';
-import OfficeDetail from '@/pages/OfficeDetail';
-import Jobs from '@/pages/Jobs';
-import Scams from '@/pages/Scams';
-import Help from '@/pages/Help';
-import Community from '@/pages/Community';
-import Support from '@/pages/Support';
-import AdminPhase8 from '@/pages/admin/AdminPhase8';
-import AdminCommunity from '@/pages/admin/AdminCommunity';
-import AdminContacts from '@/pages/admin/AdminContacts';
-import Stay from '@/pages/Stay';
-import AdminStay from '@/pages/admin/AdminStay';
-import AdminUsers from '@/pages/admin/AdminUsers';
-import AdminCivicReceipts from '@/pages/admin/AdminCivicReceipts';
-import LocalListings from '@/pages/LocalListings';
-import CivicLeaderboard from '@/pages/CivicLeaderboard';
-import RWADashboard from '@/pages/RWADashboard';
-import CSRDashboard from '@/pages/CSRDashboard';
-import AdminMonetization from '@/pages/admin/AdminMonetization';
-import MyDashboard from '@/pages/MyDashboard';
+const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
+const AdminPosts = lazy(() => import('@/pages/admin/AdminPosts'));
+const AdminComments = lazy(() => import('@/pages/admin/AdminComments'));
+const AdminReports = lazy(() => import('@/pages/admin/AdminReports'));
+const AdminAds = lazy(() => import('@/pages/admin/AdminAds'));
+const AdminCategories = lazy(() => import('@/pages/admin/AdminCategories'));
+const AdminDistricts = lazy(() => import('@/pages/admin/AdminDistricts'));
+const AdminMedia = lazy(() => import('@/pages/admin/AdminMedia'));
+const AdminSettings = lazy(() => import('@/pages/admin/AdminSettings'));
+const AdminModeration = lazy(() => import('@/pages/admin/AdminModeration'));
+const AdminModerationSettings = lazy(() => import('@/pages/admin/AdminModerationSettings'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Search = lazy(() => import('@/pages/Search'));
+const Bookmarks = lazy(() => import('@/pages/Bookmarks'));
+const Trending = lazy(() => import('@/pages/Trending'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const Awareness = lazy(() => import('@/pages/Awareness'));
+const Areas = lazy(() => import('@/pages/Areas'));
+const AreaDetail = lazy(() => import('@/pages/AreaDetail'));
+const Situations = lazy(() => import('@/pages/Situations'));
+const AskLocal = lazy(() => import('@/pages/AskLocal'));
+const QuestionDetail = lazy(() => import('@/pages/QuestionDetail'));
+const Offices = lazy(() => import('@/pages/Offices'));
+const OfficeDetail = lazy(() => import('@/pages/OfficeDetail'));
+const Jobs = lazy(() => import('@/pages/Jobs'));
+const Scams = lazy(() => import('@/pages/Scams'));
+const Help = lazy(() => import('@/pages/Help'));
+const Community = lazy(() => import('@/pages/Community'));
+const Support = lazy(() => import('@/pages/Support'));
+const AdminPhase8 = lazy(() => import('@/pages/admin/AdminPhase8'));
+const AdminCommunity = lazy(() => import('@/pages/admin/AdminCommunity'));
+const AdminContacts = lazy(() => import('@/pages/admin/AdminContacts'));
+const Stay = lazy(() => import('@/pages/Stay'));
+const AdminStay = lazy(() => import('@/pages/admin/AdminStay'));
+const AdminUsers = lazy(() => import('@/pages/admin/AdminUsers'));
+const AdminCivicReceipts = lazy(() => import('@/pages/admin/AdminCivicReceipts'));
+const LocalListings = lazy(() => import('@/pages/LocalListings'));
+const CivicLeaderboard = lazy(() => import('@/pages/CivicLeaderboard'));
+const RWADashboard = lazy(() => import('@/pages/RWADashboard'));
+const CSRDashboard = lazy(() => import('@/pages/CSRDashboard'));
+const AdminMonetization = lazy(() => import('@/pages/admin/AdminMonetization'));
+const MyDashboard = lazy(() => import('@/pages/MyDashboard'));
 
 const AuthenticatedApp = ({ theme, toggleTheme }) => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -125,7 +125,15 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/me" element={<MyDashboard />} />
       </Route>
       {/* Admin Routes */}
-      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/login" element={
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center bg-slate-50">
+            <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+          </div>
+        }>
+          <AdminLogin />
+        </Suspense>
+      } />
       <Route path="/admin" element={<ErrorBoundary><AdminLayout /></ErrorBoundary>}>
         <Route index element={<AdminDashboard />} />
         <Route path="dashboard" element={<AdminDashboard />} />
