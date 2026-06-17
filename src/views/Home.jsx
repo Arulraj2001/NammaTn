@@ -208,13 +208,44 @@ export default function Home() {
     ...scams.map(sc => ({ ...sc, post_type: "scam" })),
   ], [civicPosts, situations, stays, scams]);
 
-  /* ── derived stats ────────────────── */
-  const powerIssues   = situations.filter(s => s.situation_type === "eb_shutdown").length;
-  const waterAlerts   = situations.filter(s => s.situation_type === "water_shortage").length;
-  const scamWarnings  = scams.length;
-  const roadProblems  = civicPosts.filter(p => p.category_slug?.includes("road")).length;
-  const emergCount    = emergencies.length;
-  const activeCount   = allMapItems.length;
+  /* ── derived stats (filtered by 15km radius when user location is available) ── */
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+  };
+
+  const getNearbyItems = (items) => {
+    if (!userLocation) return items;
+    return items.filter(item => {
+      if (!item.latitude || !item.longitude) return false;
+      const dist = calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        parseFloat(item.latitude),
+        parseFloat(item.longitude)
+      );
+      return dist <= 15; // 15 km radius
+    });
+  };
+
+  const nearbySituations = getNearbyItems(situations);
+  const nearbyScams = getNearbyItems(scams);
+  const nearbyCivicPosts = getNearbyItems(civicPosts);
+  const nearbyEmergencies = getNearbyItems(emergencies);
+
+  const powerIssues   = nearbySituations.filter(s => s.situation_type === "eb_shutdown").length;
+  const waterAlerts   = nearbySituations.filter(s => s.situation_type === "water_shortage").length;
+  const scamWarnings  = nearbyScams.length;
+  const roadProblems  = nearbyCivicPosts.filter(p => p.category_slug?.includes("road")).length;
+  const emergCount    = nearbyEmergencies.length;
+  const activeCount   = getNearbyItems(allMapItems).length;
 
   const NEAR_YOU_STATS = [
     { path: "/category/electricity",       icon: "⚡", color: "text-yellow-500", bgColor: "bg-yellow-50 dark:bg-yellow-900/20", border: "border-yellow-200 dark:border-yellow-700", count: powerIssues, label_en: "Power Issues",       label_ta: "மின் சிக்கல்கள்",    sub_en: "areas affected",      sub_ta: "பகுதிகள் பாதிக்கப்பட்டன" },
