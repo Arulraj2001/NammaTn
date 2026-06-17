@@ -1,0 +1,14 @@
+{
+  "name": "AwarenessCategory",
+  "type": "object",
+  "properties": {
+    "name_en": { "type": "string" },
+    "name_ta": { "type": "string" },
+    "icon": { "type": "string", "default": "Info" },
+    "color": { "type": "string", "default": "#3B82F6" },
+    "slug": { "type": "string" },
+    "sort_order": { "type": "number", "default": 0 },
+    "is_active": { "type": "boolean", "default": true }
+  },
+  "required": ["name_en"]
+}

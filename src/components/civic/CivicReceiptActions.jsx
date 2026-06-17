@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   CheckCircle, Copy, AlertTriangle, FileText, Camera,
-  Share2, Loader2, LogIn
+  Share2, Loader2, LogIn, MessageSquareText
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -57,6 +57,8 @@ export default function CivicReceiptActions({ post, onRefresh }) {
   const [complaintId, setComplaintId] = useState(post.official_complaint_id || "");
   const [showFixedUpload, setShowFixedUpload] = useState(false);
   const [fixedPhotos, setFixedPhotos] = useState([]);
+  const [showFollowUpInput, setShowFollowUpInput] = useState(false);
+  const [followUpNote, setFollowUpNote] = useState("");
   const [loading, setLoading] = useState(null);
 
   // Track which actions this actor has already done
@@ -66,13 +68,14 @@ export default function CivicReceiptActions({ post, onRefresh }) {
     still_not_fixed: target.hasDone("still_not_fixed"),
     citizen_verified_fixed: target.hasDone("citizen_verified_fixed"),
     claim_fixed: target.hasDone("claim_fixed"),
+    follow_up: target.hasDone("follow_up"),
   });
 
   // Hydrate from DB on mount (in case localStorage was cleared)
   useEffect(() => {
     let cancelled = false;
     const hydrate = async () => {
-      const actionTypes = ["verify", "duplicate", "still_not_fixed", "citizen_verified_fixed", "claim_fixed"];
+      const actionTypes = ["verify", "duplicate", "still_not_fixed", "citizen_verified_fixed", "claim_fixed", "follow_up"];
       const results = await Promise.all(
         actionTypes.map((a) => checkExistingAction(post.id, a, actorId))
       );
@@ -112,36 +115,102 @@ export default function CivicReceiptActions({ post, onRefresh }) {
     fn();
   };
 
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // Earth's radius in meters
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // Distance in meters
+  };
+
   const handleVerify = () => withAuthGuard(async () => {
     if (done.verify) {
       toast({ description: T("You already confirmed this issue.", "நீங்கள் ஏற்கனவே இந்த சிக்கலை உறுதிப்படுத்தினீர்கள்.") });
       return;
     }
-    // Double-check against DB
-    const already = await checkExistingAction(post.id, "verify", actorId);
-    if (already) {
+    
+    const proceedVerification = async () => {
+      // Double-check against DB
+      const already = await checkExistingAction(post.id, "verify", actorId);
+      if (already) {
+        target.markDone("verify");
+        setDone((d) => ({ ...d, verify: true }));
+        toast({ description: T("You already confirmed this issue.", "நீங்கள் ஏற்கனவே இந்த சிக்கலை உறுதிப்படுத்தினீர்கள்.") });
+        return;
+      }
+      await recordAction(post.id, "verify", actorId, isAuthenticated);
       target.markDone("verify");
       setDone((d) => ({ ...d, verify: true }));
-      toast({ description: T("You already confirmed this issue.", "நீங்கள் ஏற்கனவே இந்த சிக்கலை உறுதிப்படுத்தினீர்கள்.") });
-      return;
+      const count = (post.verification_count || 0) + 1;
+      const postWithNewCount = { ...post, verification_count: count };
+      const newStatus = computeNextStatus(postWithNewCount, "verify");
+      const eventText = count >= 3
+        ? T("Issue community verified!", "சமுதாயம் சரிபார்த்தது!")
+        : T("Citizen confirmed this issue", "குடிமகன் இந்த சிக்கலை உறுதிப்படுத்தினார்");
+      await doUpdate(
+        { verification_count: count, civic_status: newStatus },
+        eventText,
+        "verify"
+      );
+    };
+
+    if (post.latitude && post.longitude) {
+      setLoading("verify");
+      if (!navigator.geolocation) {
+        setLoading(null);
+        toast({
+          title: T("GPS Unavailable", "GPS கிடைக்கவில்லை"),
+          description: T("Browser does not support geolocation.", "உலாவி இருப்பிடத்தை ஆதரிக்கவில்லை."),
+          variant: "destructive"
+        });
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const dist = calculateDistance(
+            post.latitude, post.longitude,
+            position.coords.latitude, position.coords.longitude
+          );
+
+          if (dist > 300) {
+            setLoading(null);
+            toast({
+              title: T("Verification Out of Range", "வரம்பிற்கு வெளியே சரிபார்ப்பு"),
+              description: T(
+                `You must be within 300m of the issue to verify. Current distance: ${Math.round(dist)}m`,
+                `சரிபார்க்க நீங்கள் 300மீ தூரத்திற்குள் இருக்க வேண்டும். தற்போதைய தூரம்: ${Math.round(dist)}மீ`
+              ),
+              variant: "destructive"
+            });
+            return;
+          }
+
+          await proceedVerification();
+          setLoading(null);
+        },
+        () => {
+          setLoading(null);
+          toast({
+            title: T("Location Access Denied", "இருப்பிட அனுமதி மறுக்கப்பட்டது"),
+            description: T(
+              "Please enable location access to verify this receipt.",
+              "இந்த ரசீதை உறுதிப்படுத்த இருப்பிட அனுமதியை வழங்கவும்."
+            ),
+            variant: "destructive"
+          });
+        }
+      );
+    } else {
+      setLoading("verify");
+      await proceedVerification();
+      setLoading(null);
     }
-    setLoading("verify");
-    await recordAction(post.id, "verify", actorId, isAuthenticated);
-    target.markDone("verify");
-    setDone((d) => ({ ...d, verify: true }));
-    const count = (post.verification_count || 0) + 1;
-    const postWithNewCount = { ...post, verification_count: count };
-    const newStatus = computeNextStatus(postWithNewCount, "verify");
-    const eventText = count >= 3
-      ? T("Issue community verified!", "சமுதாயம் சரிபார்த்தது!")
-      : T("Citizen confirmed this issue", "குடிமகன் இந்த சிக்கலை உறுதிப்படுத்தினார்");
-    await doUpdate(
-      { verification_count: count, civic_status: newStatus },
-      eventText,
-      "verify"
-    );
-    setLoading(null);
   }, T("Sign in to confirm this issue", "இந்த சிக்கலை உறுதிப்படுத்த உள்நுழையுங்கள்"));
+
 
   const handleDuplicate = () => withAuthGuard(async () => {
     if (done.duplicate) {
@@ -264,6 +333,27 @@ export default function CivicReceiptActions({ post, onRefresh }) {
     setLoading(null);
   }, T("Sign in to verify fixed", "சரி செய்யப்பட்டதை சரிபார்க்க உள்நுழையுங்கள்"));
 
+  const handleFollowUp = () => withAuthGuard(async () => {
+    if (!followUpNote.trim()) return;
+    setLoading("followup");
+    await recordAction(post.id, "follow_up", actorId, isAuthenticated, { note: followUpNote.trim() });
+    target.markDone("follow_up");
+    setDone((d) => ({ ...d, follow_up: true }));
+    const truncated = followUpNote.trim().length > 80
+      ? followUpNote.trim().slice(0, 80) + "…"
+      : followUpNote.trim();
+    const newStatus = post.civic_status === "under_followup" ? post.civic_status : "under_followup";
+    const newCount = (post.follow_up_count || 0) + 1;
+    await doUpdate(
+      { civic_status: newStatus, follow_up_count: newCount },
+      T(`Follow-up note added: ${truncated}`, `பின்தொடர் குறிப்பு சேர்க்கப்பட்டது: ${truncated}`),
+      "follow_up"
+    );
+    setFollowUpNote("");
+    setShowFollowUpInput(false);
+    setLoading(null);
+  }, T("Sign in to add follow-up note", "பின்தொடர் குறிப்பு சேர்க்க உள்நுழையுங்கள்"));
+
   const handleShare = () => {
     const url = window.location.href;
     const text = `🔴 NammaTN Civic Receipt\n${post.civic_receipt_id || ""}: ${post.title_en}\nStatus: ${getCivicStatus(post.civic_status)?.label}\n${url}`;
@@ -312,6 +402,50 @@ export default function CivicReceiptActions({ post, onRefresh }) {
           {T("Sign in to take community actions on this receipt.", "இந்த ரசீதில் சமுதாய நடவடிக்கைகள் எடுக்க உள்நுழையுங்கள்.")}
         </div>
       )}
+
+      {/* Verification Progress Bar */}
+      {["reported", "community_verified", "complaint_needed"].includes(post.civic_status) && (() => {
+        const count = post.verification_count || 0;
+        const pct = Math.min((count / 5) * 100, 100);
+        const barColor = count >= 5 ? "bg-green-500" : count >= 3 ? "bg-blue-500" : "bg-amber-500";
+        const label = count >= 5
+          ? T("✓ Verified", "✓ சரிபார்க்கப்பட்டது")
+          : count >= 3
+            ? T(`${count}/5 — ${5 - count} needed for Official Complaint`, `${count}/5 — அதிகாரப்பூர்வ புகாருக்கு ${5 - count} தேவை`)
+            : T(`${count}/5 — ${3 - count} needed for Community Verified`, `${count}/5 — சமுதாய சரிபார்ப்புக்கு ${3 - count} தேவை`);
+        return (
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+              <span className="font-medium">{T("Community Verification", "சமுதாய சரிபார்ப்பு")}</span>
+              <span>{label}</span>
+            </div>
+            <div className="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+              <div className={`h-full rounded-full transition-all duration-500 ${barColor}`} style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Fix Verification Progress Bar */}
+      {post.civic_status === "claimed_fixed" && (() => {
+        const count = post.citizen_fixed_count || 0;
+        const pct = Math.min((count / 3) * 100, 100);
+        const barColor = count >= 3 ? "bg-green-500" : "bg-teal-500";
+        const label = count >= 3
+          ? T("✓ Verified Fixed", "✓ சரி செய்யப்பட்டது சரிபார்க்கப்பட்டது")
+          : T(`${count}/3 — ${3 - count} more confirmation${3 - count !== 1 ? "s" : ""} needed to close case`, `${count}/3 — வழக்கை முடிக்க ${3 - count} உறுதிப்படுத்தல் தேவை`);
+        return (
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+              <span className="font-medium">{T("Fix Verification", "சரிசெய்தல் சரிபார்ப்பு")}</span>
+              <span>{label}</span>
+            </div>
+            <div className="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+              <div className={`h-full rounded-full transition-all duration-500 ${barColor}`} style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+        );
+      })()}
 
       <div className="flex flex-wrap gap-2">
         {/* Confirm / Verify */}
@@ -372,7 +506,57 @@ export default function CivicReceiptActions({ post, onRefresh }) {
             color="red"
           />
         )}
+
+        {/* Add Follow-up Note */}
+        {["complaint_filed", "under_followup", "unresolved_escalated"].includes(post.civic_status) && (
+          <ActionBtn
+            onClick={() => setShowFollowUpInput((v) => !v)}
+            icon={MessageSquareText}
+            label={T("Add Follow-up Note", "பின்தொடர் குறிப்பு சேர்")}
+            doneLabel={T("Follow-up submitted", "பின்தொடர் சமர்ப்பிக்கப்பட்டது")}
+            isDone={done.follow_up}
+            loadKey="followup"
+            color="orange"
+          />
+        )}
       </div>
+
+      {/* Follow-up Note Textarea */}
+      {showFollowUpInput && !done.follow_up && (
+        <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 space-y-2">
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            {T("Add a follow-up note:", "பின்தொடர் குறிப்பை சேர்க்கவும்:")}
+          </p>
+          <textarea
+            value={followUpNote}
+            onChange={(e) => setFollowUpNote(e.target.value.slice(0, 280))}
+            maxLength={280}
+            rows={3}
+            placeholder={T("Describe any updates, status changes, or observations…", "புதுப்பிப்புகள், நிலை மாற்றங்கள் அல்லது கவனிப்புகளை விவரிக்கவும்…")}
+            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 text-sm bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+          />
+          <div className="flex items-center justify-between">
+            <span className={`text-xs ${followUpNote.length >= 260 ? "text-red-500" : "text-slate-400"}`}>
+              {followUpNote.length}/280
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setShowFollowUpInput(false); setFollowUpNote(""); }}
+                className="px-3 py-2 border border-slate-200 rounded-xl text-sm text-slate-500"
+              >
+                {T("Cancel", "ரத்து")}
+              </button>
+              <button
+                onClick={handleFollowUp}
+                disabled={isLocker("followup") || !followUpNote.trim()}
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-sm font-medium disabled:opacity-50"
+              >
+                {isLocker("followup") ? <Loader2 className="w-4 h-4 animate-spin" /> : T("Submit Note", "குறிப்பை சமர்ப்பி")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Official Complaint ID */}
       <div>

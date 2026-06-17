@@ -3,12 +3,63 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, HelpCircle, ThumbsUp, CheckCircle, Send, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { supabase } from "@/api/supabaseClient";
 import { getQuestionById, getAnswersByQuestion, createAnswer, markAnswerHelpful, updateAnswerCount } from "@/services/questions";
 import { formatDistanceToNow } from "date-fns";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { sanitizeText, checkRateLimit } from "@/lib/security";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+
+function AnswerItem({ ans, T, isAuthenticated, user, helpfulMutation, requireAuth }) {
+  const { data: authorProfile = null } = useQuery({
+    queryKey: ["answer-author-profile", ans.created_by_id],
+    queryFn: async () => {
+      if (!ans.created_by_id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("trust_score")
+        .eq("id", ans.created_by_id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!ans.created_by_id,
+    staleTime: 60_000,
+  });
+
+  return (
+    <div className={`bg-white dark:bg-slate-800 rounded-2xl border p-4 mb-3 ${ans.is_accepted ? "border-green-300 dark:border-green-700" : "border-slate-200 dark:border-slate-700"}`}>
+      {ans.is_accepted && (
+        <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-semibold mb-2">
+          <CheckCircle className="w-3.5 h-3.5" /> {T("Best Answer", "சிறந்த பதில்")}
+        </div>
+      )}
+      <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{ans.content}</p>
+      <div className="flex items-center justify-between mt-3">
+        <div className="text-xs text-slate-400 flex items-center gap-1 flex-wrap">
+          <span>{ans.is_anonymous ? T("Anonymous", "அநாமதேயர்") : ans.author_name}</span>
+          {!ans.is_anonymous && ans.author_name && (
+            <span className="ml-1 px-1.5 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded text-[9px] font-bold">
+              ★ {authorProfile?.trust_score || 10}
+            </span>
+          )}
+          <span>· {ans.created_date ? formatDistanceToNow(new Date(ans.created_date), { addSuffix: true }) : ""}</span>
+        </div>
+        <button onClick={() => {
+            if (!isAuthenticated) {
+              requireAuth(() => {}, T("Sign in to vote", "வாக்களிக்க உள்நுழையுங்கள்"));
+              return;
+            }
+            helpfulMutation.mutate({ answerId: ans.id, actorId: user?.id });
+          }}
+          className="flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 transition-colors">
+          <ThumbsUp className="w-3.5 h-3.5" /> {T("Helpful", "உதவியாக இருந்தது")} ({ans.helpful_count || 0})
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function QuestionDetail() {
   const { id } = useParams();
@@ -17,6 +68,23 @@ export default function QuestionDetail() {
   const qc = useQueryClient();
   const { isAuthenticated, user } = useAuth();
   const { requireAuth } = useAuthModal();
+
+  // Fetch logged-in user profile for trust score
+  const { data: myProfile = null } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("*")
+        .eq("id", user?.id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 30_000,
+  });
   const [answerText, setAnswerText] = useState("");
   const [isAnon, setIsAnon] = useState(true);
   const [authorName, setAuthorName] = useState("");
@@ -30,6 +98,23 @@ export default function QuestionDetail() {
 
   const { data: question } = useQuery({ queryKey: ["question", id], queryFn: () => getQuestionById(id), enabled: !!id });
   const { data: answers = [], isLoading: answersLoading } = useQuery({ queryKey: ["answers", id], queryFn: () => getAnswersByQuestion(id), enabled: !!id });
+
+  // Fetch question author's profile for trust score
+  const { data: questionAuthorProfile = null } = useQuery({
+    queryKey: ["question-author-profile", question?.created_by_id],
+    queryFn: async () => {
+      if (!question?.created_by_id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("trust_score")
+        .eq("id", question.created_by_id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!question?.created_by_id,
+    staleTime: 60_000,
+  });
 
   usePageMeta({ title: question ? question.title : "Question – TN Voice", description: question?.content });
 
@@ -96,7 +181,14 @@ export default function QuestionDetail() {
               <span>{question.district_name}</span>
               {question.category_name && <span>· {question.category_name}</span>}
               <span>{question.created_date ? formatDistanceToNow(new Date(question.created_date), { addSuffix: true }) : ""}</span>
-              <span>{question.is_anonymous ? T("Anonymous", "அநாமதேயர்") : question.author_name}</span>
+              <span className="flex items-center gap-1">
+                <span>{question.is_anonymous ? T("Anonymous", "அநாமதேயர்") : question.author_name}</span>
+                {!question.is_anonymous && question.author_name && (
+                  <span className="ml-1 px-1.5 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded text-[9px] font-bold">
+                    ★ {questionAuthorProfile?.trust_score || 10}
+                  </span>
+                )}
+              </span>
             </div>
           </div>
         </div>
@@ -109,34 +201,28 @@ export default function QuestionDetail() {
       {answersLoading ? (
         <div className="space-y-3">{Array(2).fill(0).map((_, i) => <div key={i} className="h-20 bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse" />)}</div>
       ) : answers.map((ans) => (
-        <div key={ans.id} className={`bg-white dark:bg-slate-800 rounded-2xl border p-4 mb-3 ${ans.is_accepted ? "border-green-300 dark:border-green-700" : "border-slate-200 dark:border-slate-700"}`}>
-          {ans.is_accepted && (
-            <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-semibold mb-2">
-              <CheckCircle className="w-3.5 h-3.5" /> {T("Best Answer", "சிறந்த பதில்")}
-            </div>
-          )}
-          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{ans.content}</p>
-          <div className="flex items-center justify-between mt-3">
-            <div className="text-xs text-slate-400">
-              {ans.is_anonymous ? T("Anonymous", "அநாமதேயர்") : ans.author_name} · {ans.created_date ? formatDistanceToNow(new Date(ans.created_date), { addSuffix: true }) : ""}
-            </div>
-            <button onClick={() => {
-                if (!isAuthenticated) {
-                  requireAuth(() => {}, T("Sign in to vote", "வாக்களிக்க உள்நுழையுங்கள்"));
-                  return;
-                }
-                helpfulMutation.mutate({ answerId: ans.id, actorId: user?.id });
-              }}
-              className="flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 transition-colors">
-              <ThumbsUp className="w-3.5 h-3.5" /> {T("Helpful", "உதவியாக இருந்தது")} ({ans.helpful_count || 0})
-            </button>
-          </div>
-        </div>
+        <AnswerItem
+          key={ans.id}
+          ans={ans}
+          T={T}
+          isAuthenticated={isAuthenticated}
+          user={user}
+          helpfulMutation={helpfulMutation}
+          requireAuth={requireAuth}
+        />
       ))}
 
       {/* Add Answer */}
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 mt-4">
-        <h3 className="font-semibold text-slate-800 dark:text-white mb-3 text-sm">{T("Write an Answer", "பதில் எழுதவும்")}</h3>
+        <div className="flex items-center justify-between gap-4 mb-3">
+          <h3 className="font-semibold text-slate-800 dark:text-white text-sm">{T("Write an Answer", "பதில் எழுதவும்")}</h3>
+          {isAuthenticated && (
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl">
+              <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">{T("Your Score", "உங்கள் மதிப்பு")}</span>
+              <span className="text-sm font-extrabold text-purple-700 dark:text-purple-300">★ {myProfile?.trust_score || 10}</span>
+            </div>
+          )}
+        </div>
         <textarea value={answerText} onChange={(e) => setAnswerText(e.target.value)}
           placeholder={T("Share what you know...", "நீங்கள் தெரிந்தவற்றை பகிரவும்...")}
           rows={4} className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3" />

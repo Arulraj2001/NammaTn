@@ -13,6 +13,7 @@ import { checkRateLimit, sanitizeText } from "@/lib/security";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import dynamic from "next/dynamic";
+import { supabase } from "@/api/supabaseClient";
 
 const LocationPickerMap = dynamic(() => import("@/components/media/LocationPickerMap"), { ssr: false });
 
@@ -31,8 +32,25 @@ export default function Help() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { requireAuth } = useAuthModal();
+
+  // Fetch user profile for trust score
+  const { data: profile = null } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("*")
+        .eq("id", user?.id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 30_000,
+  });
   const [showForm, setShowForm] = useState(false);
   const [filterDistrict, setFilterDistrict] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -122,7 +140,15 @@ export default function Help() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border border-red-200 dark:border-red-800 p-5 mb-6 space-y-3">
-          <h3 className="font-semibold text-slate-800 dark:text-white">{T("Post Emergency / Help Request", "அவசர / உதவி கோரிக்கையை பதிவிடுங்கள்")}</h3>
+          <div className="flex items-center justify-between gap-4 mb-2">
+            <h3 className="font-semibold text-slate-800 dark:text-white">{T("Post Emergency / Help Request", "அவசர / உதவி கோரிக்கையை பதிவிடுங்கள்")}</h3>
+            {isAuthenticated && (
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl">
+                <span className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">{T("Your Score", "உங்கள் மதிப்பு")}</span>
+                <span className="text-sm font-extrabold text-red-700 dark:text-red-300">★ {profile?.trust_score || 10}</span>
+              </div>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-2">
             {EMERGENCY_TYPES.map(t => (
               <button key={t.value} type="button"

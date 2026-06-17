@@ -6,6 +6,7 @@ import { Briefcase, Plus, X, Loader2, AlertTriangle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import { supabase } from "@/api/supabaseClient";
 import { createJob, detectSuspiciousJob, getActiveJobs } from "@/services/jobAlerts";
 import { getAreasByDistrict } from "@/services/areas";
 import { DISTRICTS } from "@/lib/districts";
@@ -27,8 +28,25 @@ const JOB_TYPES = [
 export default function Jobs() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { requireAuth } = useAuthModal();
+
+  // Fetch user profile for trust score
+  const { data: profile = null } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("*")
+        .eq("id", user?.id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 30_000,
+  });
   const { notify } = useNotify();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
@@ -132,7 +150,15 @@ export default function Jobs() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 mb-6 space-y-3">
-          <h3 className="font-semibold text-slate-800 dark:text-white">{T("Post a Work Alert", "வேலை எச்சரிக்கையை பதிவிடுங்கள்")}</h3>
+          <div className="flex items-center justify-between gap-4 mb-2">
+            <h3 className="font-semibold text-slate-800 dark:text-white">{T("Post a Work Alert", "வேலை எச்சரிக்கையை பதிவிடுங்கள்")}</h3>
+            {isAuthenticated && (
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-xl">
+                <span className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">{T("Your Score", "உங்கள் மதிப்பு")}</span>
+                <span className="text-sm font-extrabold text-green-700 dark:text-green-300">★ {profile?.trust_score || 10}</span>
+              </div>
+            )}
+          </div>
           <p className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-2">
             {T("⚠ Job posts require admin approval before publishing.", "⚠ வேலை பதிவுகள் வெளியிடப்படும் முன் நிர்வாக ஒப்புதல் தேவை.")}
           </p>

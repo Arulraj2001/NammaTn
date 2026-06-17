@@ -1,0 +1,23 @@
+{
+  "name": "AwarenessArticle",
+  "type": "object",
+  "properties": {
+    "title_en": { "type": "string" },
+    "title_ta": { "type": "string" },
+    "slug": { "type": "string" },
+    "category_en": { "type": "string" },
+    "category_ta": { "type": "string" },
+    "featured_image": { "type": "string" },
+    "summary_en": { "type": "string" },
+    "summary_ta": { "type": "string" },
+    "content_en": { "type": "string" },
+    "content_ta": { "type": "string" },
+    "seo_title": { "type": "string" },
+    "seo_description": { "type": "string" },
+    "seo_keywords": { "type": "string" },
+    "status": { "type": "string", "enum": ["draft", "published", "archived"], "default": "draft" },
+    "is_active": { "type": "boolean", "default": true },
+    "sort_order": { "type": "number", "default": 0 }
+  },
+  "required": ["title_en"]
+}

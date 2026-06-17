@@ -5,6 +5,8 @@ import { getAreasByDistrict } from "@/services/areas";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { getSession } from "@/lib/spamGuard";
+import { useAuth } from "@/lib/AuthContext";
+import { supabase } from "@/api/supabaseClient";
 
 const AMENITY_OPTIONS = [
   { value: "wifi", label: "WiFi" },
@@ -26,6 +28,25 @@ function hasSpamContent(text) {
 }
 
 export default function StayPostForm({ onSubmit, onCancel, submitting }) {
+  const { isAuthenticated, user } = useAuth();
+
+  // Fetch user profile for trust score
+  const { data: profile = null } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("*")
+        .eq("id", user?.id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 30_000,
+  });
+
   const [form, setForm] = useState({
     title: "", description: "", listing_type: "pg_available",
     district_slug: "", area_slug: "", area_name: "", landmark: "",
@@ -110,7 +131,15 @@ export default function StayPostForm({ onSubmit, onCancel, submitting }) {
 
       {/* Basic */}
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
-        <h3 className="font-semibold text-slate-900 dark:text-white text-sm">Basic Details</h3>
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <h3 className="font-semibold text-slate-900 dark:text-white text-sm">Basic Details</h3>
+          {isAuthenticated && (
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl">
+              <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Your Score</span>
+              <span className="text-sm font-extrabold text-indigo-700 dark:text-indigo-300">★ {profile?.trust_score || 10}</span>
+            </div>
+          )}
+        </div>
         <div>
           <label className="text-xs font-medium text-slate-600 dark:text-slate-400 block mb-1">Listing Type *</label>
           <select value={form.listing_type} onChange={e => set("listing_type", e.target.value)} className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 text-sm bg-white dark:bg-slate-700 focus:outline-none">

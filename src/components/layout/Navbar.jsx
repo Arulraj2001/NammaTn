@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Search, Globe, Sun, Moon, Bookmark, ChevronDown,
-  FileText, Zap, TrendingUp, Trophy, Users, MessageCircle,
+  Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, Users, MessageCircle,
   HelpCircle, Heart, Briefcase, Home, Building2, AlertTriangle,
-  MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight
+  MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight, Plus
 } from "lucide-react";
+
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import UserMenu from "@/components/auth/UserMenu";
@@ -13,12 +13,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getSettingsMap } from "@/services/admin/settings";
 
 const MAIN_NAV = [
-  { path: "/", en: "Home", ta: "முகப்பு" },
-  { path: "/explore", en: "Explore", ta: "ஆராய்க" },
-  { path: "/areas", en: "Areas", ta: "பகுதிகள்" },
-  { path: "/situations", en: "Live", ta: "நேரடி" },
-  { path: "/dashboard", en: "Dashboard", ta: "டாஷ்போர்டு" },
+  { path: "/", en: "📍 Map", ta: "📍 வரைபடம்" },
+  { path: "/explore", en: "⚡ Live Feed", ta: "⚡ நேரடி ஊட்டம்" },
 ];
+
 
 const MEGA_GROUPS = [
   {
@@ -133,17 +131,19 @@ export default function Navbar({ theme, toggleTheme }) {
                 </Link>
               ))}
 
-              {/* More dropdown */}
+              {/* Directory dropdown */}
               <div ref={megaRef} className="relative">
                 <button
                   onClick={() => setMegaOpen(!megaOpen)}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     megaOpen ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
-                  {T("More", "மேலும்")}
+                  <Briefcase className="w-4 h-4 text-slate-500" />
+                  {T("Directory", "சேவைகள்")}
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${megaOpen ? "rotate-180" : ""}`} />
                 </button>
+
 
                 <AnimatePresence>
                   {megaOpen && (
@@ -232,10 +232,11 @@ export default function Navbar({ theme, toggleTheme }) {
               {/* Create CTA — desktop only */}
               <Link to="/create" className="hidden lg:block ml-1">
                 <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap">
-                  <FileText className="w-3.5 h-3.5" />
-                  {T("Create Civic Receipt", "குடிமை ரசீது")}
+                  <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                  {T("Log Issue", "பதிவு செய்க")}
                 </button>
               </Link>
+
 
               <UserMenu />
             </div>

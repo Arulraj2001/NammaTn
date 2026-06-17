@@ -1,48 +1,95 @@
 import React from "react";
-import { FileText, MapPin, Clock, Users, Tag, Calendar } from "lucide-react";
+import { FileText, MapPin, Clock, Tag, Calendar, Shield } from "lucide-react";
 import { format } from "date-fns";
 import CivicStatusBadge from "./CivicStatusBadge";
-import { getUrgency, getDaysOpen, CIVIC_STATUSES } from "@/lib/civicReceipt";
+import { getUrgency, getDaysOpen } from "@/lib/civicReceipt";
 import { useLanguage } from "@/context/LanguageContext";
+
+/** Main lifecycle steps (used for progress indicator) */
+const LIFECYCLE_STEPS = [
+  "reported",
+  "community_verified",
+  "complaint_needed",
+  "complaint_filed",
+  "under_followup",
+  "claimed_fixed",
+  "citizen_verified_fixed",
+];
+
+function getProgressColor(status) {
+  if (status === "citizen_verified_fixed" || status === "community_solved") return "bg-green-500";
+  if (status === "unresolved_escalated") return "bg-red-500";
+  if (status === "claimed_fixed") return "bg-teal-500";
+  if (status === "complaint_filed" || status === "under_followup") return "bg-amber-500";
+  if (status === "community_verified" || status === "complaint_needed") return "bg-indigo-500";
+  return "bg-blue-500";
+}
 
 export default function CivicReceiptHeader({ post }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const urgency = getUrgency(post.urgency_level);
   const days = getDaysOpen(post.created_date);
-  const currentStep = CIVIC_STATUSES.find(s => s.key === (post.civic_status || "reported"))?.step || 1;
-  const maxStep = 9;
+  const currentStatus = post.civic_status || "reported";
+  const currentStepIdx = LIFECYCLE_STEPS.indexOf(currentStatus);
+  const isResolved = currentStatus === "citizen_verified_fixed" || currentStatus === "community_solved";
+  const isEscalated = currentStatus === "unresolved_escalated";
 
   return (
     <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl overflow-hidden">
-      {/* Top bar */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-900 dark:to-black px-5 py-3 flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
-            <FileText className="w-3.5 h-3.5 text-white" />
+      {/* Top bar — Case File Header */}
+      <div className="bg-gradient-to-r from-slate-800 via-slate-850 to-slate-900 dark:from-slate-900 dark:to-black px-5 py-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-600/30">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-0.5">
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">
+                  {T("PUBLIC CASE FILE", "பொது வழக்கு கோப்பு")}
+                </p>
+                <span className="text-[10px] text-slate-600 font-medium">•</span>
+                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
+                  {T("NammaTN Civic Receipt", "NammaTN குடிமை ரசீது")}
+                </p>
+              </div>
+              {post.civic_receipt_id && (
+                <p className="text-lg font-bold text-white font-mono tracking-wider">{post.civic_receipt_id}</p>
+              )}
+            </div>
           </div>
-          <div>
-            <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">
-              {T("NammaTN Civic Receipt", "NammaTN குடிமை ரசீது")}
-            </p>
-            {post.civic_receipt_id && (
-              <p className="text-base font-bold text-white font-mono tracking-wide">{post.civic_receipt_id}</p>
-            )}
-          </div>
+          <CivicStatusBadge status={currentStatus} />
         </div>
-        <CivicStatusBadge status={post.civic_status || "reported"} />
-      </div>
 
-      {/* Progress bar */}
-      <div className="px-5 pt-3">
-        <div className="flex items-center gap-1 mb-1">
-          <div className="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-blue-500 transition-all duration-500"
-              style={{ width: `${(currentStep / maxStep) * 100}%` }}
-            />
-          </div>
-          <span className="text-xs text-slate-400 ml-2">{T(`Step ${currentStep}/${maxStep}`, `படி ${currentStep}/${maxStep}`)}</span>
+        {/* Step progress dots */}
+        <div className="mt-3 flex items-center gap-1.5">
+          {LIFECYCLE_STEPS.map((step, i) => {
+            const isCompleted = currentStepIdx >= 0 && i <= currentStepIdx;
+            const isCurrent = step === currentStatus;
+            return (
+              <div
+                key={step}
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  i === 0 ? "flex-[0.5]" : "flex-1"
+                } ${
+                  isCompleted
+                    ? isCurrent
+                      ? `${getProgressColor(currentStatus)} shadow-sm`
+                      : "bg-slate-500"
+                    : "bg-slate-700"
+                }`}
+              />
+            );
+          })}
+          <span className="text-[10px] text-slate-500 ml-2 flex-shrink-0">
+            {isResolved
+              ? T("Resolved ✓", "தீர்க்கப்பட்டது ✓")
+              : isEscalated
+                ? T("Escalated ⚠", "மேல்முறையீடு ⚠")
+                : T(`Step ${Math.max(currentStepIdx + 1, 1)}/${LIFECYCLE_STEPS.length}`, `படி ${Math.max(currentStepIdx + 1, 1)}/${LIFECYCLE_STEPS.length}`)
+            }
+          </span>
         </div>
       </div>
 
@@ -66,19 +113,25 @@ export default function CivicReceiptHeader({ post }) {
         <MetaItem
           icon={Clock}
           label={T("Days Open", "திறந்திருக்கும் நாட்கள்")}
-          value={`${days} ${T("days", "நாட்கள்")}`}
-          valueClass={days > 30 ? "text-orange-600" : days > 7 ? "text-yellow-600" : "text-slate-700 dark:text-slate-200"}
+          value={isResolved ? T("Closed", "மூடப்பட்டது") : `${days} ${T("days", "நாட்கள்")}`}
+          valueClass={
+            isResolved ? "text-green-600 dark:text-green-400"
+            : days > 30 ? "text-red-600 font-bold"
+            : days > 14 ? "text-orange-600"
+            : days > 7 ? "text-yellow-600"
+            : "text-slate-700 dark:text-slate-200"
+          }
         />
       </div>
 
-      {/* Urgency + verifications */}
+      {/* Urgency + verifications + complaint chips */}
       <div className="px-5 pb-4 flex flex-wrap gap-2">
         <span className={`text-xs font-semibold px-3 py-1 rounded-full ${urgency.bg} ${urgency.color}`}>
           ⚡ {T(urgency.label, urgency.label_ta)}
         </span>
         {(post.verification_count || 0) > 0 && (
           <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300">
-            <Users className="w-3 h-3 inline mr-1" />
+            <Shield className="w-3 h-3 inline mr-1" />
             {post.verification_count} {T("community verified", "சமுதாயம் சரிபார்த்தது")}
           </span>
         )}

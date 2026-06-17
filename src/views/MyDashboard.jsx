@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { supabase } from "@/api/supabaseClient";
 import { Link } from "react-router-dom";
 import {
   User, FileText, CheckCircle, MessageSquare, Flag, Briefcase, Building2,
@@ -57,8 +58,15 @@ function EmptyState({ icon: Icon, title, desc, cta, ctaTo }) {
 }
 
 // ── Overview ──────────────────────────────────────────────────────────────────
-function OverviewTab({ user, receipts, comments, reports, activity, notifications, lang }) {
+function OverviewTab({ user, profile, receipts, comments, reports, activity, notifications, lang }) {
   const bookmarks = useMemo(() => getBookmarks().slice(0, 4), []);
+
+  const displayProfile = profile || {
+    trust_score: 10,
+    approved_verifications_count: 0,
+    resolved_issues_count: 0,
+    spam_deletions_count: 0
+  };
 
   const pending = useMemo(() => {
     const items = [];
@@ -89,13 +97,43 @@ function OverviewTab({ user, receipts, comments, reports, activity, notification
 
   return (
     <div className="space-y-5">
-      {/* Welcome banner */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 text-white">
-        <p className="text-xs text-blue-200 mb-1">{T("Welcome back", "மீண்டும் வருக", lang)}</p>
-        <h2 className="text-lg font-bold mb-3">{user?.full_name || user?.email || T("Community Member", "சமூக உறுப்பினர்", lang)}</h2>
-        <Link to="/create" className="inline-flex items-center gap-1.5 bg-white text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-50">
-          <Plus className="w-4 h-4" /> {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு", lang)}
-        </Link>
+      {/* Welcome banner with Trust Score */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 text-white flex justify-between items-start gap-4">
+        <div>
+          <p className="text-xs text-blue-200 mb-1">{T("Welcome back", "மீண்டும் வருக", lang)}</p>
+          <h2 className="text-lg font-bold mb-3">{user?.full_name || user?.email || T("Community Member", "சமூக உறுப்பினர்", lang)}</h2>
+          <Link to="/create" className="inline-flex items-center gap-1.5 bg-white text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-50">
+            <Plus className="w-4 h-4" /> {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு", lang)}
+          </Link>
+        </div>
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3 text-right flex-shrink-0">
+          <p className="text-[10px] text-blue-200 uppercase font-bold tracking-wider">{T("Trust Score", "நம்பகத்தன்மை புள்ளி", lang)}</p>
+          <p className="text-3xl font-extrabold text-white mt-0.5">{displayProfile.trust_score}</p>
+          <p className="text-[9px] text-blue-100/80 mt-1">
+            {displayProfile.trust_score >= 80 ? T("High Trust", "உயர் நம்பிக்கை", lang) :
+             displayProfile.trust_score >= 40 ? T("Medium Trust", "நடுத்தர நம்பிக்கை", lang) :
+             T("Standard Member", "நிலையான உறுப்பினர்", lang)}
+          </p>
+        </div>
+      </div>
+
+      {/* Trust score components breakdown */}
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 grid grid-cols-3 gap-2 text-center shadow-sm">
+        <div>
+          <p className="text-lg font-bold text-green-600 dark:text-green-400">+{displayProfile.approved_verifications_count * 5}</p>
+          <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">{T("Verifications", "சரிபார்ப்புகள்", lang)}</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{displayProfile.approved_verifications_count} {T("Approved", "அங்கீகரிக்கப்பட்டது", lang)}</p>
+        </div>
+        <div>
+          <p className="text-lg font-bold text-blue-600 dark:text-blue-400">+{displayProfile.resolved_issues_count * 15}</p>
+          <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">{T("Resolutions", "தீர்வுகள்", lang)}</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{displayProfile.resolved_issues_count} {T("Resolved", "தீர்க்கப்பட்டது", lang)}</p>
+        </div>
+        <div>
+          <p className="text-lg font-bold text-red-600 dark:text-red-400">-{displayProfile.spam_deletions_count * 20}</p>
+          <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">{T("Spam Penalties", "தணிக்கை தண்டனை", lang)}</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{displayProfile.spam_deletions_count} {T("Deleted", "நீக்கப்பட்டது", lang)}</p>
+        </div>
       </div>
 
       {/* Stats */}
@@ -625,6 +663,21 @@ export default function MyDashboard() {
 
 // Separate content component so hooks only run when authenticated
 function MyDashboardContent({ user, lang, activeTab, setActiveTab, logout }) {
+  const { data: myProfile = null } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profile")
+        .select("*")
+        .eq("id", user?.id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 30_000,
+  });
+
   const { data: myReceipts = [] } = useQuery({
     queryKey: ["my-receipts", user?.id],
     queryFn: () => base44.entities.Post.filter({ created_by_id: user?.id, post_type: "complaint" }, "-created_date", 100),
@@ -699,7 +752,7 @@ function MyDashboardContent({ user, lang, activeTab, setActiveTab, logout }) {
       </div>
 
       {/* Tab content */}
-      {activeTab === "overview" && <OverviewTab user={user} receipts={myReceipts} comments={myComments} reports={myReports} activity={myActivity} notifications={myNotifications} lang={lang} />}
+      {activeTab === "overview" && <OverviewTab user={user} profile={myProfile} receipts={myReceipts} comments={myComments} reports={myReports} activity={myActivity} notifications={myNotifications} lang={lang} />}
       {activeTab === "receipts" && <ReceiptsTab receipts={myReceipts} lang={lang} />}
       {activeTab === "activity" && <ActivityTab activity={myActivity} lang={lang} />}
       {activeTab === "comments" && <CommentsTab comments={myComments} lang={lang} />}

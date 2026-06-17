@@ -2,6 +2,8 @@ import React, { useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, ShieldAlert } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/api/supabaseClient";
 import VerifiedBadge from "./VerifiedBadge";
 import ConfirmButton from "./ConfirmButton";
 import dynamic from "next/dynamic";
@@ -27,6 +29,23 @@ const WARN_CONFIG = {
 };
 
 export default function ScamCard({ item, compact = false }) {
+  // Query creator's trust score
+  const { data: creatorProfile = null } = useQuery({
+    queryKey: ["creator-profile", item.created_by_id],
+    queryFn: async () => {
+      if (!item.created_by_id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("trust_score")
+        .eq("id", item.created_by_id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!item.created_by_id,
+    staleTime: 60_000,
+  });
+
   const handleConfirmed = useCallback(async (newCount) => {
     await base44.entities.ScamAlert.update(item.id, { confirm_count: newCount });
   }, [item.id]);
@@ -60,6 +79,11 @@ export default function ScamCard({ item, compact = false }) {
           <div className="flex items-center gap-3 flex-wrap text-xs text-slate-400">
             <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{item.area_name ? `${item.area_name}, ` : ""}{item.district_name}</span>
             <span>{item.created_date ? formatDistanceToNow(new Date(item.created_date), { addSuffix: true }) : ""}</span>
+            {!item.is_anonymous && item.created_by && (
+              <span className="flex items-center gap-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                👤 {item.created_by} (★ {creatorProfile?.trust_score || 10})
+              </span>
+            )}
           </div>
           {!compact && item.latitude && item.longitude && (
             <div className="mt-2.5">

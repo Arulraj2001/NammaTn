@@ -5,6 +5,8 @@ import { getSession } from "@/lib/spamGuard";
 import { checkRateLimit } from "@/lib/security";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/api/supabaseClient";
 
 const TYPE_LABELS = {
   pg_available: { label: "PG Available", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
@@ -21,6 +23,23 @@ const AMENITY_ICONS = {
 };
 
 export default function StayListingCard({ listing, onReport }) {
+  // Query creator's trust score
+  const { data: creatorProfile = null } = useQuery({
+    queryKey: ["creator-profile", listing.created_by_id],
+    queryFn: async () => {
+      if (!listing.created_by_id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("trust_score")
+        .eq("id", listing.created_by_id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!listing.created_by_id,
+    staleTime: 60_000,
+  });
+
   const [contactRevealed, setContactRevealed] = useState(false);
   const [revealBlocked, setRevealBlocked] = useState(false);
   const { isAuthenticated } = useAuth();
@@ -136,9 +155,16 @@ export default function StayListingCard({ listing, onReport }) {
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700">
-          <div className="flex items-center gap-3 text-xs text-slate-400">
-            <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {listing.view_count || 0}</span>
-            <span>{age}</span>
+          <div className="flex flex-col gap-1 text-xs text-slate-400">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {listing.view_count || 0}</span>
+              <span>{age}</span>
+            </div>
+            {!listing.is_anonymous && listing.created_by && (
+              <span className="flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-1 py-0.5 rounded text-[9px] font-bold self-start mt-0.5">
+                👤 {listing.created_by} (★ {creatorProfile?.trust_score || 10})
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5">

@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { CheckCircle, AlertTriangle, Star, Megaphone, Shield, MessageCircle, Loader2, AlertCircle, FileText } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/api/supabaseClient";
 import { useLanguage } from "@/context/LanguageContext";
 import { DISTRICTS } from "@/lib/districts";
 import { CATEGORIES } from "@/lib/categories";
@@ -59,6 +61,24 @@ export default function CreatePost() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { requireAuth } = useAuthModal();
+  
+  // Fetch user profile for trust score
+  const { data: profile = null } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("*")
+        .eq("id", user?.id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 30_000,
+  });
+
   const [selectedType, setSelectedType] = useState("discussion");
   const [mediaUrls, setMediaUrls] = useState([]);
   const [submitted, setSubmitted] = useState(false);
@@ -225,13 +245,21 @@ export default function CreatePost() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          {T("Share an Update", "ஒரு புதுப்பிப்பை பகிரவும்")}
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm">
-          {T("Your voice matters. Post anonymously if you prefer.", "உங்கள் குரல் முக்கியம். விரும்பினால் அநாமதேயமாக பதிவிடலாம்.")}
-        </p>
+      <div className="mb-6 flex justify-between items-start gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+            {T("Share an Update", "ஒரு புதுப்பிப்பை பகிரவும்")}
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
+            {T("Your voice matters. Post anonymously if you prefer.", "உங்கள் குரல் முக்கியம். விரும்பினால் அநாமதேயமாக பதிவிடலாம்.")}
+          </p>
+        </div>
+        {isAuthenticated && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl px-4 py-2.5 text-right flex-shrink-0">
+            <span className="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-wider block">{T("Your Trust Score", "உங்கள் நம்பகத்தன்மை")}</span>
+            <span className="text-lg font-extrabold text-blue-700 dark:text-blue-300">★ {profile?.trust_score || 10}</span>
+          </div>
+        )}
       </div>
 
       {!isAuthenticated && (

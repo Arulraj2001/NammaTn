@@ -2,6 +2,8 @@ import React, { useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, Zap, Droplets, Car, CloudRain, Wifi, Building, AlertOctagon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/api/supabaseClient";
 import VerifiedBadge from "./VerifiedBadge";
 import UrgencyBadge from "./UrgencyBadge";
 import ConfirmButton from "./ConfirmButton";
@@ -27,6 +29,23 @@ const TYPE_CONFIG = {
 export default function SituationCard({ item, compact = false }) {
   const cfg = TYPE_CONFIG[item.situation_type] || TYPE_CONFIG.other;
   const Icon = cfg.icon;
+
+  // Query creator's trust score
+  const { data: creatorProfile = null } = useQuery({
+    queryKey: ["creator-profile", item.created_by_id],
+    queryFn: async () => {
+      if (!item.created_by_id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("trust_score")
+        .eq("id", item.created_by_id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!item.created_by_id,
+    staleTime: 60_000,
+  });
 
   const handleConfirmed = useCallback(async (newCount) => {
     await base44.entities.SituationUpdate.update(item.id, { confirm_count: newCount });
@@ -59,6 +78,11 @@ export default function SituationCard({ item, compact = false }) {
             <span className="text-xs text-slate-400">
               {item.created_date ? formatDistanceToNow(new Date(item.created_date), { addSuffix: true }) : ""}
             </span>
+            {item.created_by && (
+              <span className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                👤 {item.created_by} (★ {creatorProfile?.trust_score || 10})
+              </span>
+            )}
           </div>
           {!compact && item.latitude && item.longitude && (
             <div className="mt-2.5">

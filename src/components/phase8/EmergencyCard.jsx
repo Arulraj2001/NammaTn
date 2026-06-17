@@ -2,6 +2,8 @@ import React, { useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, Phone, CheckCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/api/supabaseClient";
 import UrgencyBadge from "./UrgencyBadge";
 import VerifiedBadge from "./VerifiedBadge";
 import ConfirmButton from "./ConfirmButton";
@@ -22,6 +24,23 @@ const TYPE_LABELS = {
 
 export default function EmergencyCard({ item, compact = false }) {
   const cfg = TYPE_LABELS[item.emergency_type] || TYPE_LABELS.other;
+
+  // Query creator's trust score
+  const { data: creatorProfile = null } = useQuery({
+    queryKey: ["creator-profile", item.created_by_id],
+    queryFn: async () => {
+      if (!item.created_by_id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("trust_score")
+        .eq("id", item.created_by_id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!item.created_by_id,
+    staleTime: 60_000,
+  });
 
   const handleConfirmed = useCallback(async (newCount) => {
     await base44.entities.EmergencyPost.update(item.id, { confirm_count: newCount });
@@ -50,6 +69,11 @@ export default function EmergencyCard({ item, compact = false }) {
       <div className="flex items-center gap-3 flex-wrap text-xs text-slate-400">
         <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{item.area_name ? `${item.area_name}, ` : ""}{item.district_name}</span>
         <span>{item.created_date ? formatDistanceToNow(new Date(item.created_date), { addSuffix: true }) : ""}</span>
+        {item.created_by && (
+          <span className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold">
+            👤 {item.created_by} (★ {creatorProfile?.trust_score || 10})
+          </span>
+        )}
       </div>
       {!compact && item.contact_visible && item.contact_info && (
         <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center gap-2">

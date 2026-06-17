@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSessionId } from "@/lib/security";
+import { supabase } from "@/api/supabaseClient";
 import { motion } from "framer-motion";
 import { ArrowLeft, ThumbsUp, ThumbsDown, MessageSquare, MapPin, Tag, Clock, AlertTriangle, Star, Megaphone, Shield, MessageCircle, User, Loader2, FileText, Users, Share2 } from "lucide-react";
 import ReportButton from "@/components/posts/ReportButton";
@@ -26,6 +27,10 @@ import CivicReceiptActions from "@/components/civic/CivicReceiptActions";
 import OfficialRouteSection from "@/components/civic/OfficialRouteSection";
 import ComplaintTrackerPanel from "@/components/civic/ComplaintTrackerPanel";
 import CivicShareCard from "@/components/civic/CivicShareCard";
+import AccountabilityMeter from "@/components/civic/AccountabilityMeter";
+import BeforeAfterPanel from "@/components/civic/BeforeAfterPanel";
+import ReceiptCredibilityScore from "@/components/civic/ReceiptCredibilityScore";
+import CaseFileSidebar from "@/components/civic/CaseFileSidebar";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import CommentSection from "@/components/comments/CommentSection";
@@ -56,6 +61,40 @@ export default function PostDetail() {
     queryKey: ["post", id],
     queryFn: () => getPostById(id),
     enabled: !!id,
+  });
+
+  // Query the post author's profile to retrieve their trust score
+  const { data: authorProfile = null } = useQuery({
+    queryKey: ["post-author-profile", post?.created_by_id],
+    queryFn: async () => {
+      if (!post?.created_by_id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("trust_score")
+        .eq("id", post.created_by_id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!post?.created_by_id,
+    staleTime: 60_000,
+  });
+
+  // Query complaint tracker entries for this post (V2 credibility scoring)
+  const { data: complaintTrackers = [] } = useQuery({
+    queryKey: ["complaint-trackers", post?.id],
+    queryFn: async () => {
+      if (!post?.id) return [];
+      const { data, error } = await supabase
+        .from("complaint_tracker")
+        .select("*")
+        .eq("post_id", post.id)
+        .order("created_date", { ascending: false });
+      if (error) return [];
+      return data || [];
+    },
+    enabled: !!post?.id && isCivicPost(post),
+    staleTime: 60_000,
   });
 
   // Hydrate my existing vote from DB on load
@@ -147,8 +186,11 @@ export default function PostDetail() {
           {/* CIVIC RECEIPT VIEW */}
           {isCivic ? (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-              {/* Receipt header */}
+              {/* Receipt header — Public Case File identity */}
               <CivicReceiptHeader post={post} />
+
+              {/* Accountability Meter — SLA tracker */}
+              <AccountabilityMeter post={post} />
 
               {/* Complaint needed nudge */}
               {showComplaintNudge && (
@@ -190,43 +232,21 @@ export default function PostDetail() {
                   </div>
                   {!post.is_anonymous && post.author_name && (
                     <span className="flex items-center gap-1 text-xs text-slate-500">
-                      <User className="w-3.5 h-3.5" /> {post.author_name}
+                      <User className="w-3.5 h-3.5" />
+                      <span>{post.author_name}</span>
+                      <span className="ml-1 px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded text-[9px] font-bold">
+                        ★ {authorProfile?.trust_score || 10}
+                      </span>
                     </span>
                   )}
                 </div>
               </div>
 
-              {/* Photo evidence */}
-              {allPhotos.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-                    📷 {T("Photo Evidence (Before)", "புகைப்பட ஆதாரம் (முன்பு)")}
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {allPhotos.map((url, i) => (
-                      <div key={i} className="rounded-xl overflow-hidden aspect-video bg-slate-100 dark:bg-slate-700">
-                        <img src={url} alt={`evidence-${i}`} className="w-full h-full object-cover" loading="lazy" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Fixed photos */}
-              {post.claimed_fixed_photos?.length > 0 && (
-                <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 rounded-2xl p-5">
-                  <h3 className="text-sm font-semibold text-teal-700 dark:text-teal-300 mb-3">
-                    ✅ {T("Resolution Proof Photos", "தீர்வு ஆதார புகைப்படங்கள்")}
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {post.claimed_fixed_photos.map((url, i) => (
-                      <div key={i} className="rounded-xl overflow-hidden aspect-video bg-teal-100 dark:bg-teal-800">
-                        <img src={url} alt={`fixed-${i}`} className="w-full h-full object-cover" loading="lazy" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Before/After Evidence Panel — V2 side-by-side comparison */}
+              <BeforeAfterPanel
+                beforePhotos={allPhotos}
+                afterPhotos={post.claimed_fixed_photos || []}
+              />
 
               {/* Official Complaint Route */}
               <OfficialRouteSection post={post} />
@@ -238,6 +258,15 @@ export default function PostDetail() {
 
               {/* Complaint Tracker */}
               <ComplaintTrackerPanel post={post} onRefresh={() => qc.invalidateQueries({ queryKey: ["post", id] })} />
+
+              {/* Receipt Credibility Score — V2 trust signal (mobile only, desktop shows in sidebar) */}
+              <div className="lg:hidden">
+                <ReceiptCredibilityScore
+                  post={post}
+                  authorTrustScore={authorProfile?.trust_score || 10}
+                  complaintTrackers={complaintTrackers}
+                />
+              </div>
 
               {/* Timeline */}
               {post.timeline_events?.length > 0 && (
@@ -296,7 +325,13 @@ export default function PostDetail() {
                   {post.category_name && <span className="flex items-center gap-1"><Tag className="w-4 h-4" />{post.category_name}</span>}
                   <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{post.created_date ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true }) : ""}</span>
                   {!post.is_anonymous && post.author_name && (
-                    <span className="flex items-center gap-1"><User className="w-4 h-4" />{post.author_name}</span>
+                    <span className="flex items-center gap-1">
+                      <User className="w-4 h-4" />
+                      <span>{post.author_name}</span>
+                      <span className="ml-1 px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded text-[9px] font-bold">
+                        ★ {authorProfile?.trust_score || 10}
+                      </span>
+                    </span>
                   )}
                 </div>
                 {content && (
@@ -351,18 +386,36 @@ export default function PostDetail() {
           <CommentSection postId={id} postCommentCount={post.comment_count} />
         </div>
 
-        {/* Sidebar */}
+        {/* Sidebar — Civic Case File dashboard on desktop */}
         <div className="hidden lg:block space-y-6">
-          <RelatedPosts post={post} limit={4} />
-          <AdSlot placement="district" className="w-full" />
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-              {T("More from", "இதிலிருந்து மேலும்")} {post.district_name}
-            </p>
-            <Link to={`/district/${post.district_slug}`} className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-              {T("View all district posts →", "மாவட்ட பதிவுகளை பார்க்க →")}
-            </Link>
-          </div>
+          {isCivic ? (
+            <>
+              <CaseFileSidebar
+                post={post}
+                authorTrustScore={authorProfile?.trust_score || 10}
+                complaintTrackers={complaintTrackers}
+              />
+              <ReceiptCredibilityScore
+                post={post}
+                authorTrustScore={authorProfile?.trust_score || 10}
+                complaintTrackers={complaintTrackers}
+              />
+              <RelatedPosts post={post} limit={3} />
+            </>
+          ) : (
+            <>
+              <RelatedPosts post={post} limit={4} />
+              <AdSlot placement="district" className="w-full" />
+              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                  {T("More from", "இதிலிருந்து மேலும்")} {post.district_name}
+                </p>
+                <Link to={`/district/${post.district_slug}`} className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                  {T("View all district posts →", "மாவட்ட பதிவுகளை பார்க்க →")}
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

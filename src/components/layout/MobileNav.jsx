@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Search, PlusCircle, Zap, Menu, X, FileText,
+  Home, PlusCircle, Zap, X, FileText,
   Users, TrendingUp, MessageCircle, AlertTriangle, Shield,
   Briefcase, ShoppingBag, Building2, Map, MapPin,
-  HelpCircle, Heart, Leaf, Trophy, ArrowRight, BarChart2
+  HelpCircle, Heart, Leaf, Trophy, ArrowRight, BarChart2, User
 } from "lucide-react";
+
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import UserMenu from "@/components/auth/UserMenu";
@@ -13,11 +14,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getSettingsMap } from "@/services/admin/settings";
 
 const BOTTOM_TABS = [
-  { path: "/", icon: Home, en: "Home", ta: "முகப்பு" },
-  { path: "/search", icon: Search, en: "Search", ta: "தேடு" },
-  { path: "/create", icon: PlusCircle, en: "Create", ta: "உருவாக்கு", isCreate: true },
-  { path: "/situations", icon: Zap, en: "Live", ta: "நேரடி" },
+  { path: "/", icon: MapPin, en: "Map", ta: "படம்" },
+  { path: "/explore", icon: Zap, en: "Live", ta: "நேரடி" },
+  { path: "/create", icon: PlusCircle, en: "Log", ta: "பதிவு", isCreate: true },
+  { path: "/me", icon: User, en: "Me", ta: "என் பக்கம்" },
 ];
+
 
 const MOBILE_MENU_GROUPS = [
   {
@@ -115,17 +117,18 @@ export default function MobileNav() {
             );
           })}
 
-          {/* Menu tab */}
+          {/* Services tab */}
           <button
             onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
+            aria-label="Open services"
             className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-all ${
               menuOpen ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"
             }`}
           >
-            <Menu className="w-5 h-5 stroke-2" />
-            <span className="text-[10px] font-medium">{T("Menu", "மெனு")}</span>
+            <Briefcase className="w-5 h-5 stroke-2" />
+            <span className="text-[10px] font-medium">{T("Services", "சேவைகள்")}</span>
           </button>
+
         </div>
       </nav>
 

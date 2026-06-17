@@ -13,13 +13,31 @@ import { formatDistanceToNow } from "date-fns";
 import { checkRateLimit, sanitizeText } from "@/lib/security";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import { supabase } from "@/api/supabaseClient";
 
 export default function AskLocal() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { requireAuth } = useAuthModal();
+
+  // Fetch user profile for trust score
+  const { data: profile = null } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("*")
+        .eq("id", user?.id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 30_000,
+  });
   const [showForm, setShowForm] = useState(false);
   const [filterDistrict, setFilterDistrict] = useState("");
   const [search, setSearch] = useState("");
@@ -93,7 +111,15 @@ export default function AskLocal() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 mb-6 space-y-3">
-          <h3 className="font-semibold text-slate-800 dark:text-white">{T("Ask a Local Question", "உள்ளூர் கேள்வி கேளுங்கள்")}</h3>
+          <div className="flex items-center justify-between gap-4 mb-2">
+            <h3 className="font-semibold text-slate-800 dark:text-white">{T("Ask a Local Question", "உள்ளூர் கேள்வி கேளுங்கள்")}</h3>
+            {isAuthenticated && (
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl">
+                <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">{T("Your Score", "உங்கள் மதிப்பு")}</span>
+                <span className="text-sm font-extrabold text-purple-700 dark:text-purple-300">★ {profile?.trust_score || 10}</span>
+              </div>
+            )}
+          </div>
           <input value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
             placeholder={T("e.g. Is RTO crowded today? Water issue in Tambaram?", "எ.கா. இன்று RTO நிரம்பி இருக்கிறதா?")}
             className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />

@@ -3,6 +3,8 @@ import { formatDistanceToNow } from "date-fns";
 import { MapPin, Briefcase, Clock, Phone, BadgeCheck, Sparkles, Crown, Flag, AlertTriangle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { getSession } from "@/lib/spamGuard";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/api/supabaseClient";
 
 const TYPE_LABELS = {
   part_time:       "Part-time",
@@ -25,6 +27,23 @@ const REPORT_REASONS = [
 ];
 
 export default function JobCard({ item }) {
+  // Query creator's trust score
+  const { data: creatorProfile = null } = useQuery({
+    queryKey: ["creator-profile", item.created_by_id],
+    queryFn: async () => {
+      if (!item.created_by_id) return null;
+      const { data, error } = await supabase
+        .from("profile")
+        .select("trust_score")
+        .eq("id", item.created_by_id)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!item.created_by_id,
+    staleTime: 60_000,
+  });
+
   const [showReport, setShowReport] = useState(false);
   const [reportReason, setReportReason] = useState("fake_job");
   const [reported, setReported] = useState(false);
@@ -96,6 +115,11 @@ export default function JobCard({ item }) {
             {item.duration && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{item.duration}</span>}
             {item.salary_info && <span className="font-medium text-green-600 dark:text-green-400">{item.salary_info}</span>}
             <span className="text-slate-300">{age}</span>
+            {item.created_by && (
+              <span className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                👤 {item.created_by} (★ {creatorProfile?.trust_score || 10})
+              </span>
+            )}
           </div>
           {item.contact_visible && item.contact_info && (
             <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center gap-2">
