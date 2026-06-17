@@ -357,39 +357,6 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════════════════════
-          MY AREA PULSE — real-time stats for selected area
-      ════════════════════════════════════════════════════ */}
-      <MyAreaPulse allAreas={areas} />
-
-      {/* ════════════════════════════════════════════════════
-          QUICK ACTIONS
-      ════════════════════════════════════════════════════ */}
-      <section className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-base font-extrabold text-slate-900 dark:text-white mb-4">
-            {T("Quick Actions", "விரைவு செயல்கள்")}
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-            {QUICK_ACTIONS.map((action) => (
-              <Link key={action.path + action.en} to={action.path}>
-                <div className="group flex flex-col items-center text-center p-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full">
-                  <div className={`w-10 h-10 rounded-xl ${action.bg} ${action.iconColor} flex items-center justify-center mb-2.5`}>
-                    {action.icon}
-                  </div>
-                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight mb-0.5">
-                    {T(action.en, action.ta)}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-                    {T(action.sub_en, action.sub_ta)}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════
           WHAT'S HAPPENING NEAR YOU
       ════════════════════════════════════════════════════ */}
       <section className="bg-slate-50 dark:bg-slate-950 py-8">
@@ -415,6 +382,39 @@ export default function Home() {
                   </p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     {stat.count} {T(stat.sub_en, stat.sub_ta)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════
+          MY AREA PULSE — real-time stats for selected area
+      ════════════════════════════════════════════════════ */}
+      <MyAreaPulse allAreas={areas} />
+
+      {/* ════════════════════════════════════════════════════
+          QUICK ACTIONS
+      ════════════════════════════════════════════════════ */}
+      <section className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-base font-extrabold text-slate-900 dark:text-white mb-4">
+            {T("Quick Actions", "விரைவு செயல்கள்")}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            {QUICK_ACTIONS.map((action) => (
+              <Link key={action.path + action.en} to={action.path}>
+                <div className="group flex flex-col items-center text-center p-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full">
+                  <div className={`w-10 h-10 rounded-xl ${action.bg} ${action.iconColor} flex items-center justify-center mb-2.5`}>
+                    {action.icon}
+                  </div>
+                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight mb-0.5">
+                    {T(action.en, action.ta)}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+                    {T(action.sub_en, action.sub_ta)}
                   </p>
                 </div>
               </Link>
