@@ -77,7 +77,7 @@ function PulseCard({ count, icon, label, sub, color, bg, border, to, loading }) 
   const Icon = icon;
   return (
     <Link to={to} className="flex-1 min-w-0">
-      <div className={`flex flex-col items-center justify-center text-center px-2 py-3 rounded-2xl border ${bg} ${border} hover:shadow-md hover:border-blue-400/40 dark:hover:border-blue-500/40 hover:-translate-y-0.5 transition-all duration-200 h-full`}>
+      <div className={`flex flex-col items-center justify-center text-center px-2 py-2 rounded-2xl border ${bg} ${border} hover:shadow-md hover:border-blue-400/40 dark:hover:border-blue-500/40 hover:-translate-y-0.5 transition-all duration-200 h-full`}>
         {loading ? (
           <Loader2 className="w-4 h-4 text-slate-300 animate-spin mb-1" />
         ) : (
@@ -85,7 +85,7 @@ function PulseCard({ count, icon, label, sub, color, bg, border, to, loading }) 
             {count}
           </span>
         )}
-        <div className={`w-7 h-7 rounded-xl ${bg} flex items-center justify-center my-1.5`}>
+        <div className={`w-7 h-7 rounded-xl ${bg} flex items-center justify-center my-1`}>
           <Icon className={`w-3.5 h-3.5 ${color}`} />
         </div>
         <p className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200 leading-snug">{label}</p>
@@ -329,7 +329,7 @@ export default function MyAreaPulse({ allAreas = [] }) {
           </div>
 
           {/* 5 stat cards */}
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-5 gap-2 max-w-3xl mx-auto">
             {STATS.map((stat, i) => (
               <PulseCard key={i} {...stat} loading={loading} />
             ))}
