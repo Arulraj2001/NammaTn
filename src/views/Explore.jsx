@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, SlidersHorizontal, X, FileText, RefreshCw } from "lucide-react";
+import { Search, SlidersHorizontal, X, FileText, RefreshCw, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { DISTRICTS } from "@/lib/districts";
@@ -46,10 +46,25 @@ const getNextCursor = (lastPage) => {
   return lastPage[lastPage.length - 1]?.created_date;
 };
 
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+};
+
 export default function Explore() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [searchParams, setSearchParams] = useSearchParams();
+  const latParam = searchParams.get("lat");
+  const lngParam = searchParams.get("lng");
+  const nearbyParam = searchParams.get("nearby") === "true";
 
   usePageMeta({
     title: "Explore | NammaTN",
@@ -101,6 +116,9 @@ export default function Explore() {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const filtered = useMemo(() => {
+    const userLat = latParam ? parseFloat(latParam) : null;
+    const userLng = lngParam ? parseFloat(lngParam) : null;
+
     return posts.filter((p) => {
       // Exclude duplicate_invalid from public feed
       if (p.civic_status === "duplicate_invalid") return false;
@@ -116,6 +134,18 @@ export default function Explore() {
       let civicStatusMatch = true;
       if (civicStatusFilter !== "all") {
         civicStatusMatch = p.civic_status === civicStatusFilter;
+      }
+
+      // Nearby filter (60km radius)
+      if (nearbyParam && userLat !== null && userLng !== null) {
+        if (!p.latitude || !p.longitude) return false;
+        const dist = calculateDistance(
+          userLat,
+          userLng,
+          parseFloat(p.latitude),
+          parseFloat(p.longitude)
+        );
+        if (dist > 60) return false;
       }
 
       const searchMatch = search === "" ||
@@ -134,9 +164,15 @@ export default function Explore() {
       if (sort === "-updated_date") return new Date(b.updated_date || b.created_date) - new Date(a.updated_date || a.created_date);
       return new Date(b.created_date) - new Date(a.created_date);
     });
-  }, [posts, typeFilter, districtFilter, categoryFilter, civicStatusFilter, search, sort]);
+  }, [posts, typeFilter, districtFilter, categoryFilter, civicStatusFilter, search, sort, latParam, lngParam, nearbyParam]);
 
-  const activeFilterCount = [typeFilter !== "all", districtFilter !== "all", categoryFilter !== "all", civicStatusFilter !== "all"].filter(Boolean).length;
+  const activeFilterCount = [
+    typeFilter !== "all",
+    districtFilter !== "all",
+    categoryFilter !== "all",
+    civicStatusFilter !== "all",
+    nearbyParam
+  ].filter(Boolean).length;
 
   const clearFilters = useCallback(() => {
     setTypeFilter("all"); setDistrictFilter("all"); setCategoryFilter("all");
@@ -221,6 +257,27 @@ export default function Explore() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Nearby Location Filter Info */}
+      {nearbyParam && latParam && lngParam && (
+        <div className="flex items-center gap-2 mb-4 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-semibold px-3 py-2 rounded-xl border border-blue-100 dark:border-blue-800/50 self-start w-fit animate-in fade-in slide-in-from-top-1 duration-200">
+          <MapPin className="w-3.5 h-3.5 text-blue-500" />
+          <span>{T("Showing updates within 60km of your location", "உங்கள் இருப்பிடத்திலிருந்து 60 கி.மீ எல்லைக்குள் உள்ள தகவல்கள்")}</span>
+          <button
+            onClick={() => {
+              const params = new URLSearchParams(searchParams);
+              params.delete("lat");
+              params.delete("lng");
+              params.delete("nearby");
+              setSearchParams(params);
+            }}
+            className="ml-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-100 transition-colors"
+            title={T("Clear location filter", "இருப்பிட வடிகட்டியை அழி")}
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Count + clear */}
       <div className="flex items-center justify-between mb-4">

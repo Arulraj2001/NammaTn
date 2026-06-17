@@ -208,7 +208,7 @@ export default function Home() {
     ...scams.map(sc => ({ ...sc, post_type: "scam" })),
   ], [civicPosts, situations, stays, scams]);
 
-  /* ── derived stats (filtered by 15km radius when user location is available) ── */
+  /* ── derived stats (filtered by 60km radius when user location is available) ── */
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Radius of the earth in km
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -231,7 +231,7 @@ export default function Home() {
         parseFloat(item.latitude),
         parseFloat(item.longitude)
       );
-      return dist <= 15; // 15 km radius
+      return dist <= 60; // 60 km radius
     });
   };
 
@@ -365,7 +365,7 @@ export default function Home() {
             <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
               {T("What's happening near you?", "உங்கள் அருகில் என்ன நடக்கிறது?")}
             </h2>
-            <Link to="/explore" className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+            <Link to={userLocation ? `/explore?lat=${userLocation.latitude}&lng=${userLocation.longitude}&nearby=true` : "/explore"} className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
               {T("View all", "அனைத்தும்")} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
