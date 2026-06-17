@@ -61,19 +61,19 @@ export default function QuickHelpRow({ lang = "en" }) {
   };
 
   return (
-    <div className="py-6">
-      <h2 className="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-3">
-        <span className="text-yellow-500">⚡</span>
+    <div className="py-5 sm:py-6">
+      <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-3">
+        <span>⚡</span>
         {T("Quick Help", "விரைவு உதவி")}
       </h2>
-      <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
           return (
             <button
               key={cat.id}
               onClick={() => scrollTo(cat.anchor)}
-              className="flex-shrink-0 flex flex-col items-center gap-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-5 py-3 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all cursor-pointer min-w-[100px]"
+              className="flex flex-col items-center gap-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-2 py-3 sm:px-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all cursor-pointer"
             >
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${cat.color}`}>
                 <Icon className="w-4 h-4" />

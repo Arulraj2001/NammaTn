@@ -42,6 +42,8 @@ const Bookmarks = lazy(() => import('@/pages/Bookmarks'));
 const Trending = lazy(() => import('@/pages/Trending'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const Awareness = lazy(() => import('@/pages/Awareness'));
+const AwarenessEmergency = lazy(() => import('@/views/AwarenessEmergency'));
+const AwarenessGuides = lazy(() => import('@/views/AwarenessGuides'));
 const Areas = lazy(() => import('@/pages/Areas'));
 const AreaDetail = lazy(() => import('@/pages/AreaDetail'));
 const Situations = lazy(() => import('@/pages/Situations'));
@@ -106,6 +108,8 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/trending" element={<Trending />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/awareness" element={<Awareness />} />
+        <Route path="/awareness/emergency" element={<AwarenessEmergency />} />
+        <Route path="/awareness/guides" element={<AwarenessGuides />} />
         <Route path="/areas" element={<Areas />} />
         <Route path="/area/:slug" element={<AreaDetail />} />
         <Route path="/situations" element={<Situations />} />

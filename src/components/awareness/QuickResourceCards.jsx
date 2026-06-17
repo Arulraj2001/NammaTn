@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { Phone, Shield, Globe, FileText, Copy, ExternalLink } from "lucide-react";
+import React from "react";
+import { Phone, Shield, Globe, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 
+// Real Tamil Nadu emergency numbers and resources
 const RESOURCES = [
   {
     id: "emergency",
@@ -12,10 +14,24 @@ const RESOURCES = [
     title_ta: "அவசர எண்கள்",
     subtitle_en: "For urgent help in Tamil Nadu",
     subtitle_ta: "தமிழ்நாட்டில் அவசர உதவிக்கு",
-    items_en: ["Police: 100", "Fire: 101", "Ambulance: 108", "Women Helpline: 1091"],
-    items_ta: ["காவல்: 100", "தீயணைப்பு: 101", "ஆம்புலன்ஸ்: 108", "பெண்கள் உதவி: 1091"],
-    btn1: { text_en: "Copy Numbers", text_ta: "எண்களை நகலெடு", url: "#", variant: "secondary" },
-    btn2: { text_en: "Emergency Guide", text_ta: "அவசர வழிகாட்டி", url: "#", variant: "primary" },
+    items_en: [
+      "112 — Integrated Emergency (Police / Fire / Ambulance)",
+      "100 — Police",
+      "101 — Fire & Rescue Services",
+      "108 — Free Ambulance (GVK EMRI)",
+      "181 — Women Helpline",
+      "1098 — Childline India",
+    ],
+    items_ta: [
+      "112 — ஒருங்கிணைந்த அவசர உதவி (காவல்/தீ/ஆம்புலன்ஸ்)",
+      "100 — காவல் துறை",
+      "101 — தீயணைப்பு சேவை",
+      "108 — இலவச ஆம்புலன்ஸ் (GVK EMRI)",
+      "181 — பெண்கள் உதவி எண்",
+      "1098 — குழந்தை உதவி எண்",
+    ],
+    btn1: { text_en: "View All Numbers", text_ta: "அனைத்து எண்கள்", url: "/awareness/emergency", variant: "secondary" },
+    btn2: { text_en: "Emergency Guide", text_ta: "அவசர வழிகாட்டி", url: "/awareness/guides", variant: "primary" },
   },
   {
     id: "rights",
@@ -27,10 +43,22 @@ const RESOURCES = [
     title_ta: "குடிமக்கள் உரிமைகள்",
     subtitle_en: "Know what you are entitled to",
     subtitle_ta: "உங்கள் உரிமைகளை அறிந்துகொள்ளுங்கள்",
-    items_en: ["Right to Information (RTI)", "Right to Education", "Consumer Protection", "MGNREGA Benefits"],
-    items_ta: ["தகவல் உரிமை (RTI)", "கல்வி உரிமை", "நுகர்வோர் பாதுகாப்பு", "MGNREGA சலுகைகள்"],
-    btn1: { text_en: "Read Rights", text_ta: "உரிமைகள் படிக்க", url: "#", variant: "secondary" },
-    btn2: { text_en: "Download PDF", text_ta: "PDF பதிவிறக்க", url: "#", variant: "secondary" },
+    items_en: [
+      "Right to Information (RTI Act, 2005)",
+      "Right to Education (6–14 years, free & compulsory)",
+      "Consumer Rights — 6 fundamental rights",
+      "MGNREGA — 100 days guaranteed employment",
+      "Right to Food — subsidised ration via PDS",
+    ],
+    items_ta: [
+      "தகவல் உரிமை (RTI சட்டம், 2005)",
+      "கல்வி உரிமை (6–14 வயது, இலவசம் & கட்டாயம்)",
+      "நுகர்வோர் உரிமைகள் — 6 அடிப்படை உரிமைகள்",
+      "MGNREGA — 100 நாட்கள் வேலை உத்தரவாதம்",
+      "உணவு உரிமை — மானிய விலையில் ரேஷன்",
+    ],
+    btn1: { text_en: "Read Rights", text_ta: "உரிமைகள் படிக்க", url: "/awareness/rights", variant: "secondary" },
+    btn2: { text_en: "File RTI Online", text_ta: "RTI ஆன்லைனில்", url: "https://rtionline.gov.in", variant: "primary" },
   },
   {
     id: "portals",
@@ -40,12 +68,24 @@ const RESOURCES = [
     borderColor: "border-green-100 dark:border-green-900/30",
     title_en: "Government Portals",
     title_ta: "அரசு இணையதளங்கள்",
-    subtitle_en: "Access official government services",
-    subtitle_ta: "அதிகாரப்பூர்வ அரசு சேவைகள்",
-    items_en: ["TN e-Sevai Portal", "Ration Card Services", "TN Electricity Board", "CMCHIS Health Scheme"],
-    items_ta: ["TN e-Sevai இணையதளம்", "குடும்ப அட்டை சேவைகள்", "TN மின்சார வாரியம்", "CMCHIS சுகாதார திட்டம்"],
-    btn1: { text_en: "Open Portal", text_ta: "இணையதளம் திற", url: "https://www.tn.gov.in", variant: "secondary" },
-    btn2: { text_en: "How to Use", text_ta: "எப்படி பயன்படுத்துவது", url: "#", variant: "secondary" },
+    subtitle_en: "Access official government e-services",
+    subtitle_ta: "அதிகாரப்பூர்வ அரசு இ-சேவைகள்",
+    items_en: [
+      "tnesevai.tn.gov.in — 150+ e-services",
+      "tnpds.gov.in — Ration card & PDS",
+      "tnebltd.org — Electricity bills & complaints",
+      "eservices.tnpolice.gov.in — Police services",
+      "cmchis.com — Free health insurance",
+    ],
+    items_ta: [
+      "tnesevai.tn.gov.in — 150+ இ-சேவைகள்",
+      "tnpds.gov.in — குடும்ப அட்டை & PDS",
+      "tnebltd.org — மின் கட்டணம் & புகார்கள்",
+      "eservices.tnpolice.gov.in — காவல் சேவைகள்",
+      "cmchis.com — இலவச சுகாதார காப்பீடு",
+    ],
+    btn1: { text_en: "Open e-Sevai", text_ta: "e-சேவை திற", url: "https://www.tnesevai.tn.gov.in", variant: "secondary" },
+    btn2: { text_en: "All Portals", text_ta: "அனைத்து இணையதளங்கள்", url: "/awareness/portals", variant: "secondary" },
   },
   {
     id: "complaint",
@@ -55,30 +95,34 @@ const RESOURCES = [
     borderColor: "border-purple-100 dark:border-purple-900/30",
     title_en: "File a Complaint",
     title_ta: "புகார் அளிக்க",
-    subtitle_en: "Choose the right channel",
-    subtitle_ta: "சரியான வழிகாட்டியை தேர்ந்தெடுங்கள்",
-    items_en: ["TN Police Online", "Consumer Forum Online", "RTI Online Portal", "CM Grievance Cell"],
-    items_ta: ["TN காவல்துறை ஆன்லைன்", "நுகர்வோர் மன்றம் ஆன்லைன்", "RTI ஆன்லைன் இணையதளம்", "முதலமைச்சர் புகார் அலுவலகம்"],
-    btn1: { text_en: "Open Complaint", text_ta: "புகார் செய்", url: "#", variant: "secondary" },
-    btn2: { text_en: "Track Status", text_ta: "நிலை கண்காணி", url: "#", variant: "secondary" },
+    subtitle_en: "Grievance channels that work",
+    subtitle_ta: "பயனுள்ள புகார் தொடர்பு வழிகள்",
+    items_en: [
+      "1100 — CM Grievance Cell (24×7)",
+      "1930 — Cybercrime Helpline",
+      "1064 — Anti-Corruption Helpline",
+      "consumer.tn.gov.in — Consumer Forum",
+      "pgportal.gov.in — Central Grievances",
+    ],
+    items_ta: [
+      "1100 — முதலமைச்சர் புகார் கலந்தாய்வு (24×7)",
+      "1930 — இணையதள குற்றங்கள்",
+      "1064 — ஊழல் தடுப்பு உதவி எண்",
+      "consumer.tn.gov.in — நுகர்வோர் மன்றம்",
+      "pgportal.gov.in — மத்திய புகார்கள்",
+    ],
+    btn1: { text_en: "CM Grievance Cell", text_ta: "முதலமைச்சர் புகார்", url: "https://cms.tn.gov.in", variant: "secondary" },
+    btn2: { text_en: "Track Status", text_ta: "நிலை கண்காணி", url: "https://pgportal.gov.in", variant: "secondary" },
   },
 ];
 
 export default function QuickResourceCards({ lang = "en" }) {
   const T = (en, ta) => lang === "ta" ? ta : en;
-  const [copied, setCopied] = useState(null);
-
-  const handleCopy = (id, text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(id);
-      setTimeout(() => setCopied(null), 2000);
-    });
-  };
 
   return (
     <section id="resources" className="mb-10">
-      <h2 className="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-4">
-        <span className="text-blue-500">🔗</span>
+      <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-4">
+        <span>🔗</span>
         {T("Quick Resources", "விரைவு வளங்கள்")}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -93,22 +137,22 @@ export default function QuickResourceCards({ lang = "en" }) {
               key={r.id}
               className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden hover:shadow-md transition-shadow flex flex-col"
             >
-              {/* Colored header */}
-              <div className={`px-5 py-4 ${r.headerColor} border-b ${r.borderColor}`}>
+              {/* Coloured header */}
+              <div className={`px-4 py-3.5 ${r.headerColor} border-b ${r.borderColor}`}>
                 <div className="flex items-center gap-2.5 mb-1">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${r.iconColor}`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${r.iconColor}`}>
                     <Icon className="w-4 h-4" />
                   </div>
                   <h3 className="text-sm font-semibold text-slate-800 dark:text-white">{title}</h3>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{subtitle}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>
               </div>
 
               {/* Bullet list */}
-              <div className="px-5 py-4 flex-1">
-                <ul className="space-y-2">
+              <div className="px-4 py-3.5 flex-1">
+                <ul className="space-y-1.5">
                   {items.map((item, i) => (
-                    <li key={i} className="text-xs text-slate-600 dark:text-slate-400 flex items-start gap-2">
+                    <li key={i} className="text-xs text-slate-600 dark:text-slate-400 flex items-start gap-2 leading-snug">
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-500 flex-shrink-0 mt-1.5" />
                       {item}
                     </li>
@@ -116,11 +160,13 @@ export default function QuickResourceCards({ lang = "en" }) {
                 </ul>
               </div>
 
-              {/* Action buttons */}
-              <div className="px-5 pb-4 flex gap-2 mt-auto flex-wrap">
+              {/* Buttons */}
+              <div className="px-4 pb-4 flex gap-2 mt-auto flex-wrap">
                 {r.btn1 && (
                   <a
                     href={r.btn1.url}
+                    target={r.btn1.url.startsWith("http") ? "_blank" : "_self"}
+                    rel="noopener noreferrer"
                     className="border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
                   >
                     {T(r.btn1.text_en, r.btn1.text_ta)}
@@ -129,6 +175,8 @@ export default function QuickResourceCards({ lang = "en" }) {
                 {r.btn2 && (
                   <a
                     href={r.btn2.url}
+                    target={r.btn2.url.startsWith("http") ? "_blank" : "_self"}
+                    rel="noopener noreferrer"
                     className="border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
                   >
                     {T(r.btn2.text_en, r.btn2.text_ta)}
