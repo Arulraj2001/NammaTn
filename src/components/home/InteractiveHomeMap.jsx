@@ -46,10 +46,11 @@ export default function InteractiveHomeMap({ items = [], userLocation = null, zo
         zoom={currentZoom}
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={true}
+        attributionControl={false}
       >
         <ChangeMapView center={center} zoom={currentZoom} />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution=""
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
