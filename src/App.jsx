@@ -44,6 +44,9 @@ const Contact = lazy(() => import('@/pages/Contact'));
 const Awareness = lazy(() => import('@/pages/Awareness'));
 const AwarenessEmergency = lazy(() => import('@/views/AwarenessEmergency'));
 const AwarenessGuides = lazy(() => import('@/views/AwarenessGuides'));
+const AwarenessSchemes = lazy(() => import('@/views/AwarenessSchemes'));
+const AwarenessPortals = lazy(() => import('@/views/AwarenessPortals'));
+const AwarenessFaqs = lazy(() => import('@/views/AwarenessFaqs'));
 const Areas = lazy(() => import('@/pages/Areas'));
 const AreaDetail = lazy(() => import('@/pages/AreaDetail'));
 const Situations = lazy(() => import('@/pages/Situations'));
@@ -110,6 +113,9 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/awareness" element={<Awareness />} />
         <Route path="/awareness/emergency" element={<AwarenessEmergency />} />
         <Route path="/awareness/guides" element={<AwarenessGuides />} />
+        <Route path="/awareness/schemes" element={<AwarenessSchemes />} />
+        <Route path="/awareness/portals" element={<AwarenessPortals />} />
+        <Route path="/awareness/faqs" element={<AwarenessFaqs />} />
         <Route path="/areas" element={<Areas />} />
         <Route path="/area/:slug" element={<AreaDetail />} />
         <Route path="/situations" element={<Situations />} />
