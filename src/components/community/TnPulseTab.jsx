@@ -69,7 +69,7 @@ function CommunityWinsSection({ posts }) {
           </div>
           <span className="font-bold text-slate-900 dark:text-white text-sm">Community Wins This Week</span>
         </div>
-        <Link to="/explore?type=civic&status=citizen_verified_fixed" className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+        <Link to="/community/wins" className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
           View all wins <ArrowRight className="w-3 h-3" />
         </Link>
       </div>

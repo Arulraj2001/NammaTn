@@ -58,6 +58,7 @@ const Jobs = lazy(() => import('@/pages/Jobs'));
 const Scams = lazy(() => import('@/pages/Scams'));
 const Help = lazy(() => import('@/pages/Help'));
 const Community = lazy(() => import('@/pages/Community'));
+const CommunityWins = lazy(() => import('@/views/CommunityWins'));
 const Support = lazy(() => import('@/pages/Support'));
 const AdminPhase8 = lazy(() => import('@/pages/admin/AdminPhase8'));
 const AdminCommunity = lazy(() => import('@/pages/admin/AdminCommunity'));
@@ -127,6 +128,7 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/scams" element={<Scams />} />
         <Route path="/help" element={<Help />} />
         <Route path="/community" element={<Community />} />
+        <Route path="/community/wins" element={<CommunityWins />} />
         <Route path="/support" element={<Support />} />
         <Route path="/stay" element={<Stay />} />
         <Route path="/listings" element={<LocalListings />} />
