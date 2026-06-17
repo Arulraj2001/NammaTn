@@ -17,11 +17,22 @@ import { CATEGORIES } from "@/lib/categories";
 import { DISTRICTS } from "@/lib/districts";
 import ShareWinModal from "@/components/community/ShareWinModal";
 
-/* ─── helpers ──────────────────────────────────────────────── */
-function timeAgo(dateStr) {
+/* ─── helpers ────────────────────────────────────────────── */
+function timeAgo(dateStr, lang) {
   if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
   const days = Math.floor(diff / 86400000);
+  if (lang === "ta") {
+    if (days === 0) return "இன்று";
+    if (days === 1) return "நேற்று";
+    if (days < 7) return `${days} நாட்களுக்கு முன்பு`;
+    if (days < 30) {
+      const weeks = Math.floor(days / 7);
+      return `${weeks} வாரம்${weeks > 1 ? "ங்கள்" : ""} முன்பு`;
+    }
+    const months = Math.floor(days / 30);
+    return `${months} மாதம்${months > 1 ? "ங்கள்" : ""} முன்பு`;
+  }
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
   if (days < 7) return `${days} days ago`;
@@ -42,20 +53,21 @@ const SORT_OPTIONS = [
 ];
 
 const CAT_ICON_MAP = {
-  "road-infrastructure": { icon: "🛣️", label: "Roads", color: "bg-blue-100 text-blue-700" },
-  "water-sanitation": { icon: "💧", label: "Water Supply", color: "bg-cyan-100 text-cyan-700" },
-  electricity: { icon: "⚡", label: "Electricity", color: "bg-yellow-100 text-yellow-700" },
-  environment: { icon: "🌿", label: "Cleanliness", color: "bg-green-100 text-green-700" },
-  "local-development": { icon: "🏗️", label: "Drainage", color: "bg-orange-100 text-orange-700" },
-  "public-safety": { icon: "🛡️", label: "Safety", color: "bg-red-100 text-red-700" },
+  "road-infrastructure": { icon: "🛣️", label: "Roads", label_ta: "சாலைகள்", color: "bg-blue-100 text-blue-700" },
+  "water-sanitation": { icon: "💧", label: "Water Supply", label_ta: "நீர் விநியோகம்", color: "bg-cyan-100 text-cyan-700" },
+  electricity: { icon: "⚡", label: "Electricity", label_ta: "மின்சாரம்", color: "bg-yellow-100 text-yellow-700" },
+  environment: { icon: "🌿", label: "Cleanliness", label_ta: "சுத்தம்", color: "bg-green-100 text-green-700" },
+  "local-development": { icon: "🏗️", label: "Drainage", label_ta: "வடிகால்", color: "bg-orange-100 text-orange-700" },
+  "public-safety": { icon: "🛡️", label: "Safety", label_ta: "பாதுகாப்பு", color: "bg-red-100 text-red-700" },
 };
 
-function getCatInfo(slug) {
+function getCatInfo(slug, lang) {
   const cat = CATEGORIES.find((c) => c.slug === slug);
   const map = CAT_ICON_MAP[slug];
+  const label = lang === "ta" ? (cat?.name_ta || map?.label_ta || slug) : (cat?.name_en || map?.label || slug);
   return {
     icon: map?.icon || cat?.icon || "✅",
-    label: cat?.name_en || slug || "General",
+    label: label,
     color: map?.color || "bg-slate-100 text-slate-700",
   };
 }
@@ -96,8 +108,13 @@ function StatCard({ icon, value, label, color }) {
 
 /* ─── Win Card ─────────────────────────────────────────────── */
 function WinCard({ post }) {
-  const cat = getCatInfo(post.category_slug);
+  const { lang } = useLanguage();
+  const T = (en, ta) => lang === "ta" ? ta : en;
+  const cat = getCatInfo(post.category_slug, lang);
   const hasImage = !!post.image_url;
+
+  const dObj = DISTRICTS.find((d) => d.slug === post.district_slug || d.name_en === post.district_name);
+  const districtDisplay = dObj ? T(dObj.name_en, dObj.name_ta) : (post.district_name || T("Tamil Nadu", "தமிழ்நாடு"));
 
   return (
     <Link to={`/post/${post.id}`} className="block group">
@@ -113,7 +130,9 @@ function WinCard({ post }) {
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => { e.target.style.display = "none"; }}
                 />
-                <span className="absolute top-1.5 left-1.5 text-[9px] font-bold bg-slate-900/70 text-white px-1.5 py-0.5 rounded-md">Before</span>
+                <span className="absolute top-1.5 left-1.5 text-[9px] font-bold bg-slate-900/70 text-white px-1.5 py-0.5 rounded-md">
+                  {T("Before", "முன்பு")}
+                </span>
               </div>
               <div className="relative w-1/2 bg-slate-100 dark:bg-slate-800">
                 <img
@@ -122,7 +141,9 @@ function WinCard({ post }) {
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => { e.target.style.display = "none"; }}
                 />
-                <span className="absolute top-1.5 left-1.5 text-[9px] font-bold bg-green-600/90 text-white px-1.5 py-0.5 rounded-md">After</span>
+                <span className="absolute top-1.5 left-1.5 text-[9px] font-bold bg-green-600/90 text-white px-1.5 py-0.5 rounded-md">
+                  {T("After", "பின்பு")}
+                </span>
               </div>
             </>
           ) : (
@@ -142,33 +163,35 @@ function WinCard({ post }) {
             </div>
             <div className="flex items-center gap-1.5 flex-shrink-0">
               <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                <CheckCircle2 className="w-3 h-3" /> Resolved
+                <CheckCircle2 className="w-3 h-3" /> {T("Resolved", "தீர்க்கப்பட்டது")}
               </span>
             </div>
           </div>
 
           <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-0.5">
-            {post.title_en || post.title || "Civic Issue Resolved"}
+            {lang === "ta" ? (post.title_ta || post.title || "குடிமைப் பிரச்சனை தீர்க்கப்பட்டது") : (post.title_en || post.title || "Civic Issue Resolved")}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-            {post.area_name && <>{post.area_name}, </>}{post.district_name || "Tamil Nadu"}
+            {post.area_name && <>{post.area_name}, </>}{districtDisplay}
           </p>
 
-          {post.content_en && (
+          {(lang === "ta" ? post.content_ta : post.content_en) && (
             <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed mb-2">
-              {post.content_en}
+              {lang === "ta" ? post.content_ta : post.content_en}
             </p>
           )}
 
           <div className="flex items-center gap-3 text-[11px] text-slate-400 dark:text-slate-500">
             <span className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              {timeAgo(post.updated_date || post.created_date)}
+              {timeAgo(post.updated_date || post.created_date, lang)}
             </span>
             {post.verification_count > 0 && (
               <span className="flex items-center gap-1 text-green-600 dark:text-green-400 font-semibold">
                 <Users className="w-3 h-3" />
-                Verified by {post.verification_count} citizen{post.verification_count !== 1 ? "s" : ""}
+                {lang === "ta" 
+                  ? `${post.verification_count} குடிமக்களால் சரிபார்க்கப்பட்டது` 
+                  : `Verified by ${post.verification_count} citizen${post.verification_count !== 1 ? "s" : ""}`}
               </span>
             )}
             {post.civic_receipt_id && (
@@ -189,18 +212,23 @@ function WinCard({ post }) {
 
 /* ─── Empty state ──────────────────────────────────────────── */
 function EmptyState({ hasFilters, onClearFilters }) {
+  const { lang } = useLanguage();
+  const T = (en, ta) => lang === "ta" ? ta : en;
+
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-12 text-center">
       <div className="w-16 h-16 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
         <Trophy className="w-8 h-8 text-green-400" />
       </div>
       <h3 className="font-bold text-slate-800 dark:text-white text-base mb-2">
-        {hasFilters ? "No wins match your filters" : "No community wins recorded yet"}
+        {hasFilters
+          ? T("No wins match your filters", "உங்கள் வடிகட்டிகளுக்குப் பொருத்தமான வெற்றிகள் எதுவும் இல்லை")
+          : T("No community wins recorded yet", "சமூக வெற்றிகள் இன்னும் பதிவு செய்யப்படவில்லை")}
       </h3>
       <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-xs mx-auto">
         {hasFilters
-          ? "Try changing the district, category, or time range to find more wins."
-          : "When civic issues get resolved, they'll appear here. Be the first to share a community win in your area."}
+          ? T("Try changing the district, category, or time range to find more wins.", "கூடுதல் வெற்றிகளைக் கண்டறிய மாவட்டம், வகை அல்லது நேர வரம்பை மாற்றி முயற்சிக்கவும்.")
+          : T("When civic issues get resolved, they'll appear here. Be the first to share a community win in your area.", "குடிமைப் பிரச்சனைகள் தீர்க்கப்படும்போது, அவை இங்கே தோன்றும். உங்கள் பகுதியில் சமூக வெற்றியைப் பகிர்ந்து கொள்ளும் முதல் நபராக இருங்கள்.")}
       </p>
       <div className="flex flex-wrap justify-center gap-3">
         {hasFilters && (
@@ -208,14 +236,14 @@ function EmptyState({ hasFilters, onClearFilters }) {
             onClick={onClearFilters}
             className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
-            <X className="w-3.5 h-3.5" /> Clear Filters
+            <X className="w-3.5 h-3.5" /> {T("Clear Filters", "வடிகட்டிகளை நீக்கு")}
           </button>
         )}
         <Link to="/create" className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors">
-          <Plus className="w-3.5 h-3.5" /> Create Civic Receipt
+          <Plus className="w-3.5 h-3.5" /> {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு")}
         </Link>
         <Link to="/explore" className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-          <Eye className="w-3.5 h-3.5" /> View Active Issues
+          <Eye className="w-3.5 h-3.5" /> {T("View Active Issues", "செயலில் உள்ள சிக்கல்களைப் பார்")}
         </Link>
       </div>
     </div>
@@ -224,6 +252,9 @@ function EmptyState({ hasFilters, onClearFilters }) {
 
 /* ─── Sidebar: Wins by Category ───────────────────────────── */
 function WinsByCategory({ wins }) {
+  const { lang } = useLanguage();
+  const T = (en, ta) => lang === "ta" ? ta : en;
+
   const cats = useMemo(() => {
     const map = {};
     wins.forEach((w) => {
@@ -233,21 +264,23 @@ function WinsByCategory({ wins }) {
     return Object.entries(map)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6)
-      .map(([slug, count]) => ({ slug, count, ...getCatInfo(slug) }));
-  }, [wins]);
+      .map(([slug, count]) => ({ slug, count, ...getCatInfo(slug, lang) }));
+  }, [wins, lang]);
 
   const max = cats[0]?.count || 1;
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
       <div className="flex items-center justify-between mb-4">
-        <span className="font-bold text-slate-900 dark:text-white text-sm">Wins by Category</span>
+        <span className="font-bold text-slate-900 dark:text-white text-sm">
+          {T("Wins by Category", "வகை வாரியாக வெற்றிகள்")}
+        </span>
         <Link to="/explore" className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-          View all <ArrowUpRight className="w-3 h-3" />
+          {T("View all", "அனைத்தையும் பார்")} <ArrowUpRight className="w-3 h-3" />
         </Link>
       </div>
       {cats.length === 0 ? (
-        <p className="text-xs text-slate-400 text-center py-4">No data yet</p>
+        <p className="text-xs text-slate-400 text-center py-4">{T("No data yet", "தரவுகள் இன்னும் இல்லை")}</p>
       ) : (
         <div className="space-y-3">
           {cats.map(({ slug, count, icon, label }) => (
@@ -275,6 +308,9 @@ function WinsByCategory({ wins }) {
 
 /* ─── Sidebar: Top Areas ───────────────────────────────────── */
 function TopAreas({ wins }) {
+  const { lang } = useLanguage();
+  const T = (en, ta) => lang === "ta" ? ta : en;
+
   const areas = useMemo(() => {
     const map = {};
     wins.forEach((w) => {
@@ -289,13 +325,15 @@ function TopAreas({ wins }) {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
       <div className="flex items-center justify-between mb-4">
-        <span className="font-bold text-slate-900 dark:text-white text-sm">Top Areas This Week</span>
+        <span className="font-bold text-slate-900 dark:text-white text-sm">
+          {T("Top Areas This Week", "இந்த வாரத்தின் முக்கிய பகுதிகள்")}
+        </span>
         <Link to="/areas" className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-          View all <ArrowUpRight className="w-3 h-3" />
+          {T("View all", "அனைத்தையும் பார்")} <ArrowUpRight className="w-3 h-3" />
         </Link>
       </div>
       {areas.length === 0 ? (
-        <p className="text-xs text-slate-400 text-center py-4">No area data yet</p>
+        <p className="text-xs text-slate-400 text-center py-4">{T("No area data yet", "பகுதி தரவுகள் இன்னும் இல்லை")}</p>
       ) : (
         <div className="divide-y divide-slate-100 dark:divide-slate-700">
           {areas.map((area, i) => (
@@ -307,7 +345,7 @@ function TopAreas({ wins }) {
                 {area.name}
               </span>
               <span className="text-xs font-bold text-green-600 dark:text-green-400 flex-shrink-0">
-                {area.count} win{area.count !== 1 ? "s" : ""}
+                {area.count} {T(`win${area.count !== 1 ? "s" : ""}`, `வெற்றி${area.count !== 1 ? "கள்" : ""}`)}
               </span>
             </div>
           ))}
@@ -319,29 +357,34 @@ function TopAreas({ wins }) {
 
 /* ─── Sidebar: Top Contributors ────────────────────────────── */
 function TopContributors({ wins }) {
+  const { lang } = useLanguage();
+  const T = (en, ta) => lang === "ta" ? ta : en;
+
   const contribs = useMemo(() => {
     const map = {};
     wins.forEach((w) => {
       const id = w.created_by_id;
       if (!id) return;
-      if (!map[id]) map[id] = { name: w.author_name || "Citizen", id, count: 0 };
+      if (!map[id]) map[id] = { name: w.author_name || (lang === "ta" ? "குடிமகன்" : "Citizen"), id, count: 0 };
       map[id].count++;
     });
     return Object.values(map).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [wins]);
+  }, [wins, lang]);
 
   const COLORS = ["bg-blue-500", "bg-green-500", "bg-purple-500", "bg-orange-500", "bg-pink-500"];
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
       <div className="flex items-center justify-between mb-4">
-        <span className="font-bold text-slate-900 dark:text-white text-sm">Top Contributors</span>
+        <span className="font-bold text-slate-900 dark:text-white text-sm">
+          {T("Top Contributors", "சிறந்த பங்களிப்பாளர்கள்")}
+        </span>
         <Link to="/leaderboard" className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-          View leaderboard <ArrowUpRight className="w-3 h-3" />
+          {T("View leaderboard", "மதிப்பீட்டுப் பட்டியலைப் பார்")} <ArrowUpRight className="w-3 h-3" />
         </Link>
       </div>
       {contribs.length === 0 ? (
-        <p className="text-xs text-slate-400 text-center py-4">No contributor data yet</p>
+        <p className="text-xs text-slate-400 text-center py-4">{T("No contributor data yet", "பங்களிப்பாளர் தரவுகள் இன்னும் இல்லை")}</p>
       ) : (
         <div className="divide-y divide-slate-100 dark:divide-slate-700">
           {contribs.map((c, i) => (
@@ -352,7 +395,9 @@ function TopContributors({ wins }) {
                 </span>
               </div>
               <span className="flex-1 text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{c.name}</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">{c.count} verified</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">
+                {c.count} {T("verified", "சரிபார்க்கப்பட்டது")}
+              </span>
             </div>
           ))}
         </div>
@@ -519,9 +564,11 @@ export default function CommunityWins() {
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
-              <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Community Wins</h2>
+              <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
+                {T("Community Wins", "சமூக வெற்றிகள்")}
+              </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Verified and resolved issues that made our areas better.
+                {T("Verified and resolved issues that made our areas better.", "எங்கள் பகுதிகளை மேம்படுத்திய சரிபார்க்கப்பட்டு தீர்க்கப்பட்ட சிக்கல்கள்.")}
               </p>
             </div>
           </div>
@@ -542,35 +589,41 @@ export default function CommunityWins() {
               <FilterSelect
                 value={districtFilter}
                 onChange={handleFilterChange(setDistrictFilter)}
-                placeholder="All Districts"
-                options={DISTRICTS.map((d) => ({ value: d.slug, label: d.name_en }))}
+                placeholder={T("All Districts", "அனைத்து மாவட்டங்கள்")}
+                options={DISTRICTS.map((d) => ({ value: d.slug, label: T(d.name_en, d.name_ta) }))}
               />
               <FilterSelect
                 value={categoryFilter}
                 onChange={handleFilterChange(setCategoryFilter)}
-                placeholder="All Categories"
-                options={CATEGORIES.map((c) => ({ value: c.slug, label: `${c.icon} ${c.name_en}` }))}
+                placeholder={T("All Categories", "அனைத்து பிரிவுகள்")}
+                options={CATEGORIES.map((c) => ({ value: c.slug, label: `${c.icon} ${T(c.name_en, c.name_ta)}` }))}
               />
               <FilterSelect
                 value={timeFilter}
                 onChange={handleFilterChange(setTimeFilter)}
-                placeholder="All Time"
-                options={TIME_RANGES.filter((r) => r.value !== "all")}
+                placeholder={T("All Time", "எல்லா காலமும்")}
+                options={TIME_RANGES.filter((r) => r.value !== "all").map((r) => ({
+                  value: r.value,
+                  label: r.value === "today" ? T("Today", "இன்று") : r.value === "week" ? T("This Week", "இந்த வாரம்") : T("This Month", "இந்த மாதம்")
+                }))}
               />
               {hasFilters && (
                 <button
                   onClick={clearFilters}
                   className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-semibold px-2 py-1.5"
                 >
-                  <X className="w-3 h-3" /> Clear
+                  <X className="w-3 h-3" /> {T("Clear", "நீக்கு")}
                 </button>
               )}
               <div className="ml-auto">
                 <FilterSelect
                   value={sort}
                   onChange={setSort}
-                  placeholder="Sort"
-                  options={SORT_OPTIONS}
+                  placeholder={T("Sort", "வரிசைப்படுத்து")}
+                  options={SORT_OPTIONS.map((o) => ({
+                    value: o.value,
+                    label: o.value === "newest" ? T("Newest First", "புதியவை முதலில்") : o.value === "most_verified" ? T("Most Verified", "அதிகம் சரிபார்க்கப்பட்டவை") : T("Oldest First", "பழையவை முதலில்")
+                  }))}
                 />
               </div>
             </div>
@@ -580,25 +633,25 @@ export default function CommunityWins() {
               <StatCard
                 icon={<CheckCircle2 className="w-5 h-5 text-green-600" />}
                 value={isLoading ? "—" : allWins.length.toLocaleString()}
-                label="Wins Achieved"
+                label={T("Wins Achieved", "பெறப்பட்ட வெற்றிகள்")}
                 color="bg-green-50 dark:bg-green-900/20"
               />
               <StatCard
                 icon={<Users className="w-5 h-5 text-blue-600" />}
                 value={isLoading ? "—" : citizensInvolved.toLocaleString()}
-                label="Citizens Involved"
+                label={T("Citizens Involved", "பங்கேற்ற குடிமக்கள்")}
                 color="bg-blue-50 dark:bg-blue-900/20"
               />
               <StatCard
                 icon={<MapPin className="w-5 h-5 text-purple-600" />}
                 value={isLoading ? "—" : uniqueDistricts}
-                label="Districts"
+                label={T("Districts", "மாவட்டங்கள்")}
                 color="bg-purple-50 dark:bg-purple-900/20"
               />
               <StatCard
                 icon={<Star className="w-5 h-5 text-orange-500" />}
                 value={isLoading ? "—" : (topCatSlug ? topCat.icon : "—")}
-                label={isLoading ? "Loading…" : topCatSlug ? `${topCat.label} — Most Wins` : "Most Wins"}
+                label={isLoading ? T("Loading…", "ஏற்றப்படுகிறது...") : topCatSlug ? `${topCat.label} — ${T("Most Wins", "அதிக வெற்றிகள்")}` : T("Most Wins", "அதிக வெற்றிகள்")}
                 color="bg-orange-50 dark:bg-orange-900/20"
               />
             </div>
@@ -607,9 +660,9 @@ export default function CommunityWins() {
             {!isLoading && (
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 {filtered.length > 0
-                  ? `Showing ${filtered.length} verified win${filtered.length !== 1 ? "s" : ""}`
-                  : "No results"}
-                {hasFilters && " (filtered)"}
+                  ? T(`Showing ${filtered.length} verified win${filtered.length !== 1 ? "s" : ""}`, `சரிபார்க்கப்பட்ட ${filtered.length} வெற்றிகள் காட்டப்படுகின்றன`)
+                  : T("No results", "முடிவுகள் எதுவும் இல்லை")}
+                {hasFilters && ` (${T("filtered", "வடிகட்டப்பட்டது")})`}
               </p>
             )}
 
@@ -634,18 +687,22 @@ export default function CommunityWins() {
             {/* Bottom CTA */}
             <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/10 dark:to-blue-900/10 border border-green-100 dark:border-green-800/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">Know about a resolved issue?</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Share it as a community win and help others trust the process.</p>
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">
+                  {T("Know about a resolved issue?", "தீர்க்கப்பட்ட ஒரு சிக்கலைப் பற்றி தெரியுமா?")}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {T("Share it as a community win and help others trust the process.", "அதை ஒரு சமூக வெற்றியாகப் பகிர்ந்து, மற்றவர்கள் இந்தச் செயல்முறையை நம்ப உதவிடுங்கள்.")}
+                </p>
               </div>
               <div className="flex gap-2 flex-shrink-0">
                 <button
                   onClick={() => setShowShareModal(true)}
                   className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors"
                 >
-                  <Share2 className="w-3.5 h-3.5" /> Share a Win
+                  <Share2 className="w-3.5 h-3.5" /> {T("Share a Win", "வெற்றி பகிர்")}
                 </button>
                 <Link to="/create" className="flex items-center gap-1.5 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-bold px-4 py-2 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
-                  <FileText className="w-3.5 h-3.5" /> Civic Receipt
+                  <FileText className="w-3.5 h-3.5" /> {T("Civic Receipt", "குடிமை ரசீது")}
                 </Link>
               </div>
             </div>

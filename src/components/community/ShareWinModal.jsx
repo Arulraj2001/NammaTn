@@ -164,10 +164,10 @@ export default function ShareWinModal({ onClose }) {
 
   const validate = () => {
     const e = {};
-    if (!form.title.trim()) e.title = "Win title is required";
-    if (!form.category) e.category = "Please select a category";
-    if (!form.description.trim()) e.description = "A short description is required";
-    if (!form.district) e.district = "Please select a district";
+    if (!form.title.trim()) e.title = T("Win title is required", "வெற்றியின் தலைப்பு தேவை");
+    if (!form.category) e.category = T("Please select a category", "தயவுசெய்து ஒரு வகையைத் தேர்ந்தெடுக்கவும்");
+    if (!form.description.trim()) e.description = T("A short description is required", "ஒரு சுருக்கமான விளக்கம் தேவை");
+    if (!form.district) e.district = T("Please select a district", "தயவுசெய்து ஒரு மாவட்டத்தைத் தேர்ந்தெடுக்கவும்");
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -187,9 +187,11 @@ export default function ShareWinModal({ onClose }) {
           <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
           </div>
-          <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2">Win Shared!</h3>
+          <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2">
+            {T("Win Shared!", "வெற்றி பகிரப்பட்டது!")}
+          </h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-            Your community win has been submitted for review. Thank you for sharing real civic progress!
+            {T("Your community win has been submitted for review. Thank you for sharing real civic progress!", "உங்கள் சமூக வெற்றி மதிப்பாய்விற்காக சமர்ப்பிக்கப்பட்டுள்ளது. உண்மையான குடிமை முன்னேற்றத்தை பகிர்ந்ததற்கு நன்றி!")}
           </p>
           <div className="flex flex-col gap-2">
             <Link
@@ -197,13 +199,13 @@ export default function ShareWinModal({ onClose }) {
               onClick={onClose}
               className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-colors"
             >
-              View Community Wins <ArrowRight className="w-4 h-4" />
+              {T("View Community Wins", "சமூக வெற்றிகளைப் பார்")} <ArrowRight className="w-4 h-4" />
             </Link>
             <button
               onClick={onClose}
               className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 py-2"
             >
-              Close
+              {T("Close", "மூடு")}
             </button>
           </div>
         </div>
@@ -241,7 +243,7 @@ export default function ShareWinModal({ onClose }) {
         <div className="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800/30 px-5 py-2.5 flex items-center gap-2 flex-shrink-0">
           <Shield className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
           <p className="text-[11px] text-blue-700 dark:text-blue-300">
-            Only submit real, verifiable wins. Proof photos help the community trust your submission.
+            {T("Only submit real, verifiable wins. Proof photos help the community trust your submission.", "உண்மையான, சரிபார்க்கக்கூடிய வெற்றிகளை மட்டுமே சமர்ப்பிக்கவும். ஆதார புகைப்படங்கள் சமூகத்தினர் உங்கள் சமர்ப்பிப்பை நம்ப உதவும்.")}
           </p>
         </div>
 
@@ -250,70 +252,70 @@ export default function ShareWinModal({ onClose }) {
 
           {/* 1. Win Details */}
           <SectionCard
-            title="Win Details"
+            title={T("Win Details", "வெற்றி விவரங்கள்")}
             icon={<CheckCircle2 className="w-4 h-4 text-green-500" />}
           >
             <div className="space-y-4">
               <div>
-                <Label required>Win Title</Label>
+                <Label required>{T("Win Title", "வெற்றி தலைப்பு")}</Label>
                 <Input
                   value={form.title}
                   onChange={(e) => set("title", e.target.value)}
-                  placeholder="e.g. Road repaired on 5th Avenue"
+                  placeholder={T("e.g. Road repaired on 5th Avenue", "எ.கா. 5வது அவென்யூவில் சாலை சீரமைக்கப்பட்டது")}
                   maxLength={120}
                 />
                 {errors.title && <HelperText warning>{errors.title}</HelperText>}
-                <HelperText>Keep it short and specific. What was fixed?</HelperText>
+                <HelperText>{T("Keep it short and specific. What was fixed?", "சுருக்கமாகவும் குறிப்பாகவும் இருக்கட்டும். என்ன சரி செய்யப்பட்டது?")}</HelperText>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label required>Category</Label>
+                  <Label required>{T("Category", "வகை")}</Label>
                   <Select value={form.category} onChange={(e) => set("category", e.target.value)}>
-                    <option value="">Select category</option>
+                    <option value="">{T("Select category", "வகையைத் தேர்ந்தெடு")}</option>
                     {CATEGORIES.map((c) => (
-                      <option key={c.slug} value={c.slug}>{c.icon} {c.name_en}</option>
+                      <option key={c.slug} value={c.slug}>{c.icon} {T(c.name_en, c.name_ta)}</option>
                     ))}
                   </Select>
                   {errors.category && <HelperText warning>{errors.category}</HelperText>}
                 </div>
                 <div>
-                  <Label>Related Civic Receipt</Label>
+                  <Label>{T("Related Civic Receipt", "தொடர்புடைய குடிமை ரசீது")}</Label>
                   <Input
                     value={form.civic_receipt_id}
                     onChange={(e) => set("civic_receipt_id", e.target.value)}
-                    placeholder="CR-XXXXX (optional)"
+                    placeholder={T("CR-XXXXX (optional)", "CR-XXXXX (விருப்பத்திற்குரியது)")}
                   />
-                  <HelperText>Link to an existing civic receipt</HelperText>
+                  <HelperText>{T("Link to an existing civic receipt", "ஏற்கனவே உள்ள குடிமை ரசீதுடன் இணைக்கவும்")}</HelperText>
                 </div>
               </div>
               <div>
-                <Label required>Short Description</Label>
+                <Label required>{T("Short Description", "சுருக்கமான விளக்கம்")}</Label>
                 <Textarea
                   value={form.description}
                   onChange={(e) => set("description", e.target.value)}
                   rows={2}
-                  placeholder="Brief summary of what happened and how it was resolved..."
+                  placeholder={T("Brief summary of what happened and how it was resolved...", "என்ன நடந்தது மற்றும் அது எவ்வாறு தீர்க்கப்பட்டது என்பதன் சுருக்கம்...")}
                   maxLength={300}
                 />
                 {errors.description && <HelperText warning>{errors.description}</HelperText>}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>What was fixed?</Label>
+                  <Label>{T("What was fixed?", "என்ன சரி செய்யப்பட்டது?")}</Label>
                   <Textarea
                     value={form.what_was_fixed}
                     onChange={(e) => set("what_was_fixed", e.target.value)}
                     rows={2}
-                    placeholder="Describe the original problem and what changed..."
+                    placeholder={T("Describe the original problem and what changed...", "அசல் பிரச்சனை மற்றும் என்ன மாறியது என்பதை விவரிக்கவும்...")}
                   />
                 </div>
                 <div>
-                  <Label>Why does it matter?</Label>
+                  <Label>{T("Why does it matter?", "இது ஏன் முக்கியம்?")}</Label>
                   <Textarea
                     value={form.why_matters}
                     onChange={(e) => set("why_matters", e.target.value)}
                     rows={2}
-                    placeholder="Impact on the community, safety, health..."
+                    placeholder={T("Impact on the community, safety, health...", "சமூகத்தில் தாக்கம், பாதுகாப்பு, சுகாதாரம்...")}
                   />
                 </div>
               </div>
@@ -322,28 +324,28 @@ export default function ShareWinModal({ onClose }) {
 
           {/* 2. Proof */}
           <SectionCard
-            title="Proof (Before & After)"
+            title={T("Proof (Before & After)", "ஆதாரம் (முன்பு & பின்பு)")}
             icon={<ImageIcon className="w-4 h-4 text-blue-500" />}
           >
             <div className="grid grid-cols-2 gap-4">
               <PhotoUpload
-                label="Before Photo"
+                label={T("Before Photo", "முன்பு புகைப்படம்")}
                 value={form.before_photo}
                 onChange={(v) => set("before_photo", v)}
-                sublabel="Show the original problem"
+                sublabel={T("Show the original problem", "அசல் சிக்கலைக் காட்டு")}
               />
               <PhotoUpload
-                label="After Photo"
+                label={T("After Photo", "பின்பு புகைப்படம்")}
                 value={form.after_photo}
                 onChange={(v) => set("after_photo", v)}
-                sublabel="Show the resolved state"
+                sublabel={T("Show the resolved state", "தீர்க்கப்பட்ட நிலையைக் காட்டு")}
               />
             </div>
             {missingProof && (
               <div className="mt-3 flex items-start gap-2 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/30 rounded-xl p-3">
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
                 <p className="text-[11px] text-amber-700 dark:text-amber-400">
-                  Proof photos help the community trust this win. You can still submit without them, but adding photos increases credibility.
+                  {T("Proof photos help the community trust this win. You can still submit without them, but adding photos increases credibility.", "ஆதாரப் புகைப்படங்கள் சமூகத்தினர் இந்த வெற்றியை நம்ப உதவும். அவை இல்லாமலும் நீங்கள் சமர்ப்பிக்கலாம், ஆனால் புகைப்படங்களைச் சேர்ப்பது நம்பகத்தன்மையை அதிகரிக்கும்.")}
                 </p>
               </div>
             )}
@@ -351,39 +353,39 @@ export default function ShareWinModal({ onClose }) {
 
           {/* 3. Location */}
           <SectionCard
-            title="Location"
+            title={T("Location", "இருப்பிடம்")}
             icon={<MapPin className="w-4 h-4 text-purple-500" />}
           >
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label required>District</Label>
+                  <Label required>{T("District", "மாவட்டம்")}</Label>
                   <Select value={form.district} onChange={(e) => set("district", e.target.value)}>
-                    <option value="">Select district</option>
+                    <option value="">{T("Select district", "மாவட்டத்தைத் தேர்ந்தெடு")}</option>
                     {DISTRICTS.map((d) => (
-                      <option key={d.slug} value={d.slug}>{d.name_en}</option>
+                      <option key={d.slug} value={d.slug}>{T(d.name_en, d.name_ta)}</option>
                     ))}
                   </Select>
                   {errors.district && <HelperText warning>{errors.district}</HelperText>}
                 </div>
                 <div>
-                  <Label>Area / Neighbourhood</Label>
+                  <Label>{T("Area / Neighbourhood", "பகுதி / அக்கம் பக்கம்")}</Label>
                   <Input
                     value={form.area}
                     onChange={(e) => set("area", e.target.value)}
-                    placeholder="e.g. Anna Nagar, Velachery"
+                    placeholder={T("e.g. Anna Nagar, Velachery", "எ.கா. அண்ணா நகர், வேளச்சேரி")}
                   />
                 </div>
               </div>
               <div>
-                <Label>Exact Location / Landmark</Label>
+                <Label>{T("Exact Location / Landmark", "துல்லியமான இருப்பிடம் / அடையாளக் குறி")}</Label>
                 <Input
                   value={form.landmark}
                   onChange={(e) => set("landmark", e.target.value)}
-                  placeholder="e.g. Near bus stand, 5th cross street..."
+                  placeholder={T("e.g. Near bus stand, 5th cross street...", "எ.கா. பேருந்து நிலையம் அருகில், 5வது குறுக்குத் தெரு...")}
                 />
                 {!form.area && !form.landmark && (
-                  <HelperText warning>Including an area or landmark helps others find this win on the map.</HelperText>
+                  <HelperText warning>{T("Including an area or landmark helps others find this win on the map.", "பகுதி அல்லது அடையாளக் குறியைச் சேர்ப்பது மற்றவர்கள் இந்த வெற்றியை வரைபடத்தில் கண்டறிய உதவும்.")}</HelperText>
                 )}
               </div>
             </div>
@@ -391,12 +393,12 @@ export default function ShareWinModal({ onClose }) {
 
           {/* 4. Verification */}
           <SectionCard
-            title="Verification"
+            title={T("Verification", "சரிபார்ப்பு")}
             icon={<Users className="w-4 h-4 text-green-500" />}
           >
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Resolution Date</Label>
+                <Label>{T("Resolution Date", "தீர்க்கப்பட்ட தேதி")}</Label>
                 <Input
                   type="date"
                   value={form.resolution_date}
@@ -404,22 +406,22 @@ export default function ShareWinModal({ onClose }) {
                 />
               </div>
               <div>
-                <Label>Verified by how many citizens?</Label>
+                <Label>{T("Verified by how many citizens?", "எத்தனை குடிமக்களால் சரிபார்க்கப்பட்டது?")}</Label>
                 <Input
                   type="number"
                   min={1}
                   value={form.verified_count}
                   onChange={(e) => set("verified_count", e.target.value)}
-                  placeholder="e.g. 12"
+                  placeholder={T("e.g. 12", "எ.கா. 12")}
                 />
-                <HelperText>Approximate number of citizens who confirmed this</HelperText>
+                <HelperText>{T("Approximate number of citizens who confirmed this", "இதை உறுதிப்படுத்திய குடிமக்களின் தோராயமான எண்ணிக்கை")}</HelperText>
               </div>
             </div>
           </SectionCard>
 
           {/* 5. Visibility */}
           <SectionCard
-            title="Visibility"
+            title={T("Visibility", "காணக்கூடிய தன்மை")}
             icon={<Eye className="w-4 h-4 text-slate-500" />}
           >
             <div className="flex flex-wrap gap-2">
@@ -427,28 +429,28 @@ export default function ShareWinModal({ onClose }) {
                 active={form.visibility === "public"}
                 onClick={() => set("visibility", "public")}
                 icon={<Eye className="w-3.5 h-3.5" />}
-                label="Post publicly"
+                label={T("Post publicly", "பொதுவாகப் பதிவிடு")}
               />
               <ToggleChip
                 active={form.visibility === "anonymous"}
                 onClick={() => set("visibility", "anonymous")}
                 icon={<EyeOff className="w-3.5 h-3.5" />}
-                label="Post anonymously"
+                label={T("Post anonymously", "பெயரிடாமல் பதிவிடு")}
               />
               <ToggleChip
                 active={form.show_name}
                 onClick={() => set("show_name", !form.show_name)}
                 icon={<Users className="w-3.5 h-3.5" />}
-                label={form.show_name ? "Showing my name" : "Name hidden"}
+                label={form.show_name ? T("Showing my name", "என் பெயரைக்காட்டு") : T("Name hidden", "பெயர் மறைக்கப்பட்டுள்ளது")}
               />
             </div>
-            <HelperText>Public posts are visible to everyone. Anonymous posts hide your identity.</HelperText>
+            <HelperText>{T("Public posts are visible to everyone. Anonymous posts hide your identity.", "பொதுப் பதிவுகள் அனைவருக்கும் தெரியும். அநாமதேயப் பதிவுகள் உங்கள் அடையாளத்தை மறைக்கும்.")}</HelperText>
           </SectionCard>
 
           {/* Preview card */}
           {(form.title || form.category) && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-green-200 dark:border-green-800/50 p-4">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Preview</p>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">{T("Preview", "முன்னோட்டம்")}</p>
               <div className="flex items-start gap-3">
                 {form.after_photo?.url && (
                   <img src={form.after_photo.url} alt="preview" className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
@@ -456,20 +458,20 @@ export default function ShareWinModal({ onClose }) {
                 <div className="flex-1 min-w-0">
                   {form.category && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 mb-1">
-                      {CATEGORIES.find((c) => c.slug === form.category)?.icon} {CATEGORIES.find((c) => c.slug === form.category)?.name_en}
+                      {CATEGORIES.find((c) => c.slug === form.category)?.icon} {T(CATEGORIES.find((c) => c.slug === form.category)?.name_en, CATEGORIES.find((c) => c.slug === form.category)?.name_ta)}
                     </span>
                   )}
                   <p className="text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-1">
-                    {form.title || "Win title will appear here"}
+                    {form.title || T("Win title will appear here", "வெற்றி தலைப்பு இங்கே தோன்றும்")}
                   </p>
                   {(form.area || form.district) && (
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                      {[form.area, DISTRICTS.find((d) => d.slug === form.district)?.name_en].filter(Boolean).join(", ")}
+                      {[form.area, T(DISTRICTS.find((d) => d.slug === form.district)?.name_en, DISTRICTS.find((d) => d.slug === form.district)?.name_ta)].filter(Boolean).join(", ")}
                     </p>
                   )}
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 flex-shrink-0">
-                  Resolved
+                  {T("Resolved", "தீர்க்கப்பட்டது")}
                 </span>
               </div>
             </div>
@@ -483,13 +485,13 @@ export default function ShareWinModal({ onClose }) {
             className="flex-1 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             onClick={onClose}
           >
-            Cancel
+            {T("Cancel", "ரத்து செய்")}
           </button>
           <button
             type="button"
             className="border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
           >
-            Save Draft
+            {T("Save Draft", "வரைவைச் சேமி")}
           </button>
           <button
             type="submit"
@@ -497,7 +499,7 @@ export default function ShareWinModal({ onClose }) {
             className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 rounded-xl transition-colors shadow-sm"
           >
             <Trophy className="w-4 h-4" />
-            Share Win
+            {T("Share Win", "வெற்றியைப் பகிர்")}
           </button>
         </div>
       </div>
