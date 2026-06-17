@@ -77,19 +77,19 @@ function PulseCard({ count, icon, label, sub, color, bg, border, to, loading }) 
   const Icon = icon;
   return (
     <Link to={to} className="flex-1 min-w-0">
-      <div className={`flex flex-col items-center justify-center text-center px-3 py-3.5 rounded-2xl border ${bg} ${border} hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full`}>
+      <div className={`flex flex-col items-center justify-center text-center px-2 py-2.5 rounded-xl border ${bg} ${border} hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 h-full`}>
         {loading ? (
-          <Loader2 className="w-5 h-5 text-slate-300 animate-spin mb-1" />
+          <Loader2 className="w-4 h-4 text-slate-300 animate-spin mb-1" />
         ) : (
-          <span className={`text-2xl font-extrabold ${color} leading-none mb-0.5`}>
+          <span className={`text-xl font-extrabold ${color} leading-none mb-0.5`}>
             {count}
           </span>
         )}
-        <div className={`w-7 h-7 rounded-lg ${bg} flex items-center justify-center my-1.5`}>
-          <Icon className={`w-3.5 h-3.5 ${color}`} />
+        <div className={`w-6 h-6 rounded-md ${bg} flex items-center justify-center my-1`}>
+          <Icon className={`w-3 h-3 ${color}`} />
         </div>
-        <p className="text-xs font-bold text-slate-800 dark:text-white leading-snug">{label}</p>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{sub}</p>
+        <p className="text-[11px] font-bold text-slate-800 dark:text-white leading-snug">{label}</p>
+        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{sub}</p>
       </div>
     </Link>
   );
@@ -328,8 +328,8 @@ export default function MyAreaPulse({ allAreas = [] }) {
             </Link>
           </div>
 
-          {/* 5 stat cards — exact reference layout */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+          {/* 5 stat cards */}
+          <div className="grid grid-cols-5 gap-2">
             {STATS.map((stat, i) => (
               <PulseCard key={i} {...stat} loading={loading} />
             ))}
