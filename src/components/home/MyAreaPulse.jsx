@@ -77,7 +77,7 @@ function PulseCard({ count, icon, label, sub, color, bg, border, to, loading }) 
   const Icon = icon;
   return (
     <Link to={to} className="flex-1 min-w-0">
-      <div className={`flex flex-col items-center justify-center text-center px-2 py-2.5 rounded-xl border ${bg} ${border} hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 h-full`}>
+      <div className={`flex flex-col items-center justify-center text-center px-2 py-3 rounded-2xl border ${bg} ${border} hover:shadow-md hover:border-blue-400/40 dark:hover:border-blue-500/40 hover:-translate-y-0.5 transition-all duration-200 h-full`}>
         {loading ? (
           <Loader2 className="w-4 h-4 text-slate-300 animate-spin mb-1" />
         ) : (
@@ -85,11 +85,11 @@ function PulseCard({ count, icon, label, sub, color, bg, border, to, loading }) 
             {count}
           </span>
         )}
-        <div className={`w-6 h-6 rounded-md ${bg} flex items-center justify-center my-1`}>
-          <Icon className={`w-3 h-3 ${color}`} />
+        <div className={`w-7 h-7 rounded-xl ${bg} flex items-center justify-center my-1.5`}>
+          <Icon className={`w-3.5 h-3.5 ${color}`} />
         </div>
-        <p className="text-[11px] font-bold text-slate-800 dark:text-white leading-snug">{label}</p>
-        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{sub}</p>
+        <p className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200 leading-snug">{label}</p>
+        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">{sub}</p>
       </div>
     </Link>
   );
