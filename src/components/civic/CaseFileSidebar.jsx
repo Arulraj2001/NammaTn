@@ -91,7 +91,7 @@ export default function CaseFileSidebar({ post, authorTrustScore, complaintTrack
   const lifecycleStatuses = LIFECYCLE_KEYS.map((key) => CIVIC_STATUSES.find((s) => s.key === key)).filter(Boolean);
 
   return (
-    <div className="sticky top-24 space-y-4">
+    <div className="space-y-4">
       {/* ── Quick Stats ── */}
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
         <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">

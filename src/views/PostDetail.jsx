@@ -259,8 +259,13 @@ export default function PostDetail() {
               {/* Complaint Tracker */}
               <ComplaintTrackerPanel post={post} onRefresh={() => qc.invalidateQueries({ queryKey: ["post", id] })} />
 
-              {/* Receipt Credibility Score — V2 trust signal (mobile only, desktop shows in sidebar) */}
-              <div className="lg:hidden">
+              {/* Civic Case File Stats & Credibility — mobile only */}
+              <div className="lg:hidden space-y-5">
+                <CaseFileSidebar
+                  post={post}
+                  authorTrustScore={authorProfile?.trust_score || 10}
+                  complaintTrackers={complaintTrackers}
+                />
                 <ReceiptCredibilityScore
                   post={post}
                   authorTrustScore={authorProfile?.trust_score || 10}
@@ -387,7 +392,7 @@ export default function PostDetail() {
         </div>
 
         {/* Sidebar — Civic Case File dashboard on desktop */}
-        <div className="hidden lg:block space-y-6">
+        <div className="hidden lg:block space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto pr-1 no-scrollbar h-fit">
           {isCivic ? (
             <>
               <CaseFileSidebar
