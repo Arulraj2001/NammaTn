@@ -24,6 +24,7 @@ const MEGA_GROUPS = [
     ta_title: "குடிமை & சமுதாயம்",
     items: [
       { path: "/community", icon: Users, en: "Community", ta: "சமுதாயம்", desc_en: "Discuss local issues and connect", desc_ta: "உள்ளூர் சிக்கல்களை விவாதிக்கவும்" },
+      { path: "/community/wins", icon: Trophy, en: "Community Wins", ta: "சமூக வெற்றிகள்", desc_en: "Verified civic achievements", desc_ta: "சரிபார்க்கப்பட்ட குடிமை சாதனைகள்" },
       { path: "/trending", icon: TrendingUp, en: "Trending", ta: "டிரெண்டிங்", desc_en: "Most discussed civic issues", desc_ta: "அதிகம் விவாதிக்கப்பட்ட சிக்கல்கள்" },
       { path: "/ask", icon: MessageCircle, en: "Ask Local", ta: "கேளுங்கள்", desc_en: "Get answers from locals", desc_ta: "உள்ளூரினரிடம் பதில் பெறுங்கள்" },
       { path: "/situations", icon: Zap, en: "Live Situations", ta: "நேரடி நிலைமைகள்", desc_en: "Real-time alerts and updates", desc_ta: "நேரடி எச்சரிக்கைகள்" },

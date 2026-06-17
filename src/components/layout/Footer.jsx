@@ -21,6 +21,7 @@ const FOOTER_COLUMNS = [
     ta_title: "சமுதாயம்",
     links: [
       { path: "/community",  en: "Community",  ta: "சமுதாயம்" },
+      { path: "/community/wins", en: "Community Wins", ta: "சமூக வெற்றிகள்" },
       { path: "/ask",        en: "Ask Local",  ta: "கேளுங்கள்" },
       { path: "/scams",      en: "Scams",      ta: "மோசடி" },
       { path: "/awareness",  en: "Awareness",  ta: "விழிப்புணர்வு" },

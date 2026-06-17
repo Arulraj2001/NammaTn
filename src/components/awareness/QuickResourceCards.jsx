@@ -1,6 +1,5 @@
 import React from "react";
 import { Phone, Shield, Globe, FileText } from "lucide-react";
-import { Link } from "react-router-dom";
 
 // Real Tamil Nadu emergency numbers and resources
 const RESOURCES = [
