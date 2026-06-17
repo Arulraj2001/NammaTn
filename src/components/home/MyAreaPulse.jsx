@@ -329,7 +329,7 @@ export default function MyAreaPulse({ allAreas = [] }) {
           </div>
 
           {/* 5 stat cards */}
-          <div className="grid grid-cols-5 gap-2 max-w-3xl mx-auto">
+          <div className="grid grid-cols-5 gap-2 max-w-4xl mx-auto">
             {STATS.map((stat, i) => (
               <PulseCard key={i} {...stat} loading={loading} />
             ))}
