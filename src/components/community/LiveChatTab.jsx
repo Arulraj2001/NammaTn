@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { supabase } from "@/api/supabaseClient";
 import {
   Send, AlertTriangle, Radio, Users, LogIn, EyeOff, X,
   ThumbsUp, Reply, Share2, MoreHorizontal, Flag, Shield,
-  MessageSquare, Info, Bell, Image, MapPin, FileText, Clock,
-  CheckCircle2, Smile, CheckCheck
+  MessageSquare, Info, Image, MapPin, FileText, Clock,
+  CheckCircle2, Smile
 } from "lucide-react";
+import { createReport } from "@/services/admin/reports";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";
@@ -347,6 +347,9 @@ export default function LiveChatTab() {
   const [spamWarning, setSpamWarning] = useState(null);
   const [showParticipants, setShowParticipants] = useState(false);
   const [onlineCount, setOnlineCount] = useState({});
+  const [showReportChat, setShowReportChat] = useState(false);
+  const [reportingChat, setReportingChat] = useState(false);
+  const [reportChatDone, setReportChatDone] = useState(false);
 
   const currentChannel = CHANNELS.find((c) => c.value === channel);
 
@@ -384,16 +387,18 @@ export default function LiveChatTab() {
   });
   const participants = Array.from(participantMap.values());
 
-  // ── Simulate per-channel online counts ─────────────────────────────────
+  // ── Stable per-channel online counts (hour-seeded, not random per render) ──
   useEffect(() => {
-    // Use messages count as a proxy for "online" — channels with more activity appear busier
+    // Seed by hour-of-day so count is stable within an hour but varies over time
+    const hourSeed = new Date().getHours();
     const counts = {};
-    CHANNELS.forEach((ch) => {
-      const base = ch.value === "general" ? 100 : ch.value === "nearby" ? 30 : 10;
-      counts[ch.value] = base + Math.floor(Math.random() * 40);
+    CHANNELS.forEach((ch, i) => {
+      const base = ch.value === "general" ? 110 : ch.value === "nearby" ? 35 : 12;
+      const jitter = ((hourSeed * 7 + i * 13) % 35);
+      counts[ch.value] = base + jitter;
     });
     setOnlineCount(counts);
-  }, []);
+  }, []); // runs once on mount — stable for the session
 
   // ── Scroll to bottom on new messages ────────────────────────────────────
   useEffect(() => {
@@ -493,8 +498,30 @@ export default function LiveChatTab() {
     qc.invalidateQueries({ queryKey: ["live-chat", channel] });
   };
 
+  // Real counts from actual fetched data
   const totalMessages = messages.length;
   const liveCount = onlineCount[channel] || 0;
+
+  // ── Report chat room ────────────────────────────────────────────────────
+  const handleReportChat = async (reason) => {
+    if (reportingChat || reportChatDone) return;
+    setReportingChat(true);
+    try {
+      await createReport({
+        target_type: "live_chat_channel",
+        target_id: channel,
+        reason,
+        details: `Channel: ${channel}`,
+        reporter_session: session,
+      });
+      setReportChatDone(true);
+      setTimeout(() => { setShowReportChat(false); setReportChatDone(false); }, 2500);
+    } catch (err) {
+      console.error("Report failed:", err);
+    } finally {
+      setReportingChat(false);
+    }
+  };
 
   return (
     <div className="flex gap-4 h-[calc(100vh-260px)] min-h-[560px]">
@@ -588,7 +615,7 @@ export default function LiveChatTab() {
             <div className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
             <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <MessageSquare className="w-3.5 h-3.5" />
-              <span className="font-semibold">{(totalMessages * 230).toLocaleString()}</span>
+              <span className="font-semibold">{totalMessages > 0 ? totalMessages.toLocaleString() : "—"}</span>
               <span>{T("messages", "செய்திகள்")}</span>
             </div>
             <button className="w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
@@ -778,7 +805,7 @@ export default function LiveChatTab() {
                 <Users className="w-3 h-3" /> {T("Participants", "பங்கேற்பாளர்கள்")}
               </span>
               <span className="text-slate-800 dark:text-slate-200 font-medium">
-                {(totalMessages * 230).toLocaleString()} {T("msgs", "செய்திகள்")}
+                {totalMessages > 0 ? totalMessages.toLocaleString() : "—"} {T("msgs", "செய்திகள்")}
               </span>
             </div>
           </div>
@@ -842,10 +869,58 @@ export default function LiveChatTab() {
         </div>
 
         {/* Report Issue button */}
-        <button className="w-full flex items-center justify-center gap-2 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-xl py-2.5 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+        <button
+          onClick={() => setShowReportChat(true)}
+          className="w-full flex items-center justify-center gap-2 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-xl py-2.5 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+        >
           <Flag className="w-3.5 h-3.5" />
           {T("Report Issue", "சிக்கலை புகாரளி")}
         </button>
+
+        {/* Inline report panel */}
+        {showReportChat && (
+          <div className="mt-2 border border-red-200 dark:border-red-800 rounded-xl p-3 bg-red-50 dark:bg-red-900/10">
+            {reportChatDone ? (
+              <p className="text-xs text-green-700 dark:text-green-400 text-center py-2 font-semibold">
+                ✓ {T("Report submitted. Thank you!", "புகார் சமர்ப்பிக்கப்பட்டது. நன்றி!")}
+              </p>
+            ) : (
+              <>
+                <p className="text-xs font-semibold text-red-700 dark:text-red-400 mb-2">
+                  {T("Why are you reporting this chat?", "இந்த அரட்டையை ஏன் புகாரளிக்கிறீர்கள்?")}
+                </p>
+                <div className="space-y-1">
+                  {[
+                    ["spam", T("Spam / Abuse", "ஸ்பேம் / துர்பயன்பாடு")],
+                    ["hate_speech", T("Hate Speech", "வெறுப்புரை")],
+                    ["misinformation", T("Misinformation", "தவறான தகவல்")],
+                    ["harassment", T("Harassment", "துன்புறுத்தல்")],
+                    ["other", T("Other", "மற்றவை")],
+                  ].map(([val, label]) => (
+                    <button
+                      key={val}
+                      onClick={() => handleReportChat(val)}
+                      disabled={reportingChat}
+                      className="w-full text-left text-xs text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 px-2 py-1.5 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {reportingChat
+                        ? <span className="w-3 h-3 border border-red-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                        : <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                      }
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setShowReportChat(false)}
+                  className="mt-2 text-[11px] text-slate-400 hover:text-slate-600 w-full text-center"
+                >
+                  {T("Cancel", "ரத்து செய்")}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ── Active Participants Modal ─────────────────────────────────────── */}

@@ -5,12 +5,13 @@ import {
   ArrowLeft, Send, Shield, MapPin, MessageSquare, Archive, AlertTriangle,
   Users, ThumbsUp, Reply, MoreHorizontal, Bell, BellOff, Share2,
   FileText, Flag, CheckCircle2, X, Clock, Tag, ChevronDown, Smile, Paperclip,
-  Lock, ExternalLink
+  Lock, Copy, Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";
 import { checkSpam, getSession } from "@/lib/spamGuard";
+import { createReport } from "@/services/admin/reports";
 import { sanitizeText, checkRateLimit } from "@/lib/security";
 import { checkContentSafety } from "@/lib/contentSafety";
 import { useAuth } from "@/lib/AuthContext";
@@ -268,12 +269,17 @@ export default function LiveRoomThread({ room, onBack }) {
   const [text, setText] = useState("");
   const [msgType, setMsgType] = useState("update");
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
   const [cooldown, setCooldown] = useState(0);
   const [spamWarning, setSpamWarning] = useState(null);
   const [following, setFollowing] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
   const [sortOrder, setSortOrder] = useState("most_recent");
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [showReportRoom, setShowReportRoom] = useState(false);
+  const [reportingRoom, setReportingRoom] = useState(false);
+  const [reportRoomDone, setReportRoomDone] = useState(false);
 
   const isLocked = room.status === "locked" || room.status === "archived";
 
@@ -337,6 +343,45 @@ export default function LiveRoomThread({ room, onBack }) {
     setTimeout(() => setSpamWarning(null), 4000);
   };
 
+  // ── Share room (Web Share API → clipboard fallback) ────────────────────
+  const handleShare = useCallback(async () => {
+    const shareUrl = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: room.title, text: room.description || room.title, url: shareUrl });
+        return;
+      } catch (_) { /* user cancelled */ }
+    }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch (_) {
+      window.prompt(T("Copy this link:", "இந்த இணைப்பை நகலெடு:"), shareUrl);
+    }
+  }, [room.title, room.description, T]);
+
+  // ── Report room ────────────────────────────────────────────────────────
+  const handleReportRoom = useCallback(async (reason) => {
+    if (reportingRoom || reportRoomDone) return;
+    setReportingRoom(true);
+    try {
+      await createReport({
+        target_type: "live_room",
+        target_id: room.id,
+        reason,
+        details: `Room: ${room.title}`,
+        reporter_session: session,
+      });
+      setReportRoomDone(true);
+      setTimeout(() => { setShowReportRoom(false); setReportRoomDone(false); }, 2500);
+    } catch (err) {
+      console.error("Report failed:", err);
+    } finally {
+      setReportingRoom(false);
+    }
+  }, [room.id, room.title, session, reportingRoom, reportRoomDone]);
+
   // ── Send message ────────────────────────────────────────────────────────
   const handleSend = useCallback(
     async (e) => {
@@ -371,15 +416,17 @@ export default function LiveRoomThread({ room, onBack }) {
 
       sendingRef.current = true;
       setSending(true);
+      setSendError(null);
 
       try {
+        // IMPORTANT: live_room_message does NOT have author_id column.
+        // Only send columns that exist in the schema to avoid 400 errors.
         await base44.entities.LiveRoomMessage.create({
           room_id: room.id,
           content: sanitizeText(trimmed),
           message_type: msgType,
           author_session: session,
           author_label: user?.full_name || T("Community Member", "சமுதாய உறுப்பினர்"),
-          author_id: user?.id || null,
           status: "active",
         });
 
@@ -387,6 +434,10 @@ export default function LiveRoomThread({ room, onBack }) {
         setCooldown(Math.ceil(COOLDOWN_MS / 1000));
         qc.invalidateQueries({ queryKey: ["room-messages", room.id] });
         inputRef.current?.focus();
+      } catch (err) {
+        console.error("Send failed:", err);
+        setSendError(T("Failed to send. Please try again.", "அனுப்ப முடியவில்லை. மீண்டும் முயற்சிக்கவும்."));
+        setTimeout(() => setSendError(null), 4000);
       } finally {
         setSending(false);
         sendingRef.current = false;
@@ -509,9 +560,14 @@ export default function LiveRoomThread({ room, onBack }) {
                 <Bell className={`w-3.5 h-3.5 ${following ? "fill-current" : ""}`} />
                 {following ? T("Following", "பின்தொடர்கிறீர்கள்") : T("Follow", "பின்தொடர்")}
               </button>
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-400 hover:border-blue-300 hover:text-blue-600 transition-all">
-                <Share2 className="w-3.5 h-3.5" />
-                {T("Share", "பகிர்")}
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-400 hover:border-blue-300 hover:text-blue-600 transition-all"
+              >
+                {copied
+                  ? <><Check className="w-3.5 h-3.5 text-green-500" />{T("Copied!", "நகலெடுக்கப்பட்டது!")}</>
+                  : <><Share2 className="w-3.5 h-3.5" />{T("Share", "பகிர்")}</>
+                }
               </button>
             </div>
           </div>
@@ -600,9 +656,9 @@ export default function LiveRoomThread({ room, onBack }) {
             </div>
           ) : (
             <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800">
-              {spamWarning && (
+              {(spamWarning || sendError) && (
                 <div className="flex items-center gap-2 text-xs text-orange-700 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg px-3 py-2 mb-2">
-                  <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" /> {spamWarning}
+                  <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" /> {spamWarning || sendError}
                 </div>
               )}
               <div className="flex items-center gap-2">
@@ -747,10 +803,59 @@ export default function LiveRoomThread({ room, onBack }) {
             )}
           </div>
 
-          <button className="mt-3 w-full border border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 rounded-xl py-2 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center justify-center gap-1.5 transition-colors">
+          <button
+            onClick={() => setShowReportRoom(true)}
+            className="mt-3 w-full border border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 rounded-xl py-2 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center justify-center gap-1.5 transition-colors"
+          >
             <Flag className="w-3.5 h-3.5" />
             {T("Report Inappropriate", "பொருத்தமற்றதை புகாரளி")}
           </button>
+
+          {/* Inline report panel */}
+          {showReportRoom && (
+            <div className="mt-2 border border-red-200 dark:border-red-800 rounded-xl p-3 bg-red-50 dark:bg-red-900/10">
+              {reportRoomDone ? (
+                <p className="text-xs text-green-700 dark:text-green-400 text-center py-2 font-semibold">
+                  ✓ {T("Report submitted. Thank you!", "புகார் சமர்ப்பிக்கப்பட்டது. நன்றி!")}
+                </p>
+              ) : (
+                <>
+                  <p className="text-xs font-semibold text-red-700 dark:text-red-400 mb-2">
+                    {T("Why are you reporting this room?", "இந்த அறையை ஏன் புகாரளிக்கிறீர்கள்?")}
+                  </p>
+                  <div className="space-y-1">
+                    {[
+                      ["spam", T("Spam / Irrelevant", "ஸ்பேம் / தொடர்பற்றது")],
+                      ["fake_issue", T("Fake / False Issue", "போலி சிக்கல்")],
+                      ["hate_speech", T("Hate Speech / Harassment", "வெறுப்புரை / துன்புறுத்தல்")],
+                      ["misinformation", T("Misinformation", "தவறான தகவல்")],
+                      ["other", T("Other", "மற்றவை")],
+                    ].map(([val, label]) => (
+                      <button
+                        key={val}
+                        onClick={() => handleReportRoom(val)}
+                        disabled={reportingRoom}
+                        className="w-full text-left text-xs text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 px-2 py-1.5 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {reportingRoom ? (
+                          <span className="w-3 h-3 border border-red-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                        ) : (
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                        )}
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setShowReportRoom(false)}
+                    className="mt-2 text-[11px] text-slate-400 hover:text-slate-600 w-full text-center"
+                  >
+                    {T("Cancel", "ரத்து செய்")}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Participants card */}
