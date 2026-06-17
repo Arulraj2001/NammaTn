@@ -61,6 +61,7 @@ const Stay = lazy(() => import('@/pages/Stay'));
 const AdminStay = lazy(() => import('@/pages/admin/AdminStay'));
 const AdminUsers = lazy(() => import('@/pages/admin/AdminUsers'));
 const AdminCivicReceipts = lazy(() => import('@/pages/admin/AdminCivicReceipts'));
+const AdminAwareness = lazy(() => import('@/views/admin/AdminAwareness'));
 const LocalListings = lazy(() => import('@/pages/LocalListings'));
 const CivicLeaderboard = lazy(() => import('@/pages/CivicLeaderboard'));
 const RWADashboard = lazy(() => import('@/pages/RWADashboard'));
@@ -153,6 +154,7 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="stay" element={<AdminStay />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="civic" element={<AdminCivicReceipts />} />
+        <Route path="awareness" element={<AdminAwareness />} />
         <Route path="monetization" element={<AdminMonetization />} />
       </Route>
 

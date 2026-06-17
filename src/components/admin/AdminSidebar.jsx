@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, MessageSquare, Tag, MapPin,
-  Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Users, Mail, Home, UserCheck
+  Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Users, Mail, Home, UserCheck, BookOpen
 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,7 @@ const NAV = [
   { label: "Contact Messages", icon: Mail, path: "/admin/contacts" },
   { label: "Stay & Rooms", icon: Home, path: "/admin/stay" },
   { label: "Civic Receipts", icon: FileText, path: "/admin/civic", badge: "NEW" },
+  { label: "Citizen Awareness", icon: BookOpen, path: "/admin/awareness", badge: "NEW" },
   { label: "Monetization", icon: Megaphone, path: "/admin/monetization", badge: "NEW" },
   { label: "Users", icon: UserCheck, path: "/admin/users" },
 ];
