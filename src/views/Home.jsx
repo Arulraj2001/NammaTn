@@ -19,6 +19,7 @@ import { getActiveScams } from "@/services/scamAlerts";
 import { getActiveEmergencies } from "@/services/emergencyPosts";
 import { getAreas } from "@/services/areas";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
+import MyAreaPulse from "@/components/home/MyAreaPulse";
 
 // Dynamically import map – avoids SSR issues
 const InteractiveHomeMap = dynamic(
@@ -323,6 +324,11 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ════════════════════════════════════════════════════
+          MY AREA PULSE — real-time stats for selected area
+      ════════════════════════════════════════════════════ */}
+      <MyAreaPulse allAreas={areas} />
 
       {/* ════════════════════════════════════════════════════
           QUICK ACTIONS
