@@ -1,6 +1,9 @@
+'use client';
+
 import React, { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
-import { Users, MessageSquare, MapPin, Zap, Radio } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { Users, MessageSquare, MapPin, Zap, Radio, Activity } from "lucide-react";
 import TnPulseTab from "@/components/community/TnPulseTab";
 import CommunityHallTab from "@/components/community/CommunityHallTab";
 import AreaDiscussionsTab from "@/components/community/AreaDiscussionsTab";
@@ -20,27 +23,35 @@ export default function Community() {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
+  usePageMeta({
+    title: "Community — TN Pulse | NammaTN",
+    description: "Real-time pulse of Tamil Nadu. Live situations, scam alerts, emergency help, community questions and wins, all in one place.",
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Page hero banner */}
-      <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white px-4 py-8">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex-1">
-            <div className="inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-semibold px-3 py-1 rounded-full mb-3">
-              👥 {T("Open Community", "திறந்த சமுதாயம்")}
-            </div>
-            <h1 className="text-2xl font-extrabold mb-1">{T("Community", "சமுதாயம்")}</h1>
-            <p className="text-purple-100 text-sm max-w-lg">
-              {T("Discuss local issues, share updates, appreciate progress, and connect with people from your area.", "உள்ளூர் சிக்கல்களை விவாதித்து, புதுப்பிப்புகளை பகிர்ந்து உங்கள் பகுதி மக்களுடன் இணைக்கவும்.")}
+      {/* ── Hero banner — matches reference: purple/indigo with heartbeat icon ── */}
+      <div className="bg-gradient-to-br from-indigo-700 via-purple-700 to-violet-800 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex items-center gap-5">
+          {/* Animated pulse icon */}
+          <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/20 shadow-lg">
+            <Activity className="w-7 h-7 text-white animate-pulse" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight mb-1">
+              {T("TN Pulse", "TN நாடி")}
+            </h1>
+            <p className="text-indigo-200 text-sm font-medium">
+              {T("Real-time pulse of your state", "உங்கள் மாநிலத்தின் நேரடி நாடி")}
             </p>
           </div>
         </div>
       </div>
-      {/* Sticky header + tab bar */}
+
+      {/* ── Sticky tab bar ── */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-16 z-30">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="pt-3 pb-0">
-            <div className="flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
             {TABS.map((tab) => {
               const Icon = tab.icon;
               const active = activeTab === tab.id;
@@ -48,7 +59,7 @@ export default function Community() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors flex-shrink-0 ${
+                  className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors flex-shrink-0 ${
                     active
                       ? "border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400"
                       : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
@@ -65,13 +76,12 @@ export default function Community() {
                 </button>
               );
             })}
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Tab Content */}
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      {/* ── Tab content ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === "pulse" && <TnPulseTab />}
         {activeTab === "hall" && <CommunityHallTab />}
         {activeTab === "area" && <AreaDiscussionsTab />}
