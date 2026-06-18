@@ -1,229 +1,62 @@
 /**
- * SEO utilities — dynamic meta tag management, structured data,
- * webmaster verifications, hreflang, analytics, and advanced meta tags.
- *
- * Settings are loaded from the `site_settings` DB table via `getSettingsMap()`.
- * Call `applySEOSettings(settingsMap)` once on app boot to inject all DB-driven tags.
+ * SEO utilities — dynamic meta tag management, structured data (JSON-LD).
+ * All helpers are idempotent: safe to call on every page mount.
  */
 
+const SITE_URL = 'https://nammatn.in';
+
 const DEFAULT = {
-  title: "NammaTN – Tamil Nadu Civic & Community Platform",
+  title: 'NammaTN – Tamil Nadu Civic & Community Platform',
   description:
     "NammaTN is Tamil Nadu's public civic platform — report local issues, track resolutions, join live community discussions, access government schemes, and celebrate community wins.",
-  image: "https://nammatn.in/og-image.png",
-  url: typeof window !== "undefined" ? window.location.origin : "https://nammatn.in",
-  siteName: "NammaTN",
-  locale: "en_IN",
+  image: `${SITE_URL}/og-image.png`,
+  url: typeof window !== 'undefined' ? window.location.origin : SITE_URL,
+  siteName: 'NammaTN',
+  locale: 'en_IN',
 };
 
-// ─── Low-level DOM helpers ───────────────────────────────────────────────────
+// ── Internal helpers ─────────────────────────────────────────────────────────
 
-function setMeta(property, content, attr = "name") {
+function setMeta(property, content, attr = 'name') {
   if (!content) return;
   let el = document.querySelector(`meta[${attr}="${property}"]`);
   if (!el) {
-    el = document.createElement("meta");
+    el = document.createElement('meta');
     el.setAttribute(attr, property);
-    el.setAttribute("data-manual", "true");
     document.head.appendChild(el);
   }
-  el.setAttribute("content", content);
-}
-
-function removeMeta(property, attr = "name") {
-  const el = document.querySelector(`meta[${attr}="${property}"]`);
-  if (el) {
-    el.setAttribute("content", "");
-  }
+  el.setAttribute('content', content);
 }
 
 function setLink(rel, href, extra = {}) {
   if (!href) return;
-  // For hreflang we need multiple <link> tags — use data attr as key
-  const key = extra.hreflang ? `${rel}-${extra.hreflang}` : rel;
-  let el = document.querySelector(`link[rel="${rel}"]${extra.hreflang ? `[hreflang="${extra.hreflang}"]` : ""}`);
+  let el = document.querySelector(`link[rel="${rel}"]`);
   if (!el) {
-    el = document.createElement("link");
-    el.setAttribute("rel", rel);
-    if (extra.hreflang) el.setAttribute("hreflang", extra.hreflang);
-    el.setAttribute("data-manual", "true");
+    el = document.createElement('link');
+    el.setAttribute('rel', rel);
     document.head.appendChild(el);
   }
-  el.setAttribute("href", href);
+  el.setAttribute('href', href);
+  Object.entries(extra).forEach(([k, v]) => el.setAttribute(k, v));
 }
 
-function injectScript(id, content, type = "application/ld+json") {
-  const existing = document.getElementById(id);
-  if (existing) {
-    existing.text = content;
-    return;
-  }
-  const script = document.createElement("script");
-  script.type = type;
+function injectScript(id, schema) {
+  removeStructuredData(id);
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
   script.id = id;
-  script.text = content;
-  script.setAttribute("data-manual", "true");
+  script.text = JSON.stringify(schema, null, 0);
   document.head.appendChild(script);
 }
 
-// ─── Webmaster verification meta map ────────────────────────────────────────
-
-const WEBMASTER_META = [
-  { settingKey: "seo_google_verification",   metaName: "google-site-verification" },
-  { settingKey: "seo_bing_verification",      metaName: "msvalidate.01" },
-  { settingKey: "seo_yandex_verification",    metaName: "yandex-verification" },
-  { settingKey: "seo_baidu_verification",     metaName: "baidu-site-verification" },
-  { settingKey: "seo_pinterest_verification", metaName: "p:domain_verify" },
-  { settingKey: "seo_norton_verification",    metaName: "norton-safeweb-site-verification" },
-  { settingKey: "seo_alexa_verification",     metaName: "alexaVerifyID" },
-];
-
-// ─── Hreflang locale map ─────────────────────────────────────────────────────
-
-const HREFLANG_LOCALES = [
-  { code: "en-IN",     key: "hreflang_en_in" },
-  { code: "ta-IN",     key: "hreflang_ta_in" },
-  { code: "hi-IN",     key: "hreflang_hi_in" },
-  { code: "x-default", key: "hreflang_default" },
-];
-
-// ─── Analytics injectors ─────────────────────────────────────────────────────
-
-function injectGA4(measurementId) {
-  if (!measurementId || document.getElementById("tn-ga4-script")) return;
-  const s = document.createElement("script");
-  s.id = "tn-ga4-script";
-  s.async = true;
-  s.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-  document.head.appendChild(s);
-  const init = document.createElement("script");
-  init.id = "tn-ga4-init";
-  init.text = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${measurementId}');`;
-  document.head.appendChild(init);
+function removeStructuredData(id) {
+  document.getElementById(id)?.remove();
 }
 
-function injectGTM(containerId) {
-  if (!containerId || document.getElementById("tn-gtm-head")) return;
-  const s = document.createElement("script");
-  s.id = "tn-gtm-head";
-  s.text = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${containerId}');`;
-  document.head.appendChild(s);
-}
-
-function injectClarity(projectId) {
-  if (!projectId || document.getElementById("tn-clarity")) return;
-  const s = document.createElement("script");
-  s.id = "tn-clarity";
-  s.text = `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${projectId}");`;
-  document.head.appendChild(s);
-}
-
-function injectFBPixel(pixelId) {
-  if (!pixelId || document.getElementById("tn-fbpixel")) return;
-  const s = document.createElement("script");
-  s.id = "tn-fbpixel";
-  s.text = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${pixelId}');fbq('track','PageView');`;
-  document.head.appendChild(s);
-}
-
-// ─── Organization JSON-LD builder ────────────────────────────────────────────
-
-function buildOrgSchema(s) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: s.sd_org_name || DEFAULT.siteName,
-    url: s.sd_org_url || DEFAULT.url,
-    ...(s.sd_org_logo ? { logo: { "@type": "ImageObject", url: s.sd_org_logo } } : {}),
-    ...(s.sd_org_email ? { email: s.sd_org_email } : {}),
-    ...(s.sd_org_phone ? { contactPoint: { "@type": "ContactPoint", telephone: s.sd_org_phone, contactType: "customer service" } } : {}),
-    ...(s.sd_social_profiles
-      ? { sameAs: s.sd_social_profiles.split("\n").map((u) => u.trim()).filter(Boolean) }
-      : {}),
-  };
-  return schema;
-}
-
-function buildWebsiteSchema(s) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: s.sd_org_name || DEFAULT.siteName,
-    url: s.sd_org_url || DEFAULT.url,
-    ...(s.sd_searchbox_enabled === "true"
-      ? {
-          potentialAction: {
-            "@type": "SearchAction",
-            target: { "@type": "EntryPoint", urlTemplate: `${s.sd_org_url || DEFAULT.url}/search?q={search_term_string}` },
-            "query-input": "required name=search_term_string",
-          },
-        }
-      : {}),
-  };
-  return schema;
-}
-
-// ─── Main: Apply all DB-driven SEO settings ───────────────────────────────────
+// ── Primary setPageMeta ──────────────────────────────────────────────────────
 
 /**
- * Call this once on app boot with the settingsMap from `getSettingsMap()`.
- * Injects webmaster verification tags, hreflang links, analytics scripts,
- * advanced meta tags, and structured data JSON-LD.
- */
-export function applySEOSettings(s = {}) {
-  if (typeof document === "undefined") return;
-
-  // 1. Webmaster verification meta tags
-  WEBMASTER_META.forEach(({ settingKey, metaName }) => {
-    if (s[settingKey]) setMeta(metaName, s[settingKey]);
-    else removeMeta(metaName);
-  });
-
-  // 2. Hreflang alternate link tags
-  HREFLANG_LOCALES.forEach(({ code, key }) => {
-    if (s[key]) setLink("alternate", s[key], { hreflang: code });
-  });
-
-  // 3. Advanced meta tags
-  if (s.seo_meta_keywords)   setMeta("keywords", s.seo_meta_keywords);
-  if (s.seo_author)          setMeta("author", s.seo_author);
-  if (s.seo_copyright)       setMeta("copyright", s.seo_copyright);
-  if (s.seo_language)        setMeta("language", s.seo_language);
-  if (s.seo_geo_region)      setMeta("geo.region", s.seo_geo_region);
-  if (s.seo_geo_placename)   setMeta("geo.placename", s.seo_geo_placename);
-  if (s.seo_geo_position)    setMeta("geo.position", s.seo_geo_position);
-  if (s.seo_robots_default)  setMeta("robots", s.seo_robots_default);
-  if (s.seo_theme_color)     setMeta("theme-color", s.seo_theme_color);
-
-  // OG extras
-  if (s.seo_og_locale_alt)   setMeta("og:locale:alternate", s.seo_og_locale_alt, "property");
-  if (s.seo_fb_app_id)       setMeta("fb:app_id", s.seo_fb_app_id, "property");
-
-  // Twitter extras
-  if (s.seo_twitter_site)    setMeta("twitter:site", s.seo_twitter_site);
-  if (s.seo_twitter_creator) setMeta("twitter:creator", s.seo_twitter_creator);
-
-  // Manifest / PWA
-  if (s.seo_manifest_url)    setLink("manifest", s.seo_manifest_url);
-  if (s.seo_apple_touch_icon) setLink("apple-touch-icon", s.seo_apple_touch_icon);
-
-  // 4. Analytics scripts
-  if (s.seo_ga4_id)       injectGA4(s.seo_ga4_id);
-  if (s.seo_gtm_id)       injectGTM(s.seo_gtm_id);
-  if (s.seo_clarity_id)   injectClarity(s.seo_clarity_id);
-  if (s.seo_fb_pixel_id)  injectFBPixel(s.seo_fb_pixel_id);
-
-  // 5. Organization JSON-LD
-  if (s.sd_org_name || s.sd_org_url) {
-    injectScript("tn-ld-org", JSON.stringify(buildOrgSchema(s)));
-    injectScript("tn-ld-website", JSON.stringify(buildWebsiteSchema(s)));
-  }
-}
-
-// ─── Per-page meta (called on every route mount) ──────────────────────────────
-
-/**
- * Set page metadata.
+ * Set all page-level SEO metadata.
  * Call on every route/page mount.
  */
 export function setPageMeta({
@@ -231,143 +64,173 @@ export function setPageMeta({
   description,
   image,
   url,
-  type = "website",
+  type = 'website',
   canonical,
   noindex = false,
 } = {}) {
-  const t = title ? `${title} | NammaTN` : DEFAULT.title;
-  const d = description || DEFAULT.description;
-  const img = image || DEFAULT.image;
-  const u = url || (typeof window !== "undefined" ? window.location.href : DEFAULT.url);
+  const t   = title       ? `${title} | NammaTN` : DEFAULT.title;
+  const d   = description || DEFAULT.description;
+  const img = image       || DEFAULT.image;
+  const u   = url         || (typeof window !== 'undefined' ? window.location.href : DEFAULT.url);
   const canon = canonical || u;
 
+  // Title
   document.title = t;
 
   // Standard
-  setMeta("description", d);
-  setMeta("robots", noindex ? "noindex, nofollow" : "index, follow");
+  setMeta('description', d);
+  setMeta('robots', noindex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+  setMeta('author', 'NammaTN');
+  setMeta('theme-color', '#4f46e5');
 
   // Open Graph
-  setMeta("og:type", type, "property");
-  setMeta("og:title", t, "property");
-  setMeta("og:description", d, "property");
-  setMeta("og:image", img, "property");
-  setMeta("og:url", u, "property");
-  setMeta("og:site_name", DEFAULT.siteName, "property");
-  setMeta("og:locale", DEFAULT.locale, "property");
+  setMeta('og:type',        type,           'property');
+  setMeta('og:title',       t,              'property');
+  setMeta('og:description', d,              'property');
+  setMeta('og:image',       img,            'property');
+  setMeta('og:image:width', '1200',         'property');
+  setMeta('og:image:height','630',          'property');
+  setMeta('og:url',         u,              'property');
+  setMeta('og:site_name',   DEFAULT.siteName,'property');
+  setMeta('og:locale',      DEFAULT.locale, 'property');
 
   // Twitter
-  setMeta("twitter:card", "summary_large_image");
-  setMeta("twitter:title", t);
-  setMeta("twitter:description", d);
-  setMeta("twitter:image", img);
+  setMeta('twitter:card',        'summary_large_image');
+  setMeta('twitter:site',        '@NammaTN');
+  setMeta('twitter:creator',     '@NammaTN');
+  setMeta('twitter:title',       t);
+  setMeta('twitter:description', d);
+  setMeta('twitter:image',       img);
 
   // Canonical
-  setLink("canonical", canon);
+  setLink('canonical', canon);
 }
 
-// ─── Structured data helpers ─────────────────────────────────────────────────
+// ── Structured Data Helpers ──────────────────────────────────────────────────
 
 /**
- * Generate JSON-LD structured data for a post.
+ * NewsArticle / post detail page structured data.
  */
 export function injectPostStructuredData(post) {
-  const id = `tn-ld-post-${post.id}`;
-
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    headline: post.title_en,
-    description: post.content_en?.substring(0, 200),
+  if (!post) return;
+  injectScript(`tn-ld-post-${post.id}`, {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: post.title_en || post.title,
+    description: (post.content_en || post.content || '').substring(0, 200),
     datePublished: post.created_date,
     dateModified: post.updated_date || post.created_date,
+    image: post.media_urls?.[0] || DEFAULT.image,
+    url: `${SITE_URL}/post/${post.id}`,
     author: {
-      "@type": post.is_anonymous ? "Organization" : "Person",
-      name: post.is_anonymous ? "Anonymous" : post.author_name || "NammaTN Community",
+      '@type': post.is_anonymous ? 'Organization' : 'Person',
+      name: post.is_anonymous ? 'Anonymous Citizen' : (post.author_name || 'NammaTN Community'),
     },
     publisher: {
-      "@type": "Organization",
-      name: "NammaTN",
-      url: DEFAULT.url,
+      '@type': 'Organization',
+      name: 'NammaTN',
+      url: SITE_URL,
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
     },
-    ...(post.media_urls?.[0] ? { image: post.media_urls[0] } : {}),
-  };
-
-  injectScript(id, JSON.stringify(schema));
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/post/${post.id}` },
+    inLanguage: 'en-IN',
+    isAccessibleForFree: true,
+    keywords: [post.category, post.district_name, post.area_name, 'Tamil Nadu civic'].filter(Boolean).join(', '),
+  });
 }
 
 /**
- * Generate JSON-LD for district/category list pages.
- */
-export function injectBreadcrumbStructuredData(items) {
-  const id = "tn-ld-breadcrumb";
-
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: item.name,
-      item: item.url,
-    })),
-  };
-
-  injectScript(id, JSON.stringify(schema));
-}
-
-/**
- * Generate FAQ JSON-LD for awareness/help pages.
+ * FAQPage structured data — appears as expandable FAQs in Google results.
+ * @param {Array<{question: string, answer: string}>} faqs
  */
 export function injectFAQStructuredData(faqs) {
-  const id = "tn-ld-faq";
-  if (!faqs?.length) {
-    const existing = document.getElementById(id);
-    if (existing) existing.text = "";
-    return;
-  }
-
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
+  if (!faqs?.length) return;
+  injectScript('tn-ld-faq', {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(({ question, answer }) => ({
+      '@type': 'Question',
+      name: question,
+      acceptedAnswer: { '@type': 'Answer', text: answer },
     })),
-  };
-
-  injectScript(id, JSON.stringify(schema));
+  });
 }
 
 /**
- * Generate LocalBusiness JSON-LD for listings.
+ * BreadcrumbList structured data.
+ * @param {Array<{name: string, url: string}>} items
  */
-export function injectLocalBusinessStructuredData(listing) {
-  const id = `tn-ld-biz-${listing.id}`;
-
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: listing.business_name || listing.title,
-    description: listing.description,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: listing.area_name || listing.district_name,
-      addressRegion: "Tamil Nadu",
-      addressCountry: "IN",
-    },
-    ...(listing.phone ? { telephone: listing.phone } : {}),
-    ...(listing.website ? { url: listing.website } : {}),
-    ...(listing.category ? { "@type": "LocalBusiness", category: listing.category } : {}),
-  };
-
-  injectScript(id, JSON.stringify(schema));
+export function injectBreadcrumbStructuredData(items) {
+  if (!items?.length) return;
+  injectScript('tn-ld-breadcrumb', {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      name: item.name,
+      item: item.url.startsWith('http') ? item.url : `${SITE_URL}${item.url}`,
+    })),
+  });
 }
 
-/** Clean up all structured data scripts on unmount */
-export function cleanupStructuredData() {
-  document.querySelectorAll('script[id^="tn-ld-"]').forEach((el) => {
-    el.text = "";
+/**
+ * LocalGovernment / district structured data.
+ */
+export function injectDistrictStructuredData(district) {
+  if (!district) return;
+  injectScript(`tn-ld-district-${district.slug}`, {
+    '@context': 'https://schema.org',
+    '@type': 'AdministrativeArea',
+    name: district.name_en || district.name,
+    description: district.description_en || `Civic issues and community discussions for ${district.name_en}, Tamil Nadu.`,
+    url: `${SITE_URL}/district/${district.slug}`,
+    containedInPlace: {
+      '@type': 'State',
+      name: 'Tamil Nadu',
+      containedInPlace: { '@type': 'Country', name: 'India' },
+    },
   });
+}
+
+/**
+ * GovernmentService structured data for awareness/scheme pages.
+ */
+export function injectSchemeStructuredData(scheme) {
+  if (!scheme) return;
+  injectScript(`tn-ld-scheme-${scheme.id}`, {
+    '@context': 'https://schema.org',
+    '@type': 'GovernmentService',
+    name: scheme.name_en || scheme.name,
+    description: scheme.description_en || scheme.description,
+    provider: {
+      '@type': 'GovernmentOrganization',
+      name: scheme.department_en || 'Government of Tamil Nadu',
+    },
+    areaServed: { '@type': 'State', name: 'Tamil Nadu' },
+    url: scheme.apply_url || scheme.website_url || SITE_URL,
+  });
+}
+
+/**
+ * WebPage structured data (default for generic pages).
+ */
+export function injectWebPageStructuredData({ name, description, url, breadcrumbs }) {
+  injectScript('tn-ld-webpage', {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name,
+    description,
+    url: url || (typeof window !== 'undefined' ? window.location.href : SITE_URL),
+    inLanguage: 'en-IN',
+    isPartOf: { '@type': 'WebSite', name: 'NammaTN', url: SITE_URL },
+    ...(breadcrumbs ? { breadcrumb: breadcrumbs } : {}),
+  });
+}
+
+/**
+ * Clean up all injected structured data scripts on page unmount.
+ */
+export function cleanupStructuredData() {
+  document.querySelectorAll('script[id^="tn-ld-"]').forEach((el) => el.remove());
 }

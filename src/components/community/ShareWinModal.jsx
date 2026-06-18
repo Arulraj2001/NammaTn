@@ -3,11 +3,15 @@ import { Link } from "react-router-dom";
 import {
   X, CheckCircle2, Upload, MapPin, Users,
   ImageIcon, AlertTriangle, ChevronDown,
-  Eye, EyeOff, Shield, Trophy, ArrowRight
+  Eye, EyeOff, Shield, Trophy, ArrowRight, Loader2
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { CATEGORIES } from "@/lib/categories";
 import { DISTRICTS } from "@/lib/districts";
+import { supabase } from "@/api/supabaseClient";
+import { useAuth } from "@/lib/AuthContext";
+import { useAuthModal } from "@/context/AuthModalContext";
+import { generateCivicReceiptId, makeTimelineEvent } from "@/lib/civicReceipt";
 
 /* ─── Reusable field components ────────────────────────────── */
 function Label({ children, required }) {
@@ -139,6 +143,8 @@ function ToggleChip({ active, onClick, icon, label }) {
 export default function ShareWinModal({ onClose }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
+  const { isAuthenticated, user } = useAuth();
+  const { requireAuth } = useAuthModal();
 
   const [form, setForm] = useState({
     title: "",
@@ -159,6 +165,8 @@ export default function ShareWinModal({ onClose }) {
   });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
@@ -172,10 +180,147 @@ export default function ShareWinModal({ onClose }) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const uploadPhoto = async (photoObj) => {
+    if (!photoObj || !photoObj.file) return null;
+    const file = photoObj.file;
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
+    const { data, error } = await supabase.storage
+      .from('media')
+      .upload(filePath, file);
+    if (error) throw error;
+    const { data: { publicUrl } } = supabase.storage
+      .from('media')
+      .getPublicUrl(filePath);
+    let file_url = publicUrl;
+    if (file_url && !file_url.includes('/storage/v1/object/public/')) {
+      file_url = file_url.replace('/storage/v1/object/media/', '/storage/v1/object/public/media/');
+    }
+    return file_url;
+  };
+
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!isAuthenticated) {
+      requireAuth(() => {}, T("Sign in to share a win", "வெற்றியைப் பகிர உள்நுழையுங்கள்"));
+      return;
+    }
     if (!validate()) return;
-    setSubmitted(true);
+    setLoading(true);
+    setSubmitError("");
+
+    try {
+      // 1. Upload photos if they exist
+      const beforeUrl = await uploadPhoto(form.before_photo);
+      const afterUrl = await uploadPhoto(form.after_photo);
+
+      const beforePhotosArray = beforeUrl ? [beforeUrl] : [];
+      const afterPhotosArray = afterUrl ? [afterUrl] : [];
+
+      // Format description by concatenating what was fixed and why it matters
+      let fullDescription = form.description.trim();
+      if (form.what_was_fixed.trim()) {
+        fullDescription += `\n\n**What was fixed:**\n${form.what_was_fixed.trim()}`;
+      }
+      if (form.why_matters.trim()) {
+        fullDescription += `\n\n**Why it matters:**\n${form.why_matters.trim()}`;
+      }
+
+      if (form.civic_receipt_id.trim()) {
+        // Case A: Link to an existing civic receipt
+        const receiptId = form.civic_receipt_id.trim();
+        const { data: existingPost, error: findError } = await supabase
+          .from("post")
+          .select("*")
+          .eq("civic_receipt_id", receiptId)
+          .maybeSingle();
+
+        if (findError) throw findError;
+        if (!existingPost) {
+          setErrors((errs) => ({ ...errs, civic_receipt_id: T("No civic receipt found with this ID", "இந்த ஐடியுடன் கூடிய குடிமை ரசீது எதுவும் இல்லை") }));
+          setLoading(false);
+          return;
+        }
+
+        // Merge photos and update status
+        const existingBefore = Array.isArray(existingPost.before_photos) ? existingPost.before_photos : [];
+        const updatedBefore = beforeUrl ? [...existingBefore, beforeUrl] : existingBefore;
+
+        const existingAfter = Array.isArray(existingPost.claimed_fixed_photos) ? existingPost.claimed_fixed_photos : [];
+        const updatedAfter = afterUrl ? [...existingAfter, afterUrl] : existingAfter;
+
+        const existingTimeline = Array.isArray(existingPost.timeline_events) ? existingPost.timeline_events : [];
+        const newEvent = makeTimelineEvent(
+          T("Citizen shared resolution proof", "குடிமகன் தீர்வுக்கான ஆதாரத்தைப் பகிர்ந்துள்ளார்"),
+          form.show_name ? user?.full_name : T("Citizen", "குடிமகன்"),
+          "resolution_claimed",
+          "user"
+        );
+
+        const { error: updateError } = await supabase
+          .from("post")
+          .update({
+            before_photos: updatedBefore,
+            claimed_fixed_photos: updatedAfter,
+            civic_status: "claimed_fixed",
+            timeline_events: [...existingTimeline, newEvent],
+            updated_date: new Date().toISOString(),
+          })
+          .eq("id", existingPost.id);
+
+        if (updateError) throw updateError;
+      } else {
+        // Case B: Create new civic win from scratch
+        const newReceiptId = generateCivicReceiptId();
+        const districtObj = DISTRICTS.find(d => d.slug === form.district);
+        const catObj = CATEGORIES.find(c => c.slug === form.category);
+
+        const timeline = [
+          makeTimelineEvent(
+            T("Civic Win shared by citizen", "குடிமகனால் குடிமை வெற்றி பகிரப்பட்டது"),
+            form.show_name ? user?.full_name : T("Citizen", "குடிமகன்"),
+            "created",
+            "user"
+          ),
+        ];
+
+        const { error: insertError } = await supabase
+          .from("post")
+          .insert({
+            post_type: "complaint",
+            civic_receipt_id: newReceiptId,
+            civic_status: "claimed_fixed",
+            moderation_status: "pending",
+            status: "active",
+            title_en: form.title.trim(),
+            content_en: fullDescription,
+            category_slug: form.category,
+            category_name: catObj?.name_en || "",
+            district_slug: form.district,
+            district_name: districtObj?.name_en || "",
+            area_name: form.area.trim() || "",
+            location_text: form.landmark.trim() || "",
+            before_photos: beforePhotosArray,
+            claimed_fixed_photos: afterPhotosArray,
+            verification_count: parseInt(form.verified_count) || 1,
+            is_anonymous: form.visibility === "anonymous",
+            author_name: form.show_name ? user?.full_name : "Citizen",
+            created_by_id: user?.id,
+            created_by: user?.full_name || user?.email,
+            timeline_events: timeline,
+          });
+
+        if (insertError) throw insertError;
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Failed to submit community win:", err);
+      setSubmitError(T("Something went wrong. Please try again.", "ஏதோ தவறு நடந்துவிட்டது. மீண்டும் முயற்சிக்கவும்."));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const missingProof = !form.before_photo && !form.after_photo;
@@ -478,28 +623,47 @@ export default function ShareWinModal({ onClose }) {
           )}
         </form>
 
+        {submitError && (
+          <div className="mx-5 mb-2 flex items-start gap-2 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-800/30 rounded-xl p-3 text-xs text-red-600">
+            <AlertTriangle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+            <p>{submitError}</p>
+          </div>
+        )}
+
         {/* Footer actions */}
         <div className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 px-5 py-4 flex items-center gap-3 flex-shrink-0">
           <button
             type="button"
             className="flex-1 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             onClick={onClose}
+            disabled={loading}
           >
             {T("Cancel", "ரத்து செய்")}
           </button>
           <button
             type="button"
-            className="border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+            disabled={loading}
+            className="border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors disabled:opacity-50"
           >
             {T("Save Draft", "வரைவைச் சேமி")}
           </button>
           <button
             type="submit"
             onClick={handleSubmit}
-            className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 rounded-xl transition-colors shadow-sm"
+            disabled={loading}
+            className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 rounded-xl transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <Trophy className="w-4 h-4" />
-            {T("Share Win", "வெற்றியைப் பகிர்")}
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                {T("Submitting...", "சமர்ப்பிக்கிறது...")}
+              </>
+            ) : (
+              <>
+                <Trophy className="w-4 h-4" />
+                {T("Share Win", "வெற்றியைப் பகிர்")}
+              </>
+            )}
           </button>
         </div>
       </div>

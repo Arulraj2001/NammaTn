@@ -51,9 +51,12 @@ const FOOTER_COLUMNS = [
     en_title: "Help",
     ta_title: "உதவி",
     links: [
-      { path: "/help",    en: "Help",    ta: "உதவி" },
-      { path: "/support", en: "Support", ta: "ஆதரவு" },
-      { path: "/contact", en: "Contact", ta: "தொடர்பு" },
+      { path: "/about",          en: "About NammaTN",  ta: "NammaTN பற்றி" },
+      { path: "/help",           en: "Help",           ta: "உதவி" },
+      { path: "/support",        en: "Support",        ta: "ஆதரவு" },
+      { path: "/contact",        en: "Contact",        ta: "தொடர்பு" },
+      { path: "/privacy-policy", en: "Privacy Policy", ta: "தனியுரிமை கொள்கை" },
+      { path: "/terms",          en: "Terms of Service",ta: "ழெவிடுகள்" },
     ],
   },
 ];
@@ -166,11 +169,29 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── Bottom copyright bar ── */}
-        <div className="border-t border-slate-200 dark:border-slate-800 mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-2">
+        {/* ── Bottom copyright + legal bar ── */}
+        <div className="border-t border-slate-200 dark:border-slate-800 mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-500 dark:text-slate-500">
             © 2026 NammaTN. {T("All rights reserved.", "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.")}
           </p>
+          {/* Legal links — required to be visible for AdSense approval */}
+          <div className="flex items-center gap-3 flex-wrap justify-center">
+            <Link to="/privacy-policy" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              {T("Privacy Policy", "தனியுரிமை")}
+            </Link>
+            <span className="text-slate-300 dark:text-slate-600">|</span>
+            <Link to="/terms" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              {T("Terms", "ழெவிடுகள்")}
+            </Link>
+            <span className="text-slate-300 dark:text-slate-600">|</span>
+            <Link to="/about" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              {T("About", "பற்றி")}
+            </Link>
+            <span className="text-slate-300 dark:text-slate-600">|</span>
+            <a href="mailto:advertise@nammatn.in" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              {T("Advertise", "விளம்பரம்")}
+            </a>
+          </div>
           <p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
             {T("Made with", "அன்போடு செய்யப்பட்டது")}
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />

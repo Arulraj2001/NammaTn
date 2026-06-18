@@ -387,6 +387,67 @@ function RoomMessagesPanel() {
   );
 }
 
+function DiscussionRepliesList({ discussionId }) {
+  const qc = useQueryClient();
+  const { toast } = useToast();
+
+  const { data: replies = [], isLoading } = useQuery({
+    queryKey: ["admin-discussion-replies", discussionId],
+    queryFn: () => base44.entities.DiscussionReply.filter({ discussion_id: discussionId }, "-created_date", 100),
+    enabled: !!discussionId,
+  });
+
+  const handleDelete = async (replyId) => {
+    await base44.entities.DiscussionReply.delete(replyId);
+    qc.invalidateQueries({ queryKey: ["admin-discussion-replies", discussionId] });
+    qc.invalidateQueries({ queryKey: ["admin-discussions"] });
+    toast({ description: "Reply deleted." });
+  };
+
+  const handleUpdateStatus = async (replyId, status) => {
+    await base44.entities.DiscussionReply.update(replyId, { status });
+    qc.invalidateQueries({ queryKey: ["admin-discussion-replies", discussionId] });
+    toast({ description: `Reply status updated to ${status}.` });
+  };
+
+  if (isLoading) {
+    return <div className="text-xs text-slate-400 animate-pulse py-2">Loading replies...</div>;
+  }
+
+  return (
+    <div className="space-y-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+      <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">Replies ({replies.length})</h4>
+      {replies.length === 0 ? (
+        <p className="text-xs text-slate-400 italic py-2">No replies yet.</p>
+      ) : (
+        <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
+          {replies.map((reply) => (
+            <div key={reply.id} className="bg-slate-50 dark:bg-slate-900 rounded-xl p-2.5 border border-slate-100 dark:border-slate-800 flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap text-[10px] text-slate-400">
+                  <span className="font-bold text-slate-600 dark:text-slate-300">{reply.author_label || "Community Member"}</span>
+                  <span className="bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded">{reply.reply_type}</span>
+                  <span className={`px-1.5 py-0.5 rounded font-semibold ${reply.status === "active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{reply.status}</span>
+                  <span>{reply.created_date ? formatDistanceToNow(new Date(reply.created_date), { addSuffix: true }) : ""}</span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 break-words">{reply.content}</p>
+              </div>
+              <div className="flex gap-1 flex-shrink-0">
+                {reply.status === "active" ? (
+                  <button onClick={() => handleUpdateStatus(reply.id, "removed")} className="p-1 text-red-500 hover:bg-red-50 rounded" title="Hide/Remove"><EyeOff className="w-3.5 h-3.5" /></button>
+                ) : (
+                  <button onClick={() => handleUpdateStatus(reply.id, "active")} className="p-1 text-green-600 hover:bg-green-50 rounded" title="Restore"><CheckCircle className="w-3.5 h-3.5" /></button>
+                )}
+                <button onClick={() => handleDelete(reply.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Delete Permanently"><Trash2 className="w-3.5 h-3.5" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Discussions Panel ────────────────────────────────────────
 function DiscussionsPanel() {
   const qc = useQueryClient();
@@ -482,6 +543,7 @@ function DiscussionsPanel() {
                 ))}
               </div>
               <p className="text-xs text-slate-400">By: {viewItem.author_label} · {viewItem.created_date ? format(new Date(viewItem.created_date), "dd MMM yyyy") : ""}</p>
+              <DiscussionRepliesList discussionId={viewItem.id} />
             </div>
           )}
         </DialogContent>

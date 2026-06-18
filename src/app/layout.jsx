@@ -2,6 +2,9 @@ import React from 'react';
 import Providers from './providers';
 import '@/index.css';
 
+// AdSense pub ID is injected at runtime by the admin panel via window.__ADSENSE_PUB_ID__
+// See: AdminMonetization.jsx → AdSense Settings tab
+
 const SITE_URL = 'https://nammatn.in';
 const SITE_NAME = 'NammaTN';
 
@@ -100,6 +103,28 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://hzgrzcablefquddisqkf.supabase.co" />
+        {/* AdSense preconnect — reduces ad load latency */}
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+        <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
+        <link rel="dns-prefetch" href="//www.googletagservices.com" />
+        {/* Google AdSense script — publisher ID loaded from admin settings at runtime */}
+        <script
+          id="adsense-init"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                var pubId = typeof window !== 'undefined' && window.__ADSENSE_PUB_ID__;
+                if (pubId && pubId !== 'ca-pub-PLACEHOLDER') {
+                  var s = document.createElement('script');
+                  s.async = true;
+                  s.crossOrigin = 'anonymous';
+                  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + pubId;
+                  document.head.appendChild(s);
+                }
+              })();
+            `,
+          }}
+        />
         {/* Organization structured data */}
         <script
           type="application/ld+json"

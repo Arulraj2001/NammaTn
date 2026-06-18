@@ -212,6 +212,18 @@ export const getPostsByType = async (postType, limit = 20) => {
   return data.filter(isPubliclyVisible).slice(0, limit);
 };
 
+export const getCommunityWins = async (limit = 100) => {
+  const { data, error } = await supabase
+    .from("post")
+    .select("*")
+    .eq("status", "active")
+    .in("civic_status", ["citizen_verified_fixed", "resolved"])
+    .order("created_date", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return data.filter(isPubliclyVisible);
+};
+
 export const updatePostReactions = async (id, upvotes, downvotes) => {
   const { data, error } = await supabase
     .from("post")

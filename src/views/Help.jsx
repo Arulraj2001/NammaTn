@@ -1,7 +1,7 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { HeartHandshake, Plus, X, Loader2 } from "lucide-react";
-import PageHero from "@/components/common/PageHero";
 import { useLanguage } from "@/context/LanguageContext";
 import { base44 } from "@/api/base44Client";
 import { createEmergency } from "@/services/emergencyPosts";
@@ -111,24 +111,34 @@ export default function Help() {
 
   return (
     <div>
-      <PageHero
-        icon="🤝"
-        title_en="Help Center"
-        title_ta="உதவி மையம்"
-        desc_en="Community emergency help requests, missing persons, and assistance across Tamil Nadu. NammaTN helps you find and share help publicly."
-        desc_ta="தமிழ்நாடு முழுவதும் சமுதாய அவசர உதவி கோரிக்கைகள், காணாமல்போனவர்கள் மற்றும் உதவி. NammaTN பொதுவாக உதவி கண்டுபிடிக்கவும் பகிரவும் உதவுகிறது."
-        cta_en="Post Help Request"
-        cta_ta="உதவி கோரிக்கையை பதிவிடு"
-        secondary_en="Create Civic Receipt"
-        secondary_ta="குடிமை ரசீது உருவாக்கு"
-        secondaryPath="/create"
-        bgFrom="from-red-700"
-        bgTo="to-rose-800"
-        lang={lang}
-        badge_en="Community Help"
-        badge_ta="சமுதாய உதவி"
-      />
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      {/* ── Hero banner — matches Community style ── */}
+      <div className="bg-gradient-to-br from-red-700 to-rose-800 text-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex items-start gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/20 shadow-lg mt-1">
+              <span className="text-3xl">🤝</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">
+                {T("Community Help", "சமுதாய உதவி")}
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-1.5">
+                {T("Help Center", "உதவி மையம்")}
+              </h1>
+              <p className="text-red-100 text-xs sm:text-sm leading-relaxed max-w-xl mb-3">
+                {T(
+                  "Community emergency help requests, missing persons, and assistance across Tamil Nadu. NammaTN helps you find and share help publicly.",
+                  "தமிழ்நாடு முழுவதும் சமுதாய அவசர உதவி கோரிக்கைகள், காணாமல்போனவர்கள் மற்றும் உதவி. NammaTN பொதுவாக உதவி கண்டுபிடிக்கவும் பகிரவும் உதவுகிறது."
+                )}
+              </p>
+              <Link to="/create" className="inline-flex items-center text-xs font-bold border border-white/40 hover:bg-white/10 text-white px-3.5 py-1.5 rounded-xl transition-colors">
+                {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு")}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center justify-between mb-6">
         <div />
         <button onClick={handleToggleForm}

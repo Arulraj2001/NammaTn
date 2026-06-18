@@ -1,6 +1,6 @@
 import React from "react";
 import { Flame, TrendingUp, MapPin, Tag } from "lucide-react";
-import PageHero from "@/components/common/PageHero";
+
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import TrendingTabs from "@/components/discovery/TrendingTabs";
@@ -28,24 +28,38 @@ export default function Trending() {
 
   return (
     <div>
-      <PageHero
-        icon="🔥"
-        title_en="Trending Now"
-        title_ta="இப்போது டிரெண்டிங்"
-        desc_en="See what people are discussing most across Tamil Nadu, including alerts, complaints, Civic Receipts, and community updates."
-        desc_ta="தமிழ்நாடு முழுவதும் மக்கள் அதிகம் விவாதிக்கும் எச்சரிக்கைகள், புகார்கள், குடிமை ரசீதுகள் மற்றும் சமுதாய புதுப்பிப்புகளை காணுங்கள்."
-        cta_en="View Trending Issues"
-        cta_ta="டிரெண்டிங் சிக்கல்களை பார்"
-        ctaPath="/explore"
-        secondary_en="Create Civic Receipt"
-        secondary_ta="குடிமை ரசீது உருவாக்கு"
-        secondaryPath="/create"
-        bgFrom="from-orange-600"
-        bgTo="to-red-700"
-        lang={lang}
-        badge_en="Most Discussed"
-        badge_ta="அதிகம் விவாதிக்கப்பட்டவை"
-      />
+      {/* ── Hero banner — matches Community style ── */}
+      <div className="bg-gradient-to-br from-orange-600 to-red-700 text-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex items-start gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/20 shadow-lg mt-1">
+              <span className="text-3xl">🔥</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">
+                {T("Most Discussed", "அதிகம் விவாதிக்கப்பட்டவை")}
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-1.5">
+                {T("Trending Now", "இப்போது டிரெண்டிங்")}
+              </h1>
+              <p className="text-orange-100 text-xs sm:text-sm leading-relaxed max-w-xl mb-3">
+                {T(
+                  "See what people are discussing most across Tamil Nadu, including alerts, complaints, Civic Receipts, and community updates.",
+                  "தமிழ்நாடு முழுவதும் மக்கள் அதிகம் விவாதிக்கும் எச்சரிக்கைகள், புகார்கள், குடிமை ரசீதுகள் மற்றும் சமுதாய புதுப்பிப்புகளை காணுங்கள்."
+                )}
+              </p>
+              <div className="flex flex-wrap gap-2 items-center">
+                <Link to="/explore" className="inline-flex items-center text-xs font-bold bg-white text-orange-700 hover:bg-orange-50 px-3.5 py-1.5 rounded-xl transition-colors">
+                  {T("View Trending Issues", "டிரெண்டிங் சிக்கல்களை பார்")}
+                </Link>
+                <Link to="/create" className="inline-flex items-center text-xs font-bold border border-white/40 hover:bg-white/10 text-white px-3.5 py-1.5 rounded-xl transition-colors">
+                  {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு")}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -7,26 +7,75 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  eslint: {
-    ignoreDuringBuilds: true,
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+
+  // ── Performance: image optimisation ──────────────────────────────────────
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'hzgrzcablefquddisqkf.supabase.co' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: 'nammatn.in' },
+    ],
+    minimumCacheTTL: 3600,
   },
-  typescript: {
-    ignoreBuildErrors: true,
+
+  // ── Security + SEO HTTP headers ──────────────────────────────────────────
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          // Security
+          { key: 'X-Frame-Options',        value: 'SAMEORIGIN' },
+          { key: 'X-Content-Type-Options',  value: 'nosniff' },
+          { key: 'Referrer-Policy',         value: 'strict-origin-when-cross-origin' },
+          { key: 'X-DNS-Prefetch-Control',  value: 'on' },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(self)',
+          },
+          // Cache static assets aggressively
+          { key: 'Vary', value: 'Accept-Encoding' },
+        ],
+      },
+      // Long cache for static assets
+      {
+        source: '/(.*)\\.(ico|png|jpg|jpeg|gif|svg|webp|avif|woff|woff2|ttf|eot)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      // Short cache for HTML (for SEO freshness)
+      {
+        source: '/(.*)\\.html',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
+    ];
   },
+
+  // ── Redirects for SEO (old URLs → new) ────────────────────────────────────
+  async redirects() {
+    return [
+      { source: '/privacy', destination: '/privacy-policy', permanent: true },
+      { source: '/tos',     destination: '/terms',           permanent: true },
+    ];
+  },
+
+  // ── Package optimisation ──────────────────────────────────────────────────
   experimental: {
     optimizePackageImports: [
-      'lucide-react',
-      'framer-motion',
-      'recharts',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
-      '@radix-ui/react-popover',
-      '@radix-ui/react-tabs',
-      '@radix-ui/react-tooltip',
-      'date-fns',
-      'lodash',
+      'lucide-react', 'framer-motion', 'recharts',
+      '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover', '@radix-ui/react-tabs',
+      '@radix-ui/react-tooltip', 'date-fns', 'lodash',
     ],
   },
+
   webpack: (config) => {
     config.resolve.alias['react-router-dom'] = path.resolve(__dirname, 'src/lib/router-compat.jsx');
     return config;

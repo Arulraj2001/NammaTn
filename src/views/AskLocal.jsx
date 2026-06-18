@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { HelpCircle, Plus, X, TrendingUp, Clock, CheckCircle } from "lucide-react";
-import PageHero from "@/components/common/PageHero";
+
 import { useLanguage } from "@/context/LanguageContext";
 import { base44 } from "@/api/base44Client";
 import { getQuestions, createQuestion } from "@/services/questions";
@@ -85,20 +85,30 @@ export default function AskLocal() {
 
   return (
     <div>
-      <PageHero
-        icon="❓"
-        title_en="Ask Local"
-        title_ta="உள்ளூரினரிடம் கேளுங்கள்"
-        desc_en="Ask area-based questions and get answers from people who know the locality. Community knowledge, not official advice."
-        desc_ta="பகுதி அடிப்படையிலான கேள்விகளை கேட்டு உள்ளூர் மக்களிடம் பதில் பெறுங்கள். சமுதாய அறிவு, அதிகாரப்பூர்வ ஆலோசனை அல்ல."
-        cta_en="Ask a Question"
-        cta_ta="ஒரு கேள்வி கேளுங்கள்"
-        bgFrom="from-purple-700"
-        bgTo="to-indigo-800"
-        lang={lang}
-        badge_en="Community Q&A"
-        badge_ta="சமுதாய கேள்வி & பதில்"
-      />
+      {/* ── Hero banner — matches Community style ── */}
+      <div className="bg-gradient-to-br from-purple-700 to-indigo-800 text-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex items-start gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/20 shadow-lg mt-1">
+              <span className="text-3xl">❓</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">
+                {T("Community Q&A", "சமுதாய கேள்வி & பதில்")}
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-1.5">
+                {T("Ask Local", "உள்ளூரினரிடம் கேளுங்கள்")}
+              </h1>
+              <p className="text-purple-100 text-xs sm:text-sm leading-relaxed max-w-xl">
+                {T(
+                  "Ask area-based questions and get answers from people who know the locality. Community knowledge, not official advice.",
+                  "பகுதி அடிப்படையிலான கேள்விகளை கேட்டு உள்ளூர் மக்களிடம் பதில் பெறுங்கள். சமுதாய அறிவு, அதிகாரப்பூர்வ ஆலோசனை அல்ல."
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center justify-between mb-6">
         <div />

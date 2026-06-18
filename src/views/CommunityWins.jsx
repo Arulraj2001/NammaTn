@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { getActivePosts } from "@/services/posts";
+import { getActivePosts, getCommunityWins } from "@/services/posts";
 import { getAreas } from "@/services/areas";
 import { CATEGORIES } from "@/lib/categories";
 import { DISTRICTS } from "@/lib/districts";
@@ -111,7 +111,10 @@ function WinCard({ post }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const cat = getCatInfo(post.category_slug, lang);
-  const hasImage = !!post.image_url;
+
+  const beforePhoto = post.before_photos?.[0] || post.media_urls?.[0];
+  const afterPhoto = post.claimed_fixed_photos?.[0] || post.final_resolution_photos?.[0];
+  const hasImage = !!beforePhoto || !!afterPhoto;
 
   const dObj = DISTRICTS.find((d) => d.slug === post.district_slug || d.name_en === post.district_name);
   const districtDisplay = dObj ? T(dObj.name_en, dObj.name_ta) : (post.district_name || T("Tamil Nadu", "தமிழ்நாடு"));
@@ -125,7 +128,7 @@ function WinCard({ post }) {
             <>
               <div className="relative w-1/2 bg-slate-100 dark:bg-slate-800">
                 <img
-                  src={post.image_url}
+                  src={beforePhoto || afterPhoto}
                   alt="Before"
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => { e.target.style.display = "none"; }}
@@ -136,7 +139,7 @@ function WinCard({ post }) {
               </div>
               <div className="relative w-1/2 bg-slate-100 dark:bg-slate-800">
                 <img
-                  src={post.after_image_url || post.image_url}
+                  src={afterPhoto || beforePhoto}
                   alt="After"
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => { e.target.style.display = "none"; }}
@@ -476,7 +479,7 @@ export default function CommunityWins() {
 
   const { data: rawPosts = [], isLoading } = useQuery({
     queryKey: ["community-wins-posts"],
-    queryFn: () => getActivePosts(200),
+    queryFn: () => getCommunityWins(200),
     staleTime: 60_000,
   });
 

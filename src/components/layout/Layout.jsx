@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import MobileNav from "./MobileNav";
+import CookieConsent from "@/components/common/CookieConsent";
 
 export default function Layout({ theme, toggleTheme }) {
   return (
@@ -25,6 +26,8 @@ export default function Layout({ theme, toggleTheme }) {
       <Suspense fallback={<div className="h-14 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 md:hidden" />}>
         <MobileNav />
       </Suspense>
+      {/* Cookie consent — GDPR/India DPDP compliant, required for AdSense */}
+      <CookieConsent />
     </div>
   );
 }

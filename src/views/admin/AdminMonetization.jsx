@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { getCategoryMeta } from "@/lib/listingCategories";
 
-const TABS = ["listings", "sponsors", "rwa"];
+const TABS = ["listings", "sponsors", "rwa", "adsense"];
 
 const PLAN_COLORS = {
   free: "text-slate-500 bg-slate-100",
@@ -39,6 +39,39 @@ export default function AdminMonetization() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [adminNotes, setAdminNotes] = useState({});
+
+  // ── AdSense settings (persisted in localStorage) ───────────────────────────────
+  const [adsense, setAdsense] = useState(() => {
+    try {
+      const saved = localStorage.getItem('nammatn_adsense_config');
+      return saved ? JSON.parse(saved) : {
+        pub_id: '',
+        slot_banner: '',
+        slot_sidebar: '',
+        slot_infeed: '',
+        enabled: false,
+      };
+    } catch { return { pub_id: '', slot_banner: '', slot_sidebar: '', slot_infeed: '', enabled: false }; }
+  });
+  const [adsenseSaved, setAdsenseSaved] = useState(false);
+
+  const saveAdsense = () => {
+    try {
+      localStorage.setItem('nammatn_adsense_config', JSON.stringify(adsense));
+      // Update ads.txt with real pub ID
+      window.__ADSENSE_PUB_ID__ = adsense.pub_id || 'ca-pub-PLACEHOLDER';
+      window.__ADSENSE_SLOTS__ = {
+        banner:  adsense.slot_banner,
+        sidebar: adsense.slot_sidebar,
+        infeed:  adsense.slot_infeed,
+      };
+      setAdsenseSaved(true);
+      toast({ description: '✅ AdSense settings saved! Publisher ID is now active.' });
+      setTimeout(() => setAdsenseSaved(false), 3000);
+    } catch (e) {
+      toast({ description: '❌ Failed to save AdSense settings.' });
+    }
+  };
 
   // ── Data ────────────────────────────────────────────────────────────────────
   const { data: listings = [], isLoading: loadL } = useQuery({
@@ -168,9 +201,10 @@ export default function AdminMonetization() {
       {/* Tabs */}
       <div className="flex gap-2 mb-5 border-b border-slate-200 dark:border-slate-700 pb-3 flex-wrap">
         {[
-          { key: "listings", label: "Local Listings", icon: BadgeCheck, count: stats.listings.pending },
-          { key: "sponsors", label: "Sponsors / CSR", icon: Leaf, count: stats.sponsors.pending },
-          { key: "rwa", label: "RWA Groups", icon: Building2, count: stats.rwa.pending },
+          { key: "listings", label: "Local Listings",  icon: BadgeCheck, count: stats.listings.pending },
+          { key: "sponsors", label: "Sponsors / CSR",  icon: Leaf,       count: stats.sponsors.pending },
+          { key: "rwa",      label: "RWA Groups",       icon: Building2,  count: stats.rwa.pending },
+          { key: "adsense",  label: "AdSense Settings", icon: Star,       count: null },
         ].map(({ key, label, icon: Icon, count }) => (
           <button key={key} onClick={() => { setActiveTab(key); setSearch(""); setStatusFilter("all"); }}
             className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeTab === key ? "bg-blue-600 text-white" : "border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"}`}>
@@ -440,6 +474,154 @@ export default function AdminMonetization() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ══ AdSense Settings Tab ══════════════════════════════════════════════ */}
+      {activeTab === 'adsense' && (
+        <div className="max-w-2xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-2xl p-6 text-white">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                <Star className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold">Google AdSense Settings</h2>
+                <p className="text-blue-100 text-sm">Configure your AdSense publisher ID and ad unit slots</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Status card */}
+          <div className={`rounded-2xl border-2 p-4 flex items-start gap-3 ${adsense.pub_id && adsense.pub_id !== 'ca-pub-PLACEHOLDER' ? 'border-green-200 bg-green-50 dark:bg-green-900/10 dark:border-green-800' : 'border-amber-200 bg-amber-50 dark:bg-amber-900/10 dark:border-amber-800'}`}>
+            {adsense.pub_id && adsense.pub_id !== 'ca-pub-PLACEHOLDER'
+              ? <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              : <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            }
+            <div>
+              <p className={`text-sm font-semibold ${adsense.pub_id && adsense.pub_id !== 'ca-pub-PLACEHOLDER' ? 'text-green-800 dark:text-green-300' : 'text-amber-800 dark:text-amber-300'}`}>
+                {adsense.pub_id && adsense.pub_id !== 'ca-pub-PLACEHOLDER'
+                  ? `✅ AdSense active: ${adsense.pub_id}`
+                  : '⚠️ AdSense not configured — ads will not show'
+                }
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {adsense.pub_id && adsense.pub_id !== 'ca-pub-PLACEHOLDER'
+                  ? 'Your ads are live. Make sure ads.txt is updated on your server.'
+                  : 'Enter your Publisher ID below to activate Google AdSense ads.'
+                }
+              </p>
+            </div>
+          </div>
+
+          {/* Publisher ID */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide">Publisher ID</h3>
+
+            <div>
+              <label className="text-xs font-medium text-slate-600 dark:text-slate-400 block mb-1.5">
+                Google AdSense Publisher ID <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={adsense.pub_id}
+                onChange={e => setAdsense(a => ({ ...a, pub_id: e.target.value.trim() }))}
+                placeholder="ca-pub-XXXXXXXXXXXXXXXX"
+                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              />
+              <p className="text-[11px] text-slate-400 mt-1.5">
+                Get this from <a href="https://adsense.google.com/start" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">adsense.google.com</a> → Account → Account info → Publisher ID
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={adsense.enabled}
+                  onChange={e => setAdsense(a => ({ ...a, enabled: e.target.checked }))}
+                  className="w-4 h-4 rounded accent-blue-600"
+                />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Enable ads across the site</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Ad Slot IDs */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide">Ad Unit Slot IDs</h3>
+            <p className="text-xs text-slate-500">Create these ad units in AdSense → Ads → Ad units. Copy the slot ID (number only).</p>
+
+            {[
+              { key: 'slot_banner',  label: 'Banner Ad (728×90 / Responsive)', desc: 'Shown at top of pages between sections', placeholder: '1234567890' },
+              { key: 'slot_sidebar', label: 'Sidebar Ad (300×250 Rectangle)',   desc: 'Shown in right sidebars on desktop',    placeholder: '0987654321' },
+              { key: 'slot_infeed',  label: 'In-Feed Ad (Native)',              desc: 'Shown between post cards in feeds',     placeholder: '1122334455' },
+            ].map(({ key, label, desc, placeholder }) => (
+              <div key={key}>
+                <label className="text-xs font-medium text-slate-600 dark:text-slate-400 block mb-1.5">{label}</label>
+                <input
+                  type="text"
+                  value={adsense[key]}
+                  onChange={e => setAdsense(a => ({ ...a, [key]: e.target.value.trim() }))}
+                  placeholder={placeholder}
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">{desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* ads.txt reminder */}
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
+            <h4 className="text-sm font-bold text-blue-900 dark:text-blue-300 mb-2 flex items-center gap-2">
+              <FileText className="w-4 h-4" /> ads.txt File
+            </h4>
+            <p className="text-xs text-blue-800 dark:text-blue-400 mb-2">
+              Make sure your <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">ads.txt</code> file at <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">https://nammatn.in/ads.txt</code> contains:
+            </p>
+            <code className="block bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 dark:text-slate-300 break-all">
+              {`google.com, ${adsense.pub_id || 'ca-pub-XXXXXXXXXXXXXXXX'}, DIRECT, f08c47fec0942fa0`}
+            </code>
+            <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-2">
+              The file is already in /public/ads.txt — update it with your real Publisher ID.
+            </p>
+          </div>
+
+          {/* Save button */}
+          <button
+            onClick={saveAdsense}
+            className={`w-full py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${adsenseSaved ? 'bg-green-600 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+          >
+            {adsenseSaved ? <><CheckCircle className="w-4 h-4" /> Saved!</> : <><Star className="w-4 h-4" /> Save AdSense Settings</>}
+          </button>
+
+          {/* AdSense approval checklist */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">📋 AdSense Approval Checklist</h3>
+            <div className="space-y-2.5">
+              {[
+                { done: true,  text: 'Site has substantial original content' },
+                { done: true,  text: 'Mobile-friendly design' },
+                { done: true,  text: 'Privacy Policy page at /privacy-policy' },
+                { done: true,  text: 'About page at /about' },
+                { done: true,  text: 'Terms of Service at /terms' },
+                { done: true,  text: 'Cookie consent banner (GDPR/DPDP)' },
+                { done: true,  text: 'ads.txt in /public/' },
+                { done: true,  text: 'Footer links to Privacy, Terms, About' },
+                { done: !!adsense.pub_id && adsense.pub_id !== 'ca-pub-PLACEHOLDER', text: 'Publisher ID configured ← Do this now' },
+                { done: false, text: 'Apply at adsense.google.com and await approval (1–14 days)' },
+                { done: false, text: 'Submit sitemap in Google Search Console' },
+              ].map(({ done, text }, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5 ${done ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-700'}`}>
+                    {done ? '✓' : '○'}
+                  </span>
+                  <span className={`text-sm ${done ? 'text-slate-600 dark:text-slate-400 line-through' : 'text-slate-900 dark:text-white font-medium'}`}>{text}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

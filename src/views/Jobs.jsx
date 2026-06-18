@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import PageHero from "@/components/common/PageHero";
-
+import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Briefcase, Plus, X, Loader2, AlertTriangle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -119,25 +118,34 @@ export default function Jobs() {
 
   return (
     <div>
-      <PageHero
-        icon="💼"
-        title_en="Local Jobs"
-        title_ta="உள்ளூர் வேலை"
-        desc_en="Discover local job updates and employment opportunities shared for Tamil Nadu communities. Report suspicious job posts."
-        desc_ta="தமிழ்நாடு சமுதாயங்களுக்காக பகிரப்பட்ட உள்ளூர் வேலை வாய்ப்புகளை கண்டுபிடிக்கவும். சந்தேகமான வேலை பதிவுகளை புகாரளிக்கவும்."
-        cta_en="Explore Jobs"
-        cta_ta="வேலை ஆராய்க"
-        ctaPath="/jobs"
-        secondary_en="Report Scam Job"
-        secondary_ta="மோசடி வேலை புகாரளி"
-        secondaryPath="/scams"
-        bgFrom="from-green-700"
-        bgTo="to-emerald-800"
-        lang={lang}
-        badge_en="Community Job Alerts"
-        badge_ta="சமுதாய வேலை எச்சரிக்கைகள்"
-        disclaimer={T("Job posts require admin approval before publishing. Verify before applying.", "வேலை பதிவுகள் வெளியிடப்படும் முன் நிர்வாக ஒப்புதல் தேவை.")}
-      />
+      {/* ── Hero banner — matches Community style ── */}
+      <div className="bg-gradient-to-br from-green-700 to-emerald-800 text-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex items-start gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/20 shadow-lg mt-1">
+              <span className="text-3xl">💼</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">
+                {T("Community Job Alerts", "சமுதாய வேலை எச்சரிக்கைகள்")}
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-1.5">
+                {T("Local Jobs", "உள்ளூர் வேலை")}
+              </h1>
+              <p className="text-emerald-100 text-xs sm:text-sm leading-relaxed max-w-xl mb-3">
+                {T(
+                  "Discover local job updates and employment opportunities shared for Tamil Nadu communities. Report suspicious job posts.",
+                  "தமிழ்நாடு சமுதாயங்களுக்காக பகிரப்பட்ட உள்ளூர் வேலை வாய்ப்புகளை கண்டுபிடிக்கவும். சந்தேகமான வேலை பதிவுகளை புகாரளிக்கவும்."
+                )}
+              </p>
+              <Link to="/scams" className="inline-flex items-center text-xs font-bold border border-white/40 hover:bg-white/10 text-white px-3.5 py-1.5 rounded-xl transition-colors">
+                {T("Report Scam Job", "மோசடி வேலை புகாரளி")}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center justify-between mb-6">
         <div />

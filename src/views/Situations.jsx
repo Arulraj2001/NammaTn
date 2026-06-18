@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Zap, Plus, X } from "lucide-react";
-import PageHero from "@/components/common/PageHero";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
 import { base44 } from "@/api/base44Client";
 import { getActiveSituations, createSituation } from "@/services/situations";
@@ -113,23 +113,33 @@ export default function Situations() {
 
   return (
     <div>
-      <PageHero
-        icon="⚡"
-        title_en="Live Situations"
-        title_ta="நேரடி நிலைமைகள்"
-        desc_en="Follow urgent local situations, emergency updates, active alerts, and real-time public reports from Tamil Nadu areas."
-        desc_ta="தமிழ்நாடு பகுதிகளில் இருந்து அவசர உள்ளூர் நிலைமைகள், அவசர புதுப்பிப்புகள், செயலில் உள்ள எச்சரிக்கைகள் மற்றும் நேரடி பொது அறிக்கைகளை பின்தொடருங்கள்."
-        cta_en="Report Live Situation"
-        cta_ta="நேரடி நிலைமையை புகாரளி"
-        secondary_en="Create Civic Receipt"
-        secondary_ta="குடிமை ரசீது உருவாக்கு"
-        secondaryPath="/create"
-        bgFrom="from-yellow-600"
-        bgTo="to-amber-700"
-        lang={lang}
-        badge_en="Live Updates"
-        badge_ta="நேரடி புதுப்பிப்புகள்"
-      />
+      {/* ── Hero banner — matches Community style ── */}
+      <div className="bg-gradient-to-br from-yellow-600 to-amber-700 text-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex items-start gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/20 shadow-lg mt-1">
+              <span className="text-3xl">⚡</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">
+                {T("Live Updates", "நேரடி புதுப்பிப்புகள்")}
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-1.5">
+                {T("Live Situations", "நேரடி நிலைமைகள்")}
+              </h1>
+              <p className="text-yellow-100 text-xs sm:text-sm leading-relaxed max-w-xl mb-3">
+                {T(
+                  "Follow urgent local situations, emergency updates, active alerts, and real-time public reports from Tamil Nadu areas.",
+                  "தமிழ்நாடு பகுதிகளில் இருந்து அவசர உள்ளூர் நிலைமைகள், அவசர புதுப்பிப்புகள், செயலில் உள்ள எச்சரிக்கைகள் மற்றும் நேரடி பொது அறிக்கைகளை பின்தொடருங்கள்."
+                )}
+              </p>
+              <Link to="/create" className="inline-flex items-center text-xs font-bold border border-white/40 hover:bg-white/10 text-white px-3.5 py-1.5 rounded-xl transition-colors">
+                {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு")}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center justify-between mb-6">
         <div />

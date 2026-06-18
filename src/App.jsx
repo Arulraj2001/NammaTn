@@ -78,6 +78,10 @@ const AdminTnToday = lazy(() => import('@/views/admin/AdminTnToday'));
 const TnToday = lazy(() => import('@/views/TnToday'));
 const TnTodayArticle = lazy(() => import('@/views/TnTodayArticle'));
 const MyDashboard = lazy(() => import('@/pages/MyDashboard'));
+// Legal + SEO pages
+const PrivacyPolicy  = lazy(() => import('@/views/PrivacyPolicy'));
+const About          = lazy(() => import('@/views/About'));
+const TermsOfService = lazy(() => import('@/views/TermsOfService'));
 
 const AuthenticatedApp = ({ theme, toggleTheme }) => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -144,6 +148,10 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/tn-today" element={<TnToday />} />
         <Route path="/tn-today/category/:category" element={<TnToday />} />
         <Route path="/tn-today/:slug" element={<TnTodayArticle />} />
+        {/* Legal & SEO pages — required for Google AdSense */}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/about"          element={<About />} />
+        <Route path="/terms"          element={<TermsOfService />} />
       </Route>
       {/* Admin Routes */}
       <Route path="/admin/login" element={

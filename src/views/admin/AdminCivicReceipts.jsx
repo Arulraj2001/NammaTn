@@ -350,6 +350,56 @@ export default function AdminCivicReceipts() {
                 {preview.location_text && <div className="col-span-2"><span className="text-slate-400">Location:</span> {preview.location_text}</div>}
               </div>
 
+              {/* Evidence Photos */}
+              {((preview.before_photos && preview.before_photos.length > 0) || 
+                (preview.media_urls && preview.media_urls.length > 0) || 
+                (preview.claimed_fixed_photos && preview.claimed_fixed_photos.length > 0) ||
+                (preview.final_resolution_photos && preview.final_resolution_photos.length > 0)) && (
+                <div className="space-y-2">
+                  <span className="text-xs font-semibold text-slate-500 block">Evidence Photos:</span>
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Before Photos */}
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Before:</span>
+                      {(() => {
+                        const beforeList = [...(preview.before_photos || []), ...(preview.media_urls || [])].filter(Boolean);
+                        if (beforeList.length === 0) {
+                          return <div className="h-28 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-xs text-slate-400 italic">No before photos</div>;
+                        }
+                        return (
+                          <div className="space-y-1">
+                            {beforeList.map((url, index) => (
+                              <a key={index} href={url} target="_blank" rel="noreferrer" className="block relative group overflow-hidden rounded-xl bg-slate-100">
+                                <img src={url} alt={`Before ${index + 1}`} className="w-full h-28 object-cover group-hover:scale-105 transition-transform duration-200" />
+                              </a>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                    {/* After Photos */}
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">After:</span>
+                      {(() => {
+                        const afterList = [...(preview.claimed_fixed_photos || []), ...(preview.final_resolution_photos || [])].filter(Boolean);
+                        if (afterList.length === 0) {
+                          return <div className="h-28 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-xs text-slate-400 italic">No after photos</div>;
+                        }
+                        return (
+                          <div className="space-y-1">
+                            {afterList.map((url, index) => (
+                              <a key={index} href={url} target="_blank" rel="noreferrer" className="block relative group overflow-hidden rounded-xl bg-slate-100">
+                                <img src={url} alt={`After ${index + 1}`} className="w-full h-28 object-cover group-hover:scale-105 transition-transform duration-200" />
+                              </a>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Change civic status */}
               <div>
                 <label className="text-xs font-semibold text-slate-500 block mb-1">Change Civic Status:</label>
