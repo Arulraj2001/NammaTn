@@ -550,13 +550,11 @@ export default function LiveRoomThread({ room, onBack }) {
 
             {/* Action buttons */}
             <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
-              {/* Mobile info toggle — only shows on small screens */}
+              {/* Mobile info button — hidden since panel now stacks below on mobile */}
               <button
                 onClick={() => setShowMobileInfo(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-400 hover:border-blue-300 hover:text-blue-600 transition-all lg:hidden"
+                className="hidden"
               >
-                <Info className="w-3.5 h-3.5" />
-                {T("Room Info", "அறை தகவல்")}
               </button>
               <button
                 onClick={() => setFollowing((f) => !f)}
@@ -735,9 +733,9 @@ export default function LiveRoomThread({ room, onBack }) {
       {/* ══════════════════════════════════════════════════════════════════════
           RIGHT — Info panel
       ══════════════════════════════════════════════════════════════════════ */}
-      <div className="w-64 flex-shrink-0 space-y-3 hidden lg:block">
+      <div className="lg:w-64 flex-shrink-0 space-y-3">
 
-        {/* Room Info card — desktop only (mobile uses bottom drawer) */}
+        {/* Room Info card */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
           <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3">
             {T("Room Info", "அறை தகவல்")}

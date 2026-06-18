@@ -525,9 +525,9 @@ export default function LiveChatTab() {
   };
 
   return (
-    <div className="flex gap-4 h-[calc(100vh-180px)] sm:h-[calc(100vh-260px)] min-h-[480px] sm:min-h-[560px]">
+    <div className="flex flex-col lg:flex-row gap-4">
       {/* ── LEFT: Chat Rooms Sidebar ────────────────────────────────────────── */}
-      <div className="w-52 flex-shrink-0 flex flex-col gap-3 hidden lg:flex">
+      <div className="lg:w-52 flex-shrink-0 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             {T("Chat Rooms", "அரட்டை அறைகள்")}
@@ -537,7 +537,8 @@ export default function LiveChatTab() {
           </button>
         </div>
 
-        <div className="space-y-1.5">
+        {/* Channels — vertical cards on desktop, horizontal scroll row on mobile */}
+        <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0">
           {CHANNELS.map((ch) => {
             const isActive = channel === ch.value;
             const dotColor =
@@ -547,7 +548,7 @@ export default function LiveChatTab() {
               <button
                 key={ch.value}
                 onClick={() => setChannel(ch.value)}
-                className={`w-full flex flex-col items-start px-3 py-2.5 rounded-xl text-left transition-all border ${
+                className={`flex-shrink-0 lg:w-full flex flex-col items-start px-3 py-2.5 rounded-xl text-left transition-all border ${
                   isActive
                     ? "bg-blue-600 text-white border-blue-600 shadow-md"
                     : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-slate-700"
@@ -585,7 +586,7 @@ export default function LiveChatTab() {
       </div>
 
       {/* ── CENTER: Main Chat Area ─────────────────────────────────────────── */}
-      <div className="flex-1 min-w-0 flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+      <div className="flex-1 min-w-0 flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden" style={{height: 'clamp(420px, calc(100vh - 280px), 700px)'}}>
         {/* Chat header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex-shrink-0 bg-white dark:bg-slate-900">
           <div className="flex items-center gap-2.5">
@@ -617,9 +618,10 @@ export default function LiveChatTab() {
               <span>{T("messages", "செய்திகள்")}</span>
             </div>
             {/* Mobile info button — opens bottom sheet */}
+            {/* Mobile info button — hidden since right panel now always visible */}
             <button
               onClick={() => setShowMobileInfo(true)}
-              className="lg:hidden w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-blue-500 transition-colors"
+              className="hidden"
               aria-label={T("Room Info", "அறை தகவல்")}
             >
               <Info className="w-4 h-4" />
@@ -630,8 +632,8 @@ export default function LiveChatTab() {
           </div>
         </div>
 
-        {/* Mobile channel switcher */}
-        <div className="flex gap-2 px-3 py-2 border-b border-slate-200 dark:border-slate-700 overflow-x-auto lg:hidden flex-shrink-0">
+        {/* Mobile channel switcher — hidden since sidebar now shows on mobile */}
+        <div className="hidden">
           {CHANNELS.map((ch) => (
             <button
               key={ch.value}
@@ -778,7 +780,7 @@ export default function LiveChatTab() {
       </div>
 
       {/* ── RIGHT: Info Panel ──────────────────────────────────────────────── */}
-      <div className="w-60 flex-shrink-0 flex flex-col gap-3 hidden xl:flex">
+      <div className="lg:w-60 flex-shrink-0 flex flex-col gap-3">
         {/* About this room */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
           <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-1.5">
