@@ -116,7 +116,7 @@ export default function QuestionDetail() {
     staleTime: 60_000,
   });
 
-  usePageMeta({ title: question ? question.title : "Question – TN Voice", description: question?.content });
+  usePageMeta({ title: question ? question.title : "Question – NammaTN", description: question?.content });
 
   const answerMutation = useMutation({
     mutationFn: async (data) => {

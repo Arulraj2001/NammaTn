@@ -24,7 +24,7 @@ export default function CategoryDetail() {
   const category = getCategoryBySlug(slug);
   const [sort, setSort] = useState("-created_date");
   usePageMeta({
-    title: category ? `${T(category.name_en, category.name_ta)} | TN Voice` : "Category | TN Voice",
+    title: category ? `${T(category.name_en, category.name_ta)} | NammaTN` : "Category | NammaTN",
     description: category ? `Browse community posts in the ${category.name_en} category across Tamil Nadu.` : "",
   });
 

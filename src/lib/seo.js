@@ -3,12 +3,12 @@
  */
 
 const DEFAULT = {
-  title: "TN Voice – Tamil Nadu Community Platform",
+  title: "NammaTN – Tamil Nadu Civic & Community Platform",
   description:
-    "Tamil Nadu public awareness and community platform. Share local issues, celebrate progress, and discuss what matters in your district.",
-  image: "https://images.unsplash.com/photo-1582560475093-ba66accbc424?w=1200&q=80",
-  url: typeof window !== "undefined" ? window.location.origin : "https://tnvoice.in",
-  siteName: "TN Voice",
+    "NammaTN is Tamil Nadu's public civic platform — report local issues, track resolutions, join live community discussions, access government schemes, and celebrate community wins.",
+  image: "https://nammatn.in/og-image.png",
+  url: typeof window !== "undefined" ? window.location.origin : "https://nammatn.in",
+  siteName: "NammaTN",
   locale: "en_IN",
 };
 

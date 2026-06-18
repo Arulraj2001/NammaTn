@@ -1,43 +1,152 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- ── HIGH PRIORITY PAGES ── -->
   <url>
-    <loc>https://tnvoice.in/</loc>
+    <loc>https://nammatn.in/</loc>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://tnvoice.in/explore</loc>
+    <loc>https://nammatn.in/explore</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/community</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/trending</loc>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
+
+  <!-- ── DISTRICT & AREA PAGES ── -->
   <url>
-    <loc>https://tnvoice.in/districts</loc>
+    <loc>https://nammatn.in/districts</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/areas</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- ── CIVIC ACTIONS ── -->
   <url>
-    <loc>https://tnvoice.in/trending</loc>
+    <loc>https://nammatn.in/create</loc>
+    <changefreq>always</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/situations</loc>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://tnvoice.in/dashboard</loc>
+    <loc>https://nammatn.in/scams</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/community-wins</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ── CITIZEN AWARENESS ── -->
+  <url>
+    <loc>https://nammatn.in/awareness</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/awareness/schemes</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/awareness/portals</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/awareness/guides</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/awareness/faqs</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/awareness/emergency</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ── DIRECTORY ── -->
+  <url>
+    <loc>https://nammatn.in/offices</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/local-listings</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://tnvoice.in/awareness</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <loc>https://nammatn.in/jobs</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.65</priority>
   </url>
   <url>
-    <loc>https://tnvoice.in/contact</loc>
+    <loc>https://nammatn.in/stay</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ── ENGAGEMENT ── -->
+  <url>
+    <loc>https://nammatn.in/leaderboard</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/ask</loc>
+    <changefreq>always</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nammatn.in/search</loc>
+    <changefreq>always</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- ── STATIC PAGES ── -->
+  <url>
+    <loc>https://nammatn.in/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://tnvoice.in/create</loc>
-    <changefreq>always</changefreq>
-    <priority>0.8</priority>
+    <loc>https://nammatn.in/help</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
+  <url>
+    <loc>https://nammatn.in/support</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
 </urlset>

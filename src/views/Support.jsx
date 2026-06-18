@@ -42,13 +42,13 @@ export default function Support() {
   });
 
   const upiId = getSetting(settings, "upi_id", "tnvoice@upi");
-  const upiName = getSetting(settings, "upi_name", "TN Voice");
+  const upiName = getSetting(settings, "upi_name", "NammaTN");
   const qrUrl = getSetting(settings, "qr_image_url", "");
   const bmcLink = getSetting(settings, "buymecoffee_link", "");
   const razorpayEnabled = getSetting(settings, "razorpay_enabled", "false") === "true";
   const stripeEnabled = getSetting(settings, "stripe_enabled", "false") === "true";
   const bmcEnabled = getSetting(settings, "buymecoffee_enabled", "false") === "true";
-  const donationMsg = getSetting(settings, "donation_message", "Your support keeps TN Voice free, fast, and community-driven. Every contribution matters — thank you!");
+  const donationMsg = getSetting(settings, "donation_message", "Your support keeps NammaTN free, fast, and community-driven. Every contribution matters — thank you!");
   const minAmount = parseInt(getSetting(settings, "min_donation_amount", "10")) || 10;
 
   const finalAmount = customAmount ? parseInt(customAmount) : amount;
@@ -101,7 +101,7 @@ export default function Support() {
           </div>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{T("Thank you!", "நன்றி!")}</h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-            {T("Your donation has been received and will be confirmed within 24 hours. TN Voice is grateful for your support!", "உங்கள் நன்கொடை பெறப்பட்டது. 24 மணி நேரத்தில் உறுதிப்படுத்தப்படும்.")}
+            {T("Your donation has been received and will be confirmed within 24 hours. NammaTN is grateful for your support!", "உங்கள் நன்கொடை பெறப்பட்டது. 24 மணி நேரத்தில் உறுதிப்படுத்தப்படும்.")}
           </p>
           <Button variant="outline" className="w-full" onClick={() => { setSubmitted(false); setForm({ name: "", email: "", transaction_ref: "", message: "" }); setScreenshot(null); setCustomAmount(""); setAmount(50); }}>
             {T("Make another donation", "மீண்டும் நன்கொடை வழங்கு")}

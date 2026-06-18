@@ -9,22 +9,22 @@ export default function Contact() {
   const T = (en, ta) => lang === "ta" ? ta : en;
 
   usePageMeta({
-    title: "Contact | TN Voice",
-    description: "Contact the TN Voice team for support, feedback, or platform queries.",
+    title: "Contact | NammaTN",
+    description: "Contact the NammaTN team for support, feedback, or platform queries.",
   });
 
   const TOPICS = [
     { icon: MessageSquare, color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400", en: "General Feedback", ta: "பொது கருத்து", en_desc: "Share your thoughts on the platform.", ta_desc: "தளம் பற்றிய உங்கள் எண்ணங்களைப் பகிரவும்." },
     { icon: Shield, color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400", en: "Content Reports", ta: "உள்ளடக்க புகார்", en_desc: "Report harmful or false content.", ta_desc: "தீங்கான உள்ளடக்கத்தை புகாரளிக்கவும்." },
     { icon: HelpCircle, color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400", en: "Support Request", ta: "உதவி கோரிக்கை", en_desc: "Need technical help or account support.", ta_desc: "தொழில்நுட்ப உதவி தேவை." },
-    { icon: Mail, color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400", en: "Advertising", ta: "விளம்பரம்", en_desc: "Interested in advertising on TN Voice.", ta_desc: "TN Voice இல் விளம்பரம் செய்ய விரும்புகிறேன்." },
+    { icon: Mail, color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400", en: "Advertising", ta: "விளம்பரம்", en_desc: "Interested in advertising on NammaTN.", ta_desc: "NammaTN இல் விளம்பரம் செய்ய விரும்புகிறேன்." },
   ];
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="text-center mb-10">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
-          {T("Contact TN Voice", "TN Voice ஐ தொடர்பு கொள்ளுங்கள்")}
+          {T("Contact NammaTN", "NammaTN ஐ தொடர்பு கொள்ளுங்கள்")}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 max-w-xl mx-auto text-sm">
           {T(

@@ -5,7 +5,7 @@ import {
   ArrowLeft, Send, Shield, MapPin, MessageSquare, Archive, AlertTriangle,
   Users, ThumbsUp, Reply, MoreHorizontal, Bell, BellOff, Share2,
   FileText, Flag, CheckCircle2, X, Clock, Tag, ChevronDown, Smile, Paperclip,
-  Lock, Copy, Check
+  Lock, Copy, Check, Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
@@ -277,6 +277,7 @@ export default function LiveRoomThread({ room, onBack }) {
   const [sortOrder, setSortOrder] = useState("most_recent");
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showMobileInfo, setShowMobileInfo] = useState(false);
   const [showReportRoom, setShowReportRoom] = useState(false);
   const [reportingRoom, setReportingRoom] = useState(false);
   const [reportRoomDone, setReportRoomDone] = useState(false);
@@ -464,7 +465,7 @@ export default function LiveRoomThread({ room, onBack }) {
   const tags = room.tags ? (Array.isArray(room.tags) ? room.tags : room.tags.split(",").map(t => t.trim())) : [];
 
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-5">
       {/* ══════════════════════════════════════════════════════════════════════
           LEFT — Main content
       ══════════════════════════════════════════════════════════════════════ */}
@@ -548,7 +549,15 @@ export default function LiveRoomThread({ room, onBack }) {
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+              {/* Mobile info toggle — only shows on small screens */}
+              <button
+                onClick={() => setShowMobileInfo(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-400 hover:border-blue-300 hover:text-blue-600 transition-all lg:hidden"
+              >
+                <Info className="w-3.5 h-3.5" />
+                {T("Room Info", "அறை தகவல்")}
+              </button>
               <button
                 onClick={() => setFollowing((f) => !f)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
@@ -728,7 +737,7 @@ export default function LiveRoomThread({ room, onBack }) {
       ══════════════════════════════════════════════════════════════════════ */}
       <div className="w-64 flex-shrink-0 space-y-3 hidden lg:block">
 
-        {/* Room Info card */}
+        {/* Room Info card — desktop only (mobile uses bottom drawer) */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
           <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3">
             {T("Room Info", "அறை தகவல்")}
@@ -925,6 +934,143 @@ export default function LiveRoomThread({ room, onBack }) {
           </div>
         </div>
       </div>
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          MOBILE INFO BOTTOM DRAWER — hidden on lg, opens via Room Info button
+      ══════════════════════════════════════════════════════════════════════ */}
+      {showMobileInfo && (
+        <div className="lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowMobileInfo(false)}
+          />
+          {/* Drawer panel */}
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl max-h-[80vh] overflow-y-auto">
+            {/* Handle + close */}
+            <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-1 rounded-full bg-slate-200 dark:bg-slate-700 absolute left-1/2 -translate-x-1/2 top-2" />
+                <Info className="w-4 h-4 text-blue-500" />
+                <span className="text-sm font-bold text-slate-900 dark:text-white">{T("Room Info", "அறை தகவல்")}</span>
+              </div>
+              <button
+                onClick={() => setShowMobileInfo(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-5">
+              {/* Creator */}
+              <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <Avatar name={room.creator_name || room.created_by || "User"} size="md" />
+                <div className="flex-1">
+                  <p className="text-xs text-slate-500">{T("Created by", "உருவாக்கியவர்")}</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                    {room.creator_name || room.created_by || T("Community Member", "சமுதாய உறுப்பினர்")}
+                  </p>
+                </div>
+                {room.created_date && (
+                  <span className="text-xs text-slate-400">
+                    {formatDistanceToNow(new Date(room.created_date), { addSuffix: true })}
+                  </span>
+                )}
+              </div>
+
+              {/* Room details */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                {room.area_name && (
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
+                    <p className="text-[11px] text-slate-400 mb-0.5">{T("Area", "பகுதி")}</p>
+                    <p className="font-semibold text-slate-800 dark:text-white text-xs">{room.area_name}</p>
+                  </div>
+                )}
+                {room.category && (
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
+                    <p className="text-[11px] text-slate-400 mb-0.5">{T("Category", "வகை")}</p>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${categoryColor}`}>{room.category}</span>
+                  </div>
+                )}
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
+                  <p className="text-[11px] text-slate-400 mb-0.5">{T("Type", "வகை")}</p>
+                  <p className="font-semibold text-slate-800 dark:text-white text-xs">{T("Public", "பொது")}</p>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3">
+                  <p className="text-[11px] text-slate-400 mb-0.5">{T("Messages", "செய்திகள்")}</p>
+                  <p className="font-semibold text-slate-800 dark:text-white text-xs">{messages.length}</p>
+                </div>
+              </div>
+
+              {/* Participants */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    {T("Participants", "பங்கேற்பாளர்கள்")} ({totalParticipants})
+                  </p>
+                  <button
+                    onClick={() => { setShowParticipants(true); setShowMobileInfo(false); }}
+                    className="text-xs text-blue-600 font-semibold"
+                  >
+                    {T("View all", "அனைத்தையும் காண்")}
+                  </button>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  {user && (
+                    <div className="relative" title={T("You", "நீங்கள்")}>
+                      <Avatar name={user.full_name || "You"} image={user.profile_image} size="md" />
+                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white dark:border-slate-900 rounded-full" />
+                    </div>
+                  )}
+                  {participants.slice(0, 6).map((p, i) => (
+                    <div key={p.id || i} className="relative">
+                      <Avatar name={p.author_label || "User"} size="md" />
+                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white dark:border-slate-900 rounded-full" />
+                    </div>
+                  ))}
+                  {totalParticipants > 7 && (
+                    <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500">
+                      +{totalParticipants - 7}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div>
+                <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">{T("Quick Actions", "விரைவு செயல்கள்")}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { icon: FileText, label_en: "Create Civic Receipt", label_ta: "குடிமை ரசீது", color: "text-blue-600" },
+                    { icon: Share2, label_en: "Share Room", label_ta: "பகிர்", color: "text-green-600", action: handleShare },
+                    { icon: Bell, label_en: "Follow Updates", label_ta: "பின்தொடர்", color: "text-purple-600", action: () => setFollowing(f => !f) },
+                    { icon: BellOff, label_en: "Mute Room", label_ta: "முடக்கு", color: "text-slate-500" },
+                  ].map(({ icon: Icon, label_en, label_ta, color, action }) => (
+                    <button
+                      key={label_en}
+                      onClick={action}
+                      className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left"
+                    >
+                      <Icon className={`w-4 h-4 ${color} flex-shrink-0`} />
+                      {T(label_en, label_ta)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Report button */}
+              <button
+                onClick={() => { setShowReportRoom(true); setShowMobileInfo(false); }}
+                className="w-full border border-red-200 dark:border-red-800 text-red-500 rounded-xl py-2.5 text-xs font-medium hover:bg-red-50 flex items-center justify-center gap-2 transition-colors"
+              >
+                <Flag className="w-3.5 h-3.5" />
+                {T("Report Inappropriate", "பொருத்தமற்றதை புகாரளி")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Participants Modal ─────────────────────────────────────────────── */}
       {showParticipants && (
