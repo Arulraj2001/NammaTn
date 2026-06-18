@@ -350,6 +350,7 @@ export default function LiveChatTab() {
   const [showReportChat, setShowReportChat] = useState(false);
   const [reportingChat, setReportingChat] = useState(false);
   const [reportChatDone, setReportChatDone] = useState(false);
+  const [showMobileInfo, setShowMobileInfo] = useState(false);
 
   const currentChannel = CHANNELS.find((c) => c.value === channel);
 
@@ -524,7 +525,7 @@ export default function LiveChatTab() {
   };
 
   return (
-    <div className="flex gap-4 h-[calc(100vh-260px)] min-h-[560px]">
+    <div className="flex gap-4 h-[calc(100vh-180px)] sm:h-[calc(100vh-260px)] min-h-[480px] sm:min-h-[560px]">
       {/* ── LEFT: Chat Rooms Sidebar ────────────────────────────────────────── */}
       <div className="w-52 flex-shrink-0 flex flex-col gap-3 hidden lg:flex">
         <div className="flex items-center justify-between">
@@ -583,9 +584,6 @@ export default function LiveChatTab() {
         </div>
       </div>
 
-      {/* ── MOBILE: channel switcher ─────────────────────────────────────────── */}
-      <div className="flex gap-2 mb-3 lg:hidden overflow-x-auto absolute top-0 left-0 right-0 scrollbar-hide" />
-
       {/* ── CENTER: Main Chat Area ─────────────────────────────────────────── */}
       <div className="flex-1 min-w-0 flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
         {/* Chat header */}
@@ -606,18 +604,26 @@ export default function LiveChatTab() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               <span className="font-semibold text-slate-700 dark:text-slate-300">{liveCount}</span>
-              <span>{T("online", "ஆன்லைன்")}</span>
+              <span className="hidden sm:inline">{T("online", "ஆன்லைன்")}</span>
             </div>
-            <div className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+            <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <MessageSquare className="w-3.5 h-3.5" />
               <span className="font-semibold">{totalMessages > 0 ? totalMessages.toLocaleString() : "—"}</span>
               <span>{T("messages", "செய்திகள்")}</span>
             </div>
+            {/* Mobile info button — opens bottom sheet */}
+            <button
+              onClick={() => setShowMobileInfo(true)}
+              className="lg:hidden w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-blue-500 transition-colors"
+              aria-label={T("Room Info", "அறை தகவல்")}
+            >
+              <Info className="w-4 h-4" />
+            </button>
             <button className="w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
               <MoreHorizontal className="w-4 h-4" />
             </button>
@@ -695,12 +701,12 @@ export default function LiveChatTab() {
               )}
 
               {/* Type selector + cooldown */}
-              <div className="flex items-center gap-2">
-                <div className="relative">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="relative w-full sm:w-auto">
                   <select
                     value={msgType}
                     onChange={(e) => setMsgType(e.target.value)}
-                    className="appearance-none pl-2 pr-6 py-1.5 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                    className="w-full sm:w-auto appearance-none pl-2 pr-6 py-1.5 border border-slate-200 dark:border-slate-600 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
                   >
                     {Object.entries(MSG_TYPE_CONFIG).map(([v, c]) => (
                       <option key={v} value={v}>{c.emoji} {T(c.label_en, c.label_ta)}</option>
@@ -930,6 +936,96 @@ export default function LiveChatTab() {
           onClose={() => setShowParticipants(false)}
           T={T}
         />
+      )}
+
+      {/* ── Mobile Info Bottom Sheet ──────────────────────────────────────── */}
+      {showMobileInfo && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm lg:hidden"
+            onClick={() => setShowMobileInfo(false)}
+          />
+          {/* Slide-up panel */}
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl p-5 max-h-[75vh] overflow-y-auto lg:hidden">
+            {/* Handle + Close */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{currentChannel?.emoji}</span>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  {T(currentChannel?.label_en, currentChannel?.label_ta)}
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowMobileInfo(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Active Participants */}
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  {T("Active Participants", "செயல்பாட்டு பங்கேற்பாளர்கள்")}
+                  <span className="text-slate-400 font-normal ml-1">({participants.length})</span>
+                </h4>
+                <button
+                  onClick={() => { setShowMobileInfo(false); setShowParticipants(true); }}
+                  className="text-[11px] text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+                >
+                  {T("View all", "அனைத்தையும் காண்")}
+                </button>
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {participants.slice(0, 8).map((p, i) => (
+                  <div key={p.id || i} className="relative" title={p.author_label}>
+                    <Avatar name={p.author_label || "User"} size="sm" />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 border-2 border-white dark:border-slate-900 rounded-full" />
+                  </div>
+                ))}
+                {participants.length > 8 && (
+                  <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                    +{participants.length - 8}
+                  </div>
+                )}
+                {participants.length === 0 && (
+                  <p className="text-xs text-slate-400">{T("No recent activity", "சமீபத்திய செயல்பாடு இல்லை")}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Room Guidelines */}
+            <div className="mb-5">
+              <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-slate-400" />
+                {T("Room Guidelines", "அறை வழிகாட்டுதல்கள்")}
+              </h4>
+              <ol className="space-y-1.5">
+                {(lang === "ta" ? ROOM_GUIDELINES_TA : ROOM_GUIDELINES_EN).map((g, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
+                    <span className="flex-shrink-0 w-4 h-4 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-[10px]">
+                      {i + 1}
+                    </span>
+                    {g}
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* Report Issue */}
+            <button
+              onClick={() => { setShowMobileInfo(false); setShowReportChat(true); }}
+              className="w-full flex items-center justify-center gap-2 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-xl py-2.5 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+            >
+              <Flag className="w-3.5 h-3.5" />
+              {T("Report Issue", "சிக்கலை புகாரளி")}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
