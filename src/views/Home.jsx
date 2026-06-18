@@ -20,6 +20,7 @@ import { getActiveEmergencies } from "@/services/emergencyPosts";
 import { getAreas } from "@/services/areas";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
 import MyAreaPulse from "@/components/home/MyAreaPulse";
+import TnTodayCard from "@/components/tntoday/TnTodayCard";
 
 // Dynamically import map – avoids SSR issues
 const InteractiveHomeMap = dynamic(
@@ -340,8 +341,8 @@ export default function Home() {
             </div>
 
             {/* RIGHT MAP */}
-            <div className="w-full lg:flex-1">
-              <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg bg-white dark:bg-slate-800" style={{ height: "340px" }}>
+            <div className="w-full lg:flex-1 flex flex-col gap-4">
+              <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg bg-white dark:bg-slate-800" style={{ height: "300px" }}>
                 <InteractiveHomeMap items={allMapItems} userLocation={userLocation} />
                 {/* View full map link */}
                 <div className="absolute bottom-3 right-3 z-20">
@@ -351,6 +352,7 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
+              <TnTodayCard />
             </div>
           </div>
         </div>
@@ -571,7 +573,7 @@ export default function Home() {
                         src={getAreaImage(area.slug)}
                         alt={area.name_en}
                         className="absolute inset-0 w-full h-full object-cover"
-                        onError={(e) => e.target.remove()}
+                        onError={(e) => { e.target.style.display = "none"; }}
                       />
                     </div>
                     <div className="text-center">

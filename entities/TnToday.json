@@ -1,0 +1,40 @@
+{
+  "name": "TnToday",
+  "type": "object",
+  "properties": {
+    "title": { "type": "string" },
+    "slug": { "type": "string" },
+    "subtitle": { "type": "string" },
+    "featured_image": { "type": "string" },
+    "category": {
+      "type": "string",
+      "enum": ["infrastructure", "education", "healthcare", "environment", "economy", "governance", "transport", "agriculture", "technology", "social", "general"],
+      "default": "general"
+    },
+    "author_name": { "type": "string", "default": "NammaTN Editorial Team" },
+    "publish_date": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "scheduled", "published", "archived"],
+      "default": "draft"
+    },
+    "reading_time": { "type": "number", "default": 5 },
+    "content": { "type": "string" },
+    "summary": { "type": "string" },
+    "why_it_matters": { "type": "string" },
+    "key_facts": { "type": "string" },
+    "timeline": { "type": "string" },
+    "official_sources": { "type": "string" },
+    "related_civic_links": { "type": "string" },
+    "seo_title": { "type": "string" },
+    "seo_description": { "type": "string" },
+    "seo_keywords": { "type": "string" },
+    "canonical_url": { "type": "string" },
+    "social_image": { "type": "string" },
+    "is_featured": { "type": "boolean", "default": false },
+    "view_count": { "type": "number", "default": 0 },
+    "district_slug": { "type": "string" },
+    "district_name": { "type": "string" }
+  },
+  "required": ["title", "slug", "status"]
+}

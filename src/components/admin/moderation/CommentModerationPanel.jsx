@@ -26,7 +26,8 @@ export default function CommentModerationPanel() {
     queryKey: ["admin-comments", filter],
     queryFn: async () => {
       if (filter === "all") return await base44.entities.Comment.list("-created_date", 100);
-      if (filter === "pending") return await base44.entities.Comment.filter({ is_pending_review: true }, "-created_date", 100);
+      // is_pending_review does not exist in DB; flagged comments are tracked via status="flagged"
+      if (filter === "pending") return await base44.entities.Comment.filter({ status: "flagged" }, "-created_date", 100);
       return await base44.entities.Comment.filter({ status: filter }, "-created_date", 100);
     },
     staleTime: 15_000,
@@ -63,7 +64,7 @@ export default function CommentModerationPanel() {
 
   const TABS = [
     { key: "flagged", label: "Flagged" },
-    { key: "pending", label: "Pending Review" },
+    { key: "pending", label: "Reported (≥3)" },
     { key: "hidden", label: "Hidden" },
     { key: "active", label: "Active" },
     { key: "all", label: "All" },
@@ -123,8 +124,8 @@ export default function CommentModerationPanel() {
                       <span className={cn("text-xs px-1.5 py-0.5 rounded font-medium", STATUS_COLORS[c.status] || "bg-slate-100 text-slate-500")}>
                         {c.status}
                       </span>
-                      {c.is_pending_review && (
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-amber-50 text-amber-600">pending review</span>
+                      {c.status === "flagged" && (
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-amber-50 text-amber-600">flagged for review</span>
                       )}
                       {reportCount > 0 && (
                         <span className="flex items-center gap-1 text-xs text-red-600">

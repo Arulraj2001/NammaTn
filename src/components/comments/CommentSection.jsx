@@ -113,7 +113,7 @@ export default function CommentSection({ postId, postCommentCount }) {
       author_name: isAnon ? "" : sanitizeText(authorName || user?.full_name || ""),
       author_id: user?.id || getSessionId(),
       is_anonymous: isAnon,
-      is_pending_review: needsReview,
+      // is_pending_review is NOT a column in the comment table — omit to avoid 400
     });
   };
 
@@ -240,7 +240,7 @@ function CommentItem({ comment, currentUserId, isAdmin, lang, onHide, onRestore,
   return (
     <div className={`bg-white dark:bg-slate-800 border rounded-2xl p-4 ${
       isHidden ? "border-red-200 dark:border-red-900 opacity-60" :
-      comment.is_pending_review ? "border-amber-200 dark:border-amber-900" :
+      comment.status === "flagged" ? "border-amber-200 dark:border-amber-900" :
       "border-slate-200 dark:border-slate-700"
     }`}>
       <div className="flex items-center gap-2 mb-2">
@@ -250,7 +250,7 @@ function CommentItem({ comment, currentUserId, isAdmin, lang, onHide, onRestore,
         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
           {comment.is_anonymous ? T("Anonymous", "அநாமதேயர்") : comment.author_name || T("Community Member", "சமுதாய உறுப்பினர்")}
         </span>
-        {comment.is_pending_review && <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Under review</span>}
+        {comment.status === "flagged" && <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Under review</span>}
         {isHidden && isAdmin && <span className="text-xs text-red-500 bg-red-50 px-1.5 py-0.5 rounded">Hidden</span>}
         <span className="text-xs text-slate-400 ml-auto">
           {comment.created_date ? formatDistanceToNow(new Date(comment.created_date), { addSuffix: true }) : ""}

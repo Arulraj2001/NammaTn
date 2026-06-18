@@ -100,12 +100,14 @@ export const deleteComment = async (id) => {
   return data;
 };
 
-/** Increment report_count and optionally flag comment */
+/** Increment report_count and flag comment when threshold is reached */
 export const flagCommentReported = async (id, currentCount) => {
   const newCount = (currentCount || 0) + 1;
+  // is_pending_review does NOT exist in the comment table.
+  // Use status="flagged" instead when report threshold is hit.
   const update = { report_count: newCount };
-  if (newCount >= 3) update.is_pending_review = true;
-  
+  if (newCount >= 3) update.status = "flagged";
+
   const { data, error } = await supabase
     .from("comment")
     .update(update)

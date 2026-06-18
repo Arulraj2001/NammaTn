@@ -84,20 +84,42 @@ export default function DiscussionForm({ onClose, onSuccess, districtSlug, distr
     const session = user?.id || localStorage.getItem("tn_session") || Math.random().toString(36).slice(2);
     localStorage.setItem("tn_session", session);
 
-    await base44.entities.CommunityDiscussion.create({
-      ...form,
-      title: sanitizeText(title),
-      content: sanitizeText(content),
-      author_session: session,
-      author_label: form.is_anonymous ? "Community Member" : (user?.full_name || "Community Member"),
-      is_pending_review: safety.needsReview,
-    });
+    try {
+      // Only send columns that exist in the community_discussion schema.
+      // NOTE: is_pending_review does NOT exist in the table — omit it to avoid 400.
+      await base44.entities.CommunityDiscussion.create({
+        title: sanitizeText(title),
+        content: sanitizeText(content),
+        discussion_type: form.discussion_type,
+        topic: form.topic,
+        district_slug: form.district_slug,
+        district_name: form.district_name,
+        area_slug: form.area_slug,
+        area_name: form.area_name,
+        author_session: session,
+        author_label: form.is_anonymous
+          ? T("Community Member", "சமுதாய உறுப்பினர்")
+          : (user?.full_name || T("Community Member", "சமுதாய உறுப்பினர்")),
+        is_anonymous: form.is_anonymous,
+        is_live: form.is_live,
+        status: "active",
+      });
 
-    setLoading(false);
-    submitting.current = false;
-    toast({ description: T("Discussion posted!", "விவாதம் இடப்பட்டது!") });
-    onSuccess?.();
-    onClose();
+      toast({ description: T("Discussion posted!", "விவாதம் இடப்பட்டது!") });
+      onSuccess?.();
+      onClose();
+    } catch (err) {
+      console.error("Discussion create failed:", err);
+      setError(
+        T(
+          "Failed to post discussion. Please try again.",
+          "விவாதத்தை இடுக முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+        )
+      );
+    } finally {
+      setLoading(false);
+      submitting.current = false;
+    }
   };
 
   return (

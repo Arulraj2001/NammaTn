@@ -73,6 +73,10 @@ const CivicLeaderboard = lazy(() => import('@/pages/CivicLeaderboard'));
 const RWADashboard = lazy(() => import('@/pages/RWADashboard'));
 const CSRDashboard = lazy(() => import('@/pages/CSRDashboard'));
 const AdminMonetization = lazy(() => import('@/pages/admin/AdminMonetization'));
+const AdminSEO = lazy(() => import('@/views/admin/AdminSEO'));
+const AdminTnToday = lazy(() => import('@/views/admin/AdminTnToday'));
+const TnToday = lazy(() => import('@/views/TnToday'));
+const TnTodayArticle = lazy(() => import('@/views/TnTodayArticle'));
 const MyDashboard = lazy(() => import('@/pages/MyDashboard'));
 
 const AuthenticatedApp = ({ theme, toggleTheme }) => {
@@ -136,6 +140,10 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/rwa" element={<RWADashboard />} />
         <Route path="/csr" element={<CSRDashboard />} />
         <Route path="/me" element={<MyDashboard />} />
+        {/* TN Today public routes */}
+        <Route path="/tn-today" element={<TnToday />} />
+        <Route path="/tn-today/category/:category" element={<TnToday />} />
+        <Route path="/tn-today/:slug" element={<TnTodayArticle />} />
       </Route>
       {/* Admin Routes */}
       <Route path="/admin/login" element={
@@ -168,6 +176,8 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="civic" element={<AdminCivicReceipts />} />
         <Route path="awareness" element={<AdminAwareness />} />
         <Route path="monetization" element={<AdminMonetization />} />
+        <Route path="seo" element={<AdminSEO />} />
+        <Route path="tn-today" element={<AdminTnToday />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

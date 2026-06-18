@@ -4,7 +4,7 @@ import {
   Home, PlusCircle, Zap, X, FileText,
   Users, TrendingUp, MessageCircle, AlertTriangle, Shield,
   Briefcase, ShoppingBag, Building2, Map, MapPin,
-  HelpCircle, Heart, Leaf, Trophy, ArrowRight, BarChart2, User
+  HelpCircle, Heart, Leaf, Trophy, ArrowRight, BarChart2, User, Newspaper
 } from "lucide-react";
 
 import { useLanguage } from "@/context/LanguageContext";
@@ -27,6 +27,7 @@ const MOBILE_MENU_GROUPS = [
     ta_title: "குடிமை & சமுதாயம்",
     items: [
       { path: "/dashboard", icon: BarChart2, en: "Dashboard", ta: "டாஷ்போர்டு", desc_en: "Live transparency stats", desc_ta: "நேரடி புள்ளிவிவரங்கள்" },
+      { path: "/tn-today", icon: Newspaper, en: "TN Today", ta: "TN Today", desc_en: "Tamil Nadu's daily headline", desc_ta: "தினடைய தமிழ்நாடு தலைவரிசை" },
       { path: "/community", icon: Users, en: "Community", ta: "சமுதாயம்", desc_en: "Discuss local issues", desc_ta: "உள்ளூர் சிக்கல்கள் விவாதிக்கவும்" },
       { path: "/community/wins", icon: Trophy, en: "Community Wins", ta: "சமூக வெற்றிகள்", desc_en: "Verified civic achievements", desc_ta: "சரிபார்க்கப்பட்ட குடிமை சாதனைகள்" },
       { path: "/trending", icon: TrendingUp, en: "Trending", ta: "டிரெண்டிங்", desc_en: "Most discussed issues", desc_ta: "அதிகம் விவாதிக்கப்பட்டவை" },

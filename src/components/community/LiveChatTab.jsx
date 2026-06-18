@@ -8,7 +8,6 @@ import {
   CheckCircle2, Smile
 } from "lucide-react";
 import { createReport } from "@/services/admin/reports";
-import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";
 import { checkSpam, getSession } from "@/lib/spamGuard";

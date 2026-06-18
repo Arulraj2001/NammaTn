@@ -5,9 +5,8 @@ import {
   ArrowLeft, Send, Shield, MapPin, MessageSquare, Archive, AlertTriangle,
   Users, ThumbsUp, Reply, MoreHorizontal, Bell, BellOff, Share2,
   FileText, Flag, CheckCircle2, X, Clock, Tag, ChevronDown, Smile, Paperclip,
-  Lock, Copy, Check, Info
+  Lock, Check, Info
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";
 import { checkSpam, getSession } from "@/lib/spamGuard";

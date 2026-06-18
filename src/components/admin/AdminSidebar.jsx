@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, MessageSquare, Tag, MapPin,
-  Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Users, Mail, Home, UserCheck, BookOpen
+  Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Users, Mail, Home, UserCheck, BookOpen, SearchCheck, Newspaper
 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { base44 } from "@/api/base44Client";
 
 const NAV = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
+  { label: "TN Today", icon: Newspaper, path: "/admin/tn-today", badge: "CMS" },
   { label: "Posts", icon: FileText, path: "/admin/posts" },
   { label: "Comments", icon: MessageSquare, path: "/admin/comments" },
   { label: "Reports", icon: Flag, path: "/admin/reports" },
@@ -20,6 +21,7 @@ const NAV = [
   { label: "Media", icon: Image, path: "/admin/media" },
   { label: "Ads", icon: Megaphone, path: "/admin/ads" },
   { label: "Settings", icon: Settings, path: "/admin/settings" },
+  { label: "SEO Manager", icon: SearchCheck, path: "/admin/seo", badge: "SEO" },
   { label: "AI Settings", icon: Zap, path: "/admin/moderation-settings" },
   { label: "Phase 8 Hub", icon: Globe, path: "/admin/phase8", badge: "NEW" },
   { label: "Community & Donations", icon: Users, path: "/admin/community" },

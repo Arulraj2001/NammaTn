@@ -337,7 +337,7 @@ function CommentsTab({ comments, lang }) {
           <div key={c.id} className={`bg-white dark:bg-slate-800 border rounded-2xl p-4 ${isHidden ? "border-red-200 dark:border-red-900/30" : "border-slate-200 dark:border-slate-700"}`}>
             {isHidden ? (
               <p className="text-xs text-red-600 italic">This comment is hidden due to moderation.</p>
-            ) : c.is_pending_review ? (
+            ) : c.status === "flagged" ? (
               <p className="text-xs text-amber-600 italic">This comment is pending review.</p>
             ) : (
               <p className="text-sm text-slate-700 dark:text-slate-300 line-clamp-3">{c.content}</p>

@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
+import { getSettingsMap } from '@/services/admin/settings';
+import { applySEOSettings } from '@/lib/seo';
 
 const AuthContext = createContext();
 
@@ -26,6 +28,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check active session on mount
     checkUserAuth();
+
+    // Load SEO settings from DB and apply to document head
+    getSettingsMap().then(applySEOSettings).catch(() => {/* silent — SEO non-critical */});
 
     // Listen to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
