@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import {
   MapPin, AlertCircle, Shield, Zap, Briefcase, Home as HomeIcon,
   CheckCircle, Navigation, Search, RefreshCw, ArrowRight, Users,
@@ -61,24 +62,20 @@ function getStatusBadge(status) {
 
 /* ─── area image mapping ──────────────────────────────────── */
 const AREA_IMAGES = {
-  velachery: "https://upload.wikimedia.org/wikipedia/commons/7/7f/India_-_Chennai_-_Velachery_-_Tansi_Nagar_from_the_MRTS_%282229573067%29.jpg",
-  "anna-nagar": "https://upload.wikimedia.org/wikipedia/commons/1/18/Annanagar_Tower.jpg",
-  adyar: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Guindy_Railway_Bridge_Adyar_River_Chennai_Jul18_DSC05379.jpg",
-  tambaram: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Tambaram_Chennai_Railway_station_board.jpeg",
-  omr: "https://upload.wikimedia.org/wikipedia/commons/e/e6/OMR_Express_way.jpg",
-  "rs-puram": "https://upload.wikimedia.org/wikipedia/commons/6/67/MC_%40RS_PURAM_COIMBATORE.JPG",
-  "t-nagar": "https://upload.wikimedia.org/wikipedia/commons/0/0f/T_Nagar_Chennai.jpg",
-  "kk-nagar": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Sivan-Park-KK-Nagar-Chennai-Beginning.JPG",
-  perambur: "https://upload.wikimedia.org/wikipedia/commons/b/bb/Perambur_railway_station.jpg",
-  porur: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Porur_Lake_Chennai.jpg",
-  srirangam: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Srirangam_Temple_Gopuram_View.jpg",
-  "saibaba-colony": "https://upload.wikimedia.org/wikipedia/commons/4/44/Anamalais_Toyota%2C_coimbatore.jpg",
-  singanallur: "https://upload.wikimedia.org/wikipedia/commons/8/86/Singanallur_Lake_JEG_JEG6969.jpg",
-  "thillai-nagar": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Uccipillaiyar-Temple-Rockfort-Trichy-TanilNadu-India.jpg",
-  "kk-nagar-madurai": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Madurai_Meenakshi_Temple_Gopuram.jpg",
-  "anna-nagar-madurai": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Madurai_Meenakshi_Temple_Gopuram.jpg"
+  velachery: "/images/areas/velachery.jpg",
+  "anna-nagar": "/images/areas/anna-nagar.jpg",
+  adyar: "/images/areas/adyar.jpg",
+  tambaram: "/images/areas/tambaram.jpeg",
+  "rs-puram": "/images/areas/rs-puram.jpg",
+  "t-nagar": "/images/areas/t-nagar.jpg",
+  "kk-nagar": "/images/areas/kk-nagar.jpg",
+  perambur: "/images/areas/perambur.jpg",
+  srirangam: "/images/areas/srirangam.jpg",
+  "saibaba-colony": "/images/areas/saibaba-colony.jpg",
+  singanallur: "/images/areas/singanallur.jpg",
+  "thillai-nagar": "/images/areas/thillai-nagar.jpg",
 };
-const getAreaImage = (slug) => AREA_IMAGES[slug] || "https://upload.wikimedia.org/wikipedia/commons/1/10/Anna_Nagar_Tower_Chennai.jpg";
+const getAreaImage = (slug) => AREA_IMAGES[slug] || "/images/areas/default.jpg";
 
 /* ─── static data ─────────────────────────────────────────── */
 const QUICK_ACTIONS = [
@@ -570,11 +567,12 @@ export default function Home() {
                       <span className="uppercase">
                         {(lang === "ta" ? area.name_ta || area.name_en : area.name_en)?.slice(0, 3)}
                       </span>
-                      <img
+                      <Image
                         src={getAreaImage(area.slug)}
                         alt={area.name_en}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={(e) => { e.target.style.display = "none"; }}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
                       />
                     </div>
                     <div className="text-center">

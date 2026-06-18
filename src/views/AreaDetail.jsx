@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import {
   MapPin, ArrowLeft, ShieldAlert, FileText, AlertTriangle,
   Plus, CheckCircle, Zap, Droplets, Construction, Users,
@@ -71,18 +72,21 @@ function statusBadge(s) {
 
 /* ── Area header image ──────────────────────────────── */
 const AREA_IMAGES = {
-  velachery: "https://upload.wikimedia.org/wikipedia/commons/7/7f/India_-_Chennai_-_Velachery_-_Tansi_Nagar_from_the_MRTS_%282229573067%29.jpg",
-  "anna-nagar": "https://upload.wikimedia.org/wikipedia/commons/1/18/Annanagar_Tower.jpg",
-  adyar: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Guindy_Railway_Bridge_Adyar_River_Chennai_Jul18_DSC05379.jpg",
-  tambaram: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Tambaram_Chennai_Railway_station_board.jpeg",
-  omr: "https://upload.wikimedia.org/wikipedia/commons/e/e6/OMR_Express_way.jpg",
-  "t-nagar": "https://upload.wikimedia.org/wikipedia/commons/0/0f/T_Nagar_Chennai.jpg",
-  "kk-nagar": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Sivan-Park-KK-Nagar-Chennai-Beginning.JPG",
-  perambur: "https://upload.wikimedia.org/wikipedia/commons/b/bb/Perambur_railway_station.jpg",
-  porur: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Porur_Lake_Chennai.jpg",
+  velachery: "/images/areas/velachery.jpg",
+  "anna-nagar": "/images/areas/anna-nagar.jpg",
+  adyar: "/images/areas/adyar.jpg",
+  tambaram: "/images/areas/tambaram.jpeg",
+  "rs-puram": "/images/areas/rs-puram.jpg",
+  "t-nagar": "/images/areas/t-nagar.jpg",
+  "kk-nagar": "/images/areas/kk-nagar.jpg",
+  perambur: "/images/areas/perambur.jpg",
+  srirangam: "/images/areas/srirangam.jpg",
+  "saibaba-colony": "/images/areas/saibaba-colony.jpg",
+  singanallur: "/images/areas/singanallur.jpg",
+  "thillai-nagar": "/images/areas/thillai-nagar.jpg",
 };
 const getAreaImg = (slug) =>
-  AREA_IMAGES[slug] || "https://upload.wikimedia.org/wikipedia/commons/1/10/Anna_Nagar_Tower_Chennai.jpg";
+  AREA_IMAGES[slug] || "/images/areas/default.jpg";
 
 /* ── Stat chip in header ──────────────────────────── */
 function HeaderStat({ icon, count, label, color }) {
@@ -389,12 +393,13 @@ export default function AreaDetail() {
       <div className="px-4 pt-2 pb-3">
         <div className="flex items-start gap-4">
           {/* Area avatar */}
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 border-slate-200 dark:border-slate-600">
-            <img
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 border-slate-200 dark:border-slate-600 relative bg-slate-100">
+            <Image
               src={getAreaImg(slug)}
               alt={areaName}
-              className="w-full h-full object-cover"
-              onError={(e) => { e.target.src = "https://upload.wikimedia.org/wikipedia/commons/1/10/Anna_Nagar_Tower_Chennai.jpg"; }}
+              fill
+              sizes="(max-width: 640px) 56px, 64px"
+              className="object-cover"
             />
           </div>
 
