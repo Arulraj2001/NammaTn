@@ -345,14 +345,15 @@ export default function Home() {
               <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg bg-white dark:bg-slate-800" style={{ height: "300px" }}>
                 <InteractiveHomeMap items={allMapItems} userLocation={userLocation} />
                 {/* View full map link */}
-                <div className="absolute bottom-3 right-3 z-20">
+                <div className="absolute top-3 right-3 z-20">
                   <Link to="/explore"
                     className="flex items-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-all">
                     {T("View full map", "முழு வரைபடம்")} <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
+                {/* Floating TN Today Card */}
+                <TnTodayCard className="absolute bottom-3 right-3 z-20" />
               </div>
-              <TnTodayCard />
             </div>
           </div>
         </div>
