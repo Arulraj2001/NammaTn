@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import UserMenu from "@/components/auth/UserMenu";
 import { useQuery } from "@tanstack/react-query";
 import { getSettingsMap } from "@/services/admin/settings";
+import { useTheme } from "@/app/providers";
 
 const MAIN_NAV = [
   { path: "/", en: "📍 Map", ta: "📍 வரைபடம்" },
@@ -64,7 +65,8 @@ const MEGA_GROUPS = [
   },
 ];
 
-export default function Navbar({ theme, toggleTheme }) {
+export default function Navbar() {
+  const { theme, toggleTheme } = useTheme();
   const [megaOpen, setMegaOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { lang, setLang } = useLanguage();
@@ -106,9 +108,7 @@ export default function Navbar({ theme, toggleTheme }) {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TN</span>
-              </div>
+              <img src="/apple-touch-icon.png" alt="NammaTN" className="w-8 h-8 rounded-lg object-contain" />
               <div className="hidden sm:block">
                 <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">NammaTN</span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-none block">

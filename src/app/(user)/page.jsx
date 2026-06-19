@@ -1,8 +1,10 @@
-"use client";
 import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import Home from '@/views/Home';
 
-const Home = nextDynamic(() => import('@/views/Home'), { ssr: false });
+export const metadata = {
+  title: "NammaTN – Know what's happening in your area right now",
+  description: "Report civic issues, see live alerts, find stays & jobs in Tamil Nadu. All in one place, verified by citizens.",
+};
 
 function HomeSkeleton() {
   return (

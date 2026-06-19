@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -17,7 +19,7 @@ async function fetchAreaPosts(areaSlug) {
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   let q = supabase
     .from("post")
-    .select("id, civic_receipt_status, category_slug, post_type, created_date, status")
+    .select("id, civic_status, category_slug, post_type, created_date, status")
     .gte("created_date", since)
     .order("created_date", { ascending: false })
     .limit(500);
@@ -59,6 +61,7 @@ async function fetchAreaScams(areaSlug) {
 
 /* ── persisted area preference ─────────────────────── */
 function getSavedArea() {
+  if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem("ntn_selected_area");
     return raw ? JSON.parse(raw) : null;
@@ -67,6 +70,7 @@ function getSavedArea() {
   }
 }
 function saveArea(area) {
+  if (typeof window === 'undefined') return;
   try {
     localStorage.setItem("ntn_selected_area", JSON.stringify(area));
   } catch {}
@@ -163,13 +167,19 @@ export default function MyAreaPulse({ allAreas = [] }) {
 
   const [selectedArea, setSelectedArea] = useState(() => getSavedArea());
   const [showPicker, setShowPicker] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   /* Persist whenever changed */
   useEffect(() => {
     if (selectedArea) saveArea(selectedArea);
   }, [selectedArea]);
 
-  const areaSlug = selectedArea?.slug || null;
+  const activeArea = mounted ? selectedArea : null;
+  const areaSlug = activeArea?.slug || null;
 
   /* ── Live data queries ─────────────────────────── */
   const { data: posts = [], isLoading: postsLoading } = useQuery({
@@ -228,7 +238,7 @@ export default function MyAreaPulse({ allAreas = [] }) {
       color: "text-red-600 dark:text-red-400",
       bg: "bg-red-50 dark:bg-red-900/20",
       border: "border-red-100 dark:border-red-900/30",
-      to: selectedArea ? `/area/${areaSlug}` : "/explore",
+      to: activeArea ? `/area/${areaSlug}` : "/explore",
     },
     {
       count: alerts,
@@ -268,12 +278,12 @@ export default function MyAreaPulse({ allAreas = [] }) {
       color: "text-green-600 dark:text-green-400",
       bg: "bg-green-50 dark:bg-green-900/20",
       border: "border-green-100 dark:border-green-900/30",
-      to: selectedArea ? `/area/${areaSlug}` : "/explore",
+      to: activeArea ? `/area/${areaSlug}` : "/explore",
     },
   ];
 
-  const areaLabel = selectedArea
-    ? `${selectedArea.name_en}${selectedArea.district_name_en ? `, ${selectedArea.district_name_en}` : ""}`
+  const areaLabel = activeArea
+    ? `${activeArea.name_en}${activeArea.district_name_en ? `, ${activeArea.district_name_en}` : ""}`
     : T("All of Tamil Nadu", "தமிழ்நாடு முழுவதும்");
 
   return (
@@ -319,7 +329,7 @@ export default function MyAreaPulse({ allAreas = [] }) {
 
             {/* View My Area → */}
             <Link
-              to={selectedArea ? `/area/${areaSlug}` : "/areas"}
+              to={activeArea ? `/area/${areaSlug}` : "/areas"}
               className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
             >
               {T("View My Area", "என் பகுதி பார்")} <ArrowRight className="w-3.5 h-3.5" />
@@ -327,7 +337,7 @@ export default function MyAreaPulse({ allAreas = [] }) {
           </div>
 
           {/* 5 stat cards */}
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {STATS.map((stat, i) => (
               <PulseCard key={i} {...stat} loading={loading} />
             ))}

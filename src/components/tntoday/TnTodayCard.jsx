@@ -42,7 +42,7 @@ export default function TnTodayCard({ className }) {
 
   if (isLoading) {
     return (
-      <div className={cn("bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-2xl animate-pulse flex flex-col gap-2.5 w-[240px] sm:w-[260px] md:w-[280px]", className)}>
+      <div className={cn("bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-2xl animate-pulse flex flex-col gap-2.5 w-[240px]", className)}>
         <div className="h-24 sm:h-26 bg-slate-200 dark:bg-slate-700 rounded-xl" />
         <div className="space-y-2">
           <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/3" />
@@ -61,7 +61,7 @@ export default function TnTodayCard({ className }) {
     return (
       <div
         className={cn(
-          "block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300 w-[200px] sm:w-[220px] md:w-[230px] group relative text-left z-20",
+          "block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300 w-[240px] group relative text-left z-20",
           className
         )}
       >
@@ -70,7 +70,7 @@ export default function TnTodayCard({ className }) {
           onClick={handleClose}
           type="button"
           className="absolute top-2 right-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350 transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 z-30"
-          title="Dismiss"
+          aria-label="Dismiss today's story"
         >
           <X className="w-3 h-3" />
         </button>
@@ -100,7 +100,7 @@ export default function TnTodayCard({ className }) {
     <Link 
       to={`/tn-today/${article.slug}`}
       className={cn(
-        "block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-600 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl hover:-translate-y-0.5 transition-all duration-300 w-[240px] sm:w-[260px] md:w-[280px] group relative text-left z-20",
+        "block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-600 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl hover:-translate-y-0.5 transition-all duration-300 w-[240px] group relative text-left z-20",
         className
       )}
     >
@@ -109,7 +109,7 @@ export default function TnTodayCard({ className }) {
         onClick={handleClose}
         type="button"
         className="absolute top-2.5 right-2.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors p-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-sm z-30"
-        title="Dismiss"
+        aria-label="Dismiss today's story"
       >
         <X className="w-3 h-3" />
       </button>

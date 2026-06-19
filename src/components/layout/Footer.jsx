@@ -115,9 +115,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="flex-shrink-0 w-full lg:w-64 flex flex-col items-center lg:items-start text-center lg:text-left">
             <Link to="/" className="inline-flex items-center gap-2 mb-2">
-              <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-extrabold text-xs">TN</span>
-              </div>
+              <img src="/apple-touch-icon.png" alt="NammaTN" className="w-7 h-7 rounded-lg object-contain flex-shrink-0" />
               <span className="font-extrabold text-blue-600 text-base leading-none">NammaTN</span>
             </Link>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">

@@ -234,3 +234,52 @@ export function injectWebPageStructuredData({ name, description, url, breadcrumb
 export function cleanupStructuredData() {
   document.querySelectorAll('script[id^="tn-ld-"]').forEach((el) => el.remove());
 }
+
+/**
+ * Apply runtime SEO settings fetched from the admin `site_setting` table.
+ * Called once on app mount from AuthContext.
+ * @param {Record<string, string>} settings — key/value map from getSettingsMap()
+ */
+export function applySEOSettings(settings) {
+  if (!settings || typeof window === 'undefined') return;
+
+  // Google AdSense publisher ID — injected at runtime from admin panel
+  const adsPubId = settings.adsense_publisher_id || settings.google_adsense_id;
+  if (adsPubId && !document.getElementById('adsense-script')) {
+    const script = document.createElement('script');
+    script.id = 'adsense-script';
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsPubId}`;
+    document.head.appendChild(script);
+  }
+
+  // Google Analytics / Tag Manager
+  const gaId = settings.google_analytics_id || settings.ga_measurement_id;
+  if (gaId && !document.getElementById('gtag-script')) {
+    const script = document.createElement('script');
+    script.id = 'gtag-script';
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+    document.head.appendChild(script);
+    const init = document.createElement('script');
+    init.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${gaId}');`;
+    document.head.appendChild(init);
+  }
+
+  // Custom site title override
+  if (settings.site_title) {
+    document.title = settings.site_title;
+  }
+
+  // Custom meta description override
+  if (settings.site_description) {
+    setMeta('description', settings.site_description);
+    setMeta('og:description', settings.site_description, 'property');
+  }
+
+  // Google Site Verification
+  if (settings.google_site_verification) {
+    setMeta('google-site-verification', settings.google_site_verification);
+  }
+}

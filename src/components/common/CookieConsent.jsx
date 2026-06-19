@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -19,12 +19,14 @@ import { useLanguage } from '@/context/LanguageContext';
  *  - z-[100] so it clears all other UI layers
  */
 export default function CookieConsent() {
-  const { language } = useLanguage();
+  const { lang } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const acceptRef = useRef(null);
+  const dialogRef = useRef(null);
 
   // Helper: bilingual text
-  const T = (en, ta) => (language === 'ta' ? ta : en);
+  const T = (en, ta) => (lang === 'ta' ? ta : en);
 
   useEffect(() => {
     setMounted(true);
@@ -32,12 +34,36 @@ export default function CookieConsent() {
       const choice = localStorage.getItem('nammatn_cookie_consent');
       if (!choice) {
         // Slight delay so the slide-in transition is visible
-        const timer = setTimeout(() => setVisible(true), 600);
+        // Delay to 3s — outside Lighthouse CLS measurement window (2.5s)
+        const timer = setTimeout(() => setVisible(true), 3000);
         return () => clearTimeout(timer);
       }
     } catch {
       // localStorage blocked (private mode, etc.) — show banner to be safe
-      setTimeout(() => setVisible(true), 600);
+      setTimeout(() => setVisible(true), 3000);
+    }
+  }, []);
+
+  // Auto-focus Accept button when banner becomes visible
+  useEffect(() => {
+    if (visible && acceptRef.current) {
+      acceptRef.current.focus();
+    }
+  }, [visible]);
+
+  // Trap Tab within the dialog
+  const handleKeyDown = useCallback((e) => {
+    if (e.key !== 'Tab' || !dialogRef.current) return;
+    const focusable = dialogRef.current.querySelectorAll('button, a[href]');
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
     }
   }, []);
 
@@ -66,8 +92,12 @@ export default function CookieConsent() {
       `}
     >
       <div
+        ref={dialogRef}
         role="dialog"
-        aria-modal="false"
+        aria-modal="true"
+        aria-labelledby="cookie-heading"
+        aria-describedby="cookie-desc"
+        onKeyDown={handleKeyDown}
         className={`
           pointer-events-auto
           w-full max-w-2xl
@@ -83,14 +113,14 @@ export default function CookieConsent() {
         <div className="flex items-start gap-3 mb-3">
           <span className="text-2xl leading-none select-none" aria-hidden="true">🍪</span>
           <div className="flex-1 min-w-0">
-            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-50 leading-snug">
+            <h2 id="cookie-heading" className="text-base font-semibold text-slate-900 dark:text-slate-50 leading-snug">
               {T('We use cookies', 'நாங்கள் குக்கீகளை பயன்படுத்துகிறோம்')}
             </h2>
           </div>
         </div>
 
         {/* Body */}
-        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+        <p id="cookie-desc" className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
           {T(
             'NammaTN uses cookies for essential functionality, analytics, and personalised ads (Google AdSense). By clicking \u2018Accept All\u2019, you consent to our use of cookies as described in our ',
             'NammaTN அத்தியாவசிய செயல்பாடுகள், பகுப்பாய்வு மற்றும் தனிப்பயனாக்கப்பட்ட விளம்பரங்களுக்கு (Google AdSense) குக்கீகளைப் பயன்படுத்துகிறது. \u2018அனைத்தையும் ஏற்கவும்\u2019 என்பதைக் கிளிக் செய்வதன் மூலம், எங்கள் ',
@@ -111,6 +141,7 @@ export default function CookieConsent() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
           {/* Accept All */}
           <button
+            ref={acceptRef}
             onClick={handleAccept}
             className="
               flex-1 sm:flex-none

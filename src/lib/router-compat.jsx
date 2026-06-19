@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext, useEffect } from 'react';
 import NextLink from 'next/link';
 import { useRouter as useNextRouter, useParams as useNextParams, usePathname, useSearchParams as useNextSearchParams } from 'next/navigation';

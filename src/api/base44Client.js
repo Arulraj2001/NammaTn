@@ -17,9 +17,18 @@ const entityProxy = new Proxy({}, {
     return {
       async create(data) {
         try {
+          // Strip client-side properties that don't exist in database tables
+          // Prevents PGRST204 "column not found in schema cache" errors
+          const STRIP_KEYS = [
+            'is_pending_review', 'author_id', 'author_name', 'author_avatar',
+            'author_email', 'user_display_name', 'user_avatar_url',
+          ];
+          const cleanData = { ...data };
+          for (const key of STRIP_KEYS) delete cleanData[key];
+
           const { data: created, error } = await supabase
             .from(tableName)
-            .insert(data)
+            .insert(cleanData)
             .select()
             .single();
           if (error) {

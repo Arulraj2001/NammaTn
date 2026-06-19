@@ -72,21 +72,21 @@ function statusBadge(s) {
 
 /* ── Area header image ──────────────────────────────── */
 const AREA_IMAGES = {
-  velachery: "/images/areas/velachery.jpg",
-  "anna-nagar": "/images/areas/anna-nagar.jpg",
-  adyar: "/images/areas/adyar.jpg",
-  tambaram: "/images/areas/tambaram.jpeg",
-  "rs-puram": "/images/areas/rs-puram.jpg",
-  "t-nagar": "/images/areas/t-nagar.jpg",
-  "kk-nagar": "/images/areas/kk-nagar.jpg",
-  perambur: "/images/areas/perambur.jpg",
-  srirangam: "/images/areas/srirangam.jpg",
-  "saibaba-colony": "/images/areas/saibaba-colony.jpg",
-  singanallur: "/images/areas/singanallur.jpg",
-  "thillai-nagar": "/images/areas/thillai-nagar.jpg",
+  velachery: "/images/areas/velachery.webp",
+  "anna-nagar": "/images/areas/anna-nagar.webp",
+  adyar: "/images/areas/adyar.webp",
+  tambaram: "/images/areas/tambaram.webp",
+  "rs-puram": "/images/areas/rs-puram.webp",
+  "t-nagar": "/images/areas/t-nagar.webp",
+  "kk-nagar": "/images/areas/kk-nagar.webp",
+  perambur: "/images/areas/perambur.webp",
+  srirangam: "/images/areas/srirangam.webp",
+  "saibaba-colony": "/images/areas/saibaba-colony.webp",
+  singanallur: "/images/areas/singanallur.webp",
+  "thillai-nagar": "/images/areas/thillai-nagar.webp",
 };
 const getAreaImg = (slug) =>
-  AREA_IMAGES[slug] || "/images/areas/default.jpg";
+  AREA_IMAGES[slug] || "/images/areas/default.webp";
 
 /* ── Stat chip in header ──────────────────────────── */
 function HeaderStat({ icon, count, label, color }) {

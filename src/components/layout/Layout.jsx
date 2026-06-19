@@ -1,3 +1,5 @@
+"use client";
+
 import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -5,11 +7,11 @@ import Footer from "./Footer";
 import MobileNav from "./MobileNav";
 import CookieConsent from "@/components/common/CookieConsent";
 
-export default function Layout({ theme, toggleTheme }) {
+export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">
       <Suspense fallback={<div className="h-16 w-full bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800" />}>
-        <Navbar theme={theme} toggleTheme={toggleTheme} />
+        <Navbar />
       </Suspense>
       <main className="flex-1 pt-16 pb-20 md:pb-0">
         <Suspense fallback={
