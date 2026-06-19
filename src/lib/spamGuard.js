@@ -1,9 +1,9 @@
-// Anti-spam and content safety utilities for TN Voice community
+// Anti-spam and content safety utilities for NammaTN community
 
 const ABUSIVE_PATTERNS = [
   /\b(spam|scam|hack|phish)\b/i,
   /(.)\1{6,}/, // Repeated characters: aaaaaaa
-  /http[s]?:\/\/(?!tnvoice)/i, // External links (basic)
+  /http[s]?:\/\/(?!nammatn)/i, // External links (basic)
 ];
 
 const FLOOD_WINDOW_MS = 30000; // 30 seconds

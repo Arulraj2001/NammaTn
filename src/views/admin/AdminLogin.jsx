@@ -64,7 +64,7 @@ export default function AdminLogin() {
             <span className="text-white font-bold">TN</span>
           </div>
           <h1 className="text-xl font-bold text-slate-900">Admin Login</h1>
-          <p className="text-sm text-slate-500 mt-1">TN Voice Admin Panel</p>
+          <p className="text-sm text-slate-500 mt-1">NammaTN Admin Panel</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

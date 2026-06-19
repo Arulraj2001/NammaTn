@@ -12,10 +12,10 @@ const SECTIONS = [
     title: "🌐 General",
     category: "general",
     fields: [
-      { key: "site_title", label: "Site Title", placeholder: "TN Voice" },
+      { key: "site_title", label: "Site Title", placeholder: "NammaTN" },
       { key: "site_description", label: "Site Description", placeholder: "Tamil Nadu civic platform" },
-      { key: "contact_email", label: "Admin Contact Email", placeholder: "admin@tnvoice.in" },
-      { key: "support_email", label: "Support Email (for replies)", placeholder: "support@tnvoice.in" },
+      { key: "contact_email", label: "Admin Contact Email", placeholder: "admin@nammatn.in" },
+      { key: "support_email", label: "Support Email (for replies)", placeholder: "support@nammatn.in" },
       { key: "site_logo_url", label: "Site Logo URL", placeholder: "https://..." },
     ],
   },
@@ -23,10 +23,10 @@ const SECTIONS = [
     title: "🔍 SEO Defaults",
     category: "seo",
     fields: [
-      { key: "meta_title", label: "Default Meta Title", placeholder: "TN Voice - Tamil Nadu Platform" },
+      { key: "meta_title", label: "Default Meta Title", placeholder: "NammaTN - Tamil Nadu Platform" },
       { key: "meta_description", label: "Default Meta Description", placeholder: "Community-driven civic platform for Tamil Nadu" },
       { key: "og_image", label: "Default OG Image URL", placeholder: "https://..." },
-      { key: "canonical_url", label: "Canonical Base URL", placeholder: "https://tnvoice.in" },
+      { key: "canonical_url", label: "Canonical Base URL", placeholder: "https://nammatn.in" },
     ],
   },
   {

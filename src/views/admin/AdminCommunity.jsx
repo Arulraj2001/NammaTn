@@ -650,10 +650,10 @@ function DonationSettingsPanel() {
   });
 
   const FIELDS = [
-    { key: "upi_id", label: "UPI ID", placeholder: "tnvoice@upi", category: "upi" },
-    { key: "upi_name", label: "UPI Display Name", placeholder: "TN Voice", category: "upi" },
+    { key: "upi_id", label: "UPI ID", placeholder: "nammatn@upi", category: "upi" },
+    { key: "upi_name", label: "UPI Display Name", placeholder: "NammaTN", category: "upi" },
     { key: "qr_image_url", label: "QR Code Image URL", placeholder: "https://...", category: "upi" },
-    { key: "donation_message", label: "Donation Page Message", placeholder: "Your support keeps TN Voice free...", category: "general" },
+    { key: "donation_message", label: "Donation Page Message", placeholder: "Your support keeps NammaTN free...", category: "general" },
     { key: "donation_enabled", label: "Donations Enabled (true/false)", placeholder: "true", category: "donation" },
     { key: "min_donation_amount", label: "Minimum Donation Amount (₹)", placeholder: "10", category: "donation" },
     { key: "buymecoffee_enabled", label: "Buy Me a Coffee Enabled (true/false)", placeholder: "false", category: "donation" },
