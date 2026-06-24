@@ -6,6 +6,7 @@
  * Uses react-quill which is already installed in the project.
  */
 import React, { useState, useRef, useCallback } from "react";
+import DOMPurify from "dompurify";
 import { Eye, Code, Edit3, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -104,7 +105,7 @@ export default function RichEditor({ value = "", onChange, placeholder = "Start 
             contentEditable
             suppressContentEditableWarning
             className={cn("p-4 outline-none text-sm text-slate-800 dark:text-slate-200 leading-relaxed", minHeight)}
-            dangerouslySetInnerHTML={{ __html: value }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(value) }}
             onInput={(e) => onChange?.(e.currentTarget.innerHTML)}
           />
         )}
@@ -134,7 +135,7 @@ export default function RichEditor({ value = "", onChange, placeholder = "Start 
           "prose-img:rounded-xl prose-img:shadow-md",
           mode !== "preview" && "hidden"
         )}
-        dangerouslySetInnerHTML={{ __html: value || "<p class='text-slate-400'>Nothing to preview yet...</p>" }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(value || "<p class='text-slate-400'>Nothing to preview yet...</p>") }}
       />
     </div>
   );

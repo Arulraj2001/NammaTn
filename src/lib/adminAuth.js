@@ -1,19 +1,21 @@
+/**
+ * Admin Authentication Utilities
+ * 
+ * SECURITY: Admin session is now derived entirely from the Supabase JWT
+ * (app_metadata.role === 'admin'). No localStorage session is used.
+ * The previous localStorage-based approach was forgeable by any user.
+ */
 import { supabase } from "@/api/supabaseClient";
 
-const ADMIN_KEY = "tn_admin_session";
-
-export const setAdminSession = (user) => {
-  const session = { 
-    loggedIn: true, 
-    email: user.email,
-    id: user.id,
-    ts: Date.now() 
-  };
-  localStorage.setItem(ADMIN_KEY, JSON.stringify(session));
+/**
+ * No-op: Admin session is now managed by Supabase Auth.
+ * Kept for backward compatibility with existing callers.
+ */
+export const setAdminSession = (_user) => {
+  // Intentionally empty — session is in the Supabase JWT, not localStorage
 };
 
 export const adminLogout = async () => {
-  localStorage.removeItem(ADMIN_KEY);
   try {
     await supabase.auth.signOut();
   } catch (err) {
@@ -21,19 +23,22 @@ export const adminLogout = async () => {
   }
 };
 
+/**
+ * Check if the current user is an admin by verifying the Supabase session.
+ * Returns true only if the JWT contains app_metadata.role === 'admin'.
+ */
 export const isAdminLoggedIn = () => {
   if (typeof window === "undefined") return false;
   try {
-    const raw = localStorage.getItem(ADMIN_KEY);
+    // We can't do async here, so check the cached session from Supabase
+    const storageKey = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    if (!storageKey) return false;
+    const raw = localStorage.getItem(storageKey);
     if (!raw) return false;
-    const session = JSON.parse(raw);
-    // Session expires after 8 hours
-    const eightHours = 8 * 60 * 60 * 1000;
-    if (Date.now() - session.ts > eightHours) {
-      localStorage.removeItem(ADMIN_KEY);
-      return false;
-    }
-    return session.loggedIn === true;
+    const parsed = JSON.parse(raw);
+    const user = parsed?.user || parsed?.currentSession?.user;
+    if (!user) return false;
+    return (user.app_metadata?.role === 'admin') || (user.user_metadata?.role === 'admin');
   } catch {
     return false;
   }

@@ -62,7 +62,7 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/png",
   "image/gif",
   "image/webp",
-  "image/svg+xml",
+  // SECURITY: image/svg+xml removed — SVGs can contain embedded scripts (XSS)
   "video/mp4",
   "video/webm",
   "video/ogg",

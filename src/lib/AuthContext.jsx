@@ -12,7 +12,7 @@ const mapSupabaseUser = (sbUser) => {
     email: sbUser.email,
     full_name: sbUser.user_metadata?.full_name || sbUser.user_metadata?.display_name || sbUser.email?.split('@')[0] || 'User',
     profile_image: sbUser.user_metadata?.avatar_url || sbUser.user_metadata?.profile_image || null,
-    role: sbUser.user_metadata?.role || 'user'
+    role: sbUser.app_metadata?.role || sbUser.user_metadata?.role || 'user'
   };
 };
 

@@ -37,7 +37,7 @@ export default function AdminLogin() {
       }
 
       if (data?.user) {
-        const role = data.user.user_metadata?.role;
+        const role = data.user.app_metadata?.role || data.user.user_metadata?.role;
         if (role === "admin") {
           navigate("/admin/dashboard", { replace: true });
         } else {

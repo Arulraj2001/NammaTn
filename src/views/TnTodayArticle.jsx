@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import DOMPurify from "dompurify";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getTnTodayBySlug, getPublishedTnToday, incrementTnTodayView } from "@/services/tnToday";
@@ -323,7 +324,7 @@ export default function TnTodayArticle() {
                   "prose-table:border-collapse prose-td:border prose-td:border-slate-200 dark:prose-td:border-slate-700 prose-td:px-3 prose-td:py-2",
                   "prose-th:bg-slate-50 dark:prose-th:bg-slate-800 prose-th:border prose-th:border-slate-200 dark:prose-th:border-slate-700 prose-th:px-3 prose-th:py-2"
                 )}
-                dangerouslySetInnerHTML={{ __html: article.content }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
               />
             )}
 
