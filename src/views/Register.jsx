@@ -26,12 +26,22 @@ export default function Register() {
       setError("Passwords do not match");
       return;
     }
+    // Password strength validation
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+      setError("Password must include uppercase, lowercase, and a number");
+      return;
+    }
     setLoading(true);
     try {
       await base44.auth.register({ email, password });
       setShowOtp(true);
     } catch (err) {
-      setError(err.message || "Registration failed");
+      // Generic message to prevent account enumeration
+      setError("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
       }
     } catch (error) {
-      console.error('User auth check failed:', error);
+      // Silently handle auth check failures — do not log to browser console
       setUser(null);
       setIsAuthenticated(false);
     } finally {
