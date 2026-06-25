@@ -1,5 +1,5 @@
 /**
- * NammaTN234 Receipt Credibility Score
+ * VizhiTN Receipt Credibility Score
  *
  * Computes a weighted credibility score from four independent signals:
  *   - Community verification count

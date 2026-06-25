@@ -68,7 +68,7 @@ const MOBILE_MENU_GROUPS = [
     en_title: "Help",
     ta_title: "உதவி",
     items: [
-      { path: "/help", icon: HelpCircle, en: "Help", ta: "உதவி", desc_en: "How to use NammaTN234", desc_ta: "NammaTN234 பயன்படுத்துவது எப்படி" },
+      { path: "/help", icon: HelpCircle, en: "Help", ta: "உதவி", desc_en: "How to use VizhiTN", desc_ta: "VizhiTN பயன்படுத்துவது எப்படி" },
       { path: "/support", icon: Heart, en: "Support", ta: "ஆதரவு", desc_en: "Support the platform", desc_ta: "தளத்தை ஆதரிக்கவும்" },
       { path: "/contact", icon: MessageCircle, en: "Contact", ta: "தொடர்பு", desc_en: "Reach our team", desc_ta: "எங்கள் குழுவை தொடர்பு கொள்ளுங்கள்" },
     ],
@@ -163,7 +163,7 @@ export default function MobileNav() {
                 {/* Header */}
                 <div className="flex items-center justify-between py-3 mb-2">
                   <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                    {T("Explore NammaTN234", "NammaTN234 ஆராய்க")}
+                    {T("Explore VizhiTN", "VizhiTN ஆராய்க")}
                   </h2>
                   <button
                     onClick={() => setMenuOpen(false)}

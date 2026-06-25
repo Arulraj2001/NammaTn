@@ -142,7 +142,7 @@ export default function AuthModal() {
           <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
             <span className="font-bold text-lg">TN</span>
           </div>
-          <h2 className="text-lg font-bold">Join NammaTN234</h2>
+          <h2 className="text-lg font-bold">Join VizhiTN</h2>
           <p className="text-blue-100 text-sm mt-1">
             {reason || "Sign in to participate in the community"}
           </p>

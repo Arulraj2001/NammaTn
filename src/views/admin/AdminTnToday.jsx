@@ -41,7 +41,7 @@ const STATUS_COLORS = {
 
 const EMPTY_FORM = {
   title: "", slug: "", subtitle: "", featured_image: "", category: "general",
-  author_name: "NammaTN234 Editorial Team", publish_date: "", status: "draft",
+  author_name: "VizhiTN Editorial Team", publish_date: "", status: "draft",
   reading_time: 5, content: "", summary: "", why_it_matters: "",
   key_facts: "", timeline: "", official_sources: "", related_civic_links: "",
   seo_title: "", seo_description: "", seo_keywords: "", canonical_url: "",
@@ -416,7 +416,7 @@ export default function AdminTnToday() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Field label="Author Name">
                 <Input value={form.author_name} onChange={e => setField("author_name", e.target.value)}
-                  placeholder="NammaTN234 Editorial Team" />
+                  placeholder="VizhiTN Editorial Team" />
               </Field>
               <Field label="Reading Time (min)">
                 <Input type="number" min={1} value={form.reading_time}
@@ -441,7 +441,7 @@ export default function AdminTnToday() {
               <input type="checkbox" checked={form.is_featured} onChange={e => setField("is_featured", e.target.checked)} className="accent-amber-500 w-4 h-4" />
               <div>
                 <p className="text-sm font-medium text-amber-900 dark:text-amber-200">📌 Pin to Homepage</p>
-                <p className="text-xs text-amber-700 dark:text-amber-400">Show this article as the featured card on the NammaTN234 homepage</p>
+                <p className="text-xs text-amber-700 dark:text-amber-400">Show this article as the featured card on the VizhiTN homepage</p>
               </div>
             </label>
           </div>
@@ -508,7 +508,7 @@ export default function AdminTnToday() {
           </Accordion>
 
           <Accordion title="Related Civic Activity" icon={Globe}>
-            <Field label="Related Links on NammaTN234" hint="Link to related discussions, areas, or alerts">
+            <Field label="Related Links on VizhiTN" hint="Link to related discussions, areas, or alerts">
               <textarea value={form.related_civic_links} onChange={e => setField("related_civic_links", e.target.value)}
                 rows={4} placeholder={"Metro Construction Issues | /community\nTransport Discussions | /community?topic=transport\nChennai Area Updates | /area/chennai"}
                 className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-mono bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
@@ -546,7 +546,7 @@ export default function AdminTnToday() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Canonical URL" hint="Overrides auto-generated canonical">
                 <Input value={form.canonical_url} onChange={e => setField("canonical_url", e.target.value)}
-                  placeholder={`https://nammatn234234.in/tn-today/${form.slug}`} />
+                  placeholder={`https://vizhitn.in/tn-today/${form.slug}`} />
               </Field>
               <Field label="Social Share Image URL" hint="Fallback to featured image if blank">
                 <Input value={form.social_image} onChange={e => setField("social_image", e.target.value)}
@@ -560,9 +560,9 @@ export default function AdminTnToday() {
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
               <p className="text-xs font-semibold text-slate-500 mb-3">GOOGLE SEARCH PREVIEW</p>
               <div className="border border-slate-200 rounded-xl p-4 bg-white">
-                <p className="text-[13px] text-slate-500 truncate">nammatn234234.in › tn-today › {form.slug}</p>
+                <p className="text-[13px] text-slate-500 truncate">vizhitn.in › tn-today › {form.slug}</p>
                 <p className="text-blue-700 text-lg font-medium leading-tight mt-0.5 truncate">
-                  {form.seo_title || form.title} | NammaTN234
+                  {form.seo_title || form.title} | VizhiTN
                 </p>
                 <p className="text-slate-600 text-sm mt-0.5 line-clamp-2">
                   {form.seo_description || form.subtitle || "Article description will appear here..."}

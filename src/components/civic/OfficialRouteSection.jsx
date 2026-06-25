@@ -51,8 +51,8 @@ export default function OfficialRouteSection({ post }) {
           <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
           <span>
             {T(
-              "NammaTN234 is a public civic documentation platform. This routing is for guidance only — please file your complaint directly with the government portal.",
-              "NammaTN234 ஒரு பொது குடிமை ஆவண தளம். இந்த வழிகாட்டல் உதவிக்காக மட்டுமே — நேரடியாக அரசு போர்ட்டலில் புகார் அளிக்கவும்."
+              "VizhiTN is a public civic documentation platform. This routing is for guidance only — please file your complaint directly with the government portal.",
+              "VizhiTN ஒரு பொது குடிமை ஆவண தளம். இந்த வழிகாட்டல் உதவிக்காக மட்டுமே — நேரடியாக அரசு போர்ட்டலில் புகார் அளிக்கவும்."
             )}
           </span>
         </p>

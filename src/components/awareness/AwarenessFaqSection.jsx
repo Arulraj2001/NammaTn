@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 const FAQS = [
   {
     id: "f1", col: "left",
-    q_en: "How do I file a complaint on NammaTN234?",
-    q_ta: "NammaTN234-ல் எப்படி புகார் பதிவு செய்வது?",
+    q_en: "How do I file a complaint on VizhiTN?",
+    q_ta: "VizhiTN-ல் எப்படி புகார் பதிவு செய்வது?",
     a_en: "Click 'Create Post' in the top menu. Select your district, ward, and issue category. Describe the problem with photos. Your post is public and also notified to relevant officials. You can track responses on your Dashboard.",
     a_ta: "மேல் மெனுவில் 'Create Post' கிளிக் செய்யுங்கள். மாவட்டம், வார்டு மற்றும் பிரச்சினை வகையை தேர்வு செய்யுங்கள். புகைப்படங்களுடன் பிரச்சினையை விவரிக்கவும்.",
   },

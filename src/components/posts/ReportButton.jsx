@@ -107,7 +107,7 @@ export default function ReportButton({ targetType, targetId, compact = false }) 
             <DialogTitle>Report Content</DialogTitle>
           </DialogHeader>
           {done ? (
-            <p className="text-center text-green-600 py-4 text-sm">✓ Report submitted. Thank you for keeping NammaTN234 safe!</p>
+            <p className="text-center text-green-600 py-4 text-sm">✓ Report submitted. Thank you for keeping VizhiTN safe!</p>
           ) : (
             <div className="space-y-3">
               <p className="text-xs text-slate-500">Select the reason that best describes the problem.</p>

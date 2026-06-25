@@ -186,7 +186,7 @@ export default function AwarenessPortalsPage() {
   const [copiedId, setCopiedId] = useState(null);
 
   usePageMeta({
-    title: "Official Government Portals Tamil Nadu | NammaTN234",
+    title: "Official Government Portals Tamil Nadu | VizhiTN",
     description: "Complete list of official Tamil Nadu government portals — TN e-Sevai, TNEB, TNPDS, RTI Online, CMS Grievance, CMCHIS, myScheme and more with direct links.",
   });
 

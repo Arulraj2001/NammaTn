@@ -464,7 +464,7 @@ function OrgsTab({ user, lang }) {
             </div>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${ST[g.status] || ST.pending}`}>{g.status}</span>
           </div>
-          {g.is_verified && <p className="text-xs text-blue-600 font-medium">✓ Verified by NammaTN234</p>}
+          {g.is_verified && <p className="text-xs text-blue-600 font-medium">✓ Verified by VizhiTN</p>}
           {g.status === "pending" && <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-2 py-1 mt-1">Request is under review. We'll contact you within 48 hours.</p>}
         </div>
       ))}

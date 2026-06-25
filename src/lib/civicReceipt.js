@@ -1,12 +1,12 @@
 /**
- * NammaTN234 Civic Receipt utilities
+ * VizhiTN Civic Receipt utilities
  */
 
 export const CIVIC_STATUSES = [
   {
     key: "reported",
-    label: "Reported on NammaTN234",
-    label_ta: "NammaTN234-ல் புகாரளிக்கப்பட்டது",
+    label: "Reported on VizhiTN",
+    label_ta: "VizhiTN-ல் புகாரளிக்கப்பட்டது",
     color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
     dot: "bg-blue-500",
     step: 1,
@@ -145,7 +145,7 @@ export const getDaysOpen = (createdDate) => {
  * @param {string} event_type - Machine type for icon selection (optional)
  * @param {string} actor_type - 'user' | 'admin' | 'system'
  */
-export const makeTimelineEvent = (event, by = "NammaTN234", event_type = "status_change", actor_type = "user") => ({
+export const makeTimelineEvent = (event, by = "VizhiTN", event_type = "status_change", actor_type = "user") => ({
   event,
   event_type,
   timestamp: new Date().toISOString(),
@@ -204,9 +204,9 @@ Issue: ${post.title_en}
 
 Description: ${post.content_en || ""}
 
-This issue was documented through NammaTN234 Civic Receipt ${post.civic_receipt_id || ""} on ${date}.
+This issue was documented through VizhiTN Civic Receipt ${post.civic_receipt_id || ""} on ${date}.
 
-Kindly inspect and resolve this issue at the earliest. Photo proof is available on NammaTN234 platform.
+Kindly inspect and resolve this issue at the earliest. Photo proof is available on VizhiTN platform.
 
 Thank you.`;
 };

@@ -466,7 +466,7 @@ export default function CommunityWins() {
   const T = (en, ta) => lang === "ta" ? ta : en;
 
   usePageMeta({
-    title: "Community Wins | NammaTN234",
+    title: "Community Wins | VizhiTN",
     description: "Verified civic improvements and resolved issues across Tamil Nadu — real progress made by real citizens.",
   });
 

@@ -16,14 +16,14 @@ const ALL_GUIDES = [
       "Check TANGEDCO's outage map at tnebltd.org to see if there's a planned shutdown.",
       "Call TANGEDCO complaint number: 94987 94987 (metro areas) or 1912 (rural).",
       "WhatsApp complaint: 98403 98403 with your Service Connection (SC) number.",
-      "Raise it on NammaTN234 so your neighbours can upvote and escalate together.",
+      "Raise it on VizhiTN so your neighbours can upvote and escalate together.",
     ],
     steps_ta: [
       "முதலில் உங்கள் வீட்டு மின் சர்க்யூட் பிரேக்கர் (MCB) சரிபார்க்கவும்.",
       "திட்டமிட்ட நிறுத்தம் உள்ளதா என tnebltd.org இல் சரிபார்க்கவும்.",
       "TANGEDCO புகார் எண்: 94987 94987 (நகரம்) அல்லது 1912 (கிராமம்) அழைக்கவும்.",
       "WhatsApp: 98403 98403 உங்கள் SC எண்ணுடன் புகார் அனுப்பவும்.",
-      "NammaTN234 இல் பதிவிட்டு அண்டை வீட்டினரையும் இணைக்கவும்.",
+      "VizhiTN இல் பதிவிட்டு அண்டை வீட்டினரையும் இணைக்கவும்.",
     ],
     contacts: [{ label: "TANGEDCO Helpline", number: "1912" }, { label: "Metro Complaint", number: "94987 94987" }],
     portal: "https://www.tnebltd.org",
@@ -92,7 +92,7 @@ const ALL_GUIDES = [
       "Call Anti-Corruption Helpline 1064 (DVAC, available 24×7).",
       "File online at vigilance.tn.gov.in — your identity is protected.",
       "File an RTI at rtionline.gov.in asking why your service is being delayed.",
-      "Also report on NammaTN234 — community exposure helps.",
+      "Also report on VizhiTN — community exposure helps.",
     ],
     steps_ta: [
       "லஞ்சம் கொடுக்காதீர்கள். அதிகாரியின் பெயர், பதவி, துறை கேளுங்கள்.",
@@ -100,7 +100,7 @@ const ALL_GUIDES = [
       "ஊழல் தடுப்பு உதவி 1064 (DVAC, 24×7) அழைக்கவும்.",
       "vigilance.tn.gov.in ல் ஆன்லைனில் புகார் அளிக்கவும் — அடையாளம் பாதுகாக்கப்படும்.",
       "ஏன் சேவை தாமதமாகிறது என்று rtionline.gov.in ல் RTI கோரிக்கை அனுப்புங்கள்.",
-      "NammaTN234 இலும் பதிவிடுங்கள் — சமூக அழுத்தம் பயனுள்ளது.",
+      "VizhiTN இலும் பதிவிடுங்கள் — சமூக அழுத்தம் பயனுள்ளது.",
     ],
     contacts: [{ label: "DVAC Helpline", number: "1064" }, { label: "CM Grievance", number: "1100" }],
     portal: "https://vigilance.tn.gov.in",
@@ -165,7 +165,7 @@ export default function AwarenessGuidesPage() {
   const [openId, setOpenId] = useState(null);
 
   usePageMeta({
-    title: "Citizen Guides — What To Do | NammaTN234",
+    title: "Citizen Guides — What To Do | VizhiTN",
     description: "Step-by-step guides for Tamil Nadu citizens: power cut, water supply, ration card, bribery reporting, medical emergency, government scheme application.",
   });
 

@@ -17,7 +17,7 @@ export default function Awareness() {
   const [searchQuery, setSearchQuery] = useState("");
 
   usePageMeta({
-    title: "Citizen Awareness | NammaTN234",
+    title: "Citizen Awareness | VizhiTN",
     description:
       "Citizen rights, government welfare schemes, emergency contacts, and civic resources for Tamil Nadu residents.",
   });

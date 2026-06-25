@@ -287,12 +287,12 @@ export default function PostDetail() {
               {/* Share Card */}
               <CivicShareCard post={post} />
 
-              {/* NammaTN234 positioning disclaimer */}
+              {/* VizhiTN positioning disclaimer */}
               <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center italic">
                   {T(
-                    "NammaTN234 does not replace government grievance systems. We help citizens document local issues, find the right authority, file better complaints, track progress, and verify real resolution with public proof.",
-                    "NammaTN234 அரசு குறைகோள் அமைப்புகளை மாற்றாது. உள்ளூர் சிக்கல்களை ஆவணப்படுத்தவும், சரியான அதிகாரியைக் கண்டுபிடிக்கவும், சிறந்த புகார்களை தாக்கல் செய்யவும், முன்னேற்றத்தை கண்காணிக்கவும் குடிமக்களுக்கு நாங்கள் உதவுகிறோம்."
+                    "VizhiTN does not replace government grievance systems. We help citizens document local issues, find the right authority, file better complaints, track progress, and verify real resolution with public proof.",
+                    "VizhiTN அரசு குறைகோள் அமைப்புகளை மாற்றாது. உள்ளூர் சிக்கல்களை ஆவணப்படுத்தவும், சரியான அதிகாரியைக் கண்டுபிடிக்கவும், சிறந்த புகார்களை தாக்கல் செய்யவும், முன்னேற்றத்தை கண்காணிக்கவும் குடிமக்களுக்கு நாங்கள் உதவுகிறோம்."
                   )}
                 </p>
               </div>

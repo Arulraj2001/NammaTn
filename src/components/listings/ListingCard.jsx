@@ -58,7 +58,7 @@ export default function ListingCard({ listing, featured }) {
         {/* Badges row — clear separation of Verified vs Sponsored vs Featured */}
         <div className="flex flex-wrap gap-1.5 mb-2">
           {listing.is_verified && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white" title="NammaTN234 reviewed basic listing details">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white" title="VizhiTN reviewed basic listing details">
               <BadgeCheck className="w-3 h-3" /> Verified
             </span>
           )}
@@ -148,7 +148,7 @@ export default function ListingCard({ listing, featured }) {
         {/* Badge disclaimer */}
         {(listing.is_verified || listing.is_sponsored || listing.is_featured) && (
           <p className="mt-2 text-[10px] text-slate-400 leading-relaxed">
-            {listing.is_verified && "Verified = NammaTN234 reviewed basic details. "}
+            {listing.is_verified && "Verified = VizhiTN reviewed basic details. "}
             {listing.is_sponsored && "Sponsored = Paid placement. "}
             {listing.is_featured && !listing.is_sponsored && "Featured = Highlighted placement. "}
             Always use your own judgment.

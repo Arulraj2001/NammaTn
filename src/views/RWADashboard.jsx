@@ -413,7 +413,7 @@ export default function RWADashboard() {
             {T("Privacy First. Data Stays With You.", "தனியுரிமை முதல். தரவு உங்களிடமே இருக்கும்.")}
           </p>
           <p className="text-xs text-green-700 dark:text-green-400 max-w-md mx-auto">
-            {T("NammaTN234 never sells community data. Reports are generated from public Civic Receipt data and do not include private user information.", "NammaTN234 சமூக தரவை விற்காது. அறிக்கைகள் பொது குடிமை ரசீது தரவிலிருந்து உருவாக்கப்படுகின்றன.")}
+            {T("VizhiTN never sells community data. Reports are generated from public Civic Receipt data and do not include private user information.", "VizhiTN சமூக தரவை விற்காது. அறிக்கைகள் பொது குடிமை ரசீது தரவிலிருந்து உருவாக்கப்படுகின்றன.")}
           </p>
         </div>
       </div>

@@ -122,8 +122,8 @@ const GROUPS = [
         icon: HelpCircle,
         en: "Help",
         ta: "உதவி",
-        desc_en: "Learn how to use NammaTN234, create Civic Receipts, verify issues, and track complaint progress.",
-        desc_ta: "NammaTN234 பயன்படுத்துவது, குடிமை ரசீதுகள் உருவாக்குவது எப்படி என்று அறிந்துகொள்ளுங்கள்.",
+        desc_en: "Learn how to use VizhiTN, create Civic Receipts, verify issues, and track complaint progress.",
+        desc_ta: "VizhiTN பயன்படுத்துவது, குடிமை ரசீதுகள் உருவாக்குவது எப்படி என்று அறிந்துகொள்ளுங்கள்.",
         cta_en: "Get Help",
         cta_ta: "உதவி பெறுங்கள்",
         bg: "bg-teal-50 dark:bg-teal-900/20",
@@ -138,8 +138,8 @@ const GROUPS = [
         icon: Heart,
         en: "Support",
         ta: "ஆதரவு",
-        desc_en: "Contact NammaTN234 support for account help, safety concerns, feature issues, or reporting problems.",
-        desc_ta: "கணக்கு உதவி, பாதுகாப்பு கவலைகள், அல்லது சிக்கல் புகாரளிக்க NammaTN234 ஆதரவை தொடர்பு கொள்ளுங்கள்.",
+        desc_en: "Contact VizhiTN support for account help, safety concerns, feature issues, or reporting problems.",
+        desc_ta: "கணக்கு உதவி, பாதுகாப்பு கவலைகள், அல்லது சிக்கல் புகாரளிக்க VizhiTN ஆதரவை தொடர்பு கொள்ளுங்கள்.",
         cta_en: "Contact Support",
         cta_ta: "ஆதரவை தொடர்பு கொள்",
         bg: "bg-pink-50 dark:bg-pink-900/20",
@@ -246,8 +246,8 @@ const GROUPS = [
         icon: Map,
         en: "Districts",
         ta: "மாவட்டங்கள்",
-        desc_en: "Explore NammaTN234 activity across all Tamil Nadu districts.",
-        desc_ta: "தமிழ்நாடு அனைத்து மாவட்டங்களிலும் NammaTN234 செயல்பாட்டை ஆராய்க.",
+        desc_en: "Explore VizhiTN activity across all Tamil Nadu districts.",
+        desc_ta: "தமிழ்நாடு அனைத்து மாவட்டங்களிலும் VizhiTN செயல்பாட்டை ஆராய்க.",
         cta_en: "View Districts",
         cta_ta: "மாவட்டங்கள் பார்",
         bg: "bg-emerald-50 dark:bg-emerald-900/20",
@@ -317,7 +317,7 @@ export default function FeatureHub() {
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
       <div className="text-center mb-10">
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-3">
-          {T("Explore NammaTN234 Features", "NammaTN234 அம்சங்களை ஆராய்க")}
+          {T("Explore VizhiTN Features", "VizhiTN அம்சங்களை ஆராய்க")}
         </h2>
         <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl mx-auto leading-relaxed">
           {T(

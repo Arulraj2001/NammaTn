@@ -64,7 +64,7 @@ export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   usePageMeta({
-    title: "Search | NammaTN234",
+    title: "Search | VizhiTN",
     description: "Search Civic Receipts, issues, scams, jobs, stay listings, and community posts across Tamil Nadu.",
   });
 
@@ -168,7 +168,7 @@ export default function Search() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
       <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
-        {T("Search NammaTN234", "NammaTN234 தேடுக")}
+        {T("Search VizhiTN", "VizhiTN தேடுக")}
       </h1>
 
       {/* Search bar */}

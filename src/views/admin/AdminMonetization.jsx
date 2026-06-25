@@ -43,7 +43,7 @@ export default function AdminMonetization() {
   // ── AdSense settings (persisted in localStorage) ───────────────────────────────
   const [adsense, setAdsense] = useState(() => {
     try {
-      const saved = localStorage.getItem('nammatn234_adsense_config');
+      const saved = localStorage.getItem('VizhiTN_adsense_config');
       return saved ? JSON.parse(saved) : {
         pub_id: '',
         slot_banner: '',
@@ -57,7 +57,7 @@ export default function AdminMonetization() {
 
   const saveAdsense = () => {
     try {
-      localStorage.setItem('nammatn234_adsense_config', JSON.stringify(adsense));
+      localStorage.setItem('VizhiTN_adsense_config', JSON.stringify(adsense));
       // Update ads.txt with real pub ID
       window.__ADSENSE_PUB_ID__ = adsense.pub_id || 'ca-pub-PLACEHOLDER';
       window.__ADSENSE_SLOTS__ = {
@@ -579,7 +579,7 @@ export default function AdminMonetization() {
               <FileText className="w-4 h-4" /> ads.txt File
             </h4>
             <p className="text-xs text-blue-800 dark:text-blue-400 mb-2">
-              Make sure your <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">ads.txt</code> file at <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">https://nammatn234234.in/ads.txt</code> contains:
+              Make sure your <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">ads.txt</code> file at <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">https://vizhitn.in/ads.txt</code> contains:
             </p>
             <code className="block bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 dark:text-slate-300 break-all">
               {`google.com, ${adsense.pub_id || 'ca-pub-XXXXXXXXXXXXXXXX'}, DIRECT, f08c47fec0942fa0`}

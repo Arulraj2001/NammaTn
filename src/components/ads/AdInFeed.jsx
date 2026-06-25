@@ -14,7 +14,7 @@ export default function AdInFeed({ className = '', slot = '' }) {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('nammatn234_cookie_consent') === 'accepted';
+      const stored = localStorage.getItem('VizhiTN_cookie_consent') === 'accepted';
       setConsent(stored);
     } catch {}
     setReady(true);

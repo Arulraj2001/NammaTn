@@ -39,7 +39,7 @@ export default function OfficeDetail() {
     setShowForm(f => !f);
   };
 
-  usePageMeta({ title: office ? `${office.name_en} Reports – NammaTN234` : "Office Reports" });
+  usePageMeta({ title: office ? `${office.name_en} Reports – VizhiTN` : "Office Reports" });
 
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ["office-reports", slug, selectedDistrict],

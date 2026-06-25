@@ -70,7 +70,7 @@ export default function Help() {
     setShowForm(f => !f);
   };
 
-  usePageMeta({ title: "NammaTN234 - Help", description: "Community emergency help requests and assistance across Tamil Nadu." });
+  usePageMeta({ title: "VizhiTN - Help", description: "Community emergency help requests and assistance across Tamil Nadu." });
 
   const { data: emergencies = [], isLoading } = useQuery({
     queryKey: ["emergencies", filterDistrict, filterType],
@@ -127,8 +127,8 @@ export default function Help() {
               </h1>
               <p className="text-red-100 text-xs sm:text-sm leading-relaxed max-w-xl mb-3">
                 {T(
-                  "Community emergency help requests, missing persons, and assistance across Tamil Nadu. NammaTN234 helps you find and share help publicly.",
-                  "தமிழ்நாடு முழுவதும் சமுதாய அவசர உதவி கோரிக்கைகள், காணாமல்போனவர்கள் மற்றும் உதவி. NammaTN234 பொதுவாக உதவி கண்டுபிடிக்கவும் பகிரவும் உதவுகிறது."
+                  "Community emergency help requests, missing persons, and assistance across Tamil Nadu. VizhiTN helps you find and share help publicly.",
+                  "தமிழ்நாடு முழுவதும் சமுதாய அவசர உதவி கோரிக்கைகள், காணாமல்போனவர்கள் மற்றும் உதவி. VizhiTN பொதுவாக உதவி கண்டுபிடிக்கவும் பகிரவும் உதவுகிறது."
                 )}
               </p>
               <Link to="/create" className="inline-flex items-center text-xs font-bold border border-white/40 hover:bg-white/10 text-white px-3.5 py-1.5 rounded-xl transition-colors">

@@ -307,7 +307,7 @@ export default function AwarenessSchemesPage() {
   const [expandedId, setExpandedId] = useState(null);
 
   usePageMeta({
-    title: "Government Schemes Tamil Nadu 2024-25 | NammaTN234",
+    title: "Government Schemes Tamil Nadu 2024-25 | VizhiTN",
     description: "Complete list of Tamil Nadu government welfare schemes 2024-25 — Kalaignar Magalir Urimai, Pudhumai Penn, CMCHIS, MGNREGA, PM-KISAN and more with eligibility and apply links.",
   });
 

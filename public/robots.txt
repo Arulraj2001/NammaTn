@@ -35,4 +35,4 @@ Allow: /search
 Crawl-delay: 2
 
 # Sitemaps
-Sitemap: https://nammatn234234.in/sitemap.xml
+Sitemap: https://vizhitn.in/sitemap.xml

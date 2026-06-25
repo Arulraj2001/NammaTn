@@ -12,11 +12,11 @@ function getContextShareText(post, url) {
   const location = post.area_name || post.district_name || "Tamil Nadu";
   const vCount = post.verification_count || 0;
   const daysOpen = getDaysOpen(post.created_date);
-  const base = `\n🔗 Track: ${url}\n\n— NammaTN234 is a citizen documentation platform, not a government portal.`;
+  const base = `\n🔗 Track: ${url}\n\n— VizhiTN is a citizen documentation platform, not a government portal.`;
 
   switch (post.civic_status) {
     case "reported":
-      return `📋 New civic issue documented in ${location}.\n\n"${post.title_en}"\n\nHelp verify — if you've seen this issue, confirm it on NammaTN234.${base}`;
+      return `📋 New civic issue documented in ${location}.\n\n"${post.title_en}"\n\nHelp verify — if you've seen this issue, confirm it on VizhiTN.${base}`;
     case "community_verified":
       return `✅ ${vCount} citizens confirmed this issue in ${location}.\n\n"${post.title_en}"\n\nOfficial complaint needed. Know the process? Help file it.${base}`;
     case "complaint_needed":
@@ -32,7 +32,7 @@ function getContextShareText(post, url) {
     case "unresolved_escalated":
       return `🔴 "${post.title_en}" in ${location} — UNRESOLVED after ${daysOpen} days.\n\n${vCount} citizens verified · Complaint filed · No resolution\n\nThis needs attention →${base}`;
     default:
-      return `📋 NammaTN234 Civic Receipt: ${post.civic_receipt_id}\n"${post.title_en}"\n📍 ${location}\n📅 ${daysOpen} days open · ${vCount} verified${base}`;
+      return `📋 VizhiTN Civic Receipt: ${post.civic_receipt_id}\n"${post.title_en}"\n📍 ${location}\n📅 ${daysOpen} days open · ${vCount} verified${base}`;
   }
 }
 
@@ -74,7 +74,7 @@ export default function CivicShareCard({ post }) {
 
   const handleShare = () => {
     if (navigator.share) {
-      navigator.share({ title: `NammaTN234: ${post.civic_receipt_id}`, text: shareText, url });
+      navigator.share({ title: `VizhiTN: ${post.civic_receipt_id}`, text: shareText, url });
     } else {
       navigator.clipboard.writeText(shareText);
       setCopied(true);
@@ -143,7 +143,7 @@ export default function CivicShareCard({ post }) {
 
         <div className="border-t border-slate-700 pt-3 flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-300 font-semibold">{T("Track on NammaTN234", "NammaTN234-ல் கண்காணிக்கவும்")}</p>
+            <p className="text-xs text-slate-300 font-semibold">{T("Track on VizhiTN", "VizhiTN-ல் கண்காணிக்கவும்")}</p>
             <p className="text-[10px] text-slate-500 italic">{T("\"No issue closes without public proof.\"", "\"பொது ஆதாரம் இல்லாமல் எந்த சிக்கலும் மூடாது.\"")}</p>
           </div>
           <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">

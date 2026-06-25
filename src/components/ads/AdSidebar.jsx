@@ -13,7 +13,7 @@ export default function AdSidebar({ className = '', slot = '' }) {
 
   useEffect(() => {
     // Check cookie consent
-    try { setConsent(localStorage.getItem('nammatn234_cookie_consent') === 'accepted'); } catch {}
+    try { setConsent(localStorage.getItem('VizhiTN_cookie_consent') === 'accepted'); } catch {}
   }, []);
 
   useEffect(() => {

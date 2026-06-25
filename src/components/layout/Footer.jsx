@@ -51,7 +51,7 @@ const FOOTER_COLUMNS = [
     en_title: "Help",
     ta_title: "உதவி",
     links: [
-      { path: "/about",          en: "About NammaTN234",  ta: "NammaTN234 பற்றி" },
+      { path: "/about",          en: "About VizhiTN",  ta: "VizhiTN பற்றி" },
       { path: "/help",           en: "Help",           ta: "உதவி" },
       { path: "/support",        en: "Support",        ta: "ஆதரவு" },
       { path: "/contact",        en: "Contact",        ta: "தொடர்பு" },
@@ -115,8 +115,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="flex-shrink-0 w-full lg:w-64 flex flex-col items-center lg:items-start text-center lg:text-left">
             <Link to="/" className="inline-flex items-center gap-2 mb-2">
-              <img src="/apple-touch-icon.png" alt="NammaTN234" className="w-7 h-7 rounded-lg object-contain flex-shrink-0" />
-              <span className="font-extrabold text-blue-600 text-base leading-none">NammaTN234</span>
+              <img src="/apple-touch-icon.png" alt="VizhiTN" className="w-7 h-7 rounded-lg object-contain flex-shrink-0" />
+              <span className="font-extrabold text-blue-600 text-base leading-none">VizhiTN</span>
             </Link>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
               {T("Community Verified.", "சமூகத்தால் சரிபார்க்கப்பட்டது.")}
@@ -170,7 +170,7 @@ export default function Footer() {
         {/* ── Bottom copyright + legal bar ── */}
         <div className="border-t border-slate-200 dark:border-slate-800 mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-500 dark:text-slate-500">
-            © 2026 NammaTN234. {T("All rights reserved.", "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.")}
+            © 2026 VizhiTN. {T("All rights reserved.", "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.")}
           </p>
           {/* Legal links — required to be visible for AdSense approval */}
           <div className="flex items-center gap-3 flex-wrap justify-center">
@@ -186,7 +186,7 @@ export default function Footer() {
               {T("About", "பற்றி")}
             </Link>
             <span className="text-slate-300 dark:text-slate-600">|</span>
-            <a href="mailto:advertise@nammatn234234.in" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <a href="mailto:advertise@vizhitn.in" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               {T("Advertise", "விளம்பரம்")}
             </a>
           </div>

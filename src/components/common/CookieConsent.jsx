@@ -31,7 +31,7 @@ export default function CookieConsent() {
   useEffect(() => {
     setMounted(true);
     try {
-      const choice = localStorage.getItem('nammatn234_cookie_consent');
+      const choice = localStorage.getItem('VizhiTN_cookie_consent');
       if (!choice) {
         // Slight delay so the slide-in transition is visible
         // Delay to 3s — outside Lighthouse CLS measurement window (2.5s)
@@ -68,14 +68,14 @@ export default function CookieConsent() {
   }, []);
 
   const handleAccept = () => {
-    try { localStorage.setItem('nammatn234_cookie_consent', 'accepted'); } catch {}
+    try { localStorage.setItem('VizhiTN_cookie_consent', 'accepted'); } catch {}
     setVisible(false);
     // Reload after transition to initialise AdSense with consent
     setTimeout(() => window.location.reload(), 400);
   };
 
   const handleReject = () => {
-    try { localStorage.setItem('nammatn234_cookie_consent', 'rejected'); } catch {}
+    try { localStorage.setItem('VizhiTN_cookie_consent', 'rejected'); } catch {}
     setVisible(false);
   };
 
@@ -122,8 +122,8 @@ export default function CookieConsent() {
         {/* Body */}
         <p id="cookie-desc" className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
           {T(
-            'NammaTN234 uses cookies for essential functionality, analytics, and personalised ads (Google AdSense). By clicking \u2018Accept All\u2019, you consent to our use of cookies as described in our ',
-            'NammaTN234 அத்தியாவசிய செயல்பாடுகள், பகுப்பாய்வு மற்றும் தனிப்பயனாக்கப்பட்ட விளம்பரங்களுக்கு (Google AdSense) குக்கீகளைப் பயன்படுத்துகிறது. \u2018அனைத்தையும் ஏற்கவும்\u2019 என்பதைக் கிளிக் செய்வதன் மூலம், எங்கள் ',
+            'VizhiTN uses cookies for essential functionality, analytics, and personalised ads (Google AdSense). By clicking \u2018Accept All\u2019, you consent to our use of cookies as described in our ',
+            'VizhiTN அத்தியாவசிய செயல்பாடுகள், பகுப்பாய்வு மற்றும் தனிப்பயனாக்கப்பட்ட விளம்பரங்களுக்கு (Google AdSense) குக்கீகளைப் பயன்படுத்துகிறது. \u2018அனைத்தையும் ஏற்கவும்\u2019 என்பதைக் கிளிக் செய்வதன் மூலம், எங்கள் ',
           )}
           <Link
             href="/privacy-policy"

@@ -1,9 +1,9 @@
-// Anti-spam and content safety utilities for NammaTN234 community
+// Anti-spam and content safety utilities for VizhiTN community
 
 const ABUSIVE_PATTERNS = [
   /\b(spam|scam|hack|phish)\b/i,
   /(.)\1{6,}/, // Repeated characters: aaaaaaa
-  /http[s]?:\/\/(?!nammatn234)/i, // External links (basic)
+  /http[s]?:\/\/(?!VizhiTN)/i, // External links (basic)
 ];
 
 const FLOOD_WINDOW_MS = 30000; // 30 seconds

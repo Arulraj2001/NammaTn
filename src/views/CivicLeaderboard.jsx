@@ -204,7 +204,7 @@ export default function CivicLeaderboard() {
             {T("Public Civic Accountability", "பொது குடிமை பொறுப்பு")}
           </p>
           <p className="text-xs text-blue-600 dark:text-blue-400 max-w-lg mx-auto">
-            {T("All data is anonymized and aggregated from public civic reports. NammaTN234 never sells personal data. Leaderboards exist to celebrate community action, not individual identity.", "அனைத்து தரவும் பொது குடிமை அறிக்கைகளிலிருந்து அநாமதேயமாக்கப்பட்டுள்ளது.")}
+            {T("All data is anonymized and aggregated from public civic reports. VizhiTN never sells personal data. Leaderboards exist to celebrate community action, not individual identity.", "அனைத்து தரவும் பொது குடிமை அறிக்கைகளிலிருந்து அநாமதேயமாக்கப்பட்டுள்ளது.")}
           </p>
         </div>
       </div>

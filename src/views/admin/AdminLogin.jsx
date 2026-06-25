@@ -63,7 +63,7 @@ export default function AdminLogin() {
             <span className="text-white font-bold">TN</span>
           </div>
           <h1 className="text-xl font-bold text-slate-900">Admin Login</h1>
-          <p className="text-sm text-slate-500 mt-1">NammaTN234 Admin Panel</p>
+          <p className="text-sm text-slate-500 mt-1">VizhiTN Admin Panel</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -109,7 +109,7 @@ export default function AdminLogin() {
 
         <p className="text-center text-xs text-slate-400 mt-6 leading-relaxed">
           Log in using your Supabase admin credentials<br/>
-          (e.g., <code className="bg-slate-100 px-1 rounded">admin@nammatn234234.in</code>)
+          (e.g., <code className="bg-slate-100 px-1 rounded">admin@vizhitn.in</code>)
         </p>
       </div>
     </div>

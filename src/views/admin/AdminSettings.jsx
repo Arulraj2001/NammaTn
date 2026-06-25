@@ -12,10 +12,10 @@ const SECTIONS = [
     title: "🌐 General",
     category: "general",
     fields: [
-      { key: "site_title", label: "Site Title", placeholder: "NammaTN234" },
+      { key: "site_title", label: "Site Title", placeholder: "VizhiTN" },
       { key: "site_description", label: "Site Description", placeholder: "Tamil Nadu civic platform" },
-      { key: "contact_email", label: "Admin Contact Email", placeholder: "admin@nammatn234234.in" },
-      { key: "support_email", label: "Support Email (for replies)", placeholder: "support@nammatn234234.in" },
+      { key: "contact_email", label: "Admin Contact Email", placeholder: "admin@vizhitn.in" },
+      { key: "support_email", label: "Support Email (for replies)", placeholder: "support@vizhitn.in" },
       { key: "site_logo_url", label: "Site Logo URL", placeholder: "https://..." },
     ],
   },
@@ -23,10 +23,10 @@ const SECTIONS = [
     title: "🔍 SEO Defaults",
     category: "seo",
     fields: [
-      { key: "meta_title", label: "Default Meta Title", placeholder: "NammaTN234 - Tamil Nadu Platform" },
+      { key: "meta_title", label: "Default Meta Title", placeholder: "VizhiTN - Tamil Nadu Platform" },
       { key: "meta_description", label: "Default Meta Description", placeholder: "Community-driven civic platform for Tamil Nadu" },
       { key: "og_image", label: "Default OG Image URL", placeholder: "https://..." },
-      { key: "canonical_url", label: "Canonical Base URL", placeholder: "https://nammatn234234.in" },
+      { key: "canonical_url", label: "Canonical Base URL", placeholder: "https://vizhitn.in" },
     ],
   },
   {

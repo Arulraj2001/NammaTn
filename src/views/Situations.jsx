@@ -72,7 +72,7 @@ export default function Situations() {
     setShowForm(f => !f);
   };
 
-  usePageMeta({ title: "NammaTN234 - Live Situations", description: "Follow urgent local situations, emergency updates, active alerts, and real-time public reports from Tamil Nadu areas." });
+  usePageMeta({ title: "VizhiTN - Live Situations", description: "Follow urgent local situations, emergency updates, active alerts, and real-time public reports from Tamil Nadu areas." });
 
   const { data: situations = [], isLoading } = useQuery({
     queryKey: ["situations", filterDistrict],

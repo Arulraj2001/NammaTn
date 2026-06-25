@@ -116,7 +116,7 @@ export default function QuestionDetail() {
     staleTime: 60_000,
   });
 
-  usePageMeta({ title: question ? question.title : "Question – NammaTN234", description: question?.content });
+  usePageMeta({ title: question ? question.title : "Question – VizhiTN", description: question?.content });
 
   const answerMutation = useMutation({
     mutationFn: async (data) => {

@@ -799,7 +799,7 @@ export default function LiveChatTab() {
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Shield className="w-3 h-3" /> {T("Created by", "உருவாக்கியவர்")}
               </span>
-              <span className="text-slate-800 dark:text-slate-200 font-medium">NammaTN234</span>
+              <span className="text-slate-800 dark:text-slate-200 font-medium">VizhiTN</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">

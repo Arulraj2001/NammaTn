@@ -14,12 +14,12 @@ export default function CivicReceiptBanner({ lang = "en" }) {
       </div>
       <div>
         <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-1">
-          {T("NammaTN234 Civic Receipt", "NammaTN234 குடிமை ரசீது")}
+          {T("VizhiTN Civic Receipt", "VizhiTN குடிமை ரசீது")}
         </p>
         <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
           {T(
-            "NammaTN234 is not a government office. Your post creates a public Civic Receipt — a transparent proof trail that helps citizens document, verify, route, track, and prove local issues.",
-            "NammaTN234 ஒரு அரசு அலுவலகம் அல்ல. உங்கள் பதிவு ஒரு பொது குடிமை ரசீதை உருவாக்குகிறது — இது குடிமக்கள் உள்ளூர் சிக்கல்களை ஆவணப்படுத்த, சரிபார்க்க, கண்காணிக்க உதவுகிறது."
+            "VizhiTN is not a government office. Your post creates a public Civic Receipt — a transparent proof trail that helps citizens document, verify, route, track, and prove local issues.",
+            "VizhiTN ஒரு அரசு அலுவலகம் அல்ல. உங்கள் பதிவு ஒரு பொது குடிமை ரசீதை உருவாக்குகிறது — இது குடிமக்கள் உள்ளூர் சிக்கல்களை ஆவணப்படுத்த, சரிபார்க்க, கண்காணிக்க உதவுகிறது."
           )}
         </p>
         <p className="text-xs text-blue-600 dark:text-blue-400 mt-1.5 font-medium">
