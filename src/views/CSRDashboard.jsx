@@ -38,7 +38,7 @@ const CSR_FEATURES = [
   { icon: "👥", title: "Community Engagement Stats", desc: "See citizen reach, verifications, and community responses." },
   { icon: "📄", title: "Monthly Impact Summary", desc: "Auto-generated monthly report for your CSR records." },
   { icon: "🌐", title: "Public Sponsor Profile", desc: "A verified public profile showing your supported campaign history." },
-  { icon: "✅", title: "Admin-Verified Impact Claims", desc: "All impact claims reviewed by NammaTN admin before publishing." },
+  { icon: "✅", title: "Admin-Verified Impact Claims", desc: "All impact claims reviewed by NammaTN234 admin before publishing." },
   { icon: "💬", title: "Citizen Feedback Visibility", desc: "See real community feedback on your supported campaigns." },
   { icon: "📥", title: "Downloadable Reports", desc: "Download public impact reports for CSR documentation." },
 ];
@@ -62,7 +62,7 @@ function SponsorCard({ s }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{s.sponsor_name}</p>
-            {s.is_verified && <Shield className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" title="Verified by NammaTN" />}
+            {s.is_verified && <Shield className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" title="Verified by NammaTN234" />}
           </div>
           {s.campaign_title && <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{s.campaign_title}</p>}
           <p className="text-xs text-slate-500 mt-0.5">{s.area_name ? `${s.area_name}, ` : ""}{s.district_name}</p>

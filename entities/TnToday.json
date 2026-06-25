@@ -11,7 +11,7 @@
       "enum": ["infrastructure", "education", "healthcare", "environment", "economy", "governance", "transport", "agriculture", "technology", "social", "general"],
       "default": "general"
     },
-    "author_name": { "type": "string", "default": "NammaTN Editorial Team" },
+    "author_name": { "type": "string", "default": "NammaTN234 Editorial Team" },
     "publish_date": { "type": "string" },
     "status": {
       "type": "string",

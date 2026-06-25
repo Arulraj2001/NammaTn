@@ -163,7 +163,7 @@ export default function CreatePost() {
       moderation_status: "approved",
       timeline_events: [
         makeTimelineEvent(
-          T("Civic Receipt created on NammaTN", "NammaTN-ல் குடிமை ரசீது உருவாக்கப்பட்டது"),
+          T("Civic Receipt created on NammaTN234", "NammaTN234-ல் குடிமை ரசீது உருவாக்கப்பட்டது"),
           data.is_anonymous ? T("Anonymous citizen", "அநாமதேய குடிமகன்") : (data.author_name || T("Citizen", "குடிமகன்")),
           "created",
           "user"
@@ -316,8 +316,8 @@ export default function CreatePost() {
                   </p>
                   <p className="text-xs text-amber-700 dark:text-amber-400 mt-1 leading-relaxed">
                     {T(
-                      "NammaTN is not a government portal. Your post creates a public Civic Receipt. We help citizens document, verify, route, track, and prove local issues. NammaTN cannot guarantee government action.",
-                      "NammaTN ஒரு அரசு போர்ட்டல் அல்ல. உங்கள் பதிவு ஒரு பொது குடிமை ரசீதை உருவாக்குகிறது. உள்ளூர் சிக்கல்களை ஆவணப்படுத்தவும், சரிபார்க்கவும், கண்காணிக்கவும் குடிமக்களுக்கு நாங்கள் உதவுகிறோம்."
+                      "NammaTN234 is not a government portal. Your post creates a public Civic Receipt. We help citizens document, verify, route, track, and prove local issues. NammaTN234 cannot guarantee government action.",
+                      "NammaTN234 ஒரு அரசு போர்ட்டல் அல்ல. உங்கள் பதிவு ஒரு பொது குடிமை ரசீதை உருவாக்குகிறது. உள்ளூர் சிக்கல்களை ஆவணப்படுத்தவும், சரிபார்க்கவும், கண்காணிக்கவும் குடிமக்களுக்கு நாங்கள் உதவுகிறோம்."
                     )}
                   </p>
                 </div>

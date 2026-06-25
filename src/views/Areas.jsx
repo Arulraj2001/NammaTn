@@ -13,7 +13,7 @@ export default function Areas() {
   const [search, setSearch] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
 
-  usePageMeta({ title: "Hyperlocal Areas – NammaTN", description: "Browse local areas in Tamil Nadu" });
+  usePageMeta({ title: "Hyperlocal Areas – NammaTN234", description: "Browse local areas in Tamil Nadu" });
 
   const { data: areas = [], isLoading } = useQuery({
     queryKey: ["areas"],

@@ -3,15 +3,15 @@
  * All helpers are idempotent: safe to call on every page mount.
  */
 
-const SITE_URL = 'https://nammatn.in';
+const SITE_URL = 'https://nammatn234234.in';
 
 const DEFAULT = {
-  title: 'NammaTN – Tamil Nadu Civic & Community Platform',
+  title: 'NammaTN234 – Tamil Nadu Civic & Community Platform',
   description:
-    "NammaTN is Tamil Nadu's public civic platform — report local issues, track resolutions, join live community discussions, access government schemes, and celebrate community wins.",
+    "NammaTN234 is Tamil Nadu's public civic platform — report local issues, track resolutions, join live community discussions, access government schemes, and celebrate community wins.",
   image: `${SITE_URL}/og-image.png`,
   url: typeof window !== 'undefined' ? window.location.origin : SITE_URL,
-  siteName: 'NammaTN',
+  siteName: 'NammaTN234',
   locale: 'en_IN',
 };
 
@@ -68,7 +68,7 @@ export function setPageMeta({
   canonical,
   noindex = false,
 } = {}) {
-  const t   = title       ? `${title} | NammaTN` : DEFAULT.title;
+  const t   = title       ? `${title} | NammaTN234` : DEFAULT.title;
   const d   = description || DEFAULT.description;
   const img = image       || DEFAULT.image;
   const u   = url         || (typeof window !== 'undefined' ? window.location.href : DEFAULT.url);
@@ -80,7 +80,7 @@ export function setPageMeta({
   // Standard
   setMeta('description', d);
   setMeta('robots', noindex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
-  setMeta('author', 'NammaTN');
+  setMeta('author', 'NammaTN234');
   setMeta('theme-color', '#4f46e5');
 
   // Open Graph
@@ -96,8 +96,8 @@ export function setPageMeta({
 
   // Twitter
   setMeta('twitter:card',        'summary_large_image');
-  setMeta('twitter:site',        '@NammaTN');
-  setMeta('twitter:creator',     '@NammaTN');
+  setMeta('twitter:site',        '@NammaTN234');
+  setMeta('twitter:creator',     '@NammaTN234');
   setMeta('twitter:title',       t);
   setMeta('twitter:description', d);
   setMeta('twitter:image',       img);
@@ -124,11 +124,11 @@ export function injectPostStructuredData(post) {
     url: `${SITE_URL}/post/${post.id}`,
     author: {
       '@type': post.is_anonymous ? 'Organization' : 'Person',
-      name: post.is_anonymous ? 'Anonymous Citizen' : (post.author_name || 'NammaTN Community'),
+      name: post.is_anonymous ? 'Anonymous Citizen' : (post.author_name || 'NammaTN234 Community'),
     },
     publisher: {
       '@type': 'Organization',
-      name: 'NammaTN',
+      name: 'NammaTN234',
       url: SITE_URL,
       logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
     },
@@ -223,7 +223,7 @@ export function injectWebPageStructuredData({ name, description, url, breadcrumb
     description,
     url: url || (typeof window !== 'undefined' ? window.location.href : SITE_URL),
     inLanguage: 'en-IN',
-    isPartOf: { '@type': 'WebSite', name: 'NammaTN', url: SITE_URL },
+    isPartOf: { '@type': 'WebSite', name: 'NammaTN234', url: SITE_URL },
     ...(breadcrumbs ? { breadcrumb: breadcrumbs } : {}),
   });
 }

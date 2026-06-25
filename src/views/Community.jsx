@@ -24,7 +24,7 @@ export default function Community() {
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
   usePageMeta({
-    title: "Community — TN Pulse | NammaTN",
+    title: "Community — TN Pulse | NammaTN234",
     description: "Real-time pulse of Tamil Nadu. Live situations, scam alerts, emergency help, community questions and wins, all in one place.",
   });
 

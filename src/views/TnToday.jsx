@@ -139,9 +139,9 @@ export default function TnToday() {
 
   usePageMeta({
     title: activeCategory
-      ? `TN Today – ${cat?.label || ""} Stories | NammaTN`
-      : "TN Today – Tamil Nadu's Daily Headline | NammaTN",
-    description: "Read Tamil Nadu's most important civic stories, curated daily by the NammaTN editorial team.",
+      ? `TN Today – ${cat?.label || ""} Stories | NammaTN234`
+      : "TN Today – Tamil Nadu's Daily Headline | NammaTN234",
+    description: "Read Tamil Nadu's most important civic stories, curated daily by the NammaTN234 editorial team.",
   });
 
   const { data: featured } = useQuery({

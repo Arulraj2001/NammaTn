@@ -110,7 +110,7 @@ export default function AdminSidebar() {
           <span className="text-white font-bold text-xs">TN</span>
         </div>
         <div>
-          <div className="font-bold text-slate-900 text-sm leading-tight">NammaTN</div>
+          <div className="font-bold text-slate-900 text-sm leading-tight">NammaTN234</div>
           <div className="text-xs text-slate-500">Admin Panel</div>
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function AdminSidebar() {
         <button onClick={() => setMobileOpen(true)} className="p-1">
           <Menu className="w-5 h-5 text-slate-700" />
         </button>
-        <div className="font-bold text-slate-900 text-sm">NammaTN Admin</div>
+        <div className="font-bold text-slate-900 text-sm">NammaTN234 Admin</div>
       </div>
 
       {/* Mobile drawer */}

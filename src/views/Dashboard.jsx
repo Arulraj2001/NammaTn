@@ -20,7 +20,7 @@ export default function Dashboard() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   usePageMeta({
-    title: "Tamil Nadu Public Dashboard | NammaTN",
+    title: "Tamil Nadu Public Dashboard | NammaTN234",
     description: "Live transparency insights, trending posts, active districts and community statistics from across Tamil Nadu.",
   });
 
@@ -206,7 +206,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <h2 className="text-sm font-bold text-slate-800 dark:text-white">
-                  {T("NammaTN Civic Receipts", "NammaTN குடிமை ரசீதுகள்")}
+                  {T("NammaTN234 Civic Receipts", "NammaTN234 குடிமை ரசீதுகள்")}
                 </h2>
                 <p className="text-xs text-slate-500">{T("Report. Prove. Resolve.", "புகார். நிரூபி. தீர்.")}</p>
               </div>
@@ -239,7 +239,7 @@ export default function Dashboard() {
           )}
 
           <p className="text-xs text-slate-400 mt-3 italic">
-            {T("NammaTN helps citizens document, verify, and track local issues. NammaTN is not a government office.", "NammaTN குடிமக்கள் உள்ளூர் சிக்கல்களை ஆவணப்படுத்த, கண்காணிக்க உதவுகிறது. NammaTN ஒரு அரசு அலுவலகம் அல்ல.")}
+            {T("NammaTN234 helps citizens document, verify, and track local issues. NammaTN234 is not a government office.", "NammaTN234 குடிமக்கள் உள்ளூர் சிக்கல்களை ஆவணப்படுத்த, கண்காணிக்க உதவுகிறது. NammaTN234 ஒரு அரசு அலுவலகம் அல்ல.")}
           </p>
         </div>
       </motion.div>

@@ -70,15 +70,24 @@ export default function AdminMedia() {
 
   // Collect all media from posts
   const mediaItems = posts
-    .flatMap((p) =>
-      (p.media_urls || []).map((url) => ({
+    .flatMap((p) => {
+      const urls = [];
+      if (Array.isArray(p.media_urls)) urls.push(...p.media_urls);
+      if (Array.isArray(p.before_photos)) urls.push(...p.before_photos);
+      if (Array.isArray(p.claimed_fixed_photos)) urls.push(...p.claimed_fixed_photos);
+      if (Array.isArray(p.final_resolution_photos)) urls.push(...p.final_resolution_photos);
+      if (p.complaint_screenshot_url) urls.push(p.complaint_screenshot_url);
+      
+      const uniqueUrls = [...new Set(urls.filter(Boolean))];
+      
+      return uniqueUrls.map((url) => ({
         url,
         post_id: p.id,
         post_title: p.title_en,
         district: p.district_name,
         created_date: p.created_date,
-      }))
-    )
+      }));
+    })
     .filter((m) =>
       !search ||
       (m.post_title || "").toLowerCase().includes(search.toLowerCase()) ||

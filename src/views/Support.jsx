@@ -42,13 +42,13 @@ export default function Support() {
   });
 
   const upiId = getSetting(settings, "upi_id", "tnvoice@upi");
-  const upiName = getSetting(settings, "upi_name", "NammaTN");
+  const upiName = getSetting(settings, "upi_name", "NammaTN234");
   const qrUrl = getSetting(settings, "qr_image_url", "");
   const bmcLink = getSetting(settings, "buymecoffee_link", "");
   const razorpayEnabled = getSetting(settings, "razorpay_enabled", "false") === "true";
   const stripeEnabled = getSetting(settings, "stripe_enabled", "false") === "true";
   const bmcEnabled = getSetting(settings, "buymecoffee_enabled", "false") === "true";
-  const donationMsg = getSetting(settings, "donation_message", "Your support keeps NammaTN free, fast, and community-driven. Every contribution matters — thank you!");
+  const donationMsg = getSetting(settings, "donation_message", "Your support keeps NammaTN234 free, fast, and community-driven. Every contribution matters — thank you!");
   const minAmount = parseInt(getSetting(settings, "min_donation_amount", "10")) || 10;
 
   const finalAmount = customAmount ? parseInt(customAmount) : amount;
@@ -101,7 +101,7 @@ export default function Support() {
           </div>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{T("Thank you!", "நன்றி!")}</h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-            {T("Your donation has been received and will be confirmed within 24 hours. NammaTN is grateful for your support!", "உங்கள் நன்கொடை பெறப்பட்டது. 24 மணி நேரத்தில் உறுதிப்படுத்தப்படும்.")}
+            {T("Your donation has been received and will be confirmed within 24 hours. NammaTN234 is grateful for your support!", "உங்கள் நன்கொடை பெறப்பட்டது. 24 மணி நேரத்தில் உறுதிப்படுத்தப்படும்.")}
           </p>
           <Button variant="outline" className="w-full" onClick={() => { setSubmitted(false); setForm({ name: "", email: "", transaction_ref: "", message: "" }); setScreenshot(null); setCustomAmount(""); setAmount(50); }}>
             {T("Make another donation", "மீண்டும் நன்கொடை வழங்கு")}
@@ -120,7 +120,7 @@ export default function Support() {
             <Heart className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl md:text-3xl font-bold mb-2">
-            {T("Support NammaTN", "NammaTN-ஐ ஆதரியுங்கள்")}
+            {T("Support NammaTN234", "NammaTN234-ஐ ஆதரியுங்கள்")}
           </h1>
           <p className="text-rose-100 text-sm md:text-base max-w-md mx-auto leading-relaxed">
             {donationMsg}
@@ -287,7 +287,7 @@ export default function Support() {
         </div>
 
         <p className="text-center text-xs text-slate-400">
-          {T("NammaTN is a community platform. All features remain free for everyone.", "NammaTN ஒரு சமுதாய தளம். அனைத்து அம்சங்களும் அனைவருக்கும் இலவசம்.")}
+          {T("NammaTN234 is a community platform. All features remain free for everyone.", "NammaTN234 ஒரு சமுதாய தளம். அனைத்து அம்சங்களும் அனைவருக்கும் இலவசம்.")}
         </p>
       </div>
     </div>

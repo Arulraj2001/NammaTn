@@ -52,7 +52,7 @@ export default function AskLocal() {
     setShowForm(f => !f);
   };
 
-  usePageMeta({ title: "NammaTN - Ask Local", description: "Ask area-based questions and get answers from people who know the locality." });
+  usePageMeta({ title: "NammaTN234 - Ask Local", description: "Ask area-based questions and get answers from people who know the locality." });
 
   const { data: questions = [], isLoading } = useQuery({
     queryKey: ["questions", filterDistrict],

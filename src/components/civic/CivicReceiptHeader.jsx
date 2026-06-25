@@ -51,7 +51,7 @@ export default function CivicReceiptHeader({ post }) {
                 </p>
                 <span className="text-[10px] text-slate-600 font-medium">•</span>
                 <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
-                  {T("NammaTN Civic Receipt", "NammaTN குடிமை ரசீது")}
+                  {T("NammaTN234 Civic Receipt", "NammaTN234 குடிமை ரசீது")}
                 </p>
               </div>
               {post.civic_receipt_id && (
@@ -147,12 +147,12 @@ export default function CivicReceiptHeader({ post }) {
         )}
       </div>
 
-      {/* NammaTN disclaimer */}
+      {/* NammaTN234 disclaimer */}
       <div className="px-5 pb-4">
         <p className="text-xs text-slate-400 dark:text-slate-500 italic">
           {T(
-            "NammaTN helps citizens document, verify, route, track, and prove local issues. NammaTN is not a government office.",
-            "NammaTN குடிமக்கள் உள்ளூர் சிக்கல்களை ஆவணப்படுத்த, சரிபார்க்க, கண்காணிக்க உதவுகிறது. NammaTN ஒரு அரசு அலுவலகம் அல்ல."
+            "NammaTN234 helps citizens document, verify, route, track, and prove local issues. NammaTN234 is not a government office.",
+            "NammaTN234 குடிமக்கள் உள்ளூர் சிக்கல்களை ஆவணப்படுத்த, சரிபார்க்க, கண்காணிக்க உதவுகிறது. NammaTN234 ஒரு அரசு அலுவலகம் அல்ல."
           )}
         </p>
       </div>

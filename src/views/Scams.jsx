@@ -69,7 +69,7 @@ export default function Scams() {
     setShowForm(f => !f);
   };
 
-  usePageMeta({ title: "NammaTN - Scam Alerts", description: "View and report local scam alerts, fake jobs, fake rentals, fraud messages, and unsafe activities across Tamil Nadu." });
+  usePageMeta({ title: "NammaTN234 - Scam Alerts", description: "View and report local scam alerts, fake jobs, fake rentals, fraud messages, and unsafe activities across Tamil Nadu." });
 
   const { data: scams = [], isLoading } = useQuery({
     queryKey: ["scams", filterDistrict],

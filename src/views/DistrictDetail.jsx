@@ -29,7 +29,7 @@ export default function DistrictDetail() {
   const T = (en, ta) => lang === "ta" ? ta : en;
   const district = getDistrictBySlug(slug);
   usePageMeta({
-    title: district ? `${T(district.name_en, district.name_ta)} | NammaTN` : "District | NammaTN",
+    title: district ? `${T(district.name_en, district.name_ta)} | NammaTN234` : "District | NammaTN234",
     description: district ? `Community posts, complaints, and updates from ${district.name_en}, Tamil Nadu.` : "",
   });
   const [typeFilter, setTypeFilter] = useState("all");

@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import Home from '@/views/Home';
 
 export const metadata = {
-  title: "NammaTN – Know what's happening in your area right now",
+  title: "NammaTN234 – Know what's happening in your area right now",
   description: "Report civic issues, see live alerts, find stays & jobs in Tamil Nadu. All in one place, verified by citizens.",
 };
 

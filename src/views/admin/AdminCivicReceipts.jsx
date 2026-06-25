@@ -74,7 +74,7 @@ export default function AdminCivicReceipts() {
     const timeline = Array.isArray(post.timeline_events) ? post.timeline_events : [];
     const updData = { ...data };
     if (data.civic_status) {
-      updData.timeline_events = [...timeline, makeTimelineEvent(`Admin changed status to: ${data.civic_status}`, "NammaTN Admin")];
+      updData.timeline_events = [...timeline, makeTimelineEvent(`Admin changed status to: ${data.civic_status}`, "NammaTN234 Admin")];
     }
     await base44.entities.Post.update(post.id, updData);
     refresh();
@@ -174,7 +174,7 @@ export default function AdminCivicReceipts() {
       {activeTab === "routing" && (
         <div className="space-y-4">
           <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 rounded-xl p-4 text-xs text-amber-700 dark:text-amber-400">
-            <strong>Note:</strong> These are the default routing rules built into NammaTN. Custom rules can be added via the DepartmentRoute entity. The table below shows the current default routes per category.
+            <strong>Note:</strong> These are the default routing rules built into NammaTN234. Custom rules can be added via the DepartmentRoute entity. The table below shows the current default routes per category.
           </div>
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
             <table className="w-full text-left min-w-[700px]">

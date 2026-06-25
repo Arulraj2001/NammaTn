@@ -155,10 +155,10 @@ export default function TnTodayArticle() {
       image: image ? [image] : [],
       datePublished: article.publish_date || article.created_date,
       dateModified: article.updated_date || article.publish_date || article.created_date,
-      author: { "@type": "Person", name: article.author_name || "NammaTN Editorial Team" },
+      author: { "@type": "Person", name: article.author_name || "NammaTN234 Editorial Team" },
       publisher: {
         "@type": "Organization",
-        name: "NammaTN",
+        name: "NammaTN234",
         logo: { "@type": "ImageObject", url: `${window.location.origin}/logo.png` },
       },
       mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
@@ -275,7 +275,7 @@ export default function TnTodayArticle() {
               </span>
               <span className="flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5" />
-                {article.author_name || "NammaTN Editorial Team"}
+                {article.author_name || "NammaTN234 Editorial Team"}
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5" />

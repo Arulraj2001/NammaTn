@@ -34,7 +34,7 @@ export default function PageHero({
         {/* Back link */}
         <Link to="/" className="inline-flex items-center gap-1.5 text-white/60 hover:text-white text-xs mb-5 transition-colors">
           <ArrowLeft className="w-3.5 h-3.5" />
-          {T("Back to NammaTN", "NammaTN-க்கு திரும்பு")}
+          {T("Back to NammaTN234", "NammaTN234-க்கு திரும்பு")}
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">

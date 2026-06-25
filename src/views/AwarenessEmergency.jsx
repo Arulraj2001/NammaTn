@@ -76,7 +76,7 @@ export default function AwarenessEmergencyPage() {
   const T = (en, ta) => lang === "ta" ? ta : en;
 
   usePageMeta({
-    title: "Emergency Helpline Numbers Tamil Nadu | NammaTN",
+    title: "Emergency Helpline Numbers Tamil Nadu | NammaTN234",
     description: "Complete list of Tamil Nadu emergency helpline numbers — Police 100, Ambulance 108, Women Helpline 181, Fire 101, CM Grievance 1100 and more.",
   });
 

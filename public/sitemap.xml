@@ -7,163 +7,163 @@
 
   <!-- ── HIGH PRIORITY PAGES ── -->
   <url>
-    <loc>https://nammatn.in/</loc>
+    <loc>https://nammatn234234.in/</loc>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/explore</loc>
+    <loc>https://nammatn234234.in/explore</loc>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/community</loc>
+    <loc>https://nammatn234234.in/community</loc>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/trending</loc>
+    <loc>https://nammatn234234.in/trending</loc>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- ── DISTRICT & AREA PAGES ── -->
   <url>
-    <loc>https://nammatn.in/districts</loc>
+    <loc>https://nammatn234234.in/districts</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/areas</loc>
+    <loc>https://nammatn234234.in/areas</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- ── CIVIC ACTIONS ── -->
   <url>
-    <loc>https://nammatn.in/create</loc>
+    <loc>https://nammatn234234.in/create</loc>
     <changefreq>always</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/situations</loc>
+    <loc>https://nammatn234234.in/situations</loc>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/scams</loc>
+    <loc>https://nammatn234234.in/scams</loc>
     <changefreq>daily</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/community-wins</loc>
+    <loc>https://nammatn234234.in/community-wins</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- ── CITIZEN AWARENESS ── -->
   <url>
-    <loc>https://nammatn.in/awareness</loc>
+    <loc>https://nammatn234234.in/awareness</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/awareness/schemes</loc>
+    <loc>https://nammatn234234.in/awareness/schemes</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/awareness/portals</loc>
+    <loc>https://nammatn234234.in/awareness/portals</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/awareness/guides</loc>
+    <loc>https://nammatn234234.in/awareness/guides</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/awareness/faqs</loc>
+    <loc>https://nammatn234234.in/awareness/faqs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.65</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/awareness/emergency</loc>
+    <loc>https://nammatn234234.in/awareness/emergency</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- ── DIRECTORY ── -->
   <url>
-    <loc>https://nammatn.in/offices</loc>
+    <loc>https://nammatn234234.in/offices</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/local-listings</loc>
+    <loc>https://nammatn234234.in/local-listings</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/jobs</loc>
+    <loc>https://nammatn234234.in/jobs</loc>
     <changefreq>daily</changefreq>
     <priority>0.65</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/stay</loc>
+    <loc>https://nammatn234234.in/stay</loc>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
 
   <!-- ── ENGAGEMENT ── -->
   <url>
-    <loc>https://nammatn.in/leaderboard</loc>
+    <loc>https://nammatn234234.in/leaderboard</loc>
     <changefreq>daily</changefreq>
     <priority>0.65</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/ask</loc>
+    <loc>https://nammatn234234.in/ask</loc>
     <changefreq>always</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/search</loc>
+    <loc>https://nammatn234234.in/search</loc>
     <changefreq>always</changefreq>
     <priority>0.75</priority>
   </url>
 
   <!-- ── STATIC PAGES ── -->
   <url>
-    <loc>https://nammatn.in/contact</loc>
+    <loc>https://nammatn234234.in/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/help</loc>
+    <loc>https://nammatn234234.in/help</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://nammatn.in/support</loc>
+    <loc>https://nammatn234234.in/support</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <!-- ── LEGAL PAGES (required for AdSense) ── -->
   <url>
-    <loc>https://nammatn.in/about</loc>
+    <loc>https://nammatn234234.in/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <lastmod>2025-06-01</lastmod>
   </url>
   <url>
-    <loc>https://nammatn.in/privacy-policy</loc>
+    <loc>https://nammatn234234.in/privacy-policy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <lastmod>2025-06-01</lastmod>
   </url>
   <url>
-    <loc>https://nammatn.in/terms</loc>
+    <loc>https://nammatn234234.in/terms</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <lastmod>2025-06-01</lastmod>
@@ -171,7 +171,7 @@
 
   <!-- ── TN TODAY NEWS ── -->
   <url>
-    <loc>https://nammatn.in/tn-today</loc>
+    <loc>https://nammatn234234.in/tn-today</loc>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>

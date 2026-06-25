@@ -10,8 +10,8 @@ const SECTIONS = [
     id: 'introduction',
     en: 'Introduction & Scope',
     ta: 'அறிமுகம் மற்றும் நோக்கம்',
-    content_en: 'NammaTN ("we", "us", or "our") is an independent, community-driven civic information and public dialogue platform accessible via nammatn.in. This Privacy Policy outlines how we collect, process, and protect your information when you register, browse, or contribute to NammaTN. We are a non-governmental initiative. By using our platform, you acknowledge and agree to the practices described in this policy. For any inquiries regarding your data, contact us at support@nammatn.in.',
-    content_ta: 'NammaTN என்பது nammatn.in வழியாக அணுகக்கூடிய ஒரு சுதந்திரமான, சமூகத்தால் இயக்கப்படும் குடிமைத் தகவல் மற்றும் பொது உரையாடல் தளமாகும். நீங்கள் NammaTN இல் பதிவு செய்யும் போது, உலாவும்போது அல்லது பங்களிக்கும் போது உங்கள் தகவலை நாங்கள் எவ்வாறு சேகரிக்கிறோம், செயலாக்குகிறோம் மற்றும் பாதுகாக்கிறோம் என்பதை இந்த தனியுரிமைக் கொள்கை விளக்குகிறது. நாங்கள் ஒரு அரசு சாரா தளம். எங்கள் தளத்தைப் பயன்படுத்துவதன் மூலம், இந்த தனியுரிமைக் கொள்கையை நீங்கள் ஒப்புக்கொள்கிறீர்கள். உங்கள் தரவு தொடர்பான கேள்விகளுக்கு support@nammatn.in என்ற மின்னஞ்சலில் எங்களைத் தொடர்பு கொள்ளவும்.'
+    content_en: 'NammaTN234 ("we", "us", or "our") is an independent, community-driven civic information and public dialogue platform accessible via nammatn234234.in. This Privacy Policy outlines how we collect, process, and protect your information when you register, browse, or contribute to NammaTN234. We are a non-governmental initiative. By using our platform, you acknowledge and agree to the practices described in this policy. For any inquiries regarding your data, contact us at support@nammatn234234.in.',
+    content_ta: 'NammaTN234 என்பது nammatn234234.in வழியாக அணுகக்கூடிய ஒரு சுதந்திரமான, சமூகத்தால் இயக்கப்படும் குடிமைத் தகவல் மற்றும் பொது உரையாடல் தளமாகும். நீங்கள் NammaTN234 இல் பதிவு செய்யும் போது, உலாவும்போது அல்லது பங்களிக்கும் போது உங்கள் தகவலை நாங்கள் எவ்வாறு சேகரிக்கிறோம், செயலாக்குகிறோம் மற்றும் பாதுகாக்கிறோம் என்பதை இந்த தனியுரிமைக் கொள்கை விளக்குகிறது. நாங்கள் ஒரு அரசு சாரா தளம். எங்கள் தளத்தைப் பயன்படுத்துவதன் மூலம், இந்த தனியுரிமைக் கொள்கையை நீங்கள் ஒப்புக்கொள்கிறீர்கள். உங்கள் தரவு தொடர்பான கேள்விகளுக்கு support@nammatn234234.in என்ற மின்னஞ்சலில் எங்களைத் தொடர்பு கொள்ளவும்.'
   },
   {
     id: 'information-collected',
@@ -21,7 +21,7 @@ const SECTIONS = [
       'Account Information: When you register (typically using Google Sign-In), we collect your name, email address, and profile photo. This helps us verify real users, prevent automated spam, and build a trusted community.',
       'Location Choices (Non-GPS): To filter local issues, emergency alerts, and district chats, you select your district and neighborhood. We do NOT track your device\'s precise live GPS location in the background.',
       'User-Generated Content: We store the text, photos, locations, scam alerts, comments, and messages you publish in our reports, directories, and live district chat rooms.',
-      'Technical & Log Data: When you browse NammaTN, our servers automatically log standard information, including your IP address, browser type, operating system, referring URL, pages viewed, and access timestamps.',
+      'Technical & Log Data: When you browse NammaTN234, our servers automatically log standard information, including your IP address, browser type, operating system, referring URL, pages viewed, and access timestamps.',
       'Cookies & Session Tokens: We use browser cookies and local storage to keep you securely signed in, remember your language setting (English/Tamil), and load your regional configuration.'
     ],
     items_ta: [
@@ -57,16 +57,16 @@ const SECTIONS = [
     id: 'google-adsense',
     en: 'Google AdSense & Advertising',
     ta: 'Google AdSense மற்றும் விளம்பரம்',
-    content_en: 'We partner with Google AdSense to display non-intrusive advertisements on NammaTN. Google, as a third-party vendor, uses cookies to serve ads on our site. Google\'s use of advertising cookies enables it and its partners to serve ads to our users based on their visit to NammaTN and/or other sites on the Internet. Users may opt out of personalized advertising at any time by visiting Google\'s Ads Settings. We do not control Google\'s ad selection algorithms or third-party cookies.',
-    content_ta: 'NammaTN இல் விளம்பரங்களைக் காண்பிக்க நாங்கள் Google AdSense உடன் இணைந்துள்ளோம். கூகுள் ஒரு மூன்றாம் தரப்பு வழங்குநராக விளம்பரங்களை வழங்க குக்கீகளைப் பயன்படுத்துகிறது. இதன் மூலம் பயனர்கள் இந்த இணையதளத்திற்கு அல்லது பிற இணையதளங்களுக்குச் சென்றதன் அடிப்படையில் தனிப்பயனாக்கப்பட்ட விளம்பரங்களைக் கூகுள் காட்டுகிறது. பயனர்கள் கூகுளின் விளம்பர அமைப்புகள் (Ads Settings) பக்கத்திற்குச் சென்று தனிப்பயனாக்கப்பட்ட விளம்பரங்களில் இருந்து எந்த நேரத்திலும் விலகலாம்.',
+    content_en: 'We partner with Google AdSense to display non-intrusive advertisements on NammaTN234. Google, as a third-party vendor, uses cookies to serve ads on our site. Google\'s use of advertising cookies enables it and its partners to serve ads to our users based on their visit to NammaTN234 and/or other sites on the Internet. Users may opt out of personalized advertising at any time by visiting Google\'s Ads Settings. We do not control Google\'s ad selection algorithms or third-party cookies.',
+    content_ta: 'NammaTN234 இல் விளம்பரங்களைக் காண்பிக்க நாங்கள் Google AdSense உடன் இணைந்துள்ளோம். கூகுள் ஒரு மூன்றாம் தரப்பு வழங்குநராக விளம்பரங்களை வழங்க குக்கீகளைப் பயன்படுத்துகிறது. இதன் மூலம் பயனர்கள் இந்த இணையதளத்திற்கு அல்லது பிற இணையதளங்களுக்குச் சென்றதன் அடிப்படையில் தனிப்பயனாக்கப்பட்ட விளம்பரங்களைக் கூகுள் காட்டுகிறது. பயனர்கள் கூகுளின் விளம்பர அமைப்புகள் (Ads Settings) பக்கத்திற்குச் சென்று தனிப்பயனாக்கப்பட்ட விளம்பரங்களில் இருந்து எந்த நேரத்திலும் விலகலாம்.',
     link: { url: 'https://adssettings.google.com', text_en: 'Opt out of personalised advertising via Google Ads Settings →', text_ta: 'கூகுள் விளம்பர அமைப்புகள் மூலம் தனிப்பயனாக்கப்பட்ட விளம்பரங்களை முடக்கவும் →' }
   },
   {
     id: 'google-analytics',
     en: 'Google Analytics & Site Traffic',
     ta: 'Google Analytics மற்றும் தளப் போக்குவரத்து',
-    content_en: 'To understand user flows and optimize usability, we use Google Analytics. Google Analytics collects anonymous browser information, screen resolutions, session durations, and pages viewed. IP address anonymization is enabled by default on NammaTN, meaning your complete IP address is never stored or processed by Google. You can disable this analytics tracking in your browser settings or install the Google Analytics Opt-out browser extension.',
-    content_ta: 'பயனர்கள் தளத்தை எவ்வாறு பயன்படுத்துகிறார்கள் என்பதைப் புரிந்துகொள்ள Google Analytics ஐப் பயன்படுத்துகிறோம். இது முற்றிலும் அநாமதேய உலாவித் தகவல்கள், அமர்வு கால அளவுகள் மற்றும் பார்வையிட்ட பக்கங்களை மட்டுமே சேகரிக்கிறது. NammaTN இல் ஐபி முகவரி அநாமதேயமாக்கல் (IP Anonymization) செயல்படுத்தப்பட்டுள்ளது, எனவே உங்கள் முழுமையான ஐபி முகவரியைக் கூகுள் சேமிக்காது.'
+    content_en: 'To understand user flows and optimize usability, we use Google Analytics. Google Analytics collects anonymous browser information, screen resolutions, session durations, and pages viewed. IP address anonymization is enabled by default on NammaTN234, meaning your complete IP address is never stored or processed by Google. You can disable this analytics tracking in your browser settings or install the Google Analytics Opt-out browser extension.',
+    content_ta: 'பயனர்கள் தளத்தை எவ்வாறு பயன்படுத்துகிறார்கள் என்பதைப் புரிந்துகொள்ள Google Analytics ஐப் பயன்படுத்துகிறோம். இது முற்றிலும் அநாமதேய உலாவித் தகவல்கள், அமர்வு கால அளவுகள் மற்றும் பார்வையிட்ட பக்கங்களை மட்டுமே சேகரிக்கிறது. NammaTN234 இல் ஐபி முகவரி அநாமதேயமாக்கல் (IP Anonymization) செயல்படுத்தப்பட்டுள்ளது, எனவே உங்கள் முழுமையான ஐபி முகவரியைக் கூகுள் சேமிக்காது.'
   },
   {
     id: 'supabase-storage',
@@ -79,8 +79,8 @@ const SECTIONS = [
     id: 'data-retention',
     en: 'Data Retention & Account Deletion',
     ta: 'தரவுத் தக்கவைப்பு மற்றும் கணக்கு நீக்கம்',
-    content_en: 'We retain your personal data (name, email, profile picture) for as long as your NammaTN account is active. If you choose to delete your account, your personal identifying records are permanently purged from our databases. To maintain the historical continuity of community boards, any civic reports, photo evidence, and public discussion comments you posted will remain visible but will be permanently anonymized and labeled as "Deleted User" to protect your privacy.',
-    content_ta: 'உங்கள் NammaTN கணக்கு செயலில் இருக்கும் வரை மட்டுமே உங்கள் தனிப்பட்ட தரவை (பெயர், மின்னஞ்சல், சுயவிவரப் படம்) நாங்கள் சேமித்து வைப்போம். உங்கள் கணக்கை நீக்க நீங்கள் தேர்வுசெய்தால், உங்கள் அடையாளத் தரவுகள் எங்கள் தரவுத்தளத்திலிருந்து நிரந்தரமாக அழிக்கப்படும். இருப்பினும், சமூக விவாதங்களின் தொடர்ச்சியைப் பாதுகாக்க, நீங்கள் பதிவிட்ட குடிமைப் புகார்கள் மற்றும் கருத்துகள் பொதுப் பார்வையில் இருக்கும், ஆனால் அவை முற்றிலும் அநாமதேயமாக்கப்பட்டு "Deleted User" எனக் குறிக்கப்படும்.'
+    content_en: 'We retain your personal data (name, email, profile picture) for as long as your NammaTN234 account is active. If you choose to delete your account, your personal identifying records are permanently purged from our databases. To maintain the historical continuity of community boards, any civic reports, photo evidence, and public discussion comments you posted will remain visible but will be permanently anonymized and labeled as "Deleted User" to protect your privacy.',
+    content_ta: 'உங்கள் NammaTN234 கணக்கு செயலில் இருக்கும் வரை மட்டுமே உங்கள் தனிப்பட்ட தரவை (பெயர், மின்னஞ்சல், சுயவிவரப் படம்) நாங்கள் சேமித்து வைப்போம். உங்கள் கணக்கை நீக்க நீங்கள் தேர்வுசெய்தால், உங்கள் அடையாளத் தரவுகள் எங்கள் தரவுத்தளத்திலிருந்து நிரந்தரமாக அழிக்கப்படும். இருப்பினும், சமூக விவாதங்களின் தொடர்ச்சியைப் பாதுகாக்க, நீங்கள் பதிவிட்ட குடிமைப் புகார்கள் மற்றும் கருத்துகள் பொதுப் பார்வையில் இருக்கும், ஆனால் அவை முற்றிலும் அநாமதேயமாக்கப்பட்டு "Deleted User" எனக் குறிக்கப்படும்.'
   },
   {
     id: 'user-rights',
@@ -90,21 +90,21 @@ const SECTIONS = [
       'Right to Access: You can request a digital file of all personal data we hold about you.',
       'Right to Correction: You can request that we update or rectify any inaccurate personal details.',
       'Right to Deletion: You can request the permanent deletion of your account and personal identifiers by emailing us.',
-      'To exercise any of these rights, please email us directly at support@nammatn.in, specifying your registered email address.'
+      'To exercise any of these rights, please email us directly at support@nammatn234234.in, specifying your registered email address.'
     ],
     items_ta: [
       'அணுகும் உரிமை: உங்களுடைய சேமிக்கப்பட்ட தனிப்பட்ட தரவுகளின் நகலைக் கோர உங்களுக்கு உரிமை உண்டு.',
       'திருத்தும் உரிமை: தவறான தனிப்பட்ட விவரங்களைத் திருத்துமாறு நீங்கள் எங்களைக் கோரலாம்.',
       'நீக்கும் உரிமை: எங்களுக்கு மின்னஞ்சல் அனுப்புவதன் மூலம் உங்கள் கணக்கு மற்றும் தனிப்பட்ட தரவை நிரந்தரமாக நீக்குமாறு கோரலாம்.',
-      'இந்த உரிமைகளைப் பயன்படுத்த, உங்கள் பதிவு செய்யப்பட்ட மின்னஞ்சல் முகவரியைக் குறிப்பிட்டு support@nammatn.in என்ற மின்னஞ்சலில் எங்களைத் தொடர்பு கொள்ளவும்.'
+      'இந்த உரிமைகளைப் பயன்படுத்த, உங்கள் பதிவு செய்யப்பட்ட மின்னஞ்சல் முகவரியைக் குறிப்பிட்டு support@nammatn234234.in என்ற மின்னஞ்சலில் எங்களைத் தொடர்பு கொள்ளவும்.'
     ]
   },
   {
     id: 'children-privacy',
     en: 'Children\'s Privacy',
     ta: 'குழந்தைகளின் தனியுரிமை',
-    content_en: 'NammaTN does not target or knowingly collect personal information from children under 13 years of age. If you are a parent or guardian and believe that your child under 13 has registered an account or provided personal details without consent, please notify us immediately at support@nammatn.in so we can verify and delete the information.',
-    content_ta: 'NammaTN 13 வயதிற்குட்பட்ட குழந்தைகளிடமிருந்து தெரிந்தே எந்தவொரு தனிப்பட்ட தகவலையும் சேகரிப்பது இல்லை. 13 வயதிற்குட்பட்ட ஒரு குழந்தை அனுமதி இல்லாமல் பதிவு செய்துள்ளார் என நீங்கள் கருதினால், உடனடியாக support@nammatn.in என்ற மின்னஞ்சலில் எங்களை அணுகவும்; நாங்கள் அதை நீக்க நடவடிக்கை எடுப்போம்.'
+    content_en: 'NammaTN234 does not target or knowingly collect personal information from children under 13 years of age. If you are a parent or guardian and believe that your child under 13 has registered an account or provided personal details without consent, please notify us immediately at support@nammatn234234.in so we can verify and delete the information.',
+    content_ta: 'NammaTN234 13 வயதிற்குட்பட்ட குழந்தைகளிடமிருந்து தெரிந்தே எந்தவொரு தனிப்பட்ட தகவலையும் சேகரிப்பது இல்லை. 13 வயதிற்குட்பட்ட ஒரு குழந்தை அனுமதி இல்லாமல் பதிவு செய்துள்ளார் என நீங்கள் கருதினால், உடனடியாக support@nammatn234234.in என்ற மின்னஞ்சலில் எங்களை அணுகவும்; நாங்கள் அதை நீக்க நடவடிக்கை எடுப்போம்.'
   },
   {
     id: 'policy-changes',
@@ -120,12 +120,12 @@ export default function PrivacyPolicy() {
   const T = (en, ta) => lang === 'ta' ? ta : en;
 
   usePageMeta({
-    title: T('Privacy Policy | NammaTN', 'தனியுரிமைக் கொள்கை | NammaTN'),
+    title: T('Privacy Policy | NammaTN234', 'தனியுரிமைக் கொள்கை | NammaTN234'),
     description: T(
-      'NammaTN Privacy Policy — details on data collection, selective location usage, cookies, Google AdSense & Analytics disclosures, and account deletion rights.',
-      'NammaTN தனியுரிமைக் கொள்கை — தரவு சேகரிப்பு, குக்கீகள், Google AdSense & Analytics அறிவிப்புகள் மற்றும் தரவு நீக்க உரிமைகள்.'
+      'NammaTN234 Privacy Policy — details on data collection, selective location usage, cookies, Google AdSense & Analytics disclosures, and account deletion rights.',
+      'NammaTN234 தனியுரிமைக் கொள்கை — தரவு சேகரிப்பு, குக்கீகள், Google AdSense & Analytics அறிவிப்புகள் மற்றும் தரவு நீக்க உரிமைகள்.'
     ),
-    canonical: 'https://nammatn.in/privacy-policy',
+    canonical: 'https://nammatn234234.in/privacy-policy',
   });
 
   return (
@@ -229,10 +229,10 @@ export default function PrivacyPolicy() {
           </p>
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <a
-              href="mailto:support@nammatn.in"
+              href="mailto:support@nammatn234234.in"
               className="bg-white text-indigo-700 font-semibold px-5 py-2 rounded-xl text-sm hover:bg-indigo-50 transition-colors"
             >
-              support@nammatn.in
+              support@nammatn234234.in
             </a>
             <Link
               to="/contact"

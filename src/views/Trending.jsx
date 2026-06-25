@@ -16,7 +16,7 @@ export default function Trending() {
   const T = (en, ta) => lang === "ta" ? ta : en;
 
   usePageMeta({
-    title: "NammaTN - Trending Now",
+    title: "NammaTN234 - Trending Now",
     description: "See the most discussed civic issues, alerts, complaints, and community updates across Tamil Nadu.",
   });
 

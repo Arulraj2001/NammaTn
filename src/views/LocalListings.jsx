@@ -175,7 +175,7 @@ export default function LocalListings() {
       {/* Disclaimer */}
       <div className="bg-amber-50 dark:bg-amber-900/10 border-b border-amber-200 dark:border-amber-800 py-2 px-4">
         <p className="text-xs text-amber-700 dark:text-amber-400 text-center max-w-3xl mx-auto">
-          <strong>{T("Note:", "குறிப்பு:")}</strong> {T("Verified = NammaTN reviewed basic listing details. Sponsored = Paid placement. Featured = Highlighted placement. Always use your own judgment before contacting.", "சரிபார்க்கப்பட்டது = NammaTN அடிப்படை விவரங்களை சரிபார்த்தது. நிதியுதவி = கட்டண இடம். சிறப்பு = முன்னிலைப்படுத்தப்பட்ட இடம். தொடர்பு கொள்வதற்கு முன் உங்கள் சொந்த நியாயத்தை பயன்படுத்துங்கள்.")}
+          <strong>{T("Note:", "குறிப்பு:")}</strong> {T("Verified = NammaTN234 reviewed basic listing details. Sponsored = Paid placement. Featured = Highlighted placement. Always use your own judgment before contacting.", "சரிபார்க்கப்பட்டது = NammaTN234 அடிப்படை விவரங்களை சரிபார்த்தது. நிதியுதவி = கட்டண இடம். சிறப்பு = முன்னிலைப்படுத்தப்பட்ட இடம். தொடர்பு கொள்வதற்கு முன் உங்கள் சொந்த நியாயத்தை பயன்படுத்துங்கள்.")}
         </p>
       </div>
 

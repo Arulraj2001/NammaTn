@@ -8,8 +8,8 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 const ALL_FAQS = [
   {
     id: "f1", category: "complaints",
-    q_en: "How do I file a complaint on NammaTN?",
-    q_ta: "NammaTN-ல் எப்படி புகார் பதிவு செய்வது?",
+    q_en: "How do I file a complaint on NammaTN234?",
+    q_ta: "NammaTN234-ல் எப்படி புகார் பதிவு செய்வது?",
     a_en: "Click 'Create Post' in the top menu. Select your district, ward, and issue category. Describe the problem with photos or videos. Your post is public and also notified to relevant officials via our automated alert system. You can track all responses on your Dashboard.",
     a_ta: "மேல் மெனுவில் 'Create Post' கிளிக் செய்யுங்கள். மாவட்டம், வார்டு மற்றும் பிரச்சினை வகையை தேர்வு செய்யுங்கள். புகைப்படங்களுடன் பிரச்சினையை விவரிக்கவும். உங்கள் Dashboard இல் பதில்களை கண்காணிக்கலாம்.",
   },
@@ -17,7 +17,7 @@ const ALL_FAQS = [
     id: "f2", category: "complaints",
     q_en: "How do I check my government complaint status?",
     q_ta: "என் அரசு புகாரின் நிலையை எப்படி சரிபார்ப்பது?",
-    a_en: "For Tamil Nadu CM Grievance Cell complaints (1100), track at cms.tn.gov.in using your reference number. For central government complaints, use pgportal.gov.in. For police complaints, use the TN Police e-Services portal. NammaTN posts are tracked in your Dashboard.",
+    a_en: "For Tamil Nadu CM Grievance Cell complaints (1100), track at cms.tn.gov.in using your reference number. For central government complaints, use pgportal.gov.in. For police complaints, use the TN Police e-Services portal. NammaTN234 posts are tracked in your Dashboard.",
     a_ta: "TN முதலமைச்சர் புகார் (1100) நிலை: cms.tn.gov.in ல் Reference Number கொண்டு சரிபார்க்கவும். மத்திய அரசு: pgportal.gov.in. காவல்துறை: TN Police e-Services.",
   },
   {
@@ -114,7 +114,7 @@ export default function AwarenessFaqsPage() {
   const [openId, setOpenId] = useState(null);
 
   usePageMeta({
-    title: "Citizen FAQs Tamil Nadu | NammaTN",
+    title: "Citizen FAQs Tamil Nadu | NammaTN234",
     description: "Answers to the most common questions Tamil Nadu citizens ask about government services — RTI, ration card, CMCHIS, FIR, electricity connection, property registration and more.",
   });
 
@@ -225,8 +225,8 @@ export default function AwarenessFaqsPage() {
 
       <p className="text-center text-xs text-slate-400 mt-8 pt-4 border-t border-slate-100 dark:border-slate-800">
         {T(
-          "Have a question not listed here? Post it on NammaTN and get answers from the community.",
-          "இங்கு இல்லாத கேள்வி இருக்கிறதா? NammaTN இல் பதிவிட்டு சமூகத்திடம் பதில் பெறுங்கள்."
+          "Have a question not listed here? Post it on NammaTN234 and get answers from the community.",
+          "இங்கு இல்லாத கேள்வி இருக்கிறதா? NammaTN234 இல் பதிவிட்டு சமூகத்திடம் பதில் பெறுங்கள்."
         )}
         {" "}<Link to="/ask" className="text-blue-500 hover:underline">{T("Ask now →", "இப்போது கேளுங்கள் →")}</Link>
       </p>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 function buildShareText(post, lang) {
   const title = lang === "ta" ? (post.title_ta || post.title_en) : post.title_en;
-  return `${title} | NammaTN`;
+  return `${title} | NammaTN234`;
 }
 
 export default function ShareBar({ post, lang = "en", compact = false }) {

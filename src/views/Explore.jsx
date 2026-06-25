@@ -67,7 +67,7 @@ export default function Explore() {
   const nearbyParam = searchParams.get("nearby") === "true";
 
   usePageMeta({
-    title: "Explore | NammaTN",
+    title: "Explore | NammaTN234",
     description: "Discover Civic Receipts, local alerts, community posts, area updates, and useful Tamil Nadu features.",
   });
 
@@ -187,7 +187,7 @@ export default function Explore() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">
-          {T("Explore NammaTN", "NammaTN ஆராய்க")}
+          {T("Explore NammaTN234", "NammaTN234 ஆராய்க")}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 text-sm">
           {T("Discover Civic Receipts, local alerts, community posts, and updates from Tamil Nadu.", "தமிழ்நாட்டிலிருந்து குடிமை ரசீதுகள், உள்ளூர் எச்சரிக்கைகள் மற்றும் சமுதாய பதிவுகளை கண்டுபிடிக்கவும்.")}

@@ -356,7 +356,7 @@ export default function CivicReceiptActions({ post, onRefresh }) {
 
   const handleShare = () => {
     const url = window.location.href;
-    const text = `🔴 NammaTN Civic Receipt\n${post.civic_receipt_id || ""}: ${post.title_en}\nStatus: ${getCivicStatus(post.civic_status)?.label}\n${url}`;
+    const text = `🔴 NammaTN234 Civic Receipt\n${post.civic_receipt_id || ""}: ${post.title_en}\nStatus: ${getCivicStatus(post.civic_status)?.label}\n${url}`;
     if (navigator.share) {
       navigator.share({ title: post.title_en, text, url });
     } else {

@@ -36,7 +36,7 @@ export default function Stay() {
   const qc = useQueryClient();
 
   usePageMeta({
-    title: "Community Stay & Rooms – NammaTN",
+    title: "Community Stay & Rooms – NammaTN234",
     description: "Find PG stays, shared rooms, roommates and temporary accommodation across Tamil Nadu.",
   });
 

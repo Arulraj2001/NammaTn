@@ -146,9 +146,9 @@ const ADVANCED_FIELDS = [
   {
     group: "🔍 Core Meta",
     fields: [
-      { key: "seo_meta_keywords", label: "Meta Keywords (comma-separated)", placeholder: "Tamil Nadu, civic, community, NammaTN", type: "text" },
-      { key: "seo_author", label: "Site Author / Publisher Name", placeholder: "NammaTN Team" },
-      { key: "seo_copyright", label: "Copyright Text", placeholder: "© 2025 NammaTN. All rights reserved." },
+      { key: "seo_meta_keywords", label: "Meta Keywords (comma-separated)", placeholder: "Tamil Nadu, civic, community, NammaTN234", type: "text" },
+      { key: "seo_author", label: "Site Author / Publisher Name", placeholder: "NammaTN234 Team" },
+      { key: "seo_copyright", label: "Copyright Text", placeholder: "© 2025 NammaTN234. All rights reserved." },
       { key: "seo_language", label: "Content Language", placeholder: "en-IN" },
       { key: "seo_geo_region", label: "Geo Region", placeholder: "IN-TN" },
       { key: "seo_geo_placename", label: "Geo Place Name", placeholder: "Tamil Nadu, India" },
@@ -159,11 +159,11 @@ const ADVANCED_FIELDS = [
     group: "📱 Open Graph / Social",
     fields: [
       { key: "seo_og_type", label: "OG Type", placeholder: "website" },
-      { key: "seo_og_site_name", label: "OG Site Name", placeholder: "NammaTN" },
+      { key: "seo_og_site_name", label: "OG Site Name", placeholder: "NammaTN234" },
       { key: "seo_og_locale", label: "OG Locale", placeholder: "en_IN" },
       { key: "seo_og_locale_alt", label: "OG Alternate Locale", placeholder: "ta_IN" },
-      { key: "seo_twitter_site", label: "Twitter @Site Handle", placeholder: "@nammatnofficial" },
-      { key: "seo_twitter_creator", label: "Twitter @Creator Handle", placeholder: "@nammatn" },
+      { key: "seo_twitter_site", label: "Twitter @Site Handle", placeholder: "@nammatn234official" },
+      { key: "seo_twitter_creator", label: "Twitter @Creator Handle", placeholder: "@nammatn234" },
       { key: "seo_twitter_card", label: "Twitter Card Type", placeholder: "summary_large_image" },
       { key: "seo_fb_app_id", label: "Facebook App ID", placeholder: "123456789" },
     ],
@@ -182,7 +182,7 @@ const ADVANCED_FIELDS = [
     group: "⚡ Performance & PWA",
     fields: [
       { key: "seo_theme_color", label: "Theme Color (PWA / browser)", placeholder: "#2563eb" },
-      { key: "seo_apple_touch_icon", label: "Apple Touch Icon URL", placeholder: "https://nammatn.in/apple-touch-icon.png" },
+      { key: "seo_apple_touch_icon", label: "Apple Touch Icon URL", placeholder: "https://nammatn234234.in/apple-touch-icon.png" },
       { key: "seo_manifest_url", label: "Web Manifest URL", placeholder: "/manifest.json" },
     ],
   },
@@ -191,15 +191,15 @@ const ADVANCED_FIELDS = [
 // ─── Structured Data settings ───────────────────────────────────────────────
 
 const STRUCTURED_DATA_FIELDS = [
-  { key: "sd_org_name", label: "Organization Name", placeholder: "NammaTN" },
-  { key: "sd_org_url", label: "Organization URL", placeholder: "https://nammatn.in" },
-  { key: "sd_org_logo", label: "Organization Logo URL", placeholder: "https://nammatn.in/logo.png" },
+  { key: "sd_org_name", label: "Organization Name", placeholder: "NammaTN234" },
+  { key: "sd_org_url", label: "Organization URL", placeholder: "https://nammatn234234.in" },
+  { key: "sd_org_logo", label: "Organization Logo URL", placeholder: "https://nammatn234234.in/logo.png" },
   { key: "sd_org_phone", label: "Contact Phone", placeholder: "+91 XXXXX XXXXX" },
-  { key: "sd_org_email", label: "Contact Email", placeholder: "hello@nammatn.in" },
-  { key: "sd_social_profiles", label: "Social Profile URLs (one per line)", placeholder: "https://twitter.com/nammatn\nhttps://facebook.com/nammatn", multiline: true },
+  { key: "sd_org_email", label: "Contact Email", placeholder: "hello@nammatn234234.in" },
+  { key: "sd_social_profiles", label: "Social Profile URLs (one per line)", placeholder: "https://twitter.com/nammatn234\nhttps://facebook.com/nammatn234", multiline: true },
   { key: "sd_searchbox_enabled", label: "Enable Sitelinks Searchbox (true/false)", placeholder: "true" },
   { key: "sd_breadcrumb_enabled", label: "Enable Breadcrumbs Schema (true/false)", placeholder: "true" },
-  { key: "sd_article_publisher", label: "Article Publisher URL", placeholder: "https://nammatn.in" },
+  { key: "sd_article_publisher", label: "Article Publisher URL", placeholder: "https://nammatn234234.in" },
 ];
 
 // ─── Helper Components ───────────────────────────────────────────────────────
@@ -446,7 +446,7 @@ export default function AdminSEO() {
                   <Input
                     value={val(locale.key)}
                     onChange={(e) => set(locale.key, e.target.value)}
-                    placeholder={`https://nammatn.in${locale.code === "ta-IN" ? "/ta" : locale.code === "hi-IN" ? "/hi" : "/"}`}
+                    placeholder={`https://nammatn234234.in${locale.code === "ta-IN" ? "/ta" : locale.code === "hi-IN" ? "/hi" : "/"}`}
                     className="text-sm"
                   />
                 </div>
@@ -485,7 +485,7 @@ export default function AdminSEO() {
           <SectionCard title="🔗 Canonical & Language Meta">
             <div className="space-y-3">
               {[
-                { key: "seo_canonical_base", label: "Canonical Base URL", placeholder: "https://nammatn.in" },
+                { key: "seo_canonical_base", label: "Canonical Base URL", placeholder: "https://nammatn234234.in" },
                 { key: "seo_content_language", label: "Content-Language Header Value", placeholder: "en-IN, ta-IN" },
                 { key: "seo_amp_enabled", label: "AMP Support (true/false)", placeholder: "false" },
               ].map((f) => (
@@ -543,8 +543,8 @@ export default function AdminSEO() {
 {JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: val("sd_org_name") || "NammaTN",
-  url: val("sd_org_url") || "https://nammatn.in",
+  name: val("sd_org_name") || "NammaTN234",
+  url: val("sd_org_url") || "https://nammatn234234.in",
   logo: val("sd_org_logo"),
   contactPoint: val("sd_org_phone") ? { "@type": "ContactPoint", telephone: val("sd_org_phone"), contactType: "customer service" } : undefined,
   email: val("sd_org_email"),
@@ -613,7 +613,7 @@ export default function AdminSEO() {
               {[
                 { key: "robots_disallow_extra", label: "Additional Disallow Paths (one per line)", placeholder: "/private/\n/temp/", multiline: true },
                 { key: "robots_crawl_delay", label: "Crawl Delay (seconds)", placeholder: "2", type: "number" },
-                { key: "robots_sitemap_url", label: "Sitemap URL", placeholder: "https://nammatn.in/sitemap.xml" },
+                { key: "robots_sitemap_url", label: "Sitemap URL", placeholder: "https://nammatn234234.in/sitemap.xml" },
               ].map((f) => (
                 <div key={f.key}>
                   <label className="text-xs font-medium text-slate-600 dark:text-slate-300 mb-1 block">{f.label}</label>
@@ -650,7 +650,7 @@ export default function AdminSEO() {
           <SectionCard title="🗺️ Sitemap Settings">
             <div className="space-y-3">
               {[
-                { key: "sitemap_base_url", label: "Sitemap Base URL", placeholder: "https://nammatn.in" },
+                { key: "sitemap_base_url", label: "Sitemap Base URL", placeholder: "https://nammatn234234.in" },
                 { key: "sitemap_change_freq", label: "Default Change Frequency", placeholder: "weekly" },
                 { key: "sitemap_priority_home", label: "Homepage Priority (0.0–1.0)", placeholder: "1.0" },
                 { key: "sitemap_priority_posts", label: "Posts Priority (0.0–1.0)", placeholder: "0.8" },

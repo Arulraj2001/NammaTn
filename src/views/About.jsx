@@ -61,12 +61,12 @@ export default function About() {
   const T = (en, ta) => lang === 'ta' ? ta : en;
 
   usePageMeta({
-    title: T("About NammaTN | Tamil Nadu's Civic Community Platform", 'NammaTN பற்றி | தமிழ்நாடு குடிமை சமுதாய தளம்'),
+    title: T("About NammaTN234 | Tamil Nadu's Civic Community Platform", 'NammaTN234 பற்றி | தமிழ்நாடு குடிமை சமுதாய தளம்'),
     description: T(
-      "Learn about NammaTN — our mission, why we were created, our Civic Receipts system, transparency goals, and how we support civic awareness in Tamil Nadu.",
-      'NammaTN பற்றி அறிந்துகொள்ளுங்கள் — எங்கள் நோக்கம், ஏன் உருவாக்கப்பட்டோம், குடிமை ரசீதுகள் முறை மற்றும் தமிழ்நாட்டில் குடிமை விழிப்புணர்வை எவ்வாறு ஆதரிக்கிறோம்.'
+      "Learn about NammaTN234 — our mission, why we were created, our Civic Receipts system, transparency goals, and how we support civic awareness in Tamil Nadu.",
+      'NammaTN234 பற்றி அறிந்துகொள்ளுங்கள் — எங்கள் நோக்கம், ஏன் உருவாக்கப்பட்டோம், குடிமை ரசீதுகள் முறை மற்றும் தமிழ்நாட்டில் குடிமை விழிப்புணர்வை எவ்வாறு ஆதரிக்கிறோம்.'
     ),
-    canonical: 'https://nammatn.in/about',
+    canonical: 'https://nammatn234234.in/about',
   });
 
   return (
@@ -82,15 +82,15 @@ export default function About() {
             <MapPin className="w-3.5 h-3.5" /> Tamil Nadu, India
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 leading-tight">
-            {T('About NammaTN', 'NammaTN பற்றி')}
+            {T('About NammaTN234', 'NammaTN234 பற்றி')}
           </h1>
           <p className="text-xl font-semibold text-blue-100 mb-6">
             {T('Tamil Nadu’s Independent Civic Information & Community Platform', 'தமிழ்நாட்டின் சுதந்திரமான குடிமைத் தகவல் மற்றும் சமூக தளம்')}
           </p>
           <p className="text-blue-200 text-base max-w-3xl mx-auto leading-relaxed">
             {T(
-              "NammaTN is a public-interest digital platform built to help the citizens of Tamil Nadu discover local information, document civic challenges, verify neighborhood updates, and share verified civic resources. We are fully independent, citizen-first, and non-governmental.",
-              'NammaTN என்பது தமிழ்நாட்டு குடிமக்களுக்கு உள்ளூர் தகவல்களைக் கண்டறியவும், குடிமைச் சவால்களை ஆவணப்படுத்தவும், சுற்றுப்புறப் புதுப்பிப்புகளைச் சரிபார்க்கவும் மற்றும் விழிப்புணர்வு ஆதாரங்களைப் பகிரவும் உருவாக்கப்பட்ட ஒரு பொதுநலத் தளமாகும். நாங்கள் முற்றிலும் சுதந்திரமான, குடிமக்களுக்கான அரசு சாரா அமைப்பாவோம்.'
+              "NammaTN234 is a public-interest digital platform built to help the citizens of Tamil Nadu discover local information, document civic challenges, verify neighborhood updates, and share verified civic resources. We are fully independent, citizen-first, and non-governmental.",
+              'NammaTN234 என்பது தமிழ்நாட்டு குடிமக்களுக்கு உள்ளூர் தகவல்களைக் கண்டறியவும், குடிமைச் சவால்களை ஆவணப்படுத்தவும், சுற்றுப்புறப் புதுப்பிப்புகளைச் சரிபார்க்கவும் மற்றும் விழிப்புணர்வு ஆதாரங்களைப் பகிரவும் உருவாக்கப்பட்ட ஒரு பொதுநலத் தளமாகும். நாங்கள் முற்றிலும் சுதந்திரமான, குடிமக்களுக்கான அரசு சாரா அமைப்பாவோம்.'
             )}
           </p>
         </div>
@@ -107,8 +107,8 @@ export default function About() {
             </h4>
             <p className="text-amber-700 dark:text-amber-300 text-xs sm:text-sm leading-relaxed">
               {T(
-                "NammaTN is a private public-interest platform. We do NOT represent, operate on behalf of, or claim affiliation with the Government of Tamil Nadu, the Government of India, or any municipal corporation. Filing a report on NammaTN does NOT constitute filing an official complaint with government authorities. For formal grievances, we guide and link users directly to official channels (such as e-Sevai, TNEB, and CM Grievance portals).",
-                "NammaTN என்பது ஒரு தனிப்பட்ட பொது நலத் தளமாகும். நாங்கள் தமிழ்நாடு அரசு, இந்திய அரசு அல்லது எந்தவொரு மாநகராட்சியுடனும் தொடர்புடையவர்கள் அல்ல. NammaTN-ல் ஒரு சிக்கலைப் பதிவிடுவது அதிகாரப்பூர்வ அரசுப் புகாராகாது. முறையான புகார்களுக்கு, பயனர்களை அதிகாரப்பூர்வ அரசு இணையதளங்களுக்கு (இ-சேவை, மின்வாரியம் மற்றும் முதலமைச்சரின் உதவி மையம் போன்றவை) நேரடியாக வழிநடத்துகிறோம்."
+                "NammaTN234 is a private public-interest platform. We do NOT represent, operate on behalf of, or claim affiliation with the Government of Tamil Nadu, the Government of India, or any municipal corporation. Filing a report on NammaTN234 does NOT constitute filing an official complaint with government authorities. For formal grievances, we guide and link users directly to official channels (such as e-Sevai, TNEB, and CM Grievance portals).",
+                "NammaTN234 என்பது ஒரு தனிப்பட்ட பொது நலத் தளமாகும். நாங்கள் தமிழ்நாடு அரசு, இந்திய அரசு அல்லது எந்தவொரு மாநகராட்சியுடனும் தொடர்புடையவர்கள் அல்ல. NammaTN234-ல் ஒரு சிக்கலைப் பதிவிடுவது அதிகாரப்பூர்வ அரசுப் புகாராகாது. முறையான புகார்களுக்கு, பயனர்களை அதிகாரப்பூர்வ அரசு இணையதளங்களுக்கு (இ-சேவை, மின்வாரியம் மற்றும் முதலமைச்சரின் உதவி மையம் போன்றவை) நேரடியாக வழிநடத்துகிறோம்."
               )}
             </p>
           </div>
@@ -128,8 +128,8 @@ export default function About() {
             </p>
             <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
               {T(
-                "On the other hand, finding reliable emergency helplines, understanding the document checklist for a state welfare scheme, or finding the coordinates of a local municipal office often required browsing multiple complex websites. NammaTN was built to solve this. We wanted a transparent, searchable, and localized database where public issues can be publicly documented, and citizen awareness is simplified.",
-                "அதே சமயம், நம்பகமான அவசர உதவி எண்களைக் கண்டறிவது, அரசு நலத்திட்டங்களுக்கான தகுதிகளைப் புரிந்துகொள்வது அல்லது உள்ளூர் நகராட்சி அலுவலகத்தைக் கண்டறிவது போன்றவற்றுக்கு பல சிக்கலான இணையதளங்களை ஆராய வேண்டியிருந்தது. இதைத் தீர்க்கவே NammaTN உருவாக்கப்பட்டது. குடிமை சிக்கல்களை பொதுவில் ஆவணப்படுத்தவும், விழிப்புணர்வை எளிதாக்கவும் ஒரு தளம் தேவைப்பட்டது."
+                "On the other hand, finding reliable emergency helplines, understanding the document checklist for a state welfare scheme, or finding the coordinates of a local municipal office often required browsing multiple complex websites. NammaTN234 was built to solve this. We wanted a transparent, searchable, and localized database where public issues can be publicly documented, and citizen awareness is simplified.",
+                "அதே சமயம், நம்பகமான அவசர உதவி எண்களைக் கண்டறிவது, அரசு நலத்திட்டங்களுக்கான தகுதிகளைப் புரிந்துகொள்வது அல்லது உள்ளூர் நகராட்சி அலுவலகத்தைக் கண்டறிவது போன்றவற்றுக்கு பல சிக்கலான இணையதளங்களை ஆராய வேண்டியிருந்தது. இதைத் தீர்க்கவே NammaTN234 உருவாக்கப்பட்டது. குடிமை சிக்கல்களை பொதுவில் ஆவணப்படுத்தவும், விழிப்புணர்வை எளிதாக்கவும் ஒரு தளம் தேவைப்பட்டது."
               )}
             </p>
           </div>
@@ -187,8 +187,8 @@ export default function About() {
             </h2>
             <p className="text-slate-600 dark:text-slate-400 text-sm">
               {T(
-                "NammaTN provides community-focused modules to simplify civic awareness, local networking, and transparency.",
-                "குடிமை விழிப்புணர்வு, உள்ளூர் தொடர்பு மற்றும் வெளிப்படைத்தன்மையை எளிமைப்படுத்த NammaTN பல்வேறு அம்சங்களை வழங்குகிறது."
+                "NammaTN234 provides community-focused modules to simplify civic awareness, local networking, and transparency.",
+                "குடிமை விழிப்புணர்வு, உள்ளூர் தொடர்பு மற்றும் வெளிப்படைத்தன்மையை எளிமைப்படுத்த NammaTN234 பல்வேறு அம்சங்களை வழங்குகிறது."
               )}
             </p>
           </div>
@@ -249,8 +249,8 @@ export default function About() {
           </h2>
           <p className="text-slate-700 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
             {T(
-              "NammaTN is in active development. We are expanding our features to offer dedicated dashboards for Resident Welfare Associations (RWAs) and apartment committees to track their local issues systematically. Furthermore, we are designing a voluntary matchmaking portal connecting local welfare organizations with CSR funding to support community-led cleanup and repair drives. Our ultimate goal is to foster a proactive civic culture across Tamil Nadu through structured information and community collaboration.",
-              "NammaTN தீவிர தயாரிப்பில் உள்ளது. குடியிருப்பு நலச் சங்கங்கள் (RWAs) தங்கள் உள்ளூர் பிரச்சினைகளை முறையாகக் கண்காணிக்க பிரத்யேக கட்டுப்பாட்டு பலகைகளை வழங்க விரிவுபடுத்தி வருகிறோம். மேலும், சமூகத் தூய்மை மற்றும் பழுதுபார்ப்புப் பணிகளை ஆதரிப்பதற்காக உள்ளூர் அமைப்புகளை நிறுவனங்களின் சமூகப் பொறுப்பு (CSR) நிதியுடன் இணைக்கும் தானியங்கித் திட்டங்களையும் வடிவமைக்கிறோம்."
+              "NammaTN234 is in active development. We are expanding our features to offer dedicated dashboards for Resident Welfare Associations (RWAs) and apartment committees to track their local issues systematically. Furthermore, we are designing a voluntary matchmaking portal connecting local welfare organizations with CSR funding to support community-led cleanup and repair drives. Our ultimate goal is to foster a proactive civic culture across Tamil Nadu through structured information and community collaboration.",
+              "NammaTN234 தீவிர தயாரிப்பில் உள்ளது. குடியிருப்பு நலச் சங்கங்கள் (RWAs) தங்கள் உள்ளூர் பிரச்சினைகளை முறையாகக் கண்காணிக்க பிரத்யேக கட்டுப்பாட்டு பலகைகளை வழங்க விரிவுபடுத்தி வருகிறோம். மேலும், சமூகத் தூய்மை மற்றும் பழுதுபார்ப்புப் பணிகளை ஆதரிப்பதற்காக உள்ளூர் அமைப்புகளை நிறுவனங்களின் சமூகப் பொறுப்பு (CSR) நிதியுடன் இணைக்கும் தானியங்கித் திட்டங்களையும் வடிவமைக்கிறோம்."
             )}
           </p>
         </section>
@@ -262,12 +262,12 @@ export default function About() {
           </h2>
           <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
             {T(
-              'NammaTN helps you reach an engaged, local audience of Tamil Nadu residents who care deeply about their neighborhoods. We support advertisements from ethical local businesses, utility services, and public welfare campaigns. To support our operational costs and keep the platform free, we serve clean, non-intrusive advertisements.',
-              'தங்கள் சுற்றுப்புறங்களில் அக்கறை கொண்ட தமிழ்நாட்டு குடியிருப்பாளர்களை எட்ட NammaTN உதவுகிறது. உள்ளூர் வணிகங்கள், பொதுச் சேவைகள் மற்றும் விழிப்புணர்வு பிரச்சாரங்களின் விளம்பரங்களை வரவேற்கிறோம். எங்கள் செயல்பாட்டுச் செலவுகளை ஈடுகட்ட, தூய்மையான விளம்பரங்களை வழங்குகிறோம்.'
+              'NammaTN234 helps you reach an engaged, local audience of Tamil Nadu residents who care deeply about their neighborhoods. We support advertisements from ethical local businesses, utility services, and public welfare campaigns. To support our operational costs and keep the platform free, we serve clean, non-intrusive advertisements.',
+              'தங்கள் சுற்றுப்புறங்களில் அக்கறை கொண்ட தமிழ்நாட்டு குடியிருப்பாளர்களை எட்ட NammaTN234 உதவுகிறது. உள்ளூர் வணிகங்கள், பொதுச் சேவைகள் மற்றும் விழிப்புணர்வு பிரச்சாரங்களின் விளம்பரங்களை வரவேற்கிறோம். எங்கள் செயல்பாட்டுச் செலவுகளை ஈடுகட்ட, தூய்மையான விளம்பரங்களை வழங்குகிறோம்.'
             )}
           </p>
           <a
-            href="mailto:advertise@nammatn.in"
+            href="mailto:advertise@nammatn234234.in"
             className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
           >
             {T('Advertise with us', 'எங்களுடன் விளம்பரப்படுத்துங்கள்')}
@@ -278,7 +278,7 @@ export default function About() {
         {/* ── CTA ──────────────────────────────────────────────────────────── */}
         <section className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-3xl p-8 text-white text-center">
           <h2 className="text-2xl font-extrabold mb-3">
-            {T('Join the NammaTN Community Today', 'இன்றே NammaTN சமூகத்தில் இணையுங்கள்')}
+            {T('Join the NammaTN234 Community Today', 'இன்றே NammaTN234 சமூகத்தில் இணையுங்கள்')}
           </h2>
           <p className="text-blue-100 text-sm max-w-lg mx-auto mb-6">
             {T(
@@ -309,8 +309,8 @@ export default function About() {
             {T('Contact us', 'எங்களைத் தொடர்பு கொள்ளவும்')}
           </Link>{' '}
           {T('or email', 'அல்லது மின்னஞ்சல் செய்க')}{' '}
-          <a href="mailto:support@nammatn.in" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
-            support@nammatn.in
+          <a href="mailto:support@nammatn234234.in" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
+            support@nammatn234234.in
           </a>
         </p>
       </div>

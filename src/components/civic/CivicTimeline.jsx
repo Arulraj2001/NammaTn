@@ -22,7 +22,7 @@ const EVENT_ICONS = {
 };
 
 const ACTOR_LABELS = {
-  admin: { label: "NammaTN Admin", style: "text-purple-600 font-semibold" },
+  admin: { label: "NammaTN234 Admin", style: "text-purple-600 font-semibold" },
   system: { label: "System", style: "text-slate-400 italic" },
   user: { label: null, style: "text-slate-500" },
 };

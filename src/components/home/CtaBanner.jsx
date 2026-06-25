@@ -29,7 +29,7 @@ export default function CtaBanner() {
                 {T("Together, we can build a better Tamil Nadu", "சேர்ந்து, சிறந்த தமிழ்நாட்டை கட்டலாம்")}
               </h3>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                {T("Report. Verify. Resolve. That's the NammaTN way.", "புகாரிடு. சரிபார். தீர். அதுவே NammaTN வழி.")}
+                {T("Report. Verify. Resolve. That's the NammaTN234 way.", "புகாரிடு. சரிபார். தீர். அதுவே NammaTN234 வழி.")}
               </p>
             </div>
           </div>

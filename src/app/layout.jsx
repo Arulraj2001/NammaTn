@@ -5,26 +5,26 @@ import '@/index.css';
 // AdSense pub ID is injected at runtime by the admin panel via window.__ADSENSE_PUB_ID__
 // See: AdminMonetization.jsx → AdSense Settings tab
 
-const SITE_URL = 'https://nammatn.in';
-const SITE_NAME = 'NammaTN';
+const SITE_URL = 'https://nammatn234234.in';
+const SITE_NAME = 'NammaTN234';
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'NammaTN – Tamil Nadu Civic Complaint & Community Platform',
-    template: '%s | NammaTN',
+    default: 'NammaTN234 – Tamil Nadu Civic Complaint & Community Platform',
+    template: '%s | NammaTN234',
   },
   description:
-    'NammaTN is Tamil Nadu\'s public civic platform — report local issues, track resolutions, join live community discussions, access government schemes, and celebrate community wins.',
+    'NammaTN234 is Tamil Nadu\'s public civic platform — report local issues, track resolutions, join live community discussions, access government schemes, and celebrate community wins.',
   keywords: [
-    'Tamil Nadu civic complaints', 'TN government issues', 'NammaTN',
+    'Tamil Nadu civic complaints', 'TN government issues', 'NammaTN234',
     'Tamil Nadu community platform', 'civic issues Tamil Nadu', 'report potholes TN',
     'Tamil Nadu water supply complaint', 'TN pulse live feed', 'community wins TN',
     'citizen awareness Tamil Nadu', 'government schemes Tamil Nadu', 'RTI Tamil Nadu',
   ],
-  authors: [{ name: 'NammaTN Team', url: SITE_URL }],
-  creator: 'NammaTN',
-  publisher: 'NammaTN',
+  authors: [{ name: 'NammaTN234 Team', url: SITE_URL }],
+  creator: 'NammaTN234',
+  publisher: 'NammaTN234',
   robots: {
     index: true,
     follow: true,
@@ -43,7 +43,7 @@ export const metadata = {
     alternateLocale: 'ta_IN',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: 'NammaTN – Tamil Nadu Civic Complaint & Community Platform',
+    title: 'NammaTN234 – Tamil Nadu Civic Complaint & Community Platform',
     description:
       'Report local civic issues, track real-time resolutions, and connect with your Tamil Nadu community.',
     images: [
@@ -51,18 +51,18 @@ export const metadata = {
         url: `${SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: 'NammaTN – Tamil Nadu Civic Platform',
+        alt: 'NammaTN234 – Tamil Nadu Civic Platform',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NammaTN – Tamil Nadu Civic Platform',
+    title: 'NammaTN234 – Tamil Nadu Civic Platform',
     description:
       'Report local civic issues, track resolutions, and connect with your community.',
     images: [`${SITE_URL}/og-image.png`],
-    creator: '@NammaTN',
-    site: '@NammaTN',
+    creator: '@NammaTN234',
+    site: '@NammaTN234',
   },
   icons: {
     icon: [
@@ -82,7 +82,7 @@ export const metadata = {
     },
   },
   verification: {
-    google: 'nammatn-google-site-verification',
+    google: 'nammatn234-google-site-verification',
   },
   category: 'civic technology',
 };
@@ -98,7 +98,7 @@ export default function RootLayout({ children }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="NammaTN" />
+        <meta name="apple-mobile-web-app-title" content="NammaTN234" />
         {/* Geo targeting — Tamil Nadu, India */}
         <meta name="geo.region" content="IN-TN" />
         <meta name="geo.placename" content="Tamil Nadu, India" />
@@ -136,7 +136,7 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: 'NammaTN',
+              name: 'NammaTN234',
               url: SITE_URL,
               logo: `${SITE_URL}/logo.png`,
               description:
@@ -152,8 +152,8 @@ export default function RootLayout({ children }) {
                 url: `${SITE_URL}/contact`,
               },
               sameAs: [
-                'https://twitter.com/NammaTN',
-                'https://www.facebook.com/NammaTN',
+                'https://twitter.com/NammaTN234',
+                'https://www.facebook.com/NammaTN234',
               ],
             }),
           }}
@@ -165,7 +165,7 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'NammaTN',
+              name: 'NammaTN234',
               url: SITE_URL,
               potentialAction: {
                 '@type': 'SearchAction',

@@ -49,9 +49,9 @@ const MEGA_GROUPS = [
     en_title: "Help & Support",
     ta_title: "உதவி & ஆதரவு",
     items: [
-      { path: "/help", icon: HelpCircle, en: "Help", ta: "உதவி", desc_en: "How to use NammaTN", desc_ta: "NammaTN எப்படி பயன்படுத்துவது" },
+      { path: "/help", icon: HelpCircle, en: "Help", ta: "உதவி", desc_en: "How to use NammaTN234", desc_ta: "NammaTN234 எப்படி பயன்படுத்துவது" },
       { path: "/support", icon: Heart, en: "Support", ta: "ஆதரவு", desc_en: "Support and contact us", desc_ta: "எங்களை ஆதரியுங்கள்" },
-      { path: "/contact", icon: MessageCircle, en: "Contact", ta: "தொடர்பு", desc_en: "Reach the NammaTN team", desc_ta: "NammaTN குழுவை தொடர்பு கொள்ளுங்கள்" },
+      { path: "/contact", icon: MessageCircle, en: "Contact", ta: "தொடர்பு", desc_en: "Reach the NammaTN234 team", desc_ta: "NammaTN234 குழுவை தொடர்பு கொள்ளுங்கள்" },
     ],
   },
   {
@@ -108,9 +108,9 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <img src="/apple-touch-icon.png" alt="NammaTN" className="w-8 h-8 rounded-lg object-contain" />
+              <img src="/apple-touch-icon.png" alt="NammaTN234" className="w-8 h-8 rounded-lg object-contain" />
               <div className="hidden sm:block">
-                <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">NammaTN</span>
+                <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">NammaTN234</span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-none block">
                   {T("Public Civic Proof Platform", "பொது குடிமை ஆதார தளம்")}
                 </span>

@@ -192,7 +192,7 @@ export default function SponsorRegisterModal({ onClose, linkedPostId, linkedPost
           <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 rounded-xl p-3 text-xs text-amber-700 dark:text-amber-400 space-y-1">
             <p><AlertTriangle className="w-3 h-3 inline mr-1" /><strong>Sponsor Integrity Policy:</strong></p>
             <ul className="space-y-0.5 ml-4 list-disc">
-              <li>NammaTN independently verifies all claimed impact.</li>
+              <li>NammaTN234 independently verifies all claimed impact.</li>
               <li>Sponsors cannot influence Civic Receipt content, status, or rankings.</li>
               <li>Sponsored content is always clearly labeled.</li>
               <li>Sponsorship appears publicly only after admin approval.</li>

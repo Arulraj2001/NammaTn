@@ -240,7 +240,7 @@ export default function AreaDetail() {
   });
 
   usePageMeta({
-    title: area ? `${area.name_en} Area Pulse – NammaTN` : "Area – NammaTN",
+    title: area ? `${area.name_en} Area Pulse – NammaTN234` : "Area – NammaTN234",
     description: area
       ? `Live civic updates, active issues, and local news for ${area.name_en}, ${area.district_name_en || ""}.`
       : "",

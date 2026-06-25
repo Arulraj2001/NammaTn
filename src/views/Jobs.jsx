@@ -66,7 +66,7 @@ export default function Jobs() {
   });
   const [formError, setFormError] = useState(null);
 
-  usePageMeta({ title: "NammaTN - Local Jobs", description: "Discover local job updates and employment opportunities shared for Tamil Nadu communities. Report suspicious job posts." });
+  usePageMeta({ title: "NammaTN234 - Local Jobs", description: "Discover local job updates and employment opportunities shared for Tamil Nadu communities. Report suspicious job posts." });
 
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["jobs", filterDistrict, filterType],
