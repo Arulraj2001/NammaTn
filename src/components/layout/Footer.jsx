@@ -10,6 +10,7 @@ const FOOTER_COLUMNS = [
     ta_title: "குடிமை ஆதாரம்",
     links: [
       { path: "/create",      en: "Create Civic Receipt", ta: "குடிமை ரசீது உருவாக்கு" },
+      { path: "/bribes",      en: "Bribe Tracker",        ta: "லஞ்சக் கண்காணிப்பு" },
       { path: "/explore",     en: "Explore",              ta: "ஆராய்க" },
       { path: "/trending",    en: "Trending",             ta: "டிரெண்டிங்" },
       { path: "/situations",  en: "Live",                 ta: "நேரடி" },
@@ -53,6 +54,7 @@ const FOOTER_COLUMNS = [
     links: [
       { path: "/about",          en: "About VizhiTN",  ta: "VizhiTN பற்றி" },
       { path: "/help",           en: "Help",           ta: "உதவி" },
+      { path: "/how-to-use",     en: "How to Use",     ta: "பயன்படுத்துவது எப்படி" },
       { path: "/support",        en: "Support",        ta: "ஆதரவு" },
       { path: "/contact",        en: "Contact",        ta: "தொடர்பு" },
       { path: "/privacy-policy", en: "Privacy Policy", ta: "தனியுரிமை கொள்கை" },

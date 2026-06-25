@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -32,15 +32,24 @@ const schema = z.object({
   content_en: z.string().min(10, "Content must be at least 10 characters").max(5000),
   district_slug: z.string().min(1, "Please select a district"),
   category_slug: z.string().min(1, "Please select a category"),
-  post_type: z.enum(["complaint", "appreciation", "local_update", "alert", "discussion"]),
+  post_type: z.enum(["complaint", "appreciation", "local_update", "alert", "discussion", "bribe"]),
   is_anonymous: z.boolean().optional(),
   author_name: z.string().optional(),
   location_text: z.string().optional(),
   urgency_level: z.string().optional(),
+  
+  // Bribe fields
+  bribe_status: z.string().optional(),
+  bribe_amount: z.any().optional(),
+  bribe_department: z.string().optional(),
+  bribe_department_other: z.string().optional(),
+  bribe_officer_designation: z.string().optional(),
+  bribe_specific_location: z.string().optional(),
 });
 
 const POST_TYPES = [
   { value: "complaint", icon: AlertTriangle, en: "Complaint", ta: "புகார்", desc_en: "Report an issue", desc_ta: "ஒரு சிக்கலை புகார் செய்யவும்", color: "red", isCivic: true },
+  { value: "bribe", icon: AlertTriangle, en: "Bribe Log", ta: "லஞ்சப் பதிவு", desc_en: "Report bribes requested/paid", desc_ta: "லஞ்சம் கேட்டால் அல்லது கொடுத்தால் பதிவு செய்", color: "pink" },
   { value: "appreciation", icon: Star, en: "Appreciation", ta: "பாராட்டு", desc_en: "Share good news", desc_ta: "நல்ல செய்தி பகிரவும்", color: "yellow" },
   { value: "local_update", icon: Megaphone, en: "Local Update", ta: "உள்ளூர் புதுப்பிப்பு", desc_en: "Community update", desc_ta: "சமுதாய புதுப்பிப்பு", color: "blue" },
   { value: "alert", icon: Shield, en: "Alert", ta: "எச்சரிக்கை", desc_en: "Urgent public notice", desc_ta: "அவசர பொது அறிவிப்பு", color: "orange" },
@@ -49,16 +58,28 @@ const POST_TYPES = [
 
 const COLOR_MAP = {
   red: "border-red-400 bg-red-50 dark:bg-red-900/20 text-red-600",
+  pink: "border-pink-400 bg-pink-50 dark:bg-pink-900/20 text-pink-600",
   yellow: "border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600",
   blue: "border-blue-400 bg-blue-50 dark:bg-blue-900/20 text-blue-600",
   orange: "border-orange-400 bg-orange-50 dark:bg-orange-900/20 text-orange-600",
   purple: "border-purple-400 bg-purple-50 dark:bg-purple-900/20 text-purple-600",
 };
 
+const DEPARTMENTS = [
+  { value: "Revenue Department", en: "Revenue Department", ta: "வருவாய்த்துறை" },
+  { value: "Police Department", en: "Police Department", ta: "காவல்துறை" },
+  { value: "RTO / Transport", en: "RTO / Transport", ta: "வட்டாரப் போக்குவரத்து (RTO)" },
+  { value: "Sub-Registrar Office", en: "Sub-Registrar Office", ta: "சார்பதிவாளர் அலுவலகம்" },
+  { value: "Electricity (TNEB)", en: "Electricity (TNEB)", ta: "மின்சார வாரியம் (TNEB)" },
+  { value: "Municipal Corporation", en: "Municipal Corporation", ta: "மாநகராட்சி / நகராட்சி" },
+  { value: "Other", en: "Other (Manual Entry)", ta: "இதர (கைமுறையாக)" }
+];
+
 export default function CreatePost() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isAuthenticated, user } = useAuth();
   const { requireAuth } = useAuthModal();
   
@@ -79,7 +100,12 @@ export default function CreatePost() {
     staleTime: 30_000,
   });
 
-  const [selectedType, setSelectedType] = useState("discussion");
+  const typeParam = searchParams.get("type");
+  const initialType = typeParam && ["complaint", "appreciation", "local_update", "alert", "discussion", "bribe"].includes(typeParam)
+    ? typeParam
+    : "discussion";
+
+  const [selectedType, setSelectedType] = useState(initialType);
   const [mediaUrls, setMediaUrls] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [submittedPost, setSubmittedPost] = useState(null);
@@ -90,15 +116,25 @@ export default function CreatePost() {
 
   const isCivicType = selectedType === "complaint" || selectedType === "alert";
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [bribeDisclaimerAccepted, setBribeDisclaimerAccepted] = useState(false);
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { post_type: "discussion", is_anonymous: false, urgency_level: "medium" },
+    defaultValues: { post_type: initialType, is_anonymous: initialType === "bribe", urgency_level: "medium" },
   });
+
+  useEffect(() => {
+    if (typeParam && ["complaint", "appreciation", "local_update", "alert", "discussion", "bribe"].includes(typeParam)) {
+      setSelectedType(typeParam);
+      setValue("post_type", typeParam);
+    }
+  }, [typeParam, setValue]);
 
   const isAnon = watch("is_anonymous");
   const selectedCategory = watch("category_slug");
   const selectedDistrict = watch("district_slug");
+  const bribeStatus = watch("bribe_status");
+  const bribeDept = watch("bribe_department");
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(true);
   const [areaSlug, setAreaSlug] = useState("");
   const [areaName, setAreaName] = useState("");
@@ -109,6 +145,14 @@ export default function CreatePost() {
     base44.entities.Area.filter({ district_slug: selectedDistrict, active: true }, "name_en", 100)
       .then(setAreas).catch(() => setAreas([]));
   }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (selectedType === "bribe") {
+      setValue("bribe_status", "paid");
+      setValue("bribe_amount", "");
+      setValue("is_anonymous", true);
+    }
+  }, [selectedType, setValue]);
 
   const onSubmit = async (data) => {
     if (!isAuthenticated) {
@@ -122,6 +166,36 @@ export default function CreatePost() {
     if (isCivicType && !disclaimerAccepted) {
       setSpamError(T("Please acknowledge the disclaimer before creating a Civic Receipt.", "குடிமை ரசீது உருவாக்குவதற்கு முன் மறுப்பை ஒப்புக்கொள்ளவும்."));
       return;
+    }
+
+    if (selectedType === "bribe") {
+      if (!bribeDisclaimerAccepted) {
+        setSpamError(T(
+          "Please acknowledge the transparency disclaimer before logging a bribe report.",
+          "லஞ்சப் பதிவை சமர்ப்பிக்கும் முன் வெளிப்படைத்தன்மை மறுப்பை ஒப்புக்கொள்ளவும்."
+        ));
+        return;
+      }
+      if (!data.bribe_status) {
+        setSpamError(T("Please select whether the bribe was Paid or Refused.", "லஞ்சம் கொடுக்கப்பட்டதா அல்லது மறுக்கப்பட்டதா என்பதைத் தேர்ந்தெடுக்கவும்."));
+        return;
+      }
+      if (data.bribe_status === "paid" && (!data.bribe_amount || Number(data.bribe_amount) <= 0)) {
+        setSpamError(T("Please enter a valid bribe amount greater than zero.", "பூஜ்ஜியத்தை விட அதிகமான சரியான லஞ்சத் தொகையை உள்ளிடவும்."));
+        return;
+      }
+      if (!data.bribe_department) {
+        setSpamError(T("Please select the department involved.", "தொடர்புடைய துறையைத் தேர்ந்தெடுக்கவும்."));
+        return;
+      }
+      if ((data.bribe_department === "Other" || data.bribe_department === "இதர") && !data.bribe_department_other?.trim()) {
+        setSpamError(T("Please specify the department name.", "துறையின் பெயரை குறிப்பிடவும்."));
+        return;
+      }
+      if (!data.bribe_specific_location?.trim()) {
+        setSpamError(T("Please specify the exact location/office name.", "சரியான இடம்/அலுவலகப் பெயரை குறிப்பிடவும்."));
+        return;
+      }
     }
 
     if (!checkRateLimit("post_create", 3, 10 * 60_000)) {
@@ -171,6 +245,16 @@ export default function CreatePost() {
       ],
     } : {};
 
+    const bribeFields = selectedType === "bribe" ? {
+      bribe_requested: true,
+      bribe_status: clean.bribe_status,
+      bribe_amount: clean.bribe_status === "paid" ? Number(clean.bribe_amount || 0) : 0,
+      bribe_department: (clean.bribe_department === "Other" || clean.bribe_department === "இதர") ? clean.bribe_department_other : clean.bribe_department,
+      bribe_officer_designation: clean.bribe_officer_designation || "",
+      bribe_specific_location: clean.bribe_specific_location || "",
+      bribe_audio_url: mediaUrls.find(url => url.endsWith(".mp3") || url.endsWith(".wav") || url.endsWith(".ogg") || url.includes("audio")) || null,
+    } : {};
+
     const post = await createPost({
       ...clean,
       post_type: selectedType,
@@ -188,12 +272,15 @@ export default function CreatePost() {
       created_by_id: user?.id,
       created_by: user?.full_name || user?.email,
       ...civicFields,
+      ...bribeFields,
     });
 
     setSubmittedPost(post);
     setSubmitted(true);
 
-    if (isCivicType && post?.id) {
+    if (selectedType === "bribe") {
+      setTimeout(() => navigate("/bribes"), 2000);
+    } else if (isCivicType && post?.id) {
       setTimeout(() => navigate(`/post/${post.id}`), 1800);
     } else {
       setTimeout(() => navigate("/explore"), 2000);
@@ -208,7 +295,20 @@ export default function CreatePost() {
           animate={{ scale: 1, opacity: 1 }}
           className="text-center max-w-sm"
         >
-          {isCivicType ? (
+          {selectedType === "bribe" ? (
+            <>
+              <div className="w-16 h-16 rounded-2xl bg-pink-600 flex items-center justify-center mx-auto mb-4 animate-bounce">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                {T("Bribe Report Logged!", "லஞ்சப் பதிவு சமர்ப்பிக்கப்பட்டது!")}
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mb-2">
+                {T("Thank you for contributing to public transparency. Your report is now anonymous and tracked.", "பொது வெளிப்படைத்தன்மைக்கு பங்களித்தமைக்கு நன்றி. உங்கள் பதிவு இப்போது அநாமதேயமாக கண்காணிக்கப்படும்.")}
+              </p>
+              <p className="text-xs text-slate-400 mt-2">{T("Redirecting to Bribe Dashboard...", "லஞ்ச கண்காணிப்பு பலகைக்கு திருப்பி விடுகிறது...")}</p>
+            </>
+          ) : isCivicType ? (
             <>
               <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-4">
                 <FileText className="w-8 h-8 text-white" />
@@ -403,16 +503,131 @@ export default function CreatePost() {
           </div>
         )}
 
+        {/* Bribe Tracker specific fields */}
+        {selectedType === "bribe" && (
+          <div key="bribe-specific-fields" className="space-y-4 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl p-4">
+            <h3 className="text-sm font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider mb-2">
+              {T("Bribe Details", "லஞ்ச விவரங்கள்")}
+            </h3>
+            
+            {/* Bribe Status */}
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 block">
+                {T("Bribe Status", "லஞ்ச நிலை")} *
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setValue("bribe_status", "paid")}
+                  className={`p-2.5 rounded-xl border-2 text-center text-sm font-medium transition-all ${
+                    bribeStatus === "paid"
+                      ? "border-pink-500 bg-pink-50 dark:bg-pink-950/30 text-pink-600 dark:text-pink-400 font-bold"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500"
+                  }`}
+                >
+                  {T("Paid / கொடுத்தேன்", "Paid / கொடுத்தேன்")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setValue("bribe_status", "refused")}
+                  className={`p-2.5 rounded-xl border-2 text-center text-sm font-medium transition-all ${
+                    bribeStatus === "refused"
+                      ? "border-pink-500 bg-pink-50 dark:bg-pink-950/30 text-pink-600 dark:text-pink-400 font-bold"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500"
+                  }`}
+                >
+                  {T("Refused / மறுத்தேன்", "Refused / மறுத்தேன்")}
+                </button>
+              </div>
+            </div>
+
+            {/* Bribe Amount */}
+            {bribeStatus === "paid" && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                  {T("Bribe Amount (₹)", "லஞ்ச தொகை (₹)")} *
+                </Label>
+                <Input
+                  type="number"
+                  {...register("bribe_amount")}
+                  placeholder={T("e.g. 2000", "எ.கா. 2000")}
+                  className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600"
+                />
+              </div>
+            )}
+
+            {/* Department Prefilled Dropdown */}
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                {T("Department", "துறை")} *
+              </Label>
+              <select
+                {...register("bribe_department")}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+              >
+                <option value="">{T("Select department", "துறையைத் தேர்ந்தெடுக்கவும்")}</option>
+                {DEPARTMENTS.map((dept) => (
+                  <option key={dept.value} value={dept.value}>{T(dept.en, dept.ta)}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Custom Department (manual entry) */}
+            {(bribeDept === "Other" || bribeDept === "இதர") && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                  {T("Specify Department Name", "துறையின் பெயர்")} *
+                </Label>
+                <Input
+                  {...register("bribe_department_other")}
+                  placeholder={T("e.g. Commercial Taxes", "எ.கா. வணிக வரிகள்")}
+                  className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600"
+                />
+              </div>
+            )}
+
+            {/* Officer Designation */}
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                {T("Officer Designation (optional)", "அதிகாரியின் பதவி (விருப்பத்தேர்வு)")}
+              </Label>
+              <Input
+                {...register("bribe_officer_designation")}
+                placeholder={T("e.g. Senior Clerk, Inspector, Sub-registrar", "எ.கா. மூத்த எழுத்தர், ஆய்வாளர், சார்பதிவாளர்")}
+                className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600"
+              />
+            </div>
+
+            {/* Specific Location */}
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                {T("Specific Location / Office Branch", "குறிப்பிட்ட இடம் / அலுவலக கிளை")} *
+              </Label>
+              <Input
+                {...register("bribe_specific_location")}
+                placeholder={T("e.g. Counter 3, Anna Nagar RTO Office", "எ.கா. கவுண்டர் 3, அண்ணா நகர் RTO அலுவலகம்")}
+                className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Title */}
         <div key="title-container">
           <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
-            {isCivicType ? T("Issue Title", "சிக்கல் தலைப்பு") : T("Title", "தலைப்பு")} *
+            {selectedType === "bribe" 
+              ? T("Bribe Report Title", "லஞ்சப் பதிவு தலைப்பு") 
+              : isCivicType 
+                ? T("Issue Title", "சிக்கல் தலைப்பு") 
+                : T("Title", "தலைப்பு")} *
           </Label>
           <Input
             {...register("title_en")}
-            placeholder={isCivicType
-              ? T("e.g. Broken road near Poonamallee bus stand", "எ.கா. பூனமல்லி பேருந்து நிறுத்தம் அருகே சேதமடைந்த சாலை")
-              : T("Brief, clear title...", "சுருக்கமான, தெளிவான தலைப்பு...")}
+            placeholder={selectedType === "bribe"
+              ? T("e.g. ₹2000 bribe request for driving license renewal", "எ.கா. ஓட்டுநர் உரிமம் புதுப்பிக்க ₹2000 லஞ்சம் கேட்கப்பட்டது")
+              : isCivicType
+                ? T("e.g. Broken road near Poonamallee bus stand", "எ.கா. பூனமல்லி பேருந்து நிறுத்தம் அருகே சேதமடைந்த சாலை")
+                : T("Brief, clear title...", "சுருக்கமான, தெளிவான தலைப்பு...")}
             className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600"
           />
           {errors.title_en && <p className="text-red-500 text-xs mt-1">{errors.title_en.message}</p>}
@@ -435,13 +650,19 @@ export default function CreatePost() {
         {/* Content */}
         <div key="content-container">
           <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
-            {isCivicType ? T("Issue Description", "சிக்கல் விவரம்") : T("Details", "விவரங்கள்")} *
+            {selectedType === "bribe"
+              ? T("Incident Details", "லஞ்ச சம்பவ விவரம்")
+              : isCivicType 
+                ? T("Issue Description", "சிக்கல் விவரம்") 
+                : T("Details", "விவரங்கள்")} *
           </Label>
           <Textarea
             {...register("content_en")}
-            placeholder={isCivicType
-              ? T("Describe the issue clearly. When did it start? How is it affecting people?", "சிக்கலை தெளிவாக விவரிக்கவும். எப்போது தொடங்கியது? மக்களை எவ்வாறு பாதிக்கிறது?")
-              : T("Describe the situation in detail...", "சூழ்நிலையை விரிவாக விவரியுங்கள்...")}
+            placeholder={selectedType === "bribe"
+              ? T("Describe the incident in detail. How was the bribe requested? What explanation was given? Please avoid personal insults or naming individual officers.", "லஞ்ச சம்பவத்தை விரிவாக விவரிக்கவும். லஞ்சம் எவ்வாறு கேட்கப்பட்டது? என்ன விளக்கம் அளிக்கப்பட்டது? தனிநபர் அவதூறுகளையோ அல்லது அதிகாரிகளின் பெயர்களையோ தவிர்க்கவும்.")
+              : isCivicType
+                ? T("Describe the issue clearly. When did it start? How is it affecting people?", "சிக்கலை தெளிவாக விவரிக்கவும். எப்போது தொடங்கியது? மக்களை எவ்வாறு பாதிக்கிறது?")
+                : T("Describe the situation in detail...", "சூழ்நிலையை விரிவாக விவரியுங்கள்...")}
             className="min-h-[140px] bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600"
           />
           {errors.content_en && <p className="text-red-500 text-xs mt-1">{errors.content_en.message}</p>}
@@ -475,11 +696,28 @@ export default function CreatePost() {
         {/* Media Upload */}
         <div key="media-upload-container">
           <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
-            {isCivicType
-              ? T("Before Photos (proof)", "முன்பு புகைப்படங்கள் (ஆதாரம்)")
-              : T("Add Media (optional)", "மீடியா சேர்க்கவும் (விருப்பத்தேர்வு)")}
+            {selectedType === "bribe"
+              ? T("Evidence / Proof (optional)", "ஆதாரங்கள் / சான்றுகள் (விருப்பத்தேர்வு)")
+              : isCivicType
+                ? T("Before Photos (proof)", "முன்பு புகைப்படங்கள் (ஆதாரம்)")
+                : T("Add Media (optional)", "மீடியா சேர்க்கவும் (விருப்பத்தேர்வு)")}
           </Label>
-          {isCivicType ? (
+          {selectedType === "bribe" ? (
+            <div className="mb-2">
+              <p className="text-xs text-slate-500">
+                {T(
+                  "Upload photos, short video clips, or audio/voice recordings as evidence. Files are anonymized.",
+                  "ஆதாரமாக புகைப்படங்கள், குறுகிய வீடியோக்கள், அல்லது ஆடியோ/குரல் பதிவுகளை பதிவேற்றவும்."
+                )}
+              </p>
+              <p className="text-xs text-pink-600 font-medium mt-1">
+                {T(
+                  "Max sizes: Image 2MB, Video 10MB, Audio/Voice 2MB.",
+                  "அதிகபட்ச அளவுகள்: படம் 2MB, வீடியோ 10MB, ஆடியோ/குரல் 2MB."
+                )}
+              </p>
+            </div>
+          ) : isCivicType ? (
             <div className="mb-2">
               <p className="text-xs text-slate-500">{T("Upload photos showing the current state of the issue.", "சிக்கலின் தற்போதைய நிலையை காட்டும் புகைப்படங்களை பதிவேற்றவும்.")}</p>
               {mediaUrls.length === 0 && (
@@ -489,7 +727,15 @@ export default function CreatePost() {
               )}
             </div>
           ) : null}
-          <MediaUploader key="post-media-uploader" onUrlsChange={setMediaUrls} />
+          <MediaUploader
+            key={selectedType === "bribe" ? "bribe-media-uploader" : "post-media-uploader"}
+            onUrlsChange={setMediaUrls}
+            customLimits={selectedType === "bribe" ? {
+              image: 2 * 1024 * 1024,
+              video: 10 * 1024 * 1024,
+              audio: 2 * 1024 * 1024
+            } : null}
+          />
         </div>
 
         {/* Anonymous */}
@@ -519,6 +765,31 @@ export default function CreatePost() {
             </div>
           )}
         </div>
+
+        {/* Bribe Disclaimer */}
+        {selectedType === "bribe" && (
+          <div key="bribe-disclaimer" className="bg-pink-50 dark:bg-pink-900/10 border border-pink-200 dark:border-pink-800 rounded-2xl p-4">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={bribeDisclaimerAccepted}
+                onChange={(e) => setBribeDisclaimerAccepted(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded accent-pink-600"
+              />
+              <div>
+                <p className="font-semibold text-sm text-pink-800 dark:text-pink-300">
+                  {T("Transparency Disclaimer Acknowledgement", "வெளிப்படைத்தன்மை மறுப்பு ஒப்புதல்")} *
+                </p>
+                <p className="text-xs text-pink-700 dark:text-pink-400 mt-1 leading-relaxed">
+                  {T(
+                    "I agree that this submission is for raising transparency and citizen awareness, and not to defame, accuse, or blame individual officials without verification.",
+                    "இந்த பதிவு வெளிப்படைத்தன்மை மற்றும் விழிப்புணர்வை அதிகரிப்பதற்காக மட்டுமே, தனிப்பட்ட அதிகாரிகளை பழிவாங்குவதற்கோ அவதூறு பரப்புவதற்கோ அல்ல என்பதை நான் ஒப்புக்கொள்கிறேன்."
+                  )}
+                </p>
+              </div>
+            </label>
+          </div>
+        )}
 
         {/* Sensitive data warning */}
         {sensitiveWarning && (

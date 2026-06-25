@@ -6,6 +6,7 @@ import QuickActions from "@/components/home/QuickActions";
 import TopCategories from "@/components/home/TopCategories";
 import RecentReceipts from "@/components/home/RecentReceipts";
 import PopularAreasAndServices from "@/components/home/PopularAreasAndServices";
+import HowToUseSection from "@/components/home/HowToUseSection";
 import CtaBanner from "@/components/home/CtaBanner";
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
       <TopCategories />
       <RecentReceipts />
       <PopularAreasAndServices />
+      <HowToUseSection />
       <CtaBanner />
     </div>
   );

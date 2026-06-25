@@ -31,6 +31,7 @@ const MOBILE_MENU_GROUPS = [
       { path: "/community", icon: Users, en: "Community", ta: "சமுதாயம்", desc_en: "Discuss local issues", desc_ta: "உள்ளூர் சிக்கல்கள் விவாதிக்கவும்" },
       { path: "/community/wins", icon: Trophy, en: "Community Wins", ta: "சமூக வெற்றிகள்", desc_en: "Verified civic achievements", desc_ta: "சரிபார்க்கப்பட்ட குடிமை சாதனைகள்" },
       { path: "/trending", icon: TrendingUp, en: "Trending", ta: "டிரெண்டிங்", desc_en: "Most discussed issues", desc_ta: "அதிகம் விவாதிக்கப்பட்டவை" },
+      { path: "/bribes", icon: AlertTriangle, en: "Bribe Tracker", ta: "லஞ்சக் கண்காணிப்பு", desc_en: "Track local corruption reports", desc_ta: "லஞ்சப் புகார்களை கண்காணிக்கவும்" },
       { path: "/ask", icon: MessageCircle, en: "Ask Local", ta: "கேளுங்கள்", desc_en: "Ask area-based questions", desc_ta: "பகுதி கேள்விகள் கேளுங்கள்" },
       { path: "/situations", icon: Zap, en: "Live Situations", ta: "நேரடி நிலைமைகள்", desc_en: "Real-time alerts", desc_ta: "நேரடி எச்சரிக்கைகள்" },
       { path: "/scams", icon: AlertTriangle, en: "Scams", ta: "மோசடி", desc_en: "Fraud and scam alerts", desc_ta: "மோசடி எச்சரிக்கைகள்" },
@@ -69,6 +70,7 @@ const MOBILE_MENU_GROUPS = [
     ta_title: "உதவி",
     items: [
       { path: "/help", icon: HelpCircle, en: "Help", ta: "உதவி", desc_en: "How to use VizhiTN", desc_ta: "VizhiTN பயன்படுத்துவது எப்படி" },
+      { path: "/how-to-use", icon: HelpCircle, en: "How to Use", ta: "பயன்படுத்துவது எப்படி", desc_en: "Step-by-step feature guides", desc_ta: "வழிமுறைகள் மற்றும் வழிகாட்டிகள்" },
       { path: "/support", icon: Heart, en: "Support", ta: "ஆதரவு", desc_en: "Support the platform", desc_ta: "தளத்தை ஆதரிக்கவும்" },
       { path: "/contact", icon: MessageCircle, en: "Contact", ta: "தொடர்பு", desc_en: "Reach our team", desc_ta: "எங்கள் குழுவை தொடர்பு கொள்ளுங்கள்" },
     ],

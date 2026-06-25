@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, Users, MessageCircle,
   HelpCircle, Heart, Briefcase, Home, Building2, AlertTriangle,
-  MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight, Plus
+  MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight, Plus, LayoutDashboard
 } from "lucide-react";
 
 import { useLanguage } from "@/context/LanguageContext";
@@ -25,13 +25,15 @@ const MEGA_GROUPS = [
     en_title: "Civic & Community",
     ta_title: "குடிமை & சமுதாயம்",
     items: [
+      { path: "/dashboard", icon: LayoutDashboard, en: "Dashboard", ta: "டாஷ்போர்டு", desc_en: "VizhiTN Civic Dashboard", desc_ta: "குடிமை டாஷ்போர்டு" },
       { path: "/community", icon: Users, en: "Community", ta: "சமுதாயம்", desc_en: "Discuss local issues and connect", desc_ta: "உள்ளூர் சிக்கல்களை விவாதிக்கவும்" },
       { path: "/community/wins", icon: Trophy, en: "Community Wins", ta: "சமூக வெற்றிகள்", desc_en: "Verified civic achievements", desc_ta: "சரிபார்க்கப்பட்ட குடிமை சாதனைகள்" },
       { path: "/trending", icon: TrendingUp, en: "Trending", ta: "டிரெண்டிங்", desc_en: "Most discussed civic issues", desc_ta: "அதிகம் விவாதிக்கப்பட்ட சிக்கல்கள்" },
+      { path: "/bribes", icon: AlertTriangle, en: "Bribe Tracker", ta: "லஞ்சக் கண்காணிப்பு", desc_en: "Track local corruption reports", desc_ta: "லஞ்சப் புகார்களை கண்காணிக்கவும்" },
       { path: "/ask", icon: MessageCircle, en: "Ask Local", ta: "கேளுங்கள்", desc_en: "Get answers from locals", desc_ta: "உள்ளூரினரிடம் பதில் பெறுங்கள்" },
       { path: "/situations", icon: Zap, en: "Live Situations", ta: "நேரடி நிலைமைகள்", desc_en: "Real-time alerts and updates", desc_ta: "நேரடி எச்சரிக்கைகள்" },
       { path: "/scams", icon: AlertTriangle, en: "Scams", ta: "மோசடி", desc_en: "Local scam and fraud alerts", desc_ta: "உள்ளூர் மோசடி எச்சரிக்கைகள்" },
-      { path: "/awareness", icon: Shield, en: "Awareness", ta: "விழிப்புணர்வு", desc_en: "Safety and public awareness", desc_ta: "பாதுகாப்பு விழிப்புணர்வு" },
+      { path: "/awareness", icon: Shield, en: "Awareness", ta: "விழிப்புணர்வு", desc_en: "Safety and public awareness", desc_ta: "பாகாப்பு விழிப்புணர்வு" },
     ],
   },
   {
@@ -154,7 +156,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.97 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 mt-2 w-[680px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 z-50"
+                      className="absolute top-full left-0 mt-2 w-[680px] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 z-50 scrollbar-thin"
                     >
                       <div className="grid grid-cols-2 gap-6">
                         {MEGA_GROUPS.map((group, gi) => (

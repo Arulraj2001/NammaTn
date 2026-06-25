@@ -25,7 +25,7 @@ function FileIcon({ type }) {
  *   onUrlsChange(urls: string[]) — called whenever uploaded URL list changes
  *   maxFiles (default: 5)
  */
-export default function MediaUploader({ onUrlsChange, maxFiles = MAX_FILES }) {
+export default function MediaUploader({ onUrlsChange, maxFiles = MAX_FILES, customLimits = null }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const inputRef = useRef();
@@ -37,12 +37,38 @@ export default function MediaUploader({ onUrlsChange, maxFiles = MAX_FILES }) {
     for (const file of incoming) {
       if (files.length + newEntries.length >= maxFiles) break;
       const { valid, errors } = validateFile(file);
+      
+      let customValid = valid;
+      let finalErrors = [...errors];
+      
+      if (valid && customLimits) {
+        if (file.type.startsWith("image/") && customLimits.image && file.size > customLimits.image) {
+          customValid = false;
+          finalErrors.push(T(
+            `Image exceeds limit of ${customLimits.image / (1024 * 1024)} MB.`,
+            `படம் ${customLimits.image / (1024 * 1024)} MB வரம்பை மீறுகிறது.`
+          ));
+        } else if (file.type.startsWith("video/") && customLimits.video && file.size > customLimits.video) {
+          customValid = false;
+          finalErrors.push(T(
+            `Video exceeds limit of ${customLimits.video / (1024 * 1024)} MB.`,
+            `வீடியோ ${customLimits.video / (1024 * 1024)} MB வரம்பை மீறுகிறது.`
+          ));
+        } else if (file.type.startsWith("audio/") && customLimits.audio && file.size > customLimits.audio) {
+          customValid = false;
+          finalErrors.push(T(
+            `Audio exceeds limit of ${customLimits.audio / (1024 * 1024)} MB.`,
+            `ஆடியோ ${customLimits.audio / (1024 * 1024)} MB வரம்பை மீறுகிறது.`
+          ));
+        }
+      }
+
       newEntries.push({
         id: `${file.name}-${Date.now()}-${Math.random()}`,
         file,
         preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
-        status: valid ? "pending" : "error",
-        error: valid ? null : errors[0],
+        status: customValid ? "pending" : "error",
+        error: customValid ? null : finalErrors[0],
         url: null,
       });
     }
