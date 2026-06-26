@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllPosts } from "@/services/admin/posts";
-import { Search, ExternalLink, Image as ImageIcon, Plus, Copy, Check, Trash2, FileText, Film, Music } from "lucide-react";
+import { Search, ExternalLink, Image as ImageIcon, Plus, Copy, Check, Trash2, FileText, Film, Music, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import MediaUploader from "@/components/media/MediaUploader";
+import { supabase } from "@/api/supabaseClient";
 
 const getFileType = (url) => {
   if (!url) return "file";
@@ -39,29 +40,41 @@ export default function AdminMedia() {
   const [preview, setPreview] = useState(null);
   const [copiedUrl, setCopiedUrl] = useState(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const [uploadedFiles, setUploadedFiles] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem("tn_admin_direct_uploads");
-        return saved ? JSON.parse(saved) : [];
-      } catch {
-        return [];
-      }
-    }
-    return [];
+  const { data: uploadedFiles = [], isLoading: isLoadingUploads, refetch: refetchUploads, isRefetching } = useQuery({
+    queryKey: ["admin-direct-uploads"],
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("media")
+        .list("", {
+          limit: 100,
+          sortBy: { column: "created_at", order: "desc" }
+        });
+
+      if (error) throw error;
+
+      return (data || []).map((file) => {
+        const { data: { publicUrl } } = supabase.storage
+          .from("media")
+          .getPublicUrl(file.name);
+
+        let file_url = publicUrl;
+        if (file_url && !file_url.includes("/storage/v1/object/public/")) {
+          file_url = file_url.replace("/storage/v1/object/media/", "/storage/v1/object/public/media/");
+        }
+
+        return {
+          name: file.name,
+          url: file_url,
+          created_at: file.created_at,
+          size: file.metadata?.size || 0,
+          mimetype: file.metadata?.mimetype || ""
+        };
+      });
+    },
+    enabled: activeTab === "uploads"
   });
-
-  // Sync to localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("tn_admin_direct_uploads", JSON.stringify(uploadedFiles));
-      } catch (err) {
-        console.error("Failed to save direct uploads to localStorage:", err);
-      }
-    }
-  }, [uploadedFiles]);
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["admin-posts-all"],
@@ -95,16 +108,7 @@ export default function AdminMedia() {
     );
 
   const handleUrlsChange = (urls) => {
-    setUploadedFiles((prev) => {
-      const existingUrls = prev.map((f) => f.url);
-      const newFiles = urls
-        .filter((url) => !existingUrls.includes(url))
-        .map((url) => ({
-          name: getFileNameFromUrl(url),
-          url,
-        }));
-      return [...prev, ...newFiles];
-    });
+    queryClient.invalidateQueries({ queryKey: ["admin-direct-uploads"] });
   };
 
   const handleCopy = (url) => {
@@ -118,13 +122,19 @@ export default function AdminMedia() {
     }, 2000);
   };
 
-  const handleRemoveUploadedFile = (url) => {
-    setUploadedFiles((prev) => prev.filter((f) => f.url !== url));
-  };
-
-  const handleClearHistory = () => {
-    if (window.confirm("Clear upload history from this browser? (Files will remain in storage)")) {
-      setUploadedFiles([]);
+  const handleRemoveUploadedFile = async (file) => {
+    if (window.confirm(`Delete "${file.name}" permanently from Supabase Storage? This action cannot be undone and will break any posts linking to this media.`)) {
+      try {
+        const { error } = await supabase.storage.from("media").remove([file.name]);
+        if (error) throw error;
+        toast({ description: "File deleted successfully from storage." });
+        queryClient.invalidateQueries({ queryKey: ["admin-direct-uploads"] });
+      } catch (err) {
+        toast({
+          variant: "destructive",
+          description: "Failed to delete file from storage.",
+        });
+      }
     }
   };
 
@@ -219,19 +229,30 @@ export default function AdminMedia() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                Direct Upload History ({uploadedFiles.length})
+                Direct Upload Storage ({uploadedFiles.length})
               </h2>
-              {uploadedFiles.length > 0 && (
-                <Button variant="outline" size="sm" onClick={handleClearHistory} className="text-rose-600 border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-950/30">
-                  Clear History
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetchUploads()}
+                disabled={isLoadingUploads || isRefetching}
+                className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isRefetching ? "animate-spin" : ""}`} />
+                <span>Refresh</span>
+              </Button>
             </div>
 
-            {uploadedFiles.length === 0 ? (
+            {isLoadingUploads ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-20 bg-slate-100 dark:bg-slate-800/40 animate-pulse rounded-xl" />
+                ))}
+              </div>
+            ) : uploadedFiles.length === 0 ? (
               <div className="text-center py-12 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800 text-slate-400">
                 <ImageIcon className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                <p className="text-sm">No direct uploads recorded yet</p>
+                <p className="text-sm">No direct uploads in storage bucket yet</p>
                 <p className="text-xs text-slate-400/80 mt-1">Upload files above to generate shareable links</p>
               </div>
             ) : (
@@ -282,9 +303,9 @@ export default function AdminMedia() {
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                         <button
-                          onClick={() => handleRemoveUploadedFile(file.url)}
+                          onClick={() => handleRemoveUploadedFile(file)}
                           className="inline-flex items-center justify-center rounded-md hover:bg-red-50 hover:text-red-500 text-slate-400 h-8 w-8 transition-colors"
-                          title="Remove from history"
+                          title="Delete from storage"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
