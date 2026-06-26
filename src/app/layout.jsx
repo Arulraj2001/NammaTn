@@ -82,7 +82,7 @@ export const metadata = {
     },
   },
   verification: {
-    google: 'VizhiTN-google-site-verification',
+    google: 'IQBuc_fauRb_DOB4lJTKjuYjN9aeEMeWCwf5zGx_q2Q',
   },
   category: 'civic technology',
 };
