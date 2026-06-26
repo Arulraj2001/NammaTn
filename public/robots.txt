@@ -22,11 +22,15 @@ Allow: /awareness
 Allow: /trending
 Allow: /scams
 Allow: /situations
-Allow: /community-wins
+Allow: /community/wins
 Allow: /leaderboard
 Allow: /offices
-Allow: /local-listings
+Allow: /listings
 Allow: /jobs
+Allow: /bribes
+Allow: /how-to-use
+Allow: /rwa
+Allow: /csr
 Allow: /contact
 Allow: /help
 Allow: /search
