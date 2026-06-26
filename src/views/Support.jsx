@@ -172,7 +172,7 @@ export default function Support() {
             <img 
               src="/support-banner.png" 
               alt="VizhiTN Citizens" 
-              className="w-full h-auto max-h-[220px] object-contain rounded-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/15" 
+              className="w-full h-auto max-h-[220px] object-contain rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/15" 
               style={{
                 animation: "float-banner 4s ease-in-out infinite",
               }}
