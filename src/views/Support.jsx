@@ -41,7 +41,7 @@ export default function Support() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const upiId = getSetting(settings, "upi_id", "tnvoice@upi");
+  const upiId = getSetting(settings, "upi_id", "vizhitn@upi");
   const upiName = getSetting(settings, "upi_name", "VizhiTN");
   const qrUrl = getSetting(settings, "qr_image_url", "");
   const bmcLink = getSetting(settings, "buymecoffee_link", "");

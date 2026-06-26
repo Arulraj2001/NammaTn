@@ -33,11 +33,11 @@ const SECTIONS = [
     title: "📣 Social Links",
     category: "social",
     fields: [
-      { key: "social_twitter", label: "Twitter / X", placeholder: "https://twitter.com/tnvoice" },
-      { key: "social_facebook", label: "Facebook", placeholder: "https://facebook.com/tnvoice" },
-      { key: "social_instagram", label: "Instagram", placeholder: "https://instagram.com/tnvoice" },
+      { key: "social_twitter", label: "Twitter / X", placeholder: "https://twitter.com/vizhitn" },
+      { key: "social_facebook", label: "Facebook", placeholder: "https://facebook.com/vizhitn" },
+      { key: "social_instagram", label: "Instagram", placeholder: "https://instagram.com/vizhitn" },
       { key: "social_whatsapp", label: "WhatsApp Group Link", placeholder: "https://chat.whatsapp.com/..." },
-      { key: "social_telegram", label: "Telegram Channel", placeholder: "https://t.me/tnvoice" },
+      { key: "social_telegram", label: "Telegram Channel", placeholder: "https://t.me/vizhitn" },
     ],
   },
   {

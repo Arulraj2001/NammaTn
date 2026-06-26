@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
 import { Heart } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getSettingsMap } from "@/services/admin/settings";
 
 /* ── Link columns: content from 2nd image ─────────────────── */
 const FOOTER_COLUMNS = [
@@ -85,10 +87,17 @@ function InstagramIcon() {
     </svg>
   );
 }
-function YouTubeIcon() {
+function TelegramIcon() {
   return (
     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-1-.65-.35-1 .22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.89 1.2-5.33 3.52-.5.35-.96.52-1.37.51-.45-.01-1.32-.26-1.97-.47-.8-.26-1.43-.4-1.38-.85.03-.23.35-.47.96-.71 3.76-1.63 6.27-2.7 7.54-3.21 3.59-1.44 4.34-1.69 4.83-1.7.11 0 .35.03.5.15.12.1.16.24.18.34.02.09.03.27.01.38z"/>
+    </svg>
+  );
+}
+function WhatsAppIcon() {
+  return (
+    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.167 1.45 4.814 1.453 5.457 0 9.895-4.436 9.898-9.896.002-2.646-1.018-5.132-2.873-6.99C15.823 1.863 13.334.844 10.692.844 5.234.844.798 5.281.795 10.741c-.001 1.702.447 3.366 1.3 4.84l-.995 3.637 3.737-.98c1.477.805 3.125 1.233 4.805 1.235zm11.232-7.653c-.307-.154-1.82-.898-2.102-1.001-.282-.103-.487-.154-.691.154-.205.308-.795 1.001-.974 1.205-.179.205-.359.231-.666.077-.307-.154-1.3-.478-2.476-1.527-.914-.815-1.53-1.822-1.71-2.129-.18-.308-.019-.475.135-.629.138-.138.307-.359.461-.539.154-.179.205-.308.307-.513.103-.205.051-.385-.026-.539-.077-.154-.691-1.667-.948-2.283-.25-.6-.525-.519-.72-.529-.186-.009-.4-.01-.614-.01-.215 0-.564.081-.861.405-.297.324-1.133 1.107-1.133 2.7 0 1.593 1.159 3.13 1.318 3.344.159.214 2.28 3.482 5.522 4.883.771.333 1.373.532 1.84.68.775.246 1.48.212 2.037.129.621-.093 1.82-.744 2.076-1.462.256-.718.256-1.333.179-1.462-.076-.128-.282-.205-.589-.359z"/>
     </svg>
   );
 }
@@ -97,6 +106,12 @@ function YouTubeIcon() {
 export default function Footer() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
+
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
 
   // Visual column order on mobile: Row 1 (1, 3, 5), Row 2 (2, 4)
   const ORDER_CLASSES = [
@@ -129,19 +144,27 @@ export default function Footer() {
             {/* Social icons row */}
             <div className="flex items-center gap-2">
               {[
-                { icon: <FacebookIcon />,  label: "Facebook" },
-                { icon: <TwitterIcon />,   label: "Twitter" },
-                { icon: <InstagramIcon />, label: "Instagram" },
-                { icon: <YouTubeIcon />,   label: "YouTube" },
-              ].map(({ icon, label }) => (
-                <button
-                  key={label}
-                  aria-label={label}
-                  className="w-7 h-7 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  {icon}
-                </button>
-              ))}
+                { icon: <FacebookIcon />,  label: "Facebook", key: "social_facebook", defaultUrl: "https://facebook.com/vizhitn" },
+                { icon: <TwitterIcon />,   label: "Twitter", key: "social_twitter", defaultUrl: "https://twitter.com/vizhitn" },
+                { icon: <InstagramIcon />, label: "Instagram", key: "social_instagram", defaultUrl: "https://instagram.com/vizhitn" },
+                { icon: <TelegramIcon />,  label: "Telegram", key: "social_telegram", defaultUrl: "https://t.me/vizhitn" },
+                { icon: <WhatsAppIcon />,  label: "WhatsApp", key: "social_whatsapp", defaultUrl: "" },
+              ].map(({ icon, label, key, defaultUrl }) => {
+                const url = settings[key] || defaultUrl;
+                if (!url || url.trim() === "") return null;
+                return (
+                  <a
+                    key={label}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="w-7 h-7 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  >
+                    {icon}
+                  </a>
+                );
+              })}
             </div>
           </div>
 
