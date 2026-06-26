@@ -9,6 +9,17 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/api/supabaseClient";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { DISTRICTS } from "@/lib/districts";
+
+const DEPT_MAP = {
+  "Revenue Department": { en: "Revenue Department", ta: "வருவாய்த்துறை" },
+  "Police Department": { en: "Police Department", ta: "காவல்துறை" },
+  "RTO / Transport": { en: "RTO / Transport", ta: "வட்டாரப் போக்குவரத்து (RTO)" },
+  "Sub-Registrar Office": { en: "Sub-Registrar Office", ta: "சார்பதிவாளர் அலுவலகம்" },
+  "Electricity (TNEB)": { en: "Electricity (TNEB)", ta: "மின்சார வாரியம் (TNEB)" },
+  "Municipal Corporation": { en: "Municipal Corporation", ta: "மாநகராட்சி / நகராட்சி" },
+  "Other": { en: "Other", ta: "இதர" }
+};
 
 // Helper components
 function StatCard({ icon: Icon, label, value, color, loading }) {
@@ -39,6 +50,8 @@ function StatCard({ icon: Icon, label, value, color, loading }) {
 function AudioPlayer({ src }) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef(null);
+  const { lang } = useLanguage();
+  const T = (en, ta) => lang === "ta" ? ta : en;
 
   const toggle = (e) => {
     e.preventDefault();
@@ -70,7 +83,7 @@ function AudioPlayer({ src }) {
       <div className="flex flex-col">
         <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
           <Volume2 className="w-3 h-3 text-pink-500 animate-pulse" />
-          Voice Proof / குரல் ஆதாரம்
+          {T("Voice Proof", "குரல் ஆதாரம்")}
         </span>
       </div>
     </div>
@@ -112,7 +125,7 @@ export default function BribeDashboard() {
   // Department breakdown
   const deptCounts = {};
   bribePosts.forEach(p => {
-    const d = p.bribe_department || T("Unspecified", "குறிப்பிடப்படாதது");
+    const d = p.bribe_department || "Unspecified";
     deptCounts[d] = (deptCounts[d] || 0) + 1;
   });
   const deptData = Object.entries(deptCounts)
@@ -122,12 +135,25 @@ export default function BribeDashboard() {
   // District breakdown
   const distCounts = {};
   bribePosts.forEach(p => {
-    const d = p.district_name || T("Unspecified", "குறிப்பிடப்படாதது");
+    const d = p.district_name || "Unspecified";
     distCounts[d] = (distCounts[d] || 0) + 1;
   });
   const distData = Object.entries(distCounts)
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
+
+  const getDeptName = (val) => {
+    if (!val || val === "Unspecified") return T("Unspecified", "குறிப்பிடப்படாதது");
+    const match = DEPT_MAP[val];
+    if (match) return T(match.en, match.ta);
+    return val;
+  };
+
+  const getDistrictName = (nameEn) => {
+    if (!nameEn || nameEn === "Unspecified") return T("Unspecified", "குறிப்பிடப்படாதது");
+    const d = DISTRICTS.find(item => item.name_en === nameEn);
+    return d ? T(d.name_en, d.name_ta) : nameEn;
+  };
 
   const formatCurrency = (val) => {
     return new Intl.NumberFormat("en-IN", {
@@ -164,19 +190,19 @@ export default function BribeDashboard() {
         </Link>
       </motion.div>
 
-      {/* Bilingual Policy Disclaimer Banner */}
+      {/* Policy Disclaimer Banner */}
       <motion.div initial="hidden" animate="visible" variants={fadeUp} className="mb-8">
         <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/40 rounded-2xl p-4 flex gap-3">
           <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
           <div>
             <h4 className="text-sm font-bold text-amber-800 dark:text-amber-300">
-              {T("VizhiTN System Transparency Policy | வெளிப்படைத்தன்மை கொள்கை", "VizhiTN System Transparency Policy | வெளிப்படைத்தன்மை கொள்கை")}
+              {T("VizhiTN System Transparency Policy", "VizhiTN வெளிப்படைத்தன்மை கொள்கை")}
             </h4>
             <p className="text-xs text-amber-700 dark:text-slate-300 mt-1 leading-relaxed">
-              <strong>English:</strong> This dashboard displays anonymized citizen-reported statistics regarding requests for bribes in various regions and departments. The purpose is to build regional statistical transparency to help raise citizen awareness. This system is not designed to blame, harass, or defame individual officers.
-            </p>
-            <p className="text-xs text-amber-700 dark:text-slate-300 mt-2 leading-relaxed">
-              <strong>தமிழ்:</strong> இந்தத் தகவல் பலகை பல்வேறு பகுதிகள் மற்றும் துறைகளில் லஞ்சம் கேட்கப்பட்டது குறித்த குடிமக்கள் அளித்த அநாமதேயப் புள்ளிவிவரங்களை வெளிப்படுத்துகிறது. இதன் நோக்கம் குடிமக்களிடையே விழிப்புணர்வை ஏற்படுத்த பிராந்திய ரீதியான புள்ளிவிவர வெளிப்படைத்தன்மையை உருவாக்குவதாகும். இந்த அமைப்பு தனிப்பட்ட அதிகாரிகளை பழிவாங்குவதற்கோ, துன்புறுத்துவதற்கோ அல்லது அவதூறு பரப்புவதற்கோ அல்ல.
+              {T(
+                "This dashboard displays anonymized citizen-reported statistics regarding requests for bribes in various regions and departments. The purpose is to build regional statistical transparency to help raise citizen awareness. This system is not designed to blame, harass, or defame individual officers.",
+                "இந்தத் தகவல் பலகை பல்வேறு பகுதிகள் மற்றும் துறைகளில் லஞ்சம் கேட்கப்பட்டது குறித்த குடிமக்கள் அளித்த அநாமதேயப் புள்ளிவிவரங்களை வெளிப்படுத்துகிறது. இதன் நோக்கம் குடிமக்களிடையே விழிப்புணர்வை ஏற்படுத்த பிராந்திய ரீதியான புள்ளிவிவர வெளிப்படைத்தன்மையை உருவாக்குவதாகும். இந்த அமைப்பு தனிப்பட்ட அதிகாரிகளை பழிவாங்குவதற்கோ, துன்புறுத்துவதற்கோ அல்லது அவதூறு பரப்புவதற்கோ அல்ல."
+              )}
             </p>
           </div>
         </div>
@@ -231,7 +257,7 @@ export default function BribeDashboard() {
                 return (
                   <div key={name}>
                     <div className="flex justify-between items-center text-xs font-semibold mb-1 text-slate-700 dark:text-slate-300">
-                      <span>{name}</span>
+                      <span>{getDeptName(name)}</span>
                       <span className="text-pink-600 dark:text-pink-400 font-bold">{count}</span>
                     </div>
                     <div className="h-3 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
@@ -266,7 +292,7 @@ export default function BribeDashboard() {
                 return (
                   <div key={name}>
                     <div className="flex justify-between items-center text-xs font-semibold mb-1 text-slate-700 dark:text-slate-300">
-                      <span>{name}</span>
+                      <span>{getDistrictName(name)}</span>
                       <span className="text-pink-600 dark:text-pink-400 font-bold">{count}</span>
                     </div>
                     <div className="h-3 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
@@ -331,11 +357,11 @@ export default function BribeDashboard() {
                     <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 dark:text-slate-400 mb-3 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl">
                       <div className="flex items-center gap-1.5 min-w-0">
                         <Building className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                        <span className="truncate font-medium">{post.bribe_department}</span>
+                        <span className="truncate font-medium">{getDeptName(post.bribe_department)}</span>
                       </div>
                       <div className="flex items-center gap-1.5 min-w-0">
                         <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                        <span className="truncate font-medium">{post.district_name}</span>
+                        <span className="truncate font-medium">{getDistrictName(post.district_name)}</span>
                       </div>
                       {post.bribe_officer_designation && (
                         <div className="flex items-center gap-1.5 min-w-0 col-span-2">

@@ -70,10 +70,15 @@ export default function HowToUse() {
           </div>
           <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2.5 leading-relaxed">
             <p>
-              <strong>English:</strong> The Home page contains an interactive map showcasing recently reported issues across Tamil Nadu. You can zoom in to your specific district, click on issue pins to view summary cards, and filter posts by categories (potholes, garbage, lighting, etc.). Use the <strong>Live Feed</strong> to read community updates chronologically.
-            </p>
-            <p>
-              <strong>தமிழ்:</strong> முகப்புப் பக்கத்தில் உள்ள ஊடாடும் வரைபடம் தமிழ்நாட்டில் அண்மையில் பதிவான சிக்கல்களைக் காட்டுகிறது. உங்கள் குறிப்பிட்ட மாவட்டத்தை பெரிதாக்கி, விவரங்களைக் காண குறியீடுகளை அழுத்தலாம். <strong>Live Feed</strong> மூலம் அனைத்துப் புகார்களையும் காலவரிசைப்படி படிக்கலாம்.
+              {lang === "ta" ? (
+                <>
+                  முகப்புப் பக்கத்தில் உள்ள ஊடாடும் வரைபடம் தமிழ்நாட்டில் அண்மையில் பதிவான சிக்கல்களைக் காட்டுகிறது. உங்கள் குறிப்பிட்ட மாவட்டத்தை பெரிதாக்கி, விவரங்களைக் காண குறியீடுகளை அழுத்தலாம். <strong>Live Feed</strong> மூலம் அனைத்துப் புகார்களையும் காலவரிசைப்படி படிக்கலாம்.
+                </>
+              ) : (
+                <>
+                  The Home page contains an interactive map showcasing recently reported issues across Tamil Nadu. You can zoom in to your specific district, click on issue pins to view summary cards, and filter posts by categories (potholes, garbage, lighting, etc.). Use the <strong>Live Feed</strong> to read community updates chronologically.
+                </>
+              )}
             </p>
           </div>
         </motion.div>
@@ -119,10 +124,15 @@ export default function HowToUse() {
           </div>
           <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2.5 leading-relaxed">
             <p>
-              <strong>English:</strong> Built to establish regional transparency indices. You can log bribe requests anonymously: select the department, location, bribe amount, and toggle whether it was <strong>Paid</strong> or <strong>Refused</strong>. You can optionally attach voice records or document receipts (restricted strictly to 2MB).
-            </p>
-            <p>
-              <strong>தமிழ்:</strong> துறைகளில் லஞ்சக் கோரிக்கைகளை அநாமதேயமாகப் பதிவிடலாம். துறை, இருப்பிடம், லஞ்சத் தொகை மற்றும் அது <strong>கொடுக்கப்பட்டதா</strong> அல்லது <strong>மறுக்கப்பட்டதா</strong> என்பதைத் தேர்வு செய்ய வேண்டும். குரல் பதிவுகள் அல்லது ஆவணங்களை (அதிகபட்சம் 2MB) இணைக்கலாம்.
+              {lang === "ta" ? (
+                <>
+                  துறைகளில் லஞ்சக் கோரிக்கைகளை அநாமதேயமாகப் பதிவிடலாம். துறை, இருப்பிடம், லஞ்சத் தொகை மற்றும் அது <strong>கொடுக்கப்பட்டதா</strong> அல்லது <strong>மறுக்கப்பட்டதா</strong> என்பதைத் தேர்வு செய்ய வேண்டும். குரல் பதிவுகள் அல்லது ஆவணங்களை (அதிகபட்சம் 2MB) இணைக்கலாம்.
+                </>
+              ) : (
+                <>
+                  Built to establish regional transparency indices. You can log bribe requests anonymously: select the department, location, bribe amount, and toggle whether it was <strong>Paid</strong> or <strong>Refused</strong>. You can optionally attach voice records or document receipts (restricted strictly to 2MB).
+                </>
+              )}
             </p>
             <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/40 rounded-xl p-3 flex gap-2.5 mt-2">
               <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
@@ -151,10 +161,15 @@ export default function HowToUse() {
           </div>
           <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2.5 leading-relaxed">
             <p>
-              <strong>English:</strong> Access Resident Welfare Association (<strong>RWA</strong>) dashboards to track local area developments collaboratively, or use the <strong>CSR</strong> hub to link corporate sponsorships to verified public issues. Track top performers and regional contributors via the <strong>Leaderboard</strong>.
-            </p>
-            <p>
-              <strong>தமிழ்:</strong> குடியிருப்பு நலச் சங்கங்களின் (<strong>RWA</strong>) பலகை மூலம் உள்ளூர் மேம்பாடுகளைக் கூட்டாகக் கண்காணிக்கலாம். நிறுவனங்கள் தங்களது சமூகப் பொறுப்பு (<strong>CSR</strong>) பங்களிப்புகளைப் புகார்களுடன் இணைக்கலாம். செயலில் உள்ளவர்களைத் தகுதிப் பட்டியல் (<strong>Leaderboard</strong>) மூலம் காணலாம்.
+              {lang === "ta" ? (
+                <>
+                  குடியிருப்பு நலச் சங்கங்களின் (<strong>RWA</strong>) பலகை மூலம் உள்ளூர் மேம்பாடுகளைக் கண்காணிக்கலாம். நிறுவனங்கள் தங்களது சமூகப் பொறுப்பு (<strong>CSR</strong>) பங்களிப்புகளைப் புகார்களுடன் இணைக்கலாம். செயலில் உள்ளவர்களைத் தகுதிப் பட்டியல் (<strong>Leaderboard</strong>) மூலம் காணலாம்.
+                </>
+              ) : (
+                <>
+                  Access Resident Welfare Association (<strong>RWA</strong>) dashboards to track local area developments collaboratively, or use the <strong>CSR</strong> hub to link corporate sponsorships to verified public issues. Track top performers and regional contributors via the <strong>Leaderboard</strong>.
+                </>
+              )}
             </p>
           </div>
         </motion.div>
