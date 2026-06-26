@@ -35,8 +35,5 @@ Allow: /contact
 Allow: /help
 Allow: /search
 
-# Crawl-delay for politeness
-Crawl-delay: 2
-
 # Sitemaps
 Sitemap: https://vizhitn.in/sitemap.xml
