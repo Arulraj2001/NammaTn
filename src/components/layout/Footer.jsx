@@ -132,7 +132,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="flex-shrink-0 w-full lg:w-64 flex flex-col items-center lg:items-start text-center lg:text-left">
             <Link to="/" className="inline-flex items-center gap-2 mb-2">
-              <img src="/apple-touch-icon.png" alt="VizhiTN" className="w-7 h-7 rounded-lg object-contain flex-shrink-0" />
+              <img src={settings.site_logo_url || "/apple-touch-icon.png"} alt="VizhiTN" className="w-7 h-7 rounded-lg object-contain flex-shrink-0" />
               <span className="font-extrabold text-blue-600 text-base leading-none">VizhiTN</span>
             </Link>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
@@ -176,16 +176,29 @@ export default function Footer() {
                   {T(col.en_title, col.ta_title)}
                 </h4>
                 <ul className="space-y-2">
-                  {col.links.map((link) => (
-                    <li key={link.path + link.en}>
-                      <Link
-                        to={link.path}
-                        className="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      >
-                        {T(link.en, link.ta)}
-                      </Link>
-                    </li>
-                  ))}
+                  {col.links
+                    .filter((link) => {
+                      if (link.path === "/jobs" && settings.jobs_enabled === "false") return false;
+                      if (link.path === "/scams" && settings.scam_alerts_enabled === "false") return false;
+                      if (link.path === "/help" && settings.emergency_enabled === "false") return false;
+                      if (link.path === "/offices" && settings.office_reports_enabled === "false") return false;
+                      if (link.path === "/ask" && settings.qa_enabled === "false") return false;
+                      if (link.path === "/situations" && settings.situations_enabled === "false") return false;
+                      if (link.path === "/rwa" && settings.rwa_enabled === "false") return false;
+                      if (link.path === "/csr" && settings.csr_enabled === "false") return false;
+                      if ((link.path === "/community" || link.path === "/community/wins") && settings.discussions_enabled === "false") return false;
+                      return true;
+                    })
+                    .map((link) => (
+                      <li key={link.path + link.en}>
+                        <Link
+                          to={link.path}
+                          className="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        >
+                          {T(link.en, link.ta)}
+                        </Link>
+                      </li>
+                    ))}
                 </ul>
               </div>
             ))}

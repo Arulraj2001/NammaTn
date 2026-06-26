@@ -18,7 +18,7 @@ export function getSession() {
   return s;
 }
 
-export function checkSpam(session, content) {
+export function checkSpam(session, content, floodLimit = 5) {
   const now = Date.now();
   if (!sessionTracker[session]) {
     sessionTracker[session] = { msgs: [], muted: false, muteUntil: 0, lastContent: "" };
@@ -39,7 +39,7 @@ export function checkSpam(session, content) {
 
   // Flood detection: prune old msgs
   tracker.msgs = tracker.msgs.filter((t) => now - t < FLOOD_WINDOW_MS);
-  if (tracker.msgs.length >= MAX_MSGS_IN_WINDOW) {
+  if (tracker.msgs.length >= Number(floodLimit)) {
     tracker.muted = true;
     tracker.muteUntil = now + 60000; // 1 minute mute
     return { blocked: true, reason: "flood" };

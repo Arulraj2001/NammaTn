@@ -206,8 +206,15 @@ export default function MobileNav() {
                     <div className="grid grid-cols-2 gap-2">
                       {group.items
                         .filter((item) => {
+                          if (item.path === "/jobs" && settings.jobs_enabled === "false") return false;
+                          if (item.path === "/scams" && settings.scam_alerts_enabled === "false") return false;
+                          if (item.path === "/help" && settings.emergency_enabled === "false") return false;
+                          if (item.path === "/offices" && settings.office_reports_enabled === "false") return false;
+                          if (item.path === "/ask" && settings.qa_enabled === "false") return false;
+                          if (item.path === "/situations" && settings.situations_enabled === "false") return false;
                           if (item.path === "/rwa" && settings.rwa_enabled === "false") return false;
                           if (item.path === "/csr" && settings.csr_enabled === "false") return false;
+                          if (item.path === "/community" && settings.discussions_enabled === "false") return false;
                           return true;
                         })
                         .map((item) => {

@@ -169,7 +169,7 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <img src="/apple-touch-icon.png" alt="VizhiTN" className="w-8 h-8 rounded-lg object-contain" />
+              <img src={settings.site_logo_url || "/apple-touch-icon.png"} alt="VizhiTN" className="w-8 h-8 rounded-lg object-contain" />
               <div className="hidden sm:block">
                 <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">VizhiTN</span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-none block">
@@ -226,8 +226,15 @@ export default function Navbar() {
                             <div className="space-y-1">
                               {group.items
                                 .filter((item) => {
+                                  if (item.path === "/jobs" && settings.jobs_enabled === "false") return false;
+                                  if (item.path === "/scams" && settings.scam_alerts_enabled === "false") return false;
+                                  if (item.path === "/help" && settings.emergency_enabled === "false") return false;
+                                  if (item.path === "/offices" && settings.office_reports_enabled === "false") return false;
+                                  if (item.path === "/ask" && settings.qa_enabled === "false") return false;
+                                  if (item.path === "/situations" && settings.situations_enabled === "false") return false;
                                   if (item.path === "/rwa" && settings.rwa_enabled === "false") return false;
                                   if (item.path === "/csr" && settings.csr_enabled === "false") return false;
+                                  if (item.path === "/community" && settings.discussions_enabled === "false") return false;
                                   return true;
                                 })
                                 .map((item) => {

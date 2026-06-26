@@ -11,6 +11,7 @@ import { createReport } from "@/services/admin/reports";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";
 import { checkSpam, getSession } from "@/lib/spamGuard";
+import { getSettingsMap } from "@/services/admin/settings";
 import { sanitizeText, checkRateLimit } from "@/lib/security";
 import { checkContentSafety } from "@/lib/contentSafety";
 import { useAuth } from "@/lib/AuthContext";
@@ -338,6 +339,12 @@ export default function LiveChatTab() {
   const sendingRef = useRef(false);
   const inputRef = useRef(null);
 
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
+
   const [channel, setChannel] = useState("general");
   const [text, setText] = useState("");
   const [msgType, setMsgType] = useState("update");
@@ -436,7 +443,8 @@ export default function LiveChatTab() {
         return;
       }
 
-      const spamCheck = checkSpam(session, trimmed);
+      const floodLimit = settings.chat_flood_limit ? parseInt(settings.chat_flood_limit) : 5;
+      const spamCheck = checkSpam(session, trimmed, floodLimit);
       if (spamCheck.blocked) {
         const msgs = {
           muted: T(`You are muted for ${spamCheck.muteRemaining}s.`, `${spamCheck.muteRemaining}s தடைசெய்யப்பட்டீர்கள்.`),
@@ -470,7 +478,8 @@ export default function LiveChatTab() {
         });
 
         setText("");
-        setCooldown(Math.ceil(COOLDOWN_MS / 1000));
+        const cooldownSeconds = settings.chat_cooldown_seconds ? parseInt(settings.chat_cooldown_seconds) : 7;
+        setCooldown(cooldownSeconds);
         qc.invalidateQueries({ queryKey: ["live-chat", channel] });
         inputRef.current?.focus();
       } finally {

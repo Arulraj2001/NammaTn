@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState } from "react";
+import { Navigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getSettingsMap } from "@/services/admin/settings";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Users, MessageSquare, MapPin, Zap, Radio, Activity } from "lucide-react";
@@ -23,10 +26,20 @@ export default function Community() {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
+
   usePageMeta({
     title: "Community — TN Pulse | VizhiTN",
     description: "Real-time pulse of Tamil Nadu. Live situations, scam alerts, emergency help, community questions and wins, all in one place.",
   });
+
+  if (settings.discussions_enabled === "false") {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -52,7 +65,11 @@ export default function Community() {
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-0 overflow-x-auto scrollbar-hide -mb-px">
-            {TABS.map((tab) => {
+            {TABS.filter((tab) => {
+              if (tab.id === "live" && settings.live_rooms_enabled === "false") return false;
+              if (tab.id === "chat" && settings.live_chat_enabled === "false") return false;
+              return true;
+            }).map((tab) => {
               const Icon = tab.icon;
               const active = activeTab === tab.id;
               return (

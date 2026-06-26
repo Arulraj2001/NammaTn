@@ -12,6 +12,7 @@ import { DISTRICTS } from "@/lib/districts";
 import { CATEGORIES } from "@/lib/categories";
 import { base44 } from "@/api/base44Client";
 import { createPost } from "@/services/posts";
+import { getSettingsMap } from "@/services/admin/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -82,6 +83,12 @@ export default function CreatePost() {
   const [searchParams] = useSearchParams();
   const { isAuthenticated, user } = useAuth();
   const { requireAuth } = useAuthModal();
+  
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
   
   // Fetch user profile for trust score
   const { data: profile = null } = useQuery({
@@ -155,7 +162,7 @@ export default function CreatePost() {
   }, [selectedType, setValue]);
 
   const onSubmit = async (data) => {
-    if (!isAuthenticated) {
+    if (settings.require_login_to_post !== "false" && !isAuthenticated) {
       requireAuth(() => {}, T("Sign in to share an update", "பதிவிட உள்நுழையுங்கள்"));
       return;
     }
@@ -234,7 +241,7 @@ export default function CreatePost() {
       still_not_fixed_count: 0,
       escalation_level: 0,
       is_publicly_visible: true,
-      moderation_status: "approved",
+      moderation_status: settings.auto_approve_posts === "false" ? "pending" : "approved",
       timeline_events: [
         makeTimelineEvent(
           T("Civic Receipt created on VizhiTN", "VizhiTN-ல் குடிமை ரசீது உருவாக்கப்பட்டது"),
@@ -268,7 +275,7 @@ export default function CreatePost() {
       comment_count: 0,
       status: "active",
       is_publicly_visible: true,
-      moderation_status: "approved",
+      moderation_status: settings.auto_approve_posts === "false" ? "pending" : "approved",
       created_by_id: user?.id,
       created_by: user?.full_name || user?.email,
       ...civicFields,
