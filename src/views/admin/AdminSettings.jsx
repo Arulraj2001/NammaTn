@@ -92,7 +92,18 @@ const SECTIONS = [
     category: "general",
     fields: [
       { key: "site_announcement", label: "Site-wide Announcement (leave blank to hide)", placeholder: "⚡ Platform maintenance on Sunday 2AM–4AM" },
-      { key: "announcement_type", label: "Announcement Type (info/warning/error)", placeholder: "info" },
+      {
+        key: "announcement_type",
+        label: "Announcement Theme",
+        type: "select",
+        options: [
+          { value: "info", label: "Blue Theme (Info)" },
+          { value: "warning", label: "Amber Theme (Warning)" },
+          { value: "error", label: "Crimson Theme (Error/Downtime)" },
+          { value: "success", label: "Emerald Theme (Success/Celebration)" },
+          { value: "royal", label: "Purple Theme (Feature/Royal Update)" },
+        ],
+      },
     ],
   },
   {
@@ -173,12 +184,26 @@ export default function AdminSettings() {
               {section.fields.map(field => (
                 <div key={field.key}>
                   <label className="text-xs font-medium text-slate-600 dark:text-slate-300 mb-1 block">{field.label}</label>
-                  <Input
-                    type={field.type || "text"}
-                    value={values[field.key] || ""}
-                    onChange={e => setValues(v => ({ ...v, [field.key]: e.target.value }))}
-                    placeholder={field.placeholder}
-                  />
+                  {field.type === "select" ? (
+                    <select
+                      value={values[field.key] || ""}
+                      onChange={e => setValues(v => ({ ...v, [field.key]: e.target.value }))}
+                      className="flex h-10 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 dark:text-slate-100"
+                    >
+                      {field.options.map(opt => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <Input
+                      type={field.type || "text"}
+                      value={values[field.key] || ""}
+                      onChange={e => setValues(v => ({ ...v, [field.key]: e.target.value }))}
+                      placeholder={field.placeholder}
+                    />
+                  )}
                 </div>
               ))}
             </div>

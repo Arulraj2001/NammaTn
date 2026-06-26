@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, Users, MessageCircle,
   HelpCircle, Heart, Briefcase, Home, Building2, AlertTriangle,
-  MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight, Plus, LayoutDashboard
+  MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight, Plus, LayoutDashboard, Info, X
 } from "lucide-react";
 
 import { useLanguage } from "@/context/LanguageContext";
@@ -81,6 +81,28 @@ export default function Navbar() {
     staleTime: 60_000,
   });
 
+  const [announcementDismissed, setAnnouncementDismissed] = useState(false);
+
+  useEffect(() => {
+    if (settings.site_announcement) {
+      const dismissedText = localStorage.getItem("announcement_dismissed_text");
+      if (dismissedText === settings.site_announcement) {
+        setAnnouncementDismissed(true);
+      } else {
+        setAnnouncementDismissed(false);
+      }
+    }
+  }, [settings.site_announcement]);
+
+  const handleDismissAnnouncement = () => {
+    if (settings.site_announcement) {
+      localStorage.setItem("announcement_dismissed_text", settings.site_announcement);
+      setAnnouncementDismissed(true);
+    }
+  };
+
+  const showAnnouncement = settings.site_announcement && settings.site_announcement.trim() !== "" && !announcementDismissed;
+
   const T = (en, ta) => lang === "ta" ? ta : en;
 
   useEffect(() => {
@@ -99,8 +121,45 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const announcementType = settings.announcement_type || "info";
+  let bgClass = "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-900/40";
+  let announcementIcon = <Info className="w-3.5 h-3.5" />;
+
+  if (announcementType === "warning") {
+    bgClass = "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-300 border-amber-100 dark:border-amber-900/40";
+    announcementIcon = <AlertTriangle className="w-3.5 h-3.5" />;
+  } else if (announcementType === "error") {
+    bgClass = "bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300 border-rose-100 dark:border-rose-900/40";
+    announcementIcon = <AlertTriangle className="w-3.5 h-3.5" />;
+  } else if (announcementType === "success") {
+    bgClass = "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900/40";
+    announcementIcon = <Trophy className="w-3.5 h-3.5" />;
+  } else if (announcementType === "royal") {
+    bgClass = "bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-300 border-purple-100 dark:border-purple-900/40";
+    announcementIcon = <Zap className="w-3.5 h-3.5" />;
+  }
+
   return (
     <>
+      {showAnnouncement && (
+        <style>{`
+          @keyframes marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-33.333%, 0, 0); }
+          }
+          .marquee-content {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 30s linear infinite;
+          }
+          .marquee-content:hover {
+            animation-play-state: paused;
+          }
+          main {
+            padding-top: 96px !important;
+          }
+        `}</style>
+      )}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur shadow-sm border-b border-slate-200 dark:border-slate-700"
         : "bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700"
@@ -246,6 +305,35 @@ export default function Navbar() {
             </div>
           </div>
         </div>
+
+        {/* Ticker Row */}
+        {showAnnouncement && (
+          <div className={`w-full h-8 relative flex items-center overflow-hidden border-t text-[11px] font-medium leading-none select-none ${bgClass}`}>
+            {/* Pinned Label / Icon */}
+            <div className="absolute left-0 top-0 bottom-0 flex items-center gap-1.5 px-3 z-20 font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-r border-slate-200 dark:border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
+              {announcementIcon}
+              <span>{T("Alert", "அறிவிப்பு")}</span>
+            </div>
+
+            {/* Marquee Content */}
+            <div className="flex-1 h-full overflow-hidden relative flex items-center pl-[90px] pr-[40px]">
+              <div className="marquee-content flex items-center gap-24">
+                <span>{settings.site_announcement}</span>
+                <span>{settings.site_announcement}</span>
+                <span>{settings.site_announcement}</span>
+              </div>
+            </div>
+
+            {/* Dismiss Button */}
+            <button
+              onClick={handleDismissAnnouncement}
+              className="absolute right-0 top-0 bottom-0 px-3 flex items-center z-20 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-[-2px_0_5px_rgba(0,0,0,0.05)]"
+              aria-label="Dismiss Announcement"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
       </header>
     </>
   );
