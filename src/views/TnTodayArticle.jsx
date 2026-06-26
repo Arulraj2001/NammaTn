@@ -34,8 +34,30 @@ function parseLines(text) {
 }
 function parsePipeLines(text) {
   return parseLines(text).map(line => {
-    const [left, ...rest] = line.split("|");
-    return { label: left?.trim(), value: rest.join("|").trim() };
+    if (line.includes("|")) {
+      const [left, ...rest] = line.split("|");
+      return { label: left?.trim(), value: rest.join("|").trim() };
+    }
+    
+    // Check if it has a colon followed by a URL/path
+    const colonIndex = line.indexOf(":");
+    if (colonIndex !== -1) {
+      const label = line.slice(0, colonIndex).trim();
+      const value = line.slice(colonIndex + 1).trim();
+      if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/")) {
+        return { label, value };
+      }
+    }
+
+    // Check if it contains a URL directly
+    const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
+    if (urlMatch) {
+      const url = urlMatch[0];
+      const label = line.replace(url, "").trim().replace(/:$/, "").trim();
+      return { label: label || url, value: url };
+    }
+
+    return { label: line, value: "" };
   }).filter(r => r.label);
 }
 
