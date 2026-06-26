@@ -140,7 +140,7 @@ export default function RootLayout({ children }) {
               url: SITE_URL,
               logo: `${SITE_URL}/logo.png`,
               description:
-                "Tamil Nadu's civic complaint and community platform.",
+                "Tamil Nadu local civic alerts platform for power cuts, water issues, scams, jobs and government updates.",
               areaServed: {
                 '@type': 'State',
                 name: 'Tamil Nadu',
