@@ -22,22 +22,25 @@ export default function Providers({ children }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("tn_theme") || "light";
+    // Read stored theme to sync state with the inline script that already applied the class
+    const stored = localStorage.getItem('tn_theme') || 'light';
     setTheme(stored);
     setMounted(true);
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
+    // Inline script already applied class on initial load.
+    // Only update class on user-triggered theme change.
     const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-      root.classList.remove("light");
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
     } else {
-      root.classList.add("light");
-      root.classList.remove("dark");
+      root.classList.add('light');
+      root.classList.remove('dark');
     }
-    localStorage.setItem("tn_theme", theme);
+    localStorage.setItem('tn_theme', theme);
   }, [theme, mounted]);
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));

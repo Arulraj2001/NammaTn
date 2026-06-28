@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
 import { Heart } from "lucide-react";
@@ -132,7 +133,14 @@ export default function Footer() {
           {/* Brand */}
           <div className="flex-shrink-0 w-full lg:w-64 flex flex-col items-center lg:items-start text-center lg:text-left">
             <Link to="/" className="inline-flex items-center gap-2 mb-2">
-              <img src={settings.site_logo_url || "/apple-touch-icon.png"} alt="VizhiTN" className="w-7 h-7 rounded-lg object-contain flex-shrink-0" />
+              <Image
+                src={settings.site_logo_url || "/apple-touch-icon.png"}
+                alt="VizhiTN"
+                width={28}
+                height={28}
+                className="rounded-lg object-contain flex-shrink-0"
+                quality={90}
+              />
               <span className="font-extrabold text-blue-600 text-base leading-none">VizhiTN</span>
             </Link>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getFeaturedTnToday } from "@/services/tnToday";
@@ -116,8 +117,16 @@ export default function TnTodayCard({ className }) {
 
       {/* Featured Header Image */}
       {article.featured_image ? (
-        <div className="relative h-24 sm:h-26 bg-slate-100 dark:bg-slate-800 flex-shrink-0">
-          <img src={article.featured_image} alt={article.title} className="w-full h-full object-cover" />
+        <div className="relative h-24 sm:h-26 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden">
+          <Image
+            src={article.featured_image}
+            alt={article.title}
+            fill
+            sizes="240px"
+            className="object-cover"
+            quality={75}
+            loading="lazy"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           {/* Category pill on the bottom-left of the image */}
           <div className="absolute bottom-2 left-2">

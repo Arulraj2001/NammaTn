@@ -13,6 +13,9 @@ Disallow: /register
 Disallow: /forgot-password
 Disallow: /reset-password
 
+# Interactive pages with no crawlable content
+Disallow: /search
+
 # Allow important public routes explicitly
 Allow: /explore
 Allow: /community
@@ -33,7 +36,6 @@ Allow: /rwa
 Allow: /csr
 Allow: /contact
 Allow: /help
-Allow: /search
 
 # Sitemaps
-Sitemap: https://vizhitn.in/sitemap.xml
+Sitemap: https://www.vizhitn.in/sitemap.xml

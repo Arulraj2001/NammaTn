@@ -5,7 +5,7 @@ import '@/index.css';
 // AdSense pub ID is injected at runtime by the admin panel via window.__ADSENSE_PUB_ID__
 // See: AdminMonetization.jsx → AdSense Settings tab
 
-const SITE_URL = 'https://vizhitn.in';
+const SITE_URL = 'https://www.vizhitn.in';
 const SITE_NAME = 'VizhiTN';
 
 export const metadata = {
@@ -78,7 +78,7 @@ export const metadata = {
     canonical: SITE_URL,
     languages: {
       'en-IN': SITE_URL,
-      'ta-IN': `${SITE_URL}/ta`,
+      // ta-IN removed: /ta page does not exist yet
     },
   },
   verification: {
@@ -103,14 +103,19 @@ export default function RootLayout({ children }) {
         <meta name="geo.region" content="IN-TN" />
         <meta name="geo.placename" content="Tamil Nadu, India" />
         <meta name="DC.language" content="en-IN" />
-        {/* Preconnect to critical origins */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Preconnect to critical origins only (max 2 to avoid Lighthouse warning) */}
         <link rel="preconnect" href="https://hzgrzcablefquddisqkf.supabase.co" />
-        {/* AdSense preconnect — reduces ad load latency */}
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
-        <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
+        {/* DNS prefetch for non-critical third parties (cheaper, non-blocking) */}
+        <link rel="dns-prefetch" href="//pagead2.googlesyndication.com" />
+        <link rel="dns-prefetch" href="//googleads.g.doubleclick.net" />
         <link rel="dns-prefetch" href="//www.googletagservices.com" />
+        {/* Synchronous theme init — runs before React hydration to prevent CLS */}
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('tn_theme')||'light';document.documentElement.classList.add(t);document.documentElement.classList.remove(t==='dark'?'light':'dark');}catch(e){}})();`,
+          }}
+        />
         {/* Google AdSense script — publisher ID loaded from admin settings at runtime */}
         <script
           id="adsense-init"

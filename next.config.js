@@ -10,6 +10,10 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 
+  // ── Compression & Minification ────────────────────────────────────────────
+  compress: true,
+  swcMinify: true,
+
   // ── Performance: image optimisation ──────────────────────────────────────
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -23,7 +27,9 @@ const nextConfig = {
       { protocol: 'https', hostname: '*.tn.gov.in' },
       { protocol: 'https', hostname: '*.gov.in' },
     ],
-    minimumCacheTTL: 3600,
+    minimumCacheTTL: 31536000, // 1 year — immutable optimised images
+    dangerouslyAllowSVG: false,
+    contentSecurityPolicy: "default-src 'none'; img-src 'self' data: blob:;",
   },
 
   // ── Security + SEO HTTP headers ──────────────────────────────────────────
@@ -99,6 +105,8 @@ const nextConfig = {
       '@radix-ui/react-popover', '@radix-ui/react-tabs',
       '@radix-ui/react-tooltip', 'date-fns', 'lodash',
     ],
+    // Inline critical CSS, defer non-critical CSS — eliminates render-blocking stylesheet
+    optimizeCss: true,
   },
 
   webpack: (config) => {

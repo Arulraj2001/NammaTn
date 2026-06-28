@@ -1,13 +1,12 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import React from 'react';
+import SearchClient from './SearchClient';
 
-const Search = nextDynamic(() => import('@/views/Search'), { ssr: false });
+// Search is an interactive UI with no crawlable content — noindex it
+export const metadata = {
+  title: 'Search | VizhiTN',
+  robots: { index: false, follow: false },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <Search />
-    </Suspense>
-  );
+  return <SearchClient />;
 }
