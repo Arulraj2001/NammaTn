@@ -66,6 +66,10 @@ import { evaluateGlobalHealth, normalizeGlobalRankingSystem, applyGovernorCorrec
 import { evaluateAlignment }                                      from '@/lib/seo/serpAlignmentMonitor';
 import { computeWeightAdjustments, derivePerformanceSnapshot, DEFAULT_SUBSYSTEM_WEIGHTS } from '@/lib/seo/selfImprovingSeoLoop';
 import { stabilizeDecision, buildSignalBundle }                   from '@/lib/seo/systemStabilityController';
+import { collectGscSignals }                                      from '@/lib/seo/gscSignalCollector';
+import { trackPosition, positionToRankingScore }                  from '@/lib/seo/serpPositionTracker';
+import { normalizeRealWorldFeedback, applyRealWorldCorrection }   from '@/lib/seo/realWorldFeedbackNormalizer';
+import { computeSerpCorrectionDeltas }                            from '@/lib/seo/serpCorrectionLoop';
 
 // ── Pipeline weight matrix ─────────────────────────────────────────────────────
 // Controls how each Stage-1/2 signal blends into finalRankingScore.
@@ -495,19 +499,16 @@ export async function runAutonomousCoreAsync(
   const trendingBlock = buildTrendingBlock(trends, 5);
 
   // ════════════════════════════════════════════════════════════════════════════
-  // STAGE 8.5 — GLOBAL GOVERNOR HOOK (single-page mode)
-  // For single-page calls, we run a lightweight alignment check only.
-  // Full fleet-level normalization runs in governedFleetAsync().
+  // STAGE 8.5 — INTERNAL ALIGNMENT CHECK
   // ════════════════════════════════════════════════════════════════════════════
   const alignmentResult = evaluateAlignment({
     internalScore:  decision.finalRankingScore,
-    actualPosition: null,   // GSC: inject real position here when available
-    actualCTR:      null,   // GSC: inject real CTR here when available
-    reportCount:    reportCount,
+    actualPosition: null,
+    actualCTR:      null,
+    reportCount,
     normalizedTier: decision.normalizedTier,
   });
 
-  // Apply alignment correction to final score
   let governedDecision = decision;
   if (alignmentResult.mismatchDetected && alignmentResult.correctionFactor !== 1.0) {
     const correctedScore = parseFloat(
@@ -521,15 +522,93 @@ export async function runAutonomousCoreAsync(
     };
   }
 
+  // ════════════════════════════════════════════════════════════════════════════
+  // STAGE 10 — REAL-WORLD SERP FEEDBACK INTEGRATION
+  // Real Google signals are ground truth. This stage overrides internal
+  // predictions when SERP data contradicts them with sufficient confidence.
+  //
+  // Signal authority:
+  //   REAL SERP DATA (GSC + position tracker) > stability controller > governor > core
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // 10a: Fetch real GSC signals (async; falls back to neutral stub if no API key)
+  const pageSlug   = `/${citySlug}/${issueSlug}/`;
+  const gscSignals = await collectGscSignals(pageSlug, { daysBack: 28 });
+
+  // 10b: Build position tracking result (stateData.positionHistory from caller/KV store)
+  const positionHistory   = stateData.positionHistory   ?? [];
+  const previousPosition  = stateData.previousPosition  ?? null;
+  const daysSinceLastCheck = stateData.daysSinceLastCheck ?? 1;
+
+  const positionTrackResult = trackPosition({
+    pageSlug,
+    currentPosition:  gscSignals.avgPosition,
+    previousPosition,
+    positionHistory,
+    daysSinceLastCheck,
+  });
+
+  // 10c: Normalise — produce unified realWorldFeedback
+  const realWorldFeedback = normalizeRealWorldFeedback({
+    gscSignals,
+    positionTrackResult,
+    internalScore:       governedDecision.finalRankingScore,
+    prevRealWorldScore:  stateData.prevRealWorldScore ?? null,
+  });
+
+  // 10d: Feed real-world signal into stability controller as highest-authority input
+  // Re-run the stability controller with realWorldFeedback injected
+  const signalBundleRW = buildSignalBundle(
+    governedDecision,
+    governedDecision.finalRankingScore,
+    alignmentResult.alignmentScore ?? 1.0,
+    'OPTIMIZE'
+  );
+  signalBundleRW.realWorldFeedback = realWorldFeedback;
+
+  const realWorldStabilized = stabilizeDecision(signalBundleRW, {
+    lastStableScore: previousSmoothedScore,
+    lastStableTier,
+  });
+
+  // 10e: Compute SERP correction loop deltas (advisory — affects next ISR cycle weights)
+  const serpCorrection = computeSerpCorrectionDeltas(
+    realWorldFeedback,
+    {
+      intentStrength: governedDecision.intentStrength,
+      authorityBoost: governedDecision.authorityBoost,
+      crawlPriority:  governedDecision.crawlPriority,
+    }
+  );
+
+  // 10f: Build final real-world-adjusted decision
+  const finalRealWorldScore = realWorldStabilized.stableFinalScore;
+  const finalRealWorldTier  = realWorldStabilized.stabilizedTier;
+
   return {
     ...governedDecision,
+    // Real-world adjusted outputs (these are THE authoritative values)
+    finalRankingScore:  finalRealWorldScore,
+    normalizedTier:     finalRealWorldTier,
+
     trends,
     outboundLinks,
     contentModules,
     trendingBlock,
     alignmentResult,
+
+    // Real-world feedback payload (consumed by page.jsx and admin tools)
+    realWorld: {
+      gscSignals,
+      positionTrackResult,
+      realWorldFeedback,
+      serpCorrection,
+      realWorldStabilized,
+      overrideApplied: realWorldStabilized.realWorldOverrideApplied,
+    },
   };
 }
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BATCH: runFleetAsync

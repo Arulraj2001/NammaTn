@@ -178,7 +178,27 @@ export default async function Page({ params }) {
   const isSpike       = trendScore >= 1.0;
   const isRising      = trendScore >= 0.75 && !isSpike;
 
+  // ── Stage 10 real-world signals ───────────────────────────────────────────
+  // All values from real GSC + SERP position tracker.
+  // finalRankingScore + normalizedTier are already real-world-adjusted above.
+  const rw              = engine.realWorld ?? {};
+  const rwFeedback      = rw.realWorldFeedback ?? {};
+  const rwGsc           = rw.gscSignals ?? {};
+  const rwPos           = rw.positionTrackResult ?? {};
+  const rwOverride      = rw.overrideApplied ?? false;
+
+  const serpPosition    = rwGsc.avgPosition   ?? null;
+  const realCTR         = rwGsc.ctr           ?? null;
+  const realImpressions = rwGsc.impressions   ?? null;
+  const realWorldScore  = rwFeedback.realWorldScore  ?? null;
+  const trendVelocity   = rwGsc.trendVelocity ?? 'none';
+  const alignmentGap    = rwFeedback.alignmentGap    ?? 0;
+  const movementClass   = rwPos.movementClass  ?? 'STABLE';
+  const positionChange  = rwPos.positionChange ?? 0;
+  const hasRealData     = rwFeedback.hasRealData ?? false;
+
   const canonicalUrl = `${SITE_URL}/${city}/${issue}/`;
+
 
   return (
     <>
@@ -253,7 +273,7 @@ export default async function Page({ params }) {
               : 'No active reports at this time'}
           </p>
 
-          {/* Machine-readable ranking signals — ALL from stability controller (Stage 9) */}
+          {/* Machine-readable signals — real-world + stability (Stages 9 + 10) */}
           <span
             data-ranking-score={finalRankingScore}
             data-stable-score={stableRankingScore}
@@ -272,6 +292,16 @@ export default async function Page({ params }) {
             data-downstream-frozen={downstreamFrozen ? '1' : '0'}
             data-alignment-score={alignmentScore}
             data-mismatch={mismatchDetected ? '1' : '0'}
+            data-real-world-score={realWorldScore ?? ''}
+            data-serp-position={serpPosition ?? ''}
+            data-real-ctr={realCTR ?? ''}
+            data-real-impressions={realImpressions ?? ''}
+            data-trend-velocity={trendVelocity}
+            data-alignment-gap={alignmentGap}
+            data-movement={movementClass}
+            data-position-change={positionChange}
+            data-real-data={hasRealData ? '1' : '0'}
+            data-rw-override={rwOverride ? '1' : '0'}
             className="hidden"
             aria-hidden="true"
           />
@@ -298,6 +328,56 @@ export default async function Page({ params }) {
             <span className="text-xs text-slate-500 dark:text-slate-400">
               Stability lock active — ranking adjustments paused. Consensus: {Math.round(consensusLevel * 100)}%
             </span>
+          </div>
+        )}
+
+        {/* ── Real-world SERP signal card (visible when GSC data available) ─ */}
+        {hasRealData && serpPosition !== null && (
+          <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/50 p-4 rounded-xl">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
+                Live SERP Data
+              </span>
+              {rwOverride && (
+                <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200">
+                  Real-World Override Active
+                </span>
+              )}
+            </div>
+            <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="text-center">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Position</p>
+                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">#{serpPosition.toFixed(1)}</p>
+                <p className={`text-[10px] font-semibold ${
+                  positionChange < 0 ? 'text-green-600 dark:text-green-400' :
+                  positionChange > 0 ? 'text-red-500 dark:text-red-400' :
+                  'text-slate-400'
+                }`}>
+                  {positionChange < 0 ? '▲' : positionChange > 0 ? '▼' : '─'} {Math.abs(positionChange).toFixed(1)}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-slate-500 dark:text-slate-400">CTR</p>
+                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">{(realCTR * 100).toFixed(1)}%</p>
+                <p className="text-[10px] text-slate-400">{movementClass}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Impressions</p>
+                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">
+                  {realImpressions >= 1000 ? `${(realImpressions / 1000).toFixed(1)}k` : realImpressions}
+                </p>
+                <p className="text-[10px] text-slate-400">{trendVelocity}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Alignment</p>
+                <p className={`text-lg font-bold ${
+                  alignmentGap < 0.10 ? 'text-green-600 dark:text-green-400' :
+                  alignmentGap < 0.20 ? 'text-amber-600 dark:text-amber-400' :
+                  'text-red-500 dark:text-red-400'
+                }`}>{(alignmentGap * 100).toFixed(0)}% gap</p>
+                <p className="text-[10px] text-slate-400">internal vs SERP</p>
+              </div>
+            </div>
           </div>
         )}
 

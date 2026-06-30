@@ -24,6 +24,7 @@
 
 import { rawTierFromScore } from '@/lib/seo/tierStabilityNormalizer';
 import { DRIFT_STATUS }     from '@/lib/seo/serpDriftController';
+import { applyRealWorldCorrection } from '@/lib/seo/realWorldFeedbackNormalizer';
 
 // ── Conflict severity levels ──────────────────────────────────────────────────
 export const CONFLICT_SEVERITY = {
@@ -167,6 +168,28 @@ export function detectSystemConflicts(signals = {}) {
       affectedSystems:  ['serpAlignmentMonitor', 'selfImprovingSeoLoop'],
       description:      `Alignment score ${alignmentScore.toFixed(2)} < 0.50 but systemMode is BOOST — amplifying misaligned signal`,
     });
+  }
+
+  // ── Detector E: Real-world SERP signal vs internal score ──────────────────
+  // If caller supplies realWorldFeedback with high trust and critical mismatch,
+  // this is treated as a CRITICAL conflict regardless of other signals.
+  const rwf = signals.realWorldFeedback;
+  if (rwf && rwf.hasRealData && rwf.trustFactor >= 0.70) {
+    if (rwf.mismatchSeverity === 'CRITICAL') {
+      conflicts.push({
+        conflictType:     'REAL_WORLD_OVERRIDE',
+        severity:         CONFLICT_SEVERITY.CRITICAL,
+        affectedSystems:  ['autonomousSeoCore', 'gscSignalCollector', 'serpPositionTracker'],
+        description:      `Real SERP data (trust ${rwf.trustFactor.toFixed(2)}) shows critical mismatch: internal ${coreScore.toFixed(3)} vs real-world ${rwf.realWorldScore.toFixed(3)} — gap ${rwf.alignmentGap.toFixed(3)}`,
+      });
+    } else if (rwf.mismatchSeverity === 'HIGH') {
+      conflicts.push({
+        conflictType:     'REAL_WORLD_DIVERGENCE',
+        severity:         CONFLICT_SEVERITY.HIGH,
+        affectedSystems:  ['autonomousSeoCore', 'gscSignalCollector'],
+        description:      `Real SERP mismatch HIGH: internal ${coreScore.toFixed(3)} vs real-world ${rwf.realWorldScore.toFixed(3)}`,
+      });
+    }
   }
 
   // ── Aggregate worst severity ──────────────────────────────────────────────
@@ -399,30 +422,54 @@ export function stabilizeDecision(inputs = {}, state = {}) {
     }
   );
 
+  // ════════════════════════════════════════════════════════════════════════════
+  // REAL-WORLD AUTHORITY OVERRIDE
+  // If realWorldFeedback is present with sufficient trust, it overrides the
+  // internal resolution. Real SERP signals are ground truth.
+  // AUTHORITY HIERARCHY:
+  //   1. realWorldFeedback (SERP ground truth)
+  //   2. stability controller resolution
+  //   3. governor / autonomous core
+  // ════════════════════════════════════════════════════════════════════════════
+  let resolvedScore = resolution.finalRankingScore;
+  let realWorldOverrideApplied = false;
+  const rwf = inputs.realWorldFeedback;
+
+  if (rwf && rwf.hasRealData && rwf.trustFactor >= 0.70) {
+    const rwAdjusted = applyRealWorldCorrection(resolvedScore, rwf);
+    if (rwAdjusted !== resolvedScore) {
+      resolvedScore = rwAdjusted;
+      realWorldOverrideApplied = true;
+    }
+  }
+
   // Derive control gates
-  const action         = resolution.finalAction;
-  const downstreamFrozen         = action === STABILITY_ACTION.LOCK || action === STABILITY_ACTION.HOLD;
-  const serpFeedbackSuppressed   = action === STABILITY_ACTION.LOCK;
-  const linkOptimizerFrozen      = action === STABILITY_ACTION.LOCK || action === STABILITY_ACTION.HOLD;
+  const action               = resolution.finalAction;
+  const downstreamFrozen     = action === STABILITY_ACTION.LOCK || action === STABILITY_ACTION.HOLD;
+  const serpFeedbackSuppressed = action === STABILITY_ACTION.LOCK;
+  const linkOptimizerFrozen  = action === STABILITY_ACTION.LOCK || action === STABILITY_ACTION.HOLD;
 
   return {
-    stableFinalScore:       resolution.finalRankingScore,
-    stabilizedTier:         resolution.finalTier,
-    systemConsensusLevel:   normResult.stabilityIndex,
-    conflictDetected:       conflictReport.totalConflicts > 0,
-    conflictSources:        conflictReport.conflicts.map(c => ({
+    stableFinalScore:          parseFloat(Math.min(Math.max(resolvedScore, 0), 1.0).toFixed(4)),
+    stabilizedTier:            rawTierFromScore(resolvedScore),
+    systemConsensusLevel:      normResult.stabilityIndex,
+    conflictDetected:          conflictReport.totalConflicts > 0,
+    conflictSources:           conflictReport.conflicts.map(c => ({
       type:             c.conflictType,
       severity:         c.severity,
       affectedSystems:  c.affectedSystems,
     })),
-    stabilityAction:        action,
-    adjustmentVector:       resolution.adjustmentVector,
-    normalizedSignals:      normResult.normalizedSignals,
-    signalVector:           normResult.signalVector,
-    worstConflictSeverity:  conflictReport.worstSeverity,
+    stabilityAction:           action,
+    adjustmentVector:          resolution.adjustmentVector,
+    normalizedSignals:         normResult.normalizedSignals,
+    signalVector:              normResult.signalVector,
+    worstConflictSeverity:     conflictReport.worstSeverity,
     downstreamFrozen,
     serpFeedbackSuppressed,
     linkOptimizerFrozen,
+    realWorldOverrideApplied,
+    realWorldScore:            rwf?.realWorldScore  ?? null,
+    realWorldTrustFactor:      rwf?.trustFactor     ?? 0,
   };
 }
 
