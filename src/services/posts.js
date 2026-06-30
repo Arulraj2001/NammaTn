@@ -22,7 +22,7 @@ const fetchVisiblePostPage = async ({ limit, cursor = null, filter = isPubliclyV
 
   while (page.length < limit && !exhausted && scans < 5) {
     let query = supabase
-      .from("post")
+      .from("unified_explore_feed")
       .select("*")
       .order("created_date", { ascending: false })
       .limit(scanLimit);
@@ -65,7 +65,7 @@ export const getAllPosts = async (limitOrOptions = 20, sort = "-created_date", c
   const orderCol = pageCursor ? "created_date" : resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = pageCursor ? false : !resolvedSort.startsWith("-");
   let query = supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
     .order(orderCol, { ascending })
     .limit(limit);
@@ -83,7 +83,7 @@ export const getPosts = async (limit = 20, sort = "-created_date") => {
   const orderCol = sort.startsWith("-") ? sort.substring(1) : sort;
   const ascending = !sort.startsWith("-");
   const { data, error } = await supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
     .order(orderCol, { ascending })
     .limit(limit);
@@ -93,6 +93,7 @@ export const getPosts = async (limit = 20, sort = "-created_date") => {
 
 export const getPostById = async (id) => {
   if (!id) return null;
+  // Detail views must query the raw post table to ensure it gets all post-specific columns correctly
   const { data, error } = await supabase
     .from("post")
     .select("*")
@@ -116,7 +117,7 @@ export const getActivePosts = async (limitOrOptions = 20, sort = "-created_date"
   const orderCol = resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = !resolvedSort.startsWith("-");
   const { data, error } = await supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
     .eq("status", "active")
     .order(orderCol, { ascending })
@@ -132,7 +133,7 @@ export const getActiveCivicPosts = async (limitOrOptions = 20, sort = "-created_
     return fetchVisiblePostPage({
       limit,
       cursor: pageCursor,
-      configure: (query) => query.eq("status", "active").eq("post_type", "complaint"),
+      configure: (query) => query.eq("status", "active"),
       filter: (p) => p.civic_receipt_id && isPubliclyVisible(p),
     });
   }
@@ -140,10 +141,9 @@ export const getActiveCivicPosts = async (limitOrOptions = 20, sort = "-created_
   const orderCol = resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = !resolvedSort.startsWith("-");
   const { data, error } = await supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
     .eq("status", "active")
-    .eq("post_type", "complaint")
     .order(orderCol, { ascending })
     .limit(limit * 2);
   if (error) throw error;
