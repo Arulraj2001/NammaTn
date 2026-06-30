@@ -62,26 +62,30 @@ import { generateContentEntropy }                                 from '@/lib/se
 import { buildOptimizedLinks }                                    from '@/lib/seo/linkOptimizer';
 import { detectTrends, getPageTrendVelocity, buildTrendingBlock } from '@/lib/seo/trendDetector';
 import { DISTRICT_MAP, CATEGORY_MAP, DISTRICTS, CATEGORIES }      from '@/lib/seo-data';
-import { evaluateGlobalHealth, normalizeGlobalRankingSystem, applyGovernorCorrection } from '@/lib/seo/globalSeoGovernor';
+import { evaluateGlobalHealth, normalizeGlobalRankingSystem, proposeGovernorCorrection } from '@/lib/seo/globalSeoGovernor';
 import { evaluateAlignment }                                      from '@/lib/seo/serpAlignmentMonitor';
 import { computeWeightAdjustments, derivePerformanceSnapshot, DEFAULT_SUBSYSTEM_WEIGHTS } from '@/lib/seo/selfImprovingSeoLoop';
-import { stabilizeDecision, buildSignalBundle }                   from '@/lib/seo/systemStabilityController';
-import { collectGscSignals }                                      from '@/lib/seo/gscSignalCollector';
-import { trackPosition, positionToRankingScore }                  from '@/lib/seo/serpPositionTracker';
-import { normalizeRealWorldFeedback, applyRealWorldCorrection }   from '@/lib/seo/realWorldFeedbackNormalizer';
-import { computeSerpCorrectionDeltas }                            from '@/lib/seo/serpCorrectionLoop';
+import { stabilizeDecision, buildSignalBundle }                    from '@/lib/seo/systemStabilityController';
+import { collectGscSignals }                                       from '@/lib/seo/gscSignalCollector';
+import { trackPosition, positionToRankingScore }                   from '@/lib/seo/serpPositionTracker';
+import { normalizeRealWorldFeedback, applyRealWorldCorrection }    from '@/lib/seo/realWorldFeedbackNormalizer';
+import { computeSerpCorrectionDeltas }                             from '@/lib/seo/serpCorrectionLoop';
 import { confidenceFromRealWorldFeedback, applyConfidenceToScore } from '@/lib/seo/confidenceWeighting';
-import { computeDampedScore, shouldApplyDampedOverride }          from '@/lib/seo/serpDampedOverride';
+import { computeDampedScore, shouldApplyDampedOverride }           from '@/lib/seo/serpDampedOverride';
+import { validateAlignment as validateAlignmentGate }              from '@/lib/seo/alignmentGate';
+import { buildUnifiedSignalVector, signalVectorToCoreBundle }      from '@/lib/seo/signalSchema';
+import { buildCorrectionProposals, resolveCorrectionPass }         from '@/lib/seo/correctionQueue';
 
 // ── Pipeline weight matrix ─────────────────────────────────────────────────────
-// Controls how each Stage-1/2 signal blends into finalRankingScore.
-// Weights must reflect what Google actually measures: E-E-A-T, freshness, intent.
-const BLEND_WEIGHTS = {
-  orchestrator:  0.40, // rankingOrchestrator composite (already multi-signal)
-  serpFeedback:  0.20, // CTR/impression proxy — Google's #1 engagement signal
-  decayRecovery: 0.20, // Temporal health — freshness factor
-  intentSignal:  0.10, // Query intent strength
-  authoritySignal: 0.10, // E-E-A-T presence
+// DEPRECATED: individual blend weights replaced by unified signal schema.
+// signalSchema.js SIGNAL_GROUP_WEIGHTS is now the single source of truth.
+// Kept here only as documentation of the previous approach.
+const _LEGACY_BLEND_WEIGHTS = {
+  orchestrator:  0.40,
+  serpFeedback:  0.20,
+  decayRecovery: 0.20,
+  intentSignal:  0.10,
+  authoritySignal: 0.10,
 };
 
 // ── Action decision thresholds ────────────────────────────────────────────────
@@ -241,49 +245,67 @@ export function runAutonomousCore(inputs = {}) {
   });
 
   // ════════════════════════════════════════════════════════════════════════════
-  // STAGE 5 — Blend into finalRankingScore
+  // STAGE 5 — BUILD UNIFIED SIGNAL VECTOR
+  // All subsystems are now signal providers. No subsystem computes a final score.
+  // The unified vector is the ONLY input to the stability controller.
   // ════════════════════════════════════════════════════════════════════════════
 
-  // Normalize authority boost (1.0→0, 1.2→0.4, 1.5→1.0)
-  const authoritySignal = Math.min((rankingData.authorityBoostFactor - 1.0) / 0.5, 1.0);
+  // Pre-build alignment gate result (offline — no real GSC data yet at this stage)
+  const alignmentGateResult = validateAlignmentGate({
+    alignmentGap:   0,       // offline at Stage 5; real gap injected in Stage 10
+    hasRealData:    false,
+    stabilityAction: 'PASS',
+    trustFactor:    0,
+  });
 
-  const rawFinalScore = parseFloat(Math.min(
-    BLEND_WEIGHTS.orchestrator  * orchestration.finalRankingScore  +
-    BLEND_WEIGHTS.serpFeedback  * serpFeedback.feedbackScore       +
-    BLEND_WEIGHTS.decayRecovery * decayRecovery.effectiveScore     +
-    BLEND_WEIGHTS.intentSignal  * intentData.intentStrength        +
-    BLEND_WEIGHTS.authoritySignal * authoritySignal,
-    1.0
-  ).toFixed(4));
+  // EMA smoothing for stability group
+  const stableRankingScore = smoothScore(orchestration.finalRankingScore, previousSmoothedScore, 0.30);
+  const tierResult         = stabilizeTier(stableRankingScore, lastStableTier, driftResult.driftStatus);
 
-  // Apply drift correction factor (dampens oscillation)
-  const driftCorrected = parseFloat(Math.min(
-    rawFinalScore * driftResult.correctionFactor,
-    1.0
-  ).toFixed(4));
+  const signalVector = buildUnifiedSignalVector({
+    orchestration,
+    serpFeedback,
+    decayRecovery,
+    driftResult,
+    intentData,
+    authorityData:  {},          // raw authorityData not needed here; rankingData has boostFactor
+    rankingData,
+    crawlData,
+    gscSignals:    {},           // no GSC at sync stage; injected at Stage 10
+    positionTrack: {},
+    realWorldFeedback: {},       // no real-world at sync stage
+    alignmentGate: alignmentGateResult,
+    trendScore,
+    stableRankingScore,
+  });
 
   // ════════════════════════════════════════════════════════════════════════════
-  // STAGE 6 — Stability layer
+  // STAGE 6 — STABILITY LAYER (EMA + tier hysteresis)
+  // Note: stableRankingScore + tierResult already computed above for signal vector.
   // ════════════════════════════════════════════════════════════════════════════
-
-  const stableRankingScore = smoothScore(driftCorrected, previousSmoothedScore, 0.30);
-
-  const tierResult = stabilizeTier(stableRankingScore, lastStableTier, driftResult.driftStatus);
   const normalizedTier = tierResult.stabilizedTier;
 
   // ════════════════════════════════════════════════════════════════════════════
-  // STAGE 7 — Action decision
+  // STAGE 7 — ACTION DECISION (advisory — stability controller is final authority)
+  // This produces a preliminary action hint. The actual action is determined
+  // by the stability controller from the unified signal vector.
   // ════════════════════════════════════════════════════════════════════════════
+
+  // Composite score from unified vector (replaces raw driftCorrected)
+  const compositeScore = signalVector.compositeScore;
+  const driftCorrected = parseFloat(Math.min(
+    compositeScore * driftResult.correctionFactor, 1.0
+  ).toFixed(4));
 
   let action;
   if (
-    driftCorrected >= ACTION_THRESHOLDS.BOOST ||
-    serpFeedback.recommendation === 'BOOST'   ||
+    compositeScore >= ACTION_THRESHOLDS.BOOST ||
+    serpFeedback.recommendation === 'BOOST'  ||
     trendVelocity === 'spike'
   ) {
     action = 'BOOST';
   } else if (
-    driftCorrected <= ACTION_THRESHOLDS.SUPPRESS           ||
+    compositeScore <= ACTION_THRESHOLDS.SUPPRESS           ||
     serpFeedback.recommendation === 'SUPPRESS'             ||
     decayRecovery.healthStatus   === 'critical'            ||
     driftResult.driftStatus      === DRIFT_STATUS.FALLING
@@ -307,7 +329,6 @@ export function runAutonomousCore(inputs = {}) {
 
   const tierConfig = TIER_CONFIGS[normalizedTier] || TIER_CONFIGS.mid;
 
-  // Action overrides on sitemap priority
   let sitemapPriority = tierConfig.sitemapPriority;
   if (action === 'BOOST')    sitemapPriority = Math.min(sitemapPriority + 0.1, 1.0);
   if (action === 'SUPPRESS') sitemapPriority = Math.max(sitemapPriority - 0.2, 0.1);
@@ -316,29 +337,16 @@ export function runAutonomousCore(inputs = {}) {
     (action === 'BOOST' ? 1.25 : action === 'SUPPRESS' ? 0.60 : 1.0);
 
   // ════════════════════════════════════════════════════════════════════════════
-  // STAGE 9 — STABILITY CONTROLLER (FINAL AUTHORITY)
-  // All signals pass through the stability gate before becoming outputs.
-  // No subsystem value is returned raw without passing this gate.
+  // STAGE 9 — STABILITY CONTROLLER (SINGLE DECISION AUTHORITY)
+  // RULE: finalRankingDecision MUST ONLY be computed here.
+  // The unified signal vector is the ONLY input. No raw subsystem value is
+  // used to produce a final score outside this gate.
   // ════════════════════════════════════════════════════════════════════════════
 
-  // Build the unified signal bundle from all upstream outputs
-  const signalBundle = buildSignalBundle(
-    {
-      finalRankingScore: driftCorrected,
-      driftStatus:       driftResult.driftStatus,
-      trendScore,
-      decayFactor:       decayRecovery.decayFactor,
-      recoveryFactor:    decayRecovery.recoveryFactor,
-      authorityBoost:    rankingData.authorityBoostFactor,
-      intentStrength:    intentData.intentStrength,
-      crawlPriority:     crawlData.crawlScore,
-    },
-    /* governorScore */ stableRankingScore,  // EMA-smoothed acts as governor proxy in sync path
-    /* alignmentScore */ 1.0,               // alignment runs in async path (Stage 8.5)
-    /* systemMode */ 'OPTIMIZE'
-  );
+  // Convert unified signal vector → core bundle format for stabilizeDecision()
+  const coreBundle = signalVectorToCoreBundle(signalVector);
 
-  const stabilized = stabilizeDecision(signalBundle, {
+  const stabilized = stabilizeDecision(coreBundle, {
     lastStableScore: previousSmoothedScore,
     lastStableTier,
   });
@@ -598,13 +606,34 @@ export async function runAutonomousCoreAsync(
     }
   );
 
-  // 10f: Build final real-world-adjusted decision
-  const finalRealWorldScore = realWorldStabilized.stableFinalScore;
+  // 10f: Single Correction Pass — collect all proposed corrections and apply only one
+  const pageSlugForQueue = `/${citySlug}/${issueSlug}/`;
+  const correctionProposals = buildCorrectionProposals({
+    pageSlug:          pageSlugForQueue,
+    stabilityDecision: realWorldStabilized,
+    alignmentResult:   {
+      mismatchDetected:  alignmentResult.mismatchDetected,
+      mismatchSeverity:  alignmentResult.mismatchSeverity ?? 'LOW',
+      correctionFactor:  alignmentResult.correctionFactor ?? 1.0,
+    },
+    governorCorrection: null, // governor runs at fleet level — not per-page sync
+    currentScore:      realWorldStabilized.stableFinalScore,
+  });
+
+  const correctionPass = resolveCorrectionPass(
+    pageSlugForQueue,
+    correctionProposals,
+    realWorldStabilized.stableFinalScore
+  );
+
+  // Apply the single winning correction (already embedded in correctedScore)
+  const finalRealWorldScore = correctionPass.applied?.correctedScore
+    ?? realWorldStabilized.stableFinalScore;
   const finalRealWorldTier  = realWorldStabilized.stabilizedTier;
 
   return {
     ...confidenceGovernedDecision,
-    // Real-world + confidence adjusted outputs (THE authoritative values)
+    // Real-world + confidence + single-pass corrected (THE authoritative values)
     finalRankingScore: finalRealWorldScore,
     normalizedTier:    finalRealWorldTier,
 
@@ -623,8 +652,17 @@ export async function runAutonomousCoreAsync(
       realWorldStabilized,
       overrideApplied: realWorldStabilized.realWorldOverrideApplied,
     },
+
+    // Correction queue result (monitoring + next-cycle scheduling)
+    correctionPass: {
+      applied:    correctionPass.applied,
+      queued:     correctionPass.queued,
+      passResult: correctionPass.passResult,
+      cycle:      correctionPass.cycle,
+    },
   };
 }
+
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -724,10 +762,73 @@ export async function governedFleetAsync(
   const { normalizedScores, adjustedTierMap, systemBalanceFactor } =
     normalizeGlobalRankingSystem(fleet);
 
-  // Step 4: Apply governor corrections per page
-  const governedFleet = fleet.map(d =>
-    applyGovernorCorrection(d, adjustedTierMap, governorOutput)
-  );
+  // Step 4: Apply single correction pass per page (stability vs alignment vs governor)
+  const TIER_CONFIGS_F = {
+    elite:   { maxLinks: 12, sitemapPriority: 1.0, changefreq: 'hourly',  linkBoost: 3.0, authorityExpand: true },
+    top:     { maxLinks: 8,  sitemapPriority: 0.9, changefreq: 'daily',   linkBoost: 2.0, authorityExpand: true },
+    mid:     { maxLinks: 6,  sitemapPriority: 0.7, changefreq: 'weekly',  linkBoost: 1.2, authorityExpand: false },
+    low:     { maxLinks: 4,  sitemapPriority: 0.4, changefreq: 'monthly', linkBoost: 0.7, authorityExpand: false },
+    dormant: { maxLinks: 2,  sitemapPriority: 0.2, changefreq: 'monthly', linkBoost: 0.5, authorityExpand: false },
+  };
+
+  const governedFleet = fleet.map(d => {
+    // 4a. Run alignment monitor evaluation for this page
+    const alignmentResult = evaluateAlignment({
+      internalScore:  d.finalRankingScore,
+      actualPosition: d.realWorld?.gscSignals?.avgPosition ?? null,
+      actualCTR:      d.realWorld?.gscSignals?.ctr ?? null,
+      reportCount:    0,
+      normalizedTier: d.normalizedTier,
+    });
+
+    // 4b. Propose governor correction for this page
+    const govCorrection = proposeGovernorCorrection(d, adjustedTierMap, governorOutput);
+
+    // 4c. Build proposals bundle
+    const proposals = buildCorrectionProposals({
+      pageSlug:          d.pageSlug,
+      stabilityDecision: d.subsystems?.stabilizedDecision ?? null,
+      alignmentResult,
+      governorCorrection: govCorrection,
+      currentScore:      d.finalRankingScore,
+    });
+
+    // 4d. Resolve single pass correction
+    const passResult = resolveCorrectionPass(d.pageSlug, proposals, d.finalRankingScore);
+
+    // 4e. Apply winning corrected score and re-derive tier / sitemap / links
+    const finalScore = passResult.applied?.correctedScore ?? d.finalRankingScore;
+    const finalTier  = rawTierFromScore(finalScore);
+
+    let finalAction = d.action;
+    if (finalScore >= ACTION_THRESHOLDS.BOOST)        finalAction = 'BOOST';
+    else if (finalScore <= ACTION_THRESHOLDS.SUPPRESS) finalAction = 'SUPPRESS';
+    else                                               finalAction = 'STABLE';
+
+    const tierConf = TIER_CONFIGS_F[finalTier] || TIER_CONFIGS_F.mid;
+    let sitemapPriority = tierConf.sitemapPriority;
+    if (finalAction === 'BOOST')    sitemapPriority = Math.min(sitemapPriority + 0.1, 1.0);
+    if (finalAction === 'SUPPRESS') sitemapPriority = Math.max(sitemapPriority - 0.2, 0.1);
+
+    const baseAdjust = d.subsystems?.rankingData?.internalLinkWeightAdjust ?? 1.0;
+    const linkWeight = baseAdjust * tierConf.linkBoost *
+      (finalAction === 'BOOST' ? 1.25 : finalAction === 'SUPPRESS' ? 0.60 : 1.0);
+
+    return {
+      ...d,
+      finalRankingScore: parseFloat(finalScore.toFixed(4)),
+      normalizedTier:    finalTier,
+      action:            finalAction,
+      sitemapPriority:   parseFloat(sitemapPriority.toFixed(2)),
+      linkWeight:        parseFloat(linkWeight.toFixed(3)),
+      correctionPass: {
+        applied:    passResult.applied,
+        queued:     passResult.queued,
+        passResult: passResult.passResult,
+        cycle:      passResult.cycle,
+      },
+    };
+  });
 
   // Step 5: Alignment monitor — fleet-level mismatch check
   const alignmentInputs = governedFleet.map(d => ({

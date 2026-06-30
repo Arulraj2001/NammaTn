@@ -30,7 +30,7 @@ export const DEFAULT_SUBSYSTEM_WEIGHTS = {
 };
 
 // ── Weight bounds — no subsystem can be completely silenced or dominant ───────
-const WEIGHT_BOUNDS = {
+export const WEIGHT_BOUNDS = {
   rankingOrchestrator: { min: 0.25, max: 0.55 },
   serpFeedback:        { min: 0.10, max: 0.30 },
   decayRecovery:       { min: 0.10, max: 0.30 },

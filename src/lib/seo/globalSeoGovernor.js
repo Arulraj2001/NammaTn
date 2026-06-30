@@ -189,19 +189,29 @@ export function normalizeGlobalRankingSystem(fleetDecisions = []) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// APPLY: applyGovernorCorrection
+// ─────────────────────────────────────────────────────────────────────────────
+// PROPOSE: proposeGovernorCorrection
 //
-// Applies governor-level correction to a single page decision.
-// Called inside autonomousSeoCore after Stage 7.
+// Generates an advisory governor-level correction proposal for a single page.
+// Purely advisory — does not mutate the decision object or run stability logic.
+// The actual correction is resolved via correctionQueue.js.
 //
 // @param {RankingDecision} decision
 // @param {object}          adjustedTierMap – from normalizeGlobalRankingSystem
 // @param {object}          governorOutput  – from evaluateGlobalHealth
-// @returns {RankingDecision} with corrected score + action
+// @returns {object} advisory correction proposal
 // ─────────────────────────────────────────────────────────────────────────────
-export function applyGovernorCorrection(decision, adjustedTierMap = {}, governorOutput = {}) {
-  const entry      = adjustedTierMap[decision.pageSlug];
-  if (!entry) return decision;
+export function proposeGovernorCorrection(decision, adjustedTierMap = {}, governorOutput = {}) {
+  const entry = adjustedTierMap[decision.pageSlug];
+  if (!entry) {
+    return {
+      correctionApplied: false,
+      correctedScore: decision.finalRankingScore,
+      multiplier: 1.0,
+      action: decision.action,
+      requiresRecalibration: false,
+    };
+  }
 
   const newScore   = entry.normalizedScore;
   const multiplier = entry.multiplier;
@@ -224,50 +234,30 @@ export function applyGovernorCorrection(decision, adjustedTierMap = {}, governor
     .some(p => p.pageSlug === decision.pageSlug);
   const requiresRecalibration = isOverperforming;
 
-  const correctedDecision = {
-    ...decision,
-    finalRankingScore:     newScore,
-    sitemapPriority:       parseFloat(Math.min(Math.max(decision.sitemapPriority * multiplier, 0.1), 1.0).toFixed(2)),
-    linkWeight:            parseFloat((decision.linkWeight * multiplier).toFixed(3)),
-    action,
-    governorApplied:       true,
-    requiresRecalibration,
-  };
-
-  // Governor output must also pass through the stability controller
-  // before being returned, to catch any governor-induced conflicts.
-  const signalBundle = buildSignalBundle(
-    correctedDecision,
-    newScore,
-    correctedDecision.subsystems?.stabilizedDecision?.normalizedSignals?.alignment ?? 1.0,
-    'OPTIMIZE'
-  );
-  const govStabilized = stabilizeDecision(signalBundle, {
-    lastStableScore: decision.stableRankingScore,
-    lastStableTier:  decision.normalizedTier,
-  });
-
-  // If stability controller triggers LOCK, roll back governor's correction
-  if (govStabilized.stabilityAction === STABILITY_ACTION.LOCK) {
-    return {
-      ...decision,
-      governorApplied:       true,
-      requiresRecalibration: true,
-      stability:             { ...decision.stability, stabilityAction: STABILITY_ACTION.LOCK, downstreamFrozen: true },
-    };
-  }
-
   return {
-    ...correctedDecision,
-    finalRankingScore:  govStabilized.stableFinalScore,
-    normalizedTier:     govStabilized.stabilizedTier,
-    stability:          {
-      ...(decision.stability || {}),
-      ...govStabilized,
-      governorStabilityAction: govStabilized.stabilityAction,
-    },
+    correctionApplied: true,
+    correctedScore:    newScore,
+    multiplier,
+    action,
+    requiresRecalibration,
+    correctionReason:  isUnderperforming ? 'lift_suppression' : 'tier_rebalance',
   };
 }
+
+// ── Deprecated: applyGovernorCorrection (kept for backward compatibility wrapper)
+export function applyGovernorCorrection(decision, adjustedTierMap = {}, governorOutput = {}) {
+  const proposal = proposeGovernorCorrection(decision, adjustedTierMap, governorOutput);
+  if (!proposal.correctionApplied) return decision;
+
+  return {
+    ...decision,
+    finalRankingScore: proposal.correctedScore,
+    action: proposal.action,
+    governorApplied: true,
+    requiresRecalibration: proposal.requiresRecalibration,
+  };
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // INTERNAL helpers
