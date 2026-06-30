@@ -1,11 +1,16 @@
 // src/app/(user)/[city]/[issue]/page.jsx
 // Production programmatic SEO page — Next.js App Router, Server Component only.
 //
-// FIXES APPLIED:
-// CRIT-01: Breadcrumb URL corrected from /district/[city]/ → /[city]/
-// CRIT-02: indexBoost no longer fires universally; passes real reportCount
-// CRIT-03: Removed non-deterministic "Last Updated" timestamp from visible HTML
-// FIX-07:  Removed tn_today DB query — lastIndexedDate defaults null safely
+// AUTONOMOUS RANKING ENGINE v4 — autonomousSeoCore integration.
+// Single call: runAutonomousCoreAsync() owns the entire 12-system pipeline.
+// page.jsx only handles: DB fetch → core call → render.
+//
+// PRESERVED:
+//   revalidate = 3600  (ISR unchanged)
+//   No Math.random()
+//   No client-only APIs
+//   No schema spam
+//   No React Router
 
 import React from 'react';
 import Link from 'next/link';
@@ -13,11 +18,11 @@ import { createClient } from '@supabase/supabase-js';
 import { DISTRICT_MAP, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
 import PageSchema from '@/components/seo/PageSchema';
 
-// SEO Hardening Imports
-import { generateContentEntropy } from '@/lib/seo/contentEntropy';
-import { getTrendingPairs } from '@/lib/seo/trendEngine';
-import { evaluateIndexBoost } from '@/lib/seo/indexBoost';
-import { getOutboundLinks } from '@/lib/seo/linkVelocity';
+import { runAutonomousCoreAsync }  from '@/lib/seo/autonomousSeoCore';
+import { resolveQueryIntent }      from '@/lib/seo/queryIntentEngine';
+import { evaluateIndexBoost }      from '@/lib/seo/indexBoost';
+import { isPageTrending }          from '@/lib/seo/trendDetector';
+import { DEFAULT_SUBSYSTEM_WEIGHTS, computeWeightAdjustments } from '@/lib/seo/selfImprovingSeoLoop';
 
 export const revalidate = 3600;
 
@@ -28,20 +33,17 @@ function getSupabase() {
   );
 }
 
-// ── SERVER DATA FETCHER ───────────────────────────────────────────────────────
-// FIX-07: Single DB call — removed tn_today secondary query entirely.
+// ── DB FETCH ──────────────────────────────────────────────────────────────────
 async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_date') {
   try {
     const supabase = getSupabase();
-
-    // Map category synonyms for accurate local routing
     const targetSlugs = [issueSlug];
-    if (issueSlug === "electricity") targetSlugs.push("power-cut");
-    if (issueSlug === "power-cut") targetSlugs.push("electricity");
-    if (issueSlug === "water-sanitation") targetSlugs.push("water-issue");
-    if (issueSlug === "water-issue") targetSlugs.push("water-sanitation");
-    if (issueSlug === "road-infrastructure") targetSlugs.push("road-problem");
-    if (issueSlug === "road-problem") targetSlugs.push("road-infrastructure");
+    if (issueSlug === 'electricity')         targetSlugs.push('power-cut');
+    if (issueSlug === 'power-cut')           targetSlugs.push('electricity');
+    if (issueSlug === 'water-sanitation')    targetSlugs.push('water-issue');
+    if (issueSlug === 'water-issue')         targetSlugs.push('water-sanitation');
+    if (issueSlug === 'road-infrastructure') targetSlugs.push('road-problem');
+    if (issueSlug === 'road-problem')        targetSlugs.push('road-infrastructure');
 
     const { data: reports } = await supabase
       .from('unified_explore_feed')
@@ -59,40 +61,43 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
   }
 }
 
-// ── GENERATE METADATA ─────────────────────────────────────────────────────────
+// ── METADATA ──────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const { city, issue } = params;
-  const cityData = DISTRICT_MAP[city];
+  const cityData  = DISTRICT_MAP[city];
   const issueData = CATEGORY_MAP[issue];
 
   if (!cityData || !issueData) {
     return { title: 'Civic Report Page | VizhiTN', robots: { index: false } };
   }
 
-  const title = `${cityData.name} ${issueData.name} Reports Today | VizhiTN`;
-  const description = `Live tracking of ${issueData.descriptionFragment} in ${cityData.name}, Tamil Nadu. View citizen reports, helpline details, and official response channels.`;
+  const intentData   = resolveQueryIntent(city, issue, 0);
+  const primaryKw    = intentData.primaryKeywords?.[0] || issueData.descriptionFragment;
+  const title        = `${cityData.name} ${issueData.name} Reports Today | VizhiTN`;
+  const description  = `Live tracking of ${primaryKw} in ${cityData.name}, Tamil Nadu. View citizen reports, helpline details, and official ${issueData.authority || 'authority'} contact.`;
   const canonicalUrl = `${SITE_URL}/${city}/${issue}/`;
 
   return {
     title,
     description,
     alternates: { canonical: canonicalUrl },
-    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
-    openGraph: { title, description, url: canonicalUrl, type: 'website' },
+    robots:     { index: true, follow: true, googleBot: { index: true, follow: true } },
+    openGraph:  { title, description, url: canonicalUrl, type: 'website' },
+    keywords:   intentData.localKeywords?.slice(0, 5).join(', '),
   };
 }
 
-// ── STATIC GENERATION: Pre-render Tier 1 at build time ───────────────────────
+// ── STATIC PARAMS ─────────────────────────────────────────────────────────────
 export async function generateStaticParams() {
-  const priorityCities = ['chennai', 'coimbatore', 'madurai', 'salem', 'tiruchirappalli'];
-  const priorityIssues = ['power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay'];
-  return priorityCities.flatMap(city => priorityIssues.map(issue => ({ city, issue })));
+  const cities = ['chennai', 'coimbatore', 'madurai', 'salem', 'tiruchirappalli'];
+  const issues = ['power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay'];
+  return cities.flatMap(city => issues.map(issue => ({ city, issue })));
 }
 
-// ── SERVER RENDERED COMPONENT ─────────────────────────────────────────────────
+// ── SERVER COMPONENT ──────────────────────────────────────────────────────────
 export default async function Page({ params }) {
   const { city, issue } = params;
-  const cityData = DISTRICT_MAP[city];
+  const cityData  = DISTRICT_MAP[city];
   const issueData = CATEGORY_MAP[issue];
 
   if (!cityData || !issueData) {
@@ -104,58 +109,141 @@ export default async function Page({ params }) {
     );
   }
 
-  // 1. Fetch reports (single DB call)
+  // ── 1. DB fetch ───────────────────────────────────────────────────────────
   const { reports } = await fetchCityIssueData(city, issue);
 
-  // 2. Evaluate index boost (FIX-01: pass reportCount; no boost if no real data)
-  //    lastIndexedDate is null — no tn_today query. Boost only fires if a real
-  //    seo_index_log table provides this value in future.
+  // ── 2. ISR freshness (indexBoost — unchanged) ─────────────────────────────
   const boost = evaluateIndexBoost(city, issue, null, reports.length);
-
-  // Re-fetch with boosted ordering only if boost is active and reports exist
   let finalReports = reports;
   if (boost.boostActive && boost.feedOrder !== 'created_date' && reports.length > 0) {
     const { reports: reordered } = await fetchCityIssueData(city, issue, boost.feedOrder);
     finalReports = reordered;
   }
 
-  // 3. Real-Time Trend Engine
-  const trendingPairs = await getTrendingPairs();
-  const isTrendingNow = trendingPairs.some(t => t.city === city && t.issue === issue);
+  // ── 3. AUTONOMOUS CORE — single call, 12 systems ──────────────────────────
+  const latestDate = finalReports[0]?.created_date || null;
 
-  // 4. Content Entropy (deterministic, unique per city×issue)
-  const stats = { totalReports: finalReports.length };
-  const contentModules = generateContentEntropy(cityData, issueData, stats, finalReports);
+  const engine = await runAutonomousCoreAsync(
+    city,
+    issue,
+    { reportCount: finalReports.length, latestReportDate: latestDate },
+    // stateData: in production, load from KV store / edge cache
+    { baselineScore: null, previousSmoothedScore: null, lastStableTier: 'mid', recoveryStartDate: null }
+  );
 
-  // 5. Link Velocity (deterministic anchor text, max 8 links)
-  const outboundLinks = getOutboundLinks(city, issue, trendingPairs, {
-    [`${city}:${issue}`]: boost,
-  });
+  // ── Use ONLY stabilized outputs — never raw subsystem values ─────────────
+  // All values below have passed through systemStabilityController (Stage 9).
+  const {
+    finalRankingScore,   // stabilized — may differ from rawFinalScore
+    stableRankingScore,
+    normalizedTier,      // hysteresis-stable + conflict-resolved tier
+    driftStatus,
+    decayFactor,
+    recoveryFactor,
+    authorityBoost,
+    intentStrength,
+    trendScore,
+    crawlPriority,
+    linkWeight,          // frozen during LOCK/HOLD
+    sitemapPriority,
+    action,
+    decisions,           // built from stabilizedTier, not rawTier
+    stability,           // { stabilityAction, systemConsensusLevel, conflictDetected, ... }
+    subsystems,
+    trends,
+    outboundLinks,       // link budget respects linkOptimizerFrozen
+    contentModules,
+  } = engine;
+
+  const { authorityData, driftResult, decayRecovery } = subsystems;
+
+  // Stability metadata (read-only display + data attrs)
+  const stabilityAction    = stability?.stabilityAction    ?? 'PASS';
+  const consensusLevel     = stability?.systemConsensusLevel ?? 1.0;
+  const conflictDetected   = stability?.conflictDetected   ?? false;
+  const downstreamFrozen   = stability?.downstreamFrozen   ?? false;
+
+  // Alignment (from Stage 8.5 in async path)
+  const alignmentResult  = engine.alignmentResult || {};
+  const alignmentScore   = alignmentResult.alignmentScore ?? 1.0;
+  const mismatchDetected = alignmentResult.mismatchDetected ?? false;
+
+  // Self-improving loop: systemMode (advisory display only)
+  const loopOutput = computeWeightAdjustments(
+    { avgAlignmentScore: alignmentScore, avgCTRRatio: 1.0, avgRankingScore: finalRankingScore, globalHealthScore: finalRankingScore },
+    DEFAULT_SUBSYSTEM_WEIGHTS
+  );
+  const systemMode    = loopOutput.systemMode;
+  const isTrendingNow = isPageTrending(trends, city, issue);
+  const isSpike       = trendScore >= 1.0;
+  const isRising      = trendScore >= 0.75 && !isSpike;
 
   const canonicalUrl = `${SITE_URL}/${city}/${issue}/`;
 
   return (
     <>
-      {/* CRIT-01 FIX: breadcrumb uses /[city]/ not /district/[city]/ */}
       <PageSchema
         url={canonicalUrl}
         name={`${cityData.name} ${issueData.name} Reports`}
         description={`Track ${issueData.name.toLowerCase()} in ${cityData.name}, Tamil Nadu.`}
         breadcrumbs={[
-          { name: 'Home', url: SITE_URL },
-          { name: cityData.name, url: `${SITE_URL}/${city}/` },
+          { name: 'Home',         url: SITE_URL },
+          { name: cityData.name,  url: `${SITE_URL}/${city}/` },
           { name: issueData.name, url: canonicalUrl },
         ]}
         dateModified={boost.lastModified}
       />
 
+      {/* Civic authority schema — one clean entity, no spam */}
+      {authorityData?.schemaCivicEntity && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              ...authorityData.schemaCivicEntity,
+            }),
+          }}
+        />
+      )}
+
       <main className="max-w-4xl mx-auto px-4 py-8 space-y-8 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
 
-        {/* CRIT-03 FIX: No volatile timestamp in visible HTML */}
+        {/* ── Header ───────────────────────────────────────────────────── */}
         <div className="border-b pb-6">
-          <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">
-            VizhiTN Civic Alert
-          </span>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">
+              VizhiTN Civic Alert
+            </span>
+
+          {/* Tier + action + system-mode badge */}
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
+                ${normalizedTier === 'elite' ? 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300' :
+                  normalizedTier === 'top'   ? 'bg-green-100  text-green-700  dark:bg-green-950  dark:text-green-300'  :
+                  normalizedTier === 'mid'   ? 'bg-blue-100   text-blue-700   dark:bg-blue-950   dark:text-blue-300'   :
+                                              'bg-slate-100  text-slate-500  dark:bg-slate-800  dark:text-slate-400'}`}
+              >
+                {normalizedTier}
+              </span>
+              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
+                ${action === 'BOOST'    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
+                  action === 'SUPPRESS' ? 'bg-red-100     text-red-700     dark:bg-red-950     dark:text-red-300'     :
+                                          'bg-slate-100   text-slate-500   dark:bg-slate-800   dark:text-slate-400'}`}
+              >
+                {action}
+              </span>
+              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
+                ${systemMode === 'BOOST'     ? 'bg-cyan-100    text-cyan-700    dark:bg-cyan-950    dark:text-cyan-300'    :
+                  systemMode === 'RECOVER'   ? 'bg-orange-100  text-orange-700  dark:bg-orange-950  dark:text-orange-300'  :
+                  systemMode === 'STABILIZE' ? 'bg-teal-100    text-teal-700    dark:bg-teal-950    dark:text-teal-300'    :
+                                              'bg-slate-100   text-slate-500   dark:bg-slate-800   dark:text-slate-400'}`}
+              >
+                {systemMode}
+              </span>
+            </div>
+          </div>
+
           <h1 className="text-3xl font-extrabold tracking-tight mt-1 sm:text-4xl">
             {cityData.name} {issueData.name} Reports Today
           </h1>
@@ -164,19 +252,110 @@ export default async function Page({ params }) {
               ? `${finalReports.length} active report${finalReports.length !== 1 ? 's' : ''} — updated every hour`
               : 'No active reports at this time'}
           </p>
+
+          {/* Machine-readable ranking signals — ALL from stability controller (Stage 9) */}
+          <span
+            data-ranking-score={finalRankingScore}
+            data-stable-score={stableRankingScore}
+            data-tier={normalizedTier}
+            data-action={action}
+            data-drift={driftStatus}
+            data-decay={decayFactor}
+            data-recovery={recoveryFactor}
+            data-crawl-priority={crawlPriority}
+            data-link-weight={linkWeight}
+            data-sitemap-priority={sitemapPriority}
+            data-system-mode={systemMode}
+            data-stability-action={stabilityAction}
+            data-consensus={consensusLevel}
+            data-conflict={conflictDetected ? '1' : '0'}
+            data-downstream-frozen={downstreamFrozen ? '1' : '0'}
+            data-alignment-score={alignmentScore}
+            data-mismatch={mismatchDetected ? '1' : '0'}
+            className="hidden"
+            aria-hidden="true"
+          />
         </div>
 
-        {/* Trending Alert */}
-        {isTrendingNow && (
+        {/* ── Trending Alert ────────────────────────────────────────────── */}
+        {isTrendingNow && decisions.trendingBlock && (
           <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 p-4 rounded-xl flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
             <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-              Trending Alert: High report velocity detected in {cityData.name} for this category.
+              {isSpike
+                ? `⚡ Spike Alert: Unusually high ${issueData.name} reports in ${cityData.name} this week.`
+                : `Trending: Rising ${issueData.name} activity detected in ${cityData.name}.`}
             </span>
           </div>
         )}
 
-        {/* Content Entropy blocks */}
+        {/* ── Stability Frozen Notice (internal — admin visibility) ─────── */}
+        {downstreamFrozen && (
+          <div className="bg-slate-100 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700 p-3 rounded-xl flex items-center gap-3">
+            <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-200">
+              {stabilityAction}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Stability lock active — ranking adjustments paused. Consensus: {Math.round(consensusLevel * 100)}%
+            </span>
+          </div>
+        )}
+
+        {/* ── Authority Contact Block (E-E-A-T) ────────────────────────── */}
+        {authorityData?.contactBlock && action !== 'SUPPRESS' && (
+          <section className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40 p-5 rounded-2xl space-y-3">
+            <h2 className="text-sm font-bold text-blue-800 dark:text-blue-300 uppercase tracking-widest">
+              Official Contact
+            </h2>
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              {authorityData.contactBlock.title}
+            </p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              {authorityData.contactBlock.content}
+            </p>
+            <div className="flex flex-wrap gap-3 mt-2">
+              {authorityData.contactBlock.helpline && (
+                <a
+                  href={`tel:${authorityData.contactBlock.helpline}`}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  📞 {authorityData.contactBlock.helpline}
+                </a>
+              )}
+              {authorityData.contactBlock.portal && (
+                <a
+                  href={authorityData.contactBlock.portal}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-400 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-lg hover:bg-blue-100 dark:hover:bg-blue-950 transition-colors"
+                >
+                  File Complaint Online ↗
+                </a>
+              )}
+            </div>
+            {decisions.authorityExpand && authorityData.contactBlock.escalation?.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mb-1">Escalation Path</p>
+                <ol className="text-xs text-slate-500 dark:text-slate-400 space-y-0.5 list-decimal list-inside">
+                  {authorityData.contactBlock.escalation.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ── Decay / Recovery Notice (only on recovering pages) ─────── */}
+        {decayRecovery?.healthStatus === 'recovering' && (
+          <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/40 p-3 rounded-xl">
+            <p className="text-xs text-green-700 dark:text-green-400 font-medium">
+              📈 This page is recovering — increased report activity detected. Ranking signals improving.
+            </p>
+          </div>
+        )}
+
+        {/* ── Content Modules (autonomous-core assembled) ───────────────── */}
         <section className="space-y-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
           <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
             Local Operations &amp; Overview
@@ -195,7 +374,7 @@ export default async function Page({ params }) {
           </div>
         </section>
 
-        {/* Reports Feed */}
+        {/* ── Reports Feed ──────────────────────────────────────────────── */}
         <section className="space-y-4">
           <h2 className="text-xl font-bold">
             Recent Reports ({finalReports.length})
@@ -230,7 +409,19 @@ export default async function Page({ params }) {
           )}
         </section>
 
-        {/* Internal Linking (max 8, deterministic anchors) */}
+        {/* ── ISR Activity Boost Block ──────────────────────────────────── */}
+        {boost.recentActivityBlock && (
+          <section className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/40 p-4 rounded-xl">
+            <p className="text-xs font-semibold text-green-800 dark:text-green-300">
+              {boost.recentActivityBlock.title}
+            </p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              {boost.recentActivityBlock.content}
+            </p>
+          </section>
+        )}
+
+        {/* ── Adaptive Internal Links (autonomous-core ranked) ──────────── */}
         {outboundLinks.length > 0 && (
           <section className="border-t pt-8 space-y-4">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
