@@ -152,7 +152,7 @@ export const getActiveCivicPosts = async (limitOrOptions = 20, sort = "-created_
 
 export const getDistrictPosts = async (districtSlug, limit = 30) => {
   const { data, error } = await supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
     .eq("district_slug", districtSlug)
     .eq("status", "active")
@@ -164,11 +164,10 @@ export const getDistrictPosts = async (districtSlug, limit = 30) => {
 
 export const getDistrictCivicPosts = async (districtSlug, limit = 50) => {
   const { data, error } = await supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
     .eq("district_slug", districtSlug)
     .eq("status", "active")
-    .eq("post_type", "complaint")
     .order("created_date", { ascending: false })
     .limit(limit * 2);
   if (error) throw error;

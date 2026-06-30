@@ -30,8 +30,8 @@ async function fetchTopReports(districtSlug) {
   try {
     const supabase = getSupabase();
     const { data } = await supabase
-      .from('post')
-      .select('id,title,description,category_slug,area_slug,created_date,upvotes')
+      .from('unified_explore_feed')
+      .select('id,title_en,content_en,category_slug,area_slug,created_date,upvotes')
       .eq('district_slug', districtSlug)
       .eq('status', 'active')
       .order('upvotes', { ascending: false })
@@ -146,10 +146,10 @@ export default async function Page({ params }) {
                 className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm"
               >
                 <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
-                  {report.title}
+                  {report.title_en}
                 </h3>
-                {report.description && (
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">{report.description}</p>
+                {report.content_en && (
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">{report.content_en}</p>
                 )}
                 <div className="flex gap-4 mt-2 text-[10px] text-slate-400">
                   {report.category_slug && <span>{report.category_slug.replace(/-/g, ' ')}</span>}

@@ -53,7 +53,7 @@ export const getPublicDashboard = async () => {
 
 export const getDistrictStats = async (slug) => {
   const { data: posts, error } = await supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
     .eq("district_slug", slug)
     .eq("status", "active")
@@ -90,10 +90,19 @@ export const getDistrictStats = async (slug) => {
 };
 
 export const getCategoryStats = async (slug) => {
+  // Map category synonyms for accurate aggregate calculations
+  const targetSlugs = [slug];
+  if (slug === "electricity") targetSlugs.push("power-cut");
+  if (slug === "power-cut") targetSlugs.push("electricity");
+  if (slug === "water-sanitation") targetSlugs.push("water-issue");
+  if (slug === "water-issue") targetSlugs.push("water-sanitation");
+  if (slug === "road-infrastructure") targetSlugs.push("road-problem");
+  if (slug === "road-problem") targetSlugs.push("road-infrastructure");
+
   const { data: posts, error } = await supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
-    .eq("category_slug", slug)
+    .in("category_slug", targetSlugs)
     .eq("status", "active")
     .order("created_date", { ascending: false })
     .limit(200);
