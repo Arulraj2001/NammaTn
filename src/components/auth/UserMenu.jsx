@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { LogIn, LogOut, LayoutDashboard, ChevronDown, Shield } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 
 export default function UserMenu() {

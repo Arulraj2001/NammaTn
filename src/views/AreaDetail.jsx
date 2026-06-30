@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import Image from "next/image";

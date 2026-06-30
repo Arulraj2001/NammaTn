@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { AlertTriangle, Star, MessageSquare, ThumbsUp, TrendingUp } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 

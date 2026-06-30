@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Zap, Plus, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { base44 } from "@/api/base44Client";
 import { getActiveSituations, createSituation } from "@/services/situations";

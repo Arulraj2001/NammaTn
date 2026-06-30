@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { HelpCircle, Plus, X, TrendingUp, Clock, CheckCircle } from "lucide-react";
 
 import { useLanguage } from "@/context/LanguageContext";

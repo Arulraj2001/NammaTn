@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Zap, HeartHandshake, ShieldAlert, ArrowRight } from "lucide-react";
 import { getActiveSituations } from "@/services/situations";
 import { getActiveEmergencies } from "@/services/emergencyPosts";

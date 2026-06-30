@@ -1,6 +1,6 @@
 import React from "react";
 import { Droplets, Users, GraduationCap, Heart, Briefcase, UtensilsCrossed, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 
 // Real active TN government schemes 2024-2025 with verified data
 const SCHEMES = [

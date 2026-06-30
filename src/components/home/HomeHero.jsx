@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown } from "lucide-react";

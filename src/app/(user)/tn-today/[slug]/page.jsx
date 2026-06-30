@@ -1,6 +1,10 @@
 // Server Component — fetches article data for metadata/SEO at request time.
 // The TnTodayArticle client component below handles all interactivity (untouched).
 import React from 'react';
+
+// ISR: regenerate every hour — article edits (corrections, updates) surface
+// to Google without a full redeploy. Also updates lastModified in sitemap.
+export const revalidate = 3600;
 import { createClient } from '@supabase/supabase-js';
 import TnTodayArticleClient from './TnTodayArticleClient';
 

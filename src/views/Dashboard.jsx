@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { motion } from "framer-motion";
 import { BarChart2, TrendingUp, MapPin, MessageSquare, ThumbsUp, AlertTriangle, Star, Flame, ArrowRight, Users, FileText, CheckCircle, Clock, Shield } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";

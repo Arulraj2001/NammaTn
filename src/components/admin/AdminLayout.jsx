@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "@/lib/router-compat";
 import AdminSidebar from "./AdminSidebar";
 import AdminGuard from "./AdminGuard";
 

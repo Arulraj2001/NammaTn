@@ -1,6 +1,13 @@
 // Server Component — fetches post data for metadata/SEO at request time.
 // PostDetail client component below handles all interactivity (completely untouched).
+//
+// SEO: Individual posts are noindex. They are thin UGC (1–5 sentences).
+// Crawl budget is preserved for district/category hub pages instead.
+// Users can still reach posts via direct links — noindex ≠ inaccessible.
 import React from 'react';
+
+// ISR: regenerate every hour (keeps post data fresh for direct link visits)
+export const revalidate = 3600;
 import { createClient } from '@supabase/supabase-js';
 import PostDetailClient from './PostDetailClient';
 
@@ -61,6 +68,12 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: { canonical },
+    // noindex: individual posts are thin UGC. Hub pages (district, category)
+    // are indexed and surface the same content in aggregated, keyword-rich form.
+    robots: {
+      index: false,
+      follow: true, // still follow links on the post page
+    },
     openGraph: {
       type: 'article',
       title,
@@ -122,7 +135,7 @@ export default async function Page({ params }) {
           { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
           { '@type': 'ListItem', position: 2, name: 'Explore', item: `${SITE_URL}/explore` },
           ...(post.district_slug
-            ? [{ '@type': 'ListItem', position: 3, name: post.district_slug.replace(/-/g, ' '), item: `${SITE_URL}/district/${post.district_slug}` }]
+            ? [{ '@type': 'ListItem', position: 3, name: post.district_slug.replace(/-/g, ' '), item: `${SITE_URL}/${post.district_slug}/` }]
             : []),
           { '@type': 'ListItem', position: post.district_slug ? 4 : 3, name: post.title || 'Report', item: `${SITE_URL}/post/${post.id}` },
         ],

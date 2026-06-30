@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "@/lib/router-compat";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSessionId } from "@/lib/security";
 import { supabase } from "@/api/supabaseClient";

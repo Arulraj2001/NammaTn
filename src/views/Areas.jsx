@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { MapPin, Search } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getAreas } from "@/services/areas";

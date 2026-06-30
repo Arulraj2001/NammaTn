@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Globe, Zap, ShieldAlert, FileText, MessageSquare, CreditCard, Heart, BookOpen, ArrowRight, ExternalLink, Copy, Check } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 
 // Real TN government portals with verified URLs
 const PORTALS = [

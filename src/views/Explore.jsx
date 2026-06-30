@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link } from "@/lib/router-compat";
 import { Search, SlidersHorizontal, X, FileText, RefreshCw, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";

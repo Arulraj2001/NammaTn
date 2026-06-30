@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";

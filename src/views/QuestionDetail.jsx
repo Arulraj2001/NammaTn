@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, HelpCircle, ThumbsUp, CheckCircle, Send, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";

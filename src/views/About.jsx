@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { MapPin, Users, Megaphone, ShieldCheck, Trophy, Building2, ArrowRight, FileText, CheckCircle, ShieldAlert, BookOpen, Compass, Eye, ShieldCheck as VerifiedIcon } from 'lucide-react';

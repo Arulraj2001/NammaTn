@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { Plus, Zap, Home as HomeIcon, Briefcase, ShieldAlert, Building2 } from "lucide-react";
 

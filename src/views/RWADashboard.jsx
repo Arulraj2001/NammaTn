@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate } from "@/lib/router-compat";
 import { getSettingsMap } from "@/services/admin/settings";
 import {
   Building2, CheckCircle, FileText, Shield, Clock, Users,

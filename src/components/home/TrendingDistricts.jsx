@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { MapPin, TrendingUp } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { DISTRICTS } from "@/lib/districts";

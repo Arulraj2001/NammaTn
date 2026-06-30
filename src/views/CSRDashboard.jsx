@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import SponsorRegisterModal from "@/components/sponsors/SponsorRegisterModal";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "@/lib/router-compat";
 import { getSettingsMap } from "@/services/admin/settings";
 
 const CAMPAIGN_TYPES = [

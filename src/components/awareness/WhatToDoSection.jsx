@@ -1,6 +1,6 @@
 import React from "react";
 import { Zap, Droplets, CreditCard, AlertTriangle, Ambulance, FileText, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 
 // Real Tamil Nadu civic problem guides
 const GUIDES = [

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { supabase } from "@/api/supabaseClient";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import {
   User, FileText, CheckCircle, MessageSquare, Flag, Briefcase, Building2,
   Bell, Settings, Plus, AlertTriangle, ChevronRight, LogOut,

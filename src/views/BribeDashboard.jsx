@@ -5,7 +5,7 @@ import {
   AlertTriangle, ShieldCheck, MapPin, Building, Briefcase, Calendar, 
   Volume2, Play, Pause, Loader2, FileText, CheckCircle, Flame, ArrowRight 
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { supabase } from "@/api/supabaseClient";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";

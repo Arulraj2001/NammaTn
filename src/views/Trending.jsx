@@ -6,7 +6,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import TrendingTabs from "@/components/discovery/TrendingTabs";
 import DistrictRanking from "@/components/discovery/DistrictRanking";
 import AdSlot from "@/components/ads/AdSlot";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { getTrendingCategories } from "@/services/trending";
 import { CATEGORIES } from "@/lib/categories";

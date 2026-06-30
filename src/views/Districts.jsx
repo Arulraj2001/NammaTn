@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Search, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";

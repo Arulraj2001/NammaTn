@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import DOMPurify from "dompurify";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { getTnTodayBySlug, getPublishedTnToday, incrementTnTodayView } from "@/services/tnToday";
 import { format } from "date-fns";

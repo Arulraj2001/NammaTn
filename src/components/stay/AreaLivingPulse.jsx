@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Activity, Briefcase, MessageSquare, Zap, Droplets, ArrowRight } from "lucide-react";
 
 function PulseItem({ icon: PulseIcon, color, label, count, empty }) {

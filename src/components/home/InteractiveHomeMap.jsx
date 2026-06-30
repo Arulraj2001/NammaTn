@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Link } from 'react-router-dom';
+import { Link } from "@/lib/router-compat";
 
 // Load Leaflet CSS dynamically (non-render-blocking)
 if (typeof document !== 'undefined' && !document.getElementById('leaflet-css')) {

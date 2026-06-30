@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "@/lib/router-compat";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import MobileNav from "./MobileNav";

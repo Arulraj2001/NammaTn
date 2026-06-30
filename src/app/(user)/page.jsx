@@ -1,9 +1,16 @@
 import React, { Suspense } from 'react';
 import Home from '@/views/Home';
+import { HomeCityLinks, AllCategoryLinks } from '@/components/seo/InternalLinks';
 
+// Title deliberately excludes "| VizhiTN" — the root layout template adds it.
+// Result: "Know what's happening in your area right now | VizhiTN"
 export const metadata = {
   title: "Know what's happening in your area right now",
   description: "Report civic issues, see live alerts, find stays & jobs in Tamil Nadu. All in one place, verified by citizens.",
+  alternates: {
+    // Self-canonical on homepage prevents www vs non-www duplication
+    canonical: 'https://www.vizhitn.in/',
+  },
 };
 
 function HomeSkeleton() {
@@ -41,8 +48,18 @@ function HomeSkeleton() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<HomeSkeleton />}>
-      <Home />
-    </Suspense>
+    <>
+      <Suspense fallback={<HomeSkeleton />}>
+        <Home />
+      </Suspense>
+
+      {/* Server-rendered SEO internal links — below the fold, not disruptive to UI.
+          These pass homepage link equity down to district and category hub pages.
+          Googlebot reads these even if JS never runs. */}
+      <div className="sr-only" aria-hidden="true">
+        <HomeCityLinks />
+        <AllCategoryLinks />
+      </div>
+    </>
   );
 }

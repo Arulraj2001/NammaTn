@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { MapPin, Tag, ThumbsUp, MessageSquare, Clock, AlertTriangle, Star, Megaphone, Shield, MessageCircle, Users, FileText, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ChevronDown, HelpCircle, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 
 // Real, practical FAQs for Tamil Nadu citizens
 const FAQS = [

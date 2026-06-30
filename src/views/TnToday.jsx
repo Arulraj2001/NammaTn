@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { getPublishedTnToday, getFeaturedTnToday } from "@/services/tnToday";
 import { format } from "date-fns";

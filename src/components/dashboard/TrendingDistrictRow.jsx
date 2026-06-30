@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { DISTRICTS } from "@/lib/districts";
 
 export default function TrendingDistrictRow({ district, rank, max, lang }) {

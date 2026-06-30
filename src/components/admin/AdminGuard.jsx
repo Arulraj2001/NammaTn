@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "@/lib/router-compat";
 import { useAuth } from "@/lib/AuthContext";
 
 export default function AdminGuard({ children }) {

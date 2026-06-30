@@ -4,7 +4,7 @@ import {
   CreditCard, Heart, BookOpen, ExternalLink, Copy,
   Check, ArrowLeft, Search, X
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
 

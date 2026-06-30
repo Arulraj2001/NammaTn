@@ -1,6 +1,6 @@
 import React from "react";
 import { Phone, Shield, AlertTriangle, Users, Heart, BookOpen, Zap, Droplets, ExternalLink, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
 

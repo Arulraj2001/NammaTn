@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Shield, Mail, ExternalLink, ChevronRight } from 'lucide-react';

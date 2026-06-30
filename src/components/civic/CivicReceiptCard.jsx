@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { MapPin, Clock, Users } from "lucide-react";
 import CivicStatusBadge from "./CivicStatusBadge";
 import { getUrgency, getDaysOpen } from "@/lib/civicReceipt";

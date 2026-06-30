@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, AlertCircle, MapPin, Clock, MessageSquare, ThumbsUp } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";

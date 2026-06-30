@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Briefcase, Plus, X, Loader2, AlertTriangle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";

@@ -1,41 +1,23 @@
 User-agent: *
 Allow: /
 
-# Block admin and private routes
+# ── Private / auth routes ─────────────────────────────────────────────────────
 Disallow: /admin/
-Disallow: /admin/*
 Disallow: /api/
-Disallow: /dashboard
-Disallow: /my-dashboard
-Disallow: /bookmarks
+Disallow: /dashboard/
+Disallow: /me/
+Disallow: /bookmarks/
+
+# ── Auth pages (no indexable content) ────────────────────────────────────────
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
 Disallow: /reset-password
 
-# Interactive pages with no crawlable content
-Disallow: /search
+# ── Search (handled via noindex meta tag, not robots.txt disallow)
+# /search is NOT disallowed here — noindex in page metadata handles it.
+# Disallowing in robots.txt blocks crawling entirely, preventing
+# Google from seeing the noindex header and following internal links.
 
-# Allow important public routes explicitly
-Allow: /explore
-Allow: /community
-Allow: /districts
-Allow: /areas
-Allow: /awareness
-Allow: /trending
-Allow: /scams
-Allow: /situations
-Allow: /community/wins
-Allow: /leaderboard
-Allow: /offices
-Allow: /listings
-Allow: /jobs
-Allow: /bribes
-Allow: /how-to-use
-Allow: /rwa
-Allow: /csr
-Allow: /contact
-Allow: /help
-
-# Sitemaps
+# ── Dynamic sitemap (served by Next.js App Router at /sitemap.xml) ───────────
 Sitemap: https://www.vizhitn.in/sitemap.xml

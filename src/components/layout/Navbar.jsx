@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "@/lib/router-compat";
 import {
   Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, Users, MessageCircle,
   HelpCircle, Heart, Briefcase, Home, Building2, AlertTriangle,

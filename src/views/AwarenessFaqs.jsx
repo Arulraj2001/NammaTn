@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { HelpCircle, Search, ChevronDown, ArrowLeft, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
 

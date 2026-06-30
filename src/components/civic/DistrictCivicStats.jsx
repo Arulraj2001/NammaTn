@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { FileText } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import CivicReceiptCard from "./CivicReceiptCard";

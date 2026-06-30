@@ -9,7 +9,7 @@ import { getAllComments } from "@/services/admin/comments";
 import { getModerationLogs } from "@/services/admin/moderation";
 import { getQueueStats } from "@/services/ai/moderationQueue";
 import { formatDistanceToNow } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 
 export default function AdminDashboard() {
   const { data: stats, isLoading: statsLoading } = useQuery({

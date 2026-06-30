@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { useAuth } from "@/lib/AuthContext";
 import { supabase } from "@/api/supabaseClient";
 import { Lock, Eye, EyeOff, Mail } from "lucide-react";

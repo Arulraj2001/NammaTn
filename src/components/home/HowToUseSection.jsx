@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { Map, FileText, AlertTriangle, Users, ArrowRight } from "lucide-react";
 

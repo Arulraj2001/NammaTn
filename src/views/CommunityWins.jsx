@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import {
   Trophy, ArrowLeft, Share2, CheckCircle2, ChevronLeft, ChevronRight,
