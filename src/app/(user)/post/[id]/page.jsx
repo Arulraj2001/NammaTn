@@ -24,14 +24,95 @@ function getSupabase() {
 async function fetchPost(id) {
   try {
     const supabase = getSupabase();
-    const { data } = await supabase
+
+    // 1. Try post table
+    const { data: post } = await supabase
       .from('post')
-      .select('id,title,description,area_slug,district_slug,category_slug,post_type,created_date,featured_image,status,civic_receipt_id,upvotes,downvotes')
+      .select('id,title:title_en,description:content_en,area_slug,district_slug,category_slug,post_type,created_date,status,civic_receipt_id,upvotes,downvotes')
       .eq('id', id)
       .maybeSingle();
-    // Only index publicly visible, active posts
-    if (!data || data.status !== 'active') return null;
-    return data;
+
+    if (post) {
+      if (post.status !== 'active') return null;
+      return post;
+    }
+
+    // 2. Try situation_update table
+    const { data: sit } = await supabase
+      .from('situation_update')
+      .select('id,title,details,area_slug,district_slug,situation_type,created_date,status,confirm_count')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (sit) {
+      if (sit.status !== 'active') return null;
+      return {
+        id: sit.id,
+        title: sit.title,
+        description: sit.details,
+        area_slug: sit.area_slug,
+        district_slug: sit.district_slug,
+        category_slug: sit.situation_type === 'eb_shutdown' ? 'power-cut' : (sit.situation_type === 'water_shortage' ? 'water-issue' : 'road-problem'),
+        post_type: 'alert',
+        created_date: sit.created_date,
+        status: sit.status,
+        civic_receipt_id: 'SIT-' + sit.id,
+        upvotes: sit.confirm_count,
+        downvotes: 0
+      };
+    }
+
+    // 3. Try scam_alert table
+    const { data: scam } = await supabase
+      .from('scam_alert')
+      .select('id,title,description,area_slug,district_slug,created_date,status,confirm_count')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (scam) {
+      if (scam.status !== 'active') return null;
+      return {
+        id: scam.id,
+        title: scam.title,
+        description: scam.description,
+        area_slug: scam.area_slug,
+        district_slug: scam.district_slug,
+        category_slug: 'scam',
+        post_type: 'alert',
+        created_date: scam.created_date,
+        status: scam.status,
+        civic_receipt_id: 'SCAM-' + scam.id,
+        upvotes: scam.confirm_count,
+        downvotes: 0
+      };
+    }
+
+    // 4. Try emergency_post table
+    const { data: emerg } = await supabase
+      .from('emergency_post')
+      .select('id,title,description,area_slug,district_slug,created_date,status,confirm_count')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (emerg) {
+      if (emerg.status !== 'active') return null;
+      return {
+        id: emerg.id,
+        title: emerg.title,
+        description: emerg.description,
+        area_slug: emerg.area_slug,
+        district_slug: emerg.district_slug,
+        category_slug: 'scam',
+        post_type: 'alert',
+        created_date: emerg.created_date,
+        status: emerg.status,
+        civic_receipt_id: 'EMERG-' + emerg.id,
+        upvotes: emerg.confirm_count,
+        downvotes: 0
+      };
+    }
+
+    return null;
   } catch {
     return null;
   }

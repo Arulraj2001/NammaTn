@@ -93,14 +93,82 @@ export const getPosts = async (limit = 20, sort = "-created_date") => {
 
 export const getPostById = async (id) => {
   if (!id) return null;
-  // Detail views must query the raw post table to ensure it gets all post-specific columns correctly
-  const { data, error } = await supabase
+
+  // 1. Try post table
+  const { data: post, error: e1 } = await supabase
     .from("post")
     .select("*")
     .eq("id", id)
     .limit(1);
-  if (error) throw error;
-  return data[0] || null;
+
+  if (!e1 && post && post.length > 0) {
+    return post[0];
+  }
+
+  // 2. Try situation_update table
+  const { data: sit, error: e2 } = await supabase
+    .from("situation_update")
+    .select("*")
+    .eq("id", id)
+    .limit(1);
+
+  if (!e2 && sit && sit.length > 0) {
+    const s = sit[0];
+    return {
+      ...s,
+      title_en: s.title,
+      content_en: s.details,
+      category_slug: s.situation_type === 'eb_shutdown' ? 'power-cut' : (s.situation_type === 'water_shortage' ? 'water-issue' : 'road-problem'),
+      post_type: 'alert',
+      civic_receipt_id: 'SIT-' + s.id,
+      upvotes: s.confirm_count || 0,
+      downvotes: 0
+    };
+  }
+
+  // 3. Try scam_alert table
+  const { data: scam, error: e3 } = await supabase
+    .from("scam_alert")
+    .select("*")
+    .eq("id", id)
+    .limit(1);
+
+  if (!e3 && scam && scam.length > 0) {
+    const sc = scam[0];
+    return {
+      ...sc,
+      title_en: sc.title,
+      content_en: sc.description,
+      category_slug: 'scam',
+      post_type: 'alert',
+      civic_receipt_id: 'SCAM-' + sc.id,
+      upvotes: sc.confirm_count || 0,
+      downvotes: 0
+    };
+  }
+
+  // 4. Try emergency_post table
+  const { data: emerg, error: e4 } = await supabase
+    .from("emergency_post")
+    .select("*")
+    .eq("id", id)
+    .limit(1);
+
+  if (!e4 && emerg && emerg.length > 0) {
+    const em = emerg[0];
+    return {
+      ...em,
+      title_en: em.title,
+      content_en: em.description,
+      category_slug: 'scam',
+      post_type: 'alert',
+      civic_receipt_id: 'EMERG-' + em.id,
+      upvotes: em.confirm_count || 0,
+      downvotes: 0
+    };
+  }
+
+  return null;
 };
 
 export const getActivePosts = async (limitOrOptions = 20, sort = "-created_date", cursor = null) => {
