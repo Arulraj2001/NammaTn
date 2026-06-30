@@ -189,10 +189,19 @@ export const getAreaCivicPosts = async (areaSlug, limit = 50) => {
 };
 
 export const getCategoryPosts = async (categorySlug, limit = 20) => {
+  // Map category slug synonyms to fetch unified posts across table boundaries
+  const targetSlugs = [categorySlug];
+  if (categorySlug === "electricity") targetSlugs.push("power-cut");
+  if (categorySlug === "power-cut") targetSlugs.push("electricity");
+  if (categorySlug === "water-sanitation") targetSlugs.push("water-issue");
+  if (categorySlug === "water-issue") targetSlugs.push("water-sanitation");
+  if (categorySlug === "road-infrastructure") targetSlugs.push("road-problem");
+  if (categorySlug === "road-problem") targetSlugs.push("road-infrastructure");
+
   const { data, error } = await supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
-    .eq("category_slug", categorySlug)
+    .in("category_slug", targetSlugs)
     .eq("status", "active")
     .order("created_date", { ascending: false })
     .limit(limit * 2);
