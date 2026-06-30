@@ -24,7 +24,10 @@
 
 import { rawTierFromScore } from '@/lib/seo/tierStabilityNormalizer';
 import { DRIFT_STATUS }     from '@/lib/seo/serpDriftController';
-import { applyRealWorldCorrection } from '@/lib/seo/realWorldFeedbackNormalizer';
+import { applyRealWorldCorrection }     from '@/lib/seo/realWorldFeedbackNormalizer';
+import { computeConfidenceWeight, applyConfidenceToScore, confidenceFromRealWorldFeedback } from '@/lib/seo/confidenceWeighting';
+import { computeDampedScore, shouldApplyDampedOverride }         from '@/lib/seo/serpDampedOverride';
+import { validateAlignment, applyAlignmentGateToWeights }        from '@/lib/seo/alignmentGate';
 
 // ── Conflict severity levels ──────────────────────────────────────────────────
 export const CONFLICT_SEVERITY = {
@@ -391,49 +394,111 @@ export function resolveFinalDecision(conflictReport = {}, normResult = {}, conte
  * @property {boolean} linkOptimizerFrozen     – true when LOCK or HOLD
  */
 export function stabilizeDecision(inputs = {}, state = {}) {
-  // Map driftStatus → numeric drift score for signal normalization
+  // ── Map driftStatus → numeric drift score ─────────────────────────────────
   const DRIFT_SCORE_MAP = {
-    [DRIFT_STATUS.SURGING]:    1.0,
-    [DRIFT_STATUS.RISING]:     0.75,
-    [DRIFT_STATUS.STABLE]:     0.50,
-    [DRIFT_STATUS.SLIPPING]:   0.30,
-    [DRIFT_STATUS.FALLING]:    0.10,
-    [DRIFT_STATUS.NO_BASELINE]:0.50,
+    [DRIFT_STATUS.SURGING]:     1.0,
+    [DRIFT_STATUS.RISING]:      0.75,
+    [DRIFT_STATUS.STABLE]:      0.50,
+    [DRIFT_STATUS.SLIPPING]:    0.30,
+    [DRIFT_STATUS.FALLING]:     0.10,
+    [DRIFT_STATUS.NO_BASELINE]: 0.50,
   };
 
-  const driftScore = DRIFT_SCORE_MAP[inputs.driftStatus] ?? 0.50;
-
+  const driftScore   = DRIFT_SCORE_MAP[inputs.driftStatus] ?? 0.50;
   const signalBundle = { ...inputs, driftScore };
+  const rwf          = inputs.realWorldFeedback;
 
-  // Module 1: detect conflicts
+  // ════════════════════════════════════════════════════════════════════════════
+  // 6-STEP CONTROL PIPELINE (enforced order)
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // ── STEP 1: Detect conflicts ────────────────────────────────────────────────
   const conflictReport = detectSystemConflicts(signalBundle);
 
-  // Module 2: normalize signals
+  // ── STEP 2: Normalize signals ──────────────────────────────────────────────
   const normResult = normalizeSignals(signalBundle);
 
-  // Module 3: resolve final decision
+  // ── STEP 3: Apply alignment gate ───────────────────────────────────────────
+  const gateResult = validateAlignment({
+    alignmentGap:    rwf?.alignmentGap    ?? 0,
+    hasRealData:     rwf?.hasRealData     ?? false,
+    stabilityAction: conflictReport.worstSeverity === 'CRITICAL' ? 'LOCK' : 'PASS',
+    trustFactor:     rwf?.trustFactor     ?? 0,
+  });
+
+  // ── STEP 4: Apply confidence weighting ─────────────────────────────────
+  const confidenceResult = rwf
+    ? confidenceFromRealWorldFeedback(rwf)
+    : computeConfidenceWeight({});  // offline defaults
+
+  // Apply confidence to the core score before resolution
+  const confidenceAdjustedCoreScore = applyConfidenceToScore(
+    signalBundle.coreScore ?? 0,
+    confidenceResult
+  );
+  // Rebuild signalBundle with confidence-adjusted score
+  const adjustedBundle = {
+    ...signalBundle,
+    coreScore:     confidenceAdjustedCoreScore,
+    confidenceState: confidenceResult.confidenceState,
+  };
+
+  // Re-normalize with adjusted score
+  const normResultFinal = normalizeSignals(adjustedBundle);
+
+  // ── STEP 5: Apply damped SERP override ────────────────────────────────
+  let dampedResult = null;
+  let preResolutionScore = confidenceAdjustedCoreScore;
+
+  if (rwf && shouldApplyDampedOverride(rwf)) {
+    dampedResult = computeDampedScore(
+      confidenceAdjustedCoreScore,
+      rwf.realWorldScore,
+      rwf.trustFactor,
+      state.lastStableScore ?? null
+    );
+    preResolutionScore = dampedResult.dampedScore;
+  }
+
+  // Inject pre-resolution score back into normalized signals for resolution step
+  const normResultWithDamp = {
+    ...normResultFinal,
+    normalizedSignals: {
+      ...normResultFinal.normalizedSignals,
+      coreScore: parseFloat(Math.min(Math.max(preResolutionScore, 0), 1.0).toFixed(4)),
+    },
+    signalVector: parseFloat((
+      normResultFinal.signalVector * 0.70 + preResolutionScore * 0.30
+    ).toFixed(4)),
+  };
+
+  // ── STEP 6: Resolve final decision (with gate-enforced action constraints) ─
+  // If alignment gate locked, escalate minimum action from PASS to REBALANCE
+  const gateConstrainedMode = gateResult.alignmentLocked
+    ? 'CONTROLLED'
+    : (inputs.systemMode ?? 'STABILIZE');
+
   const resolution = resolveFinalDecision(
     conflictReport,
-    normResult,
+    normResultWithDamp,
     {
       lastStableScore: state.lastStableScore ?? null,
       lastStableTier:  state.lastStableTier  ?? 'mid',
-      systemMode:      inputs.systemMode      ?? 'STABILIZE',
+      systemMode:      gateConstrainedMode,
     }
   );
 
-  // ════════════════════════════════════════════════════════════════════════════
-  // REAL-WORLD AUTHORITY OVERRIDE
-  // If realWorldFeedback is present with sufficient trust, it overrides the
-  // internal resolution. Real SERP signals are ground truth.
-  // AUTHORITY HIERARCHY:
-  //   1. realWorldFeedback (SERP ground truth)
-  //   2. stability controller resolution
-  //   3. governor / autonomous core
-  // ════════════════════════════════════════════════════════════════════════════
+  // Enforce gate's permitted action (cannot use BOOST or PASS when locked)
+  let finalAction = resolution.finalAction;
+  if (gateResult.alignmentLocked) {
+    if (finalAction === STABILITY_ACTION.PASS || finalAction === STABILITY_ACTION.SOFT_ADJUST) {
+      finalAction = STABILITY_ACTION.REBALANCE;
+    }
+  }
+
+  // ── Real-world authority override (final gate) ─────────────────────────
   let resolvedScore = resolution.finalRankingScore;
   let realWorldOverrideApplied = false;
-  const rwf = inputs.realWorldFeedback;
 
   if (rwf && rwf.hasRealData && rwf.trustFactor >= 0.70) {
     const rwAdjusted = applyRealWorldCorrection(resolvedScore, rwf);
@@ -443,33 +508,46 @@ export function stabilizeDecision(inputs = {}, state = {}) {
     }
   }
 
-  // Derive control gates
-  const action               = resolution.finalAction;
-  const downstreamFrozen     = action === STABILITY_ACTION.LOCK || action === STABILITY_ACTION.HOLD;
-  const serpFeedbackSuppressed = action === STABILITY_ACTION.LOCK;
-  const linkOptimizerFrozen  = action === STABILITY_ACTION.LOCK || action === STABILITY_ACTION.HOLD;
+  // ── Derive control gates ──────────────────────────────────────────────
+  const downstreamFrozen       = finalAction === STABILITY_ACTION.LOCK || finalAction === STABILITY_ACTION.HOLD;
+  const serpFeedbackSuppressed = finalAction === STABILITY_ACTION.LOCK;
+  // linkOptimizer boosts suppressed when gate is CONTROLLED or LOCK/HOLD
+  const linkOptimizerFrozen    = finalAction === STABILITY_ACTION.LOCK ||
+                                  finalAction === STABILITY_ACTION.HOLD ||
+                                  gateResult.weightAdjustments?.linkOptimizerBoostSuppressed === true;
 
   return {
     stableFinalScore:          parseFloat(Math.min(Math.max(resolvedScore, 0), 1.0).toFixed(4)),
     stabilizedTier:            rawTierFromScore(resolvedScore),
-    systemConsensusLevel:      normResult.stabilityIndex,
+    systemConsensusLevel:      normResultFinal.stabilityIndex,
     conflictDetected:          conflictReport.totalConflicts > 0,
     conflictSources:           conflictReport.conflicts.map(c => ({
       type:             c.conflictType,
       severity:         c.severity,
       affectedSystems:  c.affectedSystems,
     })),
-    stabilityAction:           action,
+    stabilityAction:           finalAction,
     adjustmentVector:          resolution.adjustmentVector,
-    normalizedSignals:         normResult.normalizedSignals,
-    signalVector:              normResult.signalVector,
+    normalizedSignals:         normResultFinal.normalizedSignals,
+    signalVector:              normResultFinal.signalVector,
     worstConflictSeverity:     conflictReport.worstSeverity,
     downstreamFrozen,
     serpFeedbackSuppressed,
     linkOptimizerFrozen,
     realWorldOverrideApplied,
-    realWorldScore:            rwf?.realWorldScore  ?? null,
-    realWorldTrustFactor:      rwf?.trustFactor     ?? 0,
+    realWorldScore:            rwf?.realWorldScore ?? null,
+    realWorldTrustFactor:      rwf?.trustFactor    ?? 0,
+    // New control layer outputs
+    confidenceState:           confidenceResult.confidenceState,
+    confidenceWeight:          confidenceResult.confidenceWeight,
+    uncertaintyPenalty:        confidenceResult.uncertaintyPenalty,
+    alignmentGateMode:         gateResult.gateMode,
+    alignmentLocked:           gateResult.alignmentLocked,
+    boostDisabled:             gateResult.boostDisabled,
+    stabilityOverride:         gateResult.stabilityOverride,
+    dampedOverrideApplied:     dampedResult !== null,
+    dampedScore:               dampedResult?.dampedScore ?? null,
+    clampedByDelta:            dampedResult?.clampedByDelta ?? false,
   };
 }
 

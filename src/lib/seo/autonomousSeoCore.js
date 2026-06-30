@@ -70,6 +70,8 @@ import { collectGscSignals }                                      from '@/lib/se
 import { trackPosition, positionToRankingScore }                  from '@/lib/seo/serpPositionTracker';
 import { normalizeRealWorldFeedback, applyRealWorldCorrection }   from '@/lib/seo/realWorldFeedbackNormalizer';
 import { computeSerpCorrectionDeltas }                            from '@/lib/seo/serpCorrectionLoop';
+import { confidenceFromRealWorldFeedback, applyConfidenceToScore } from '@/lib/seo/confidenceWeighting';
+import { computeDampedScore, shouldApplyDampedOverride }          from '@/lib/seo/serpDampedOverride';
 
 // ── Pipeline weight matrix ─────────────────────────────────────────────────────
 // Controls how each Stage-1/2 signal blends into finalRankingScore.
@@ -556,11 +558,26 @@ export async function runAutonomousCoreAsync(
     prevRealWorldScore:  stateData.prevRealWorldScore ?? null,
   });
 
-  // 10d: Feed real-world signal into stability controller as highest-authority input
-  // Re-run the stability controller with realWorldFeedback injected
-  const signalBundleRW = buildSignalBundle(
-    governedDecision,
+  // 10c½: Apply confidence weighting to the governed score
+  // Offline mode must NOT preserve full ranking stability.
+  // Confidence-adjusted score flows into the stability controller.
+  const confidenceResult = confidenceFromRealWorldFeedback(realWorldFeedback);
+  const confidenceAdjustedScore = applyConfidenceToScore(
     governedDecision.finalRankingScore,
+    confidenceResult
+  );
+
+  // Replace governed score with confidence-adjusted version
+  const confidenceGovernedDecision = confidenceAdjustedScore !== governedDecision.finalRankingScore
+    ? { ...governedDecision, finalRankingScore: confidenceAdjustedScore,
+        confidenceState: confidenceResult.confidenceState,
+        confidenceWeight: confidenceResult.confidenceWeight }
+    : { ...governedDecision, confidenceState: confidenceResult.confidenceState };
+
+  // 10d: Feed real-world signal into stability controller as highest-authority input
+  const signalBundleRW = buildSignalBundle(
+    confidenceGovernedDecision,
+    confidenceGovernedDecision.finalRankingScore,
     alignmentResult.alignmentScore ?? 1.0,
     'OPTIMIZE'
   );
@@ -575,9 +592,9 @@ export async function runAutonomousCoreAsync(
   const serpCorrection = computeSerpCorrectionDeltas(
     realWorldFeedback,
     {
-      intentStrength: governedDecision.intentStrength,
-      authorityBoost: governedDecision.authorityBoost,
-      crawlPriority:  governedDecision.crawlPriority,
+      intentStrength: confidenceGovernedDecision.intentStrength,
+      authorityBoost: confidenceGovernedDecision.authorityBoost,
+      crawlPriority:  confidenceGovernedDecision.crawlPriority,
     }
   );
 
@@ -586,10 +603,10 @@ export async function runAutonomousCoreAsync(
   const finalRealWorldTier  = realWorldStabilized.stabilizedTier;
 
   return {
-    ...governedDecision,
-    // Real-world adjusted outputs (these are THE authoritative values)
-    finalRankingScore:  finalRealWorldScore,
-    normalizedTier:     finalRealWorldTier,
+    ...confidenceGovernedDecision,
+    // Real-world + confidence adjusted outputs (THE authoritative values)
+    finalRankingScore: finalRealWorldScore,
+    normalizedTier:    finalRealWorldTier,
 
     trends,
     outboundLinks,
