@@ -33,11 +33,21 @@ function getSupabase() {
 async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_date') {
   try {
     const supabase = getSupabase();
+
+    // Map category synonyms for accurate local routing
+    const targetSlugs = [issueSlug];
+    if (issueSlug === "electricity") targetSlugs.push("power-cut");
+    if (issueSlug === "power-cut") targetSlugs.push("electricity");
+    if (issueSlug === "water-sanitation") targetSlugs.push("water-issue");
+    if (issueSlug === "water-issue") targetSlugs.push("water-sanitation");
+    if (issueSlug === "road-infrastructure") targetSlugs.push("road-problem");
+    if (issueSlug === "road-problem") targetSlugs.push("road-infrastructure");
+
     const { data: reports } = await supabase
-      .from('post')
-      .select('id,title,description,area_slug,district_slug,category_slug,post_type,created_date,featured_image,status,upvotes,downvotes')
+      .from('unified_explore_feed')
+      .select('id,title:title_en,description:content_en,area_slug,district_slug,category_slug,post_type,created_date,status,upvotes,downvotes')
       .eq('district_slug', citySlug)
-      .eq('category_slug', issueSlug)
+      .in('category_slug', targetSlugs)
       .eq('status', 'active')
       .order(orderField, { ascending: false })
       .limit(20);
