@@ -94,6 +94,8 @@ const nextConfig = {
     return [
       { source: '/privacy', destination: '/privacy-policy', permanent: true },
       { source: '/tos',     destination: '/terms',           permanent: true },
+      // Redirect old /district/:slug to canonical /:slug/ — route file removed to save crawl budget
+      { source: '/district/:slug', destination: '/:slug/', permanent: true },
     ];
   },
 

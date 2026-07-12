@@ -1,6 +1,7 @@
 // src/app/sitemap.js
 // FIX 3 & 9: Only includes /[city]/[issue]/ URLs with ≥1 active report in DB.
 // Fallback to Tier 1 static pairs if DB is unreachable.
+// SEO PHASE 1: Also includes /tn-today/[slug] article URLs.
 
 import { createClient } from '@supabase/supabase-js';
 import { DISTRICTS, CATEGORIES, DISTRICT_MAP, CATEGORY_MAP } from '@/lib/seo-data';
@@ -84,8 +85,31 @@ export default async function sitemap() {
     });
   }
 
-  // ── Utility pages ─────────────────────────────────────────────────────────
-  ['/about/', '/contact/', '/privacy-policy/', '/terms/'].forEach(path => {
+  // ── TN Today articles (published) ──────────────────────────────────────
+  try {
+    const supabase = getSupabase();
+    const { data: articles } = await supabase
+      .from('tn_today')
+      .select('slug, updated_date, publish_date')
+      .eq('status', 'published')
+      .order('publish_date', { ascending: false })
+      .limit(500);
+
+    (articles || []).forEach(a => {
+      if (!a.slug) return;
+      entries.push({
+        url: `${SITE_URL}/tn-today/${a.slug}`,
+        lastModified: a.updated_date || a.publish_date || TODAY,
+        changeFrequency: 'weekly',
+        priority: 0.6,
+      });
+    });
+  } catch (e) {
+    console.warn('[sitemap] TN Today fetch failed:', e.message);
+  }
+
+  // ── Utility pages ───────────────────────────────────────────────────
+  ['/about/', '/contact/', '/privacy-policy/', '/terms/', '/how-to-use/'].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,
       lastModified: '2026-06-30T00:00:00.000Z',

@@ -5,6 +5,13 @@
 // Single call: runAutonomousCoreAsync() owns the entire 12-system pipeline.
 // page.jsx only handles: DB fetch → core call → render.
 //
+// SEO PHASE 1 FIXES:
+// - generateStaticParams covers ALL 38 districts × 6 categories (228 pages)
+// - Enriched meta description with neighborhood names
+// - District+category FAQ structured data for rich results
+// - SSR intro paragraph (unique per city+issue) above content modules
+// - Breadcrumb nav added server-side
+//
 // PRESERVED:
 //   revalidate = 3600  (ISR unchanged)
 //   No Math.random()
@@ -15,7 +22,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
-import { DISTRICT_MAP, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
+import { DISTRICT_MAP, DISTRICTS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
 import PageSchema from '@/components/seo/PageSchema';
 
 import { runAutonomousCoreAsync }  from '@/lib/seo/autonomousSeoCore';
@@ -71,27 +78,69 @@ export async function generateMetadata({ params }) {
     return { title: 'Civic Report Page | VizhiTN', robots: { index: false } };
   }
 
-  const intentData   = resolveQueryIntent(city, issue, 0);
-  const primaryKw    = intentData.primaryKeywords?.[0] || issueData.descriptionFragment;
-  const title        = `${cityData.name} ${issueData.name} Reports Today | VizhiTN`;
-  const description  = `Live tracking of ${primaryKw} in ${cityData.name}, Tamil Nadu. View citizen reports, helpline details, and official ${issueData.authority || 'authority'} contact.`;
+  const intentData      = resolveQueryIntent(city, issue, 0);
+  const primaryKw       = intentData.primaryKeywords?.[0] || issueData.descriptionFragment;
+  const neighborhoodStr = cityData.neighborhoods?.slice(0, 2).join(' and ') || cityData.name;
+  const title           = `${cityData.name} ${issueData.name} Reports Today | VizhiTN`;
+  const description     =
+    `Live tracking of ${primaryKw} in ${cityData.name}, Tamil Nadu — covering ${neighborhoodStr} and surrounding areas. ` +
+    `View citizen reports, helpline details, and contact for ${issueData.authority || 'relevant authorities'}. Updated hourly.`;
   const canonicalUrl = `${SITE_URL}/${city}/${issue}/`;
 
   return {
     title,
     description,
     alternates: { canonical: canonicalUrl },
-    robots:     { index: true, follow: true, googleBot: { index: true, follow: true } },
-    openGraph:  { title, description, url: canonicalUrl, type: 'website' },
+    robots:     { index: true, follow: true, googleBot: { index: true, follow: true, 'max-snippet': -1 } },
+    openGraph:  { title, description, url: canonicalUrl, type: 'website',
+      images: [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: title }] },
     keywords:   intentData.localKeywords?.slice(0, 5).join(', '),
   };
 }
 
 // ── STATIC PARAMS ─────────────────────────────────────────────────────────────
+// ALL 38 districts × 6 categories = 228 pages pre-rendered at build time
 export async function generateStaticParams() {
-  const cities = ['chennai', 'coimbatore', 'madurai', 'salem', 'tiruchirappalli'];
   const issues = ['power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay'];
-  return cities.flatMap(city => issues.map(issue => ({ city, issue })));
+  return DISTRICTS.flatMap(d => issues.map(issue => ({ city: d.slug, issue })));
+}
+
+// Build district+category-specific FAQ structured data
+function buildCategoryFAQ(cityData, issueData) {
+  const city  = cityData.name;
+  const issue = issueData.name;
+  const auth  = issueData.authority || 'the relevant government authority';
+  const line  = issueData.helpline  || '1912';
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `How do I report a ${issue.toLowerCase()} in ${city}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Report a ${issue.toLowerCase()} in ${city} on VizhiTN by clicking "Report Issue" and selecting ${city} and the ${issue} category. Your report is instantly visible to the community and relevant officials.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `What is the helpline for ${issue.toLowerCase()} in ${city}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `For ${issue.toLowerCase()} in ${city}, contact ${auth} at helpline ${line}. You can also track the issue and see if others in ${city} have faced the same problem on VizhiTN.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How long does it take to resolve ${issue.toLowerCase()} in ${city}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Resolution times for ${issue.toLowerCase()} in ${city} vary by severity. On VizhiTN, you can track the status of your report and see historical resolution data from past community reports in ${city}.`,
+        },
+      },
+    ],
+  };
 }
 
 // ── SERVER COMPONENT ──────────────────────────────────────────────────────────
@@ -214,6 +263,17 @@ export default async function Page({ params }) {
         dateModified={boost.lastModified}
       />
 
+      {/* FAQ Structured Data — city+issue specific Q&A for rich results */}
+      {(() => {
+        const faqSchema = buildCategoryFAQ(cityData, issueData);
+        return (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          />
+        );
+      })()}
+
       {/* Civic authority schema — one clean entity, no spam */}
       {authorityData?.schemaCivicEntity && (
         <script
@@ -228,6 +288,15 @@ export default async function Page({ params }) {
       )}
 
       <main className="max-w-4xl mx-auto px-4 py-8 space-y-8 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+
+        {/* ── Breadcrumb — server-rendered for Google ──────────────────────── */}
+        <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1">
+          <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+          <span aria-hidden="true">›</span>
+          <Link href={`/${city}/`} className="hover:text-blue-600 transition-colors">{cityData.name}</Link>
+          <span aria-hidden="true">›</span>
+          <span className="text-slate-600 dark:text-slate-300 font-medium">{issueData.plural}</span>
+        </nav>
 
         {/* ── Header ───────────────────────────────────────────────────── */}
         <div className="border-b pb-6">
@@ -434,6 +503,22 @@ export default async function Page({ params }) {
             </p>
           </div>
         )}
+
+        {/* ── SSR Intro paragraph — unique per city+issue, fixes thin content ─ */}
+        <section className="bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 p-5 rounded-2xl">
+          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            This page tracks live <strong>{issueData.name.toLowerCase()}</strong> reports from residents of{' '}
+            <strong>{cityData.name}</strong>
+            {cityData.neighborhoods?.length > 0 && (
+              <>, including {cityData.neighborhoods.slice(0, 3).join(', ')}, and nearby areas</>
+            )}.
+            {' '}All reports are submitted by citizens on VizhiTN and verified by the community.
+            {issueData.helpline && (
+              <> For urgent {issueData.name.toLowerCase()} issues in {cityData.name}, call{' '}
+              <strong>{issueData.authority || 'the helpline'}</strong> at <strong>{issueData.helpline}</strong>.</>
+            )}
+          </p>
+        </section>
 
         {/* ── Content Modules (autonomous-core assembled) ───────────────── */}
         <section className="space-y-6 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
