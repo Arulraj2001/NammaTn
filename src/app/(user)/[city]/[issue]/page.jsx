@@ -79,6 +79,8 @@ export async function generateMetadata({ params }) {
     return { title: 'Civic Report Page', robots: { index: false, follow: false } };
   }
 
+  const { reports } = await fetchCityIssueData(city, issue);
+
   const intentData      = resolveQueryIntent(city, issue, 0);
   const primaryKw       = intentData.primaryKeywords?.[0] || issueData.descriptionFragment;
   const neighborhoodStr = cityData.neighborhoods?.slice(0, 2).join(' and ') || cityData.name;
@@ -92,7 +94,9 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: { canonical: canonicalUrl },
-    robots:     { index: true, follow: true, googleBot: { index: true, follow: true, 'max-snippet': -1 } },
+    robots: reports.length > 0
+      ? { index: true, follow: true, googleBot: { index: true, follow: true, 'max-snippet': -1 } }
+      : { index: false, follow: true, googleBot: { index: false, follow: true } },
     openGraph:  { title, description, url: canonicalUrl, type: 'website',
       images: [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: title }] },
     keywords:   intentData.localKeywords?.slice(0, 5).join(', '),
