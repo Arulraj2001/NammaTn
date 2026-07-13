@@ -22,6 +22,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { unstable_cache } from 'next/cache';
 import { createClient } from '@supabase/supabase-js';
 import { DISTRICT_MAP, DISTRICTS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
 import PageSchema from '@/components/seo/PageSchema';
@@ -69,6 +70,16 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
   }
 }
 
+// Metadata generation and page rendering can run independently for the same URL.
+// Cache the shared Supabase result so one request does not hit the database twice.
+function getCachedCityIssueData(citySlug, issueSlug, orderField = 'created_date') {
+  return unstable_cache(
+    () => fetchCityIssueData(citySlug, issueSlug, orderField),
+    ['city-issue-reports', citySlug, issueSlug, orderField],
+    { revalidate: 3600 },
+  )();
+}
+
 // ── METADATA ──────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const { city, issue } = params;
@@ -79,7 +90,7 @@ export async function generateMetadata({ params }) {
     return { title: 'Civic Report Page', robots: { index: false, follow: false } };
   }
 
-  const { reports } = await fetchCityIssueData(city, issue);
+  const { reports } = await getCachedCityIssueData(city, issue);
 
   const intentData      = resolveQueryIntent(city, issue, 0);
   const primaryKw       = intentData.primaryKeywords?.[0] || issueData.descriptionFragment;
@@ -159,13 +170,13 @@ export default async function Page({ params }) {
   }
 
   // ── 1. DB fetch ───────────────────────────────────────────────────────────
-  const { reports } = await fetchCityIssueData(city, issue);
+  const { reports } = await getCachedCityIssueData(city, issue);
 
   // ── 2. ISR freshness (indexBoost — unchanged) ─────────────────────────────
   const boost = evaluateIndexBoost(city, issue, null, reports.length);
   let finalReports = reports;
   if (boost.boostActive && boost.feedOrder !== 'created_date' && reports.length > 0) {
-    const { reports: reordered } = await fetchCityIssueData(city, issue, boost.feedOrder);
+    const { reports: reordered } = await getCachedCityIssueData(city, issue, boost.feedOrder);
     finalReports = reordered;
   }
 
