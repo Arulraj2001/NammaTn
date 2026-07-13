@@ -46,10 +46,11 @@ export default async function sitemap() {
     // Fetch distinct (district_slug, category_slug) pairs with active posts
     const { data: activePairs, error } = await supabase
       .from('unified_explore_feed')
-      .select('district_slug, category_slug, created_date, updated_date')
+      .select('district_slug, category_slug, created_date')
       .eq('status', 'active')
       .not('district_slug', 'is', null)
-      .not('category_slug', 'is', null);
+      .not('category_slug', 'is', null)
+      .order('created_date', { ascending: false });
 
     if (error) throw error;
 
@@ -64,7 +65,7 @@ export default async function sitemap() {
         seen.add(key);
         entries.push({
           url: `${SITE_URL}/${p.district_slug}/${p.category_slug}/`,
-          ...(p.updated_date || p.created_date ? { lastModified: p.updated_date || p.created_date } : {}),
+          ...(p.created_date ? { lastModified: p.created_date } : {}),
           changeFrequency: 'daily',
           priority: 0.7,
         });
