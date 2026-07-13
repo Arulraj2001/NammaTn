@@ -11,6 +11,7 @@ import { getCategoryMeta } from "@/lib/listingCategories";
 import { getSettingsMap, saveSettingsGroup } from "@/services/admin/settings";
 
 const TABS = ["listings", "sponsors", "rwa", "adsense"];
+const EMPTY_SETTINGS = {};
 
 const PLAN_COLORS = {
   free: "text-slate-500 bg-slate-100",
@@ -51,18 +52,19 @@ export default function AdminMonetization() {
   });
   const [adsenseSaved, setAdsenseSaved] = useState(false);
 
-  const { data: monetizationSettings = {} } = useQuery({
+  const { data: monetizationSettings } = useQuery({
     queryKey: ["admin-settings"],
     queryFn: getSettingsMap,
   });
 
   useEffect(() => {
+    const settings = monetizationSettings || EMPTY_SETTINGS;
     setAdsense({
-      pub_id: monetizationSettings.adsense_publisher_id || '',
-      slot_banner: monetizationSettings.adsense_slot_banner || '',
-      slot_sidebar: monetizationSettings.adsense_slot_sidebar || '',
-      slot_infeed: monetizationSettings.adsense_slot_infeed || '',
-      enabled: monetizationSettings.adsense_enabled === 'true',
+      pub_id: settings.adsense_publisher_id || '',
+      slot_banner: settings.adsense_slot_banner || '',
+      slot_sidebar: settings.adsense_slot_sidebar || '',
+      slot_infeed: settings.adsense_slot_infeed || '',
+      enabled: settings.adsense_enabled === 'true',
     });
   }, [monetizationSettings]);
 
