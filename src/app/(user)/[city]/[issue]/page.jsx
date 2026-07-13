@@ -388,68 +388,6 @@ export default async function Page({ params }) {
           </div>
         )}
 
-        {/* ── Stability Frozen Notice (internal — admin visibility) ─────── */}
-        {downstreamFrozen && (
-          <div className="bg-slate-100 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700 p-3 rounded-xl flex items-center gap-3">
-            <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-200">
-              {stabilityAction}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              Stability lock active — ranking adjustments paused. Consensus: {Math.round(consensusLevel * 100)}%
-            </span>
-          </div>
-        )}
-
-        {/* ── Real-world SERP signal card (visible when GSC data available) ─ */}
-        {hasRealData && serpPosition !== null && (
-          <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/50 p-4 rounded-xl">
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
-                Live SERP Data
-              </span>
-              {rwOverride && (
-                <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200">
-                  Real-World Override Active
-                </span>
-              )}
-            </div>
-            <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="text-center">
-                <p className="text-xs text-slate-500 dark:text-slate-400">Position</p>
-                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">#{serpPosition.toFixed(1)}</p>
-                <p className={`text-[10px] font-semibold ${
-                  positionChange < 0 ? 'text-green-600 dark:text-green-400' :
-                  positionChange > 0 ? 'text-red-500 dark:text-red-400' :
-                  'text-slate-400'
-                }`}>
-                  {positionChange < 0 ? '▲' : positionChange > 0 ? '▼' : '─'} {Math.abs(positionChange).toFixed(1)}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-slate-500 dark:text-slate-400">CTR</p>
-                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">{(realCTR * 100).toFixed(1)}%</p>
-                <p className="text-[10px] text-slate-400">{movementClass}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-slate-500 dark:text-slate-400">Impressions</p>
-                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">
-                  {realImpressions >= 1000 ? `${(realImpressions / 1000).toFixed(1)}k` : realImpressions}
-                </p>
-                <p className="text-[10px] text-slate-400">{trendVelocity}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-slate-500 dark:text-slate-400">Alignment</p>
-                <p className={`text-lg font-bold ${
-                  alignmentGap < 0.10 ? 'text-green-600 dark:text-green-400' :
-                  alignmentGap < 0.20 ? 'text-amber-600 dark:text-amber-400' :
-                  'text-red-500 dark:text-red-400'
-                }`}>{(alignmentGap * 100).toFixed(0)}% gap</p>
-                <p className="text-[10px] text-slate-400">internal vs SERP</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* ── Authority Contact Block (E-E-A-T) ────────────────────────── */}
         {authorityData?.contactBlock && action !== 'SUPPRESS' && (
           <section className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40 p-5 rounded-2xl space-y-3">
