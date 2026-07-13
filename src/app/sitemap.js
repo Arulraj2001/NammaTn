@@ -98,8 +98,8 @@ export default async function sitemap() {
     (articles || []).forEach(a => {
       if (!a.slug) return;
       entries.push({
-        url: `${SITE_URL}/tn-today/${a.slug}`,
-        lastModified: a.updated_date || a.publish_date || TODAY,
+        url: `${SITE_URL}/tn-today/${a.slug}/`,
+        lastModified: a.updated_date || a.publish_date || FALLBACK_DATE,
         changeFrequency: 'weekly',
         priority: 0.6,
       });
