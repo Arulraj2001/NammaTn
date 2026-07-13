@@ -82,7 +82,7 @@ function getCachedCityIssueData(citySlug, issueSlug, orderField = 'created_date'
 
 // ── METADATA ──────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const { city, issue } = params;
+  const { city, issue } = await params;
   const cityData  = DISTRICT_MAP[city];
   const issueData = CATEGORY_MAP[issue];
 
@@ -161,7 +161,7 @@ function buildCategoryFAQ(cityData, issueData) {
 
 // ── SERVER COMPONENT ──────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const { city, issue } = params;
+  const { city, issue } = await params;
   const cityData  = DISTRICT_MAP[city];
   const issueData = CATEGORY_MAP[issue];
 
