@@ -11,6 +11,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import nextDynamic from 'next/dynamic';
 import { createClient } from '@supabase/supabase-js';
 import { DISTRICT_MAP, DISTRICTS, CATEGORIES, SITE_URL } from '@/lib/seo-data';
@@ -75,7 +76,7 @@ export async function generateMetadata({ params }) {
   }
 
   const neighborhoodStr = district.neighborhoods?.slice(0, 3).join(', ') || district.name;
-  const title = `${district.name} Civic Issue Reports & Alerts | VizhiTN`;
+  const title = `${district.name} Civic Issue Reports & Alerts`;
   const description =
     `Live citizen reports from ${district.name}, Tamil Nadu — covering ${neighborhoodStr} and surrounding areas. ` +
     `Track power cuts, water supply failures, road problems, scam alerts, job listings, and more. ` +
@@ -158,12 +159,7 @@ export default async function Page({ params }) {
   const canonicalUrl = `${SITE_URL}/${city}/`;
 
   if (!district) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-4">
-        <h1 className="text-xl font-bold">District Not Found</h1>
-        <Link href="/" className="mt-4 text-blue-600 underline">Return Home</Link>
-      </div>
-    );
+    notFound();
   }
 
   // Fetch data server-side — present in HTML on first crawl
@@ -347,7 +343,7 @@ export default async function Page({ params }) {
       </div>
 
       {/* DistrictDetail: ssr:true — full interactive district view */}
-      <DistrictDetail />
+      <DistrictDetail districtSlug={city} />
 
       {/* Internal linking section */}
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 border-t border-slate-100 dark:border-slate-800">

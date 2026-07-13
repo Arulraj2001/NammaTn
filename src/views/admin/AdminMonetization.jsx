@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
@@ -8,8 +8,10 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { getCategoryMeta } from "@/lib/listingCategories";
+import { getSettingsMap, saveSettingsGroup } from "@/services/admin/settings";
 
 const TABS = ["listings", "sponsors", "rwa", "adsense"];
+const EMPTY_SETTINGS = {};
 
 const PLAN_COLORS = {
   free: "text-slate-500 bg-slate-100",
@@ -40,33 +42,50 @@ export default function AdminMonetization() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [adminNotes, setAdminNotes] = useState({});
 
-  // ── AdSense settings (persisted in localStorage) ───────────────────────────────
-  const [adsense, setAdsense] = useState(() => {
-    try {
-      const saved = localStorage.getItem('VizhiTN_adsense_config');
-      return saved ? JSON.parse(saved) : {
-        pub_id: '',
-        slot_banner: '',
-        slot_sidebar: '',
-        slot_infeed: '',
-        enabled: false,
-      };
-    } catch { return { pub_id: '', slot_banner: '', slot_sidebar: '', slot_infeed: '', enabled: false }; }
+  // ── AdSense settings (shared site settings) ────────────────────────────────
+  const [adsense, setAdsense] = useState({
+    pub_id: '',
+    slot_banner: '',
+    slot_sidebar: '',
+    slot_infeed: '',
+    enabled: false,
   });
   const [adsenseSaved, setAdsenseSaved] = useState(false);
 
-  const saveAdsense = () => {
+  const { data: monetizationSettings } = useQuery({
+    queryKey: ["admin-settings"],
+    queryFn: getSettingsMap,
+  });
+
+  useEffect(() => {
+    const settings = monetizationSettings || EMPTY_SETTINGS;
+    setAdsense({
+      pub_id: settings.adsense_publisher_id || '',
+      slot_banner: settings.adsense_slot_banner || '',
+      slot_sidebar: settings.adsense_slot_sidebar || '',
+      slot_infeed: settings.adsense_slot_infeed || '',
+      enabled: settings.adsense_enabled === 'true',
+    });
+  }, [monetizationSettings]);
+
+  const saveAdsense = async () => {
     try {
-      localStorage.setItem('VizhiTN_adsense_config', JSON.stringify(adsense));
-      // Update ads.txt with real pub ID
-      window.__ADSENSE_PUB_ID__ = adsense.pub_id || 'ca-pub-PLACEHOLDER';
+      await saveSettingsGroup({
+        adsense_publisher_id: adsense.pub_id,
+        adsense_slot_banner: adsense.slot_banner,
+        adsense_slot_sidebar: adsense.slot_sidebar,
+        adsense_slot_infeed: adsense.slot_infeed,
+        adsense_enabled: adsense.enabled,
+      }, 'monetization');
+      window.__ADSENSE_PUB_ID__ = adsense.pub_id || null;
       window.__ADSENSE_SLOTS__ = {
-        banner:  adsense.slot_banner,
+        banner: adsense.slot_banner,
         sidebar: adsense.slot_sidebar,
-        infeed:  adsense.slot_infeed,
+        infeed: adsense.slot_infeed,
       };
+      await qc.invalidateQueries({ queryKey: ["admin-settings"] });
       setAdsenseSaved(true);
-      toast({ description: '✅ AdSense settings saved! Publisher ID is now active.' });
+      toast({ description: '✅ AdSense settings saved for the whole site.' });
       setTimeout(() => setAdsenseSaved(false), 3000);
     } catch (e) {
       toast({ description: '❌ Failed to save AdSense settings.' });

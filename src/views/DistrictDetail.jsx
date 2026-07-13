@@ -24,8 +24,9 @@ const POST_TYPES = [
   { value: "discussion", en: "Discussion", ta: "விவாதம்" },
 ];
 
-export default function DistrictDetail() {
-  const { slug } = useParams();
+export default function DistrictDetail({ districtSlug }) {
+  const routeParams = useParams();
+  const slug = districtSlug || routeParams.city || routeParams.slug;
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const district = getDistrictBySlug(slug);

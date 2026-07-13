@@ -2,9 +2,6 @@ import React from 'react';
 import Providers from './providers';
 import '@/index.css';
 
-// AdSense pub ID is injected at runtime by the admin panel via window.__ADSENSE_PUB_ID__
-// See: AdminMonetization.jsx → AdSense Settings tab
-
 const SITE_URL = 'https://www.vizhitn.in';
 const SITE_NAME = 'VizhiTN';
 
@@ -114,24 +111,6 @@ export default function RootLayout({ children }) {
           id="theme-init"
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('tn_theme')||'light';document.documentElement.classList.add(t);document.documentElement.classList.remove(t==='dark'?'light':'dark');}catch(e){}})();`,
-          }}
-        />
-        {/* Google AdSense script — publisher ID loaded from admin settings at runtime */}
-        <script
-          id="adsense-init"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(){
-                var pubId = typeof window !== 'undefined' && window.__ADSENSE_PUB_ID__;
-                if (pubId && pubId !== 'ca-pub-PLACEHOLDER') {
-                  var s = document.createElement('script');
-                  s.async = true;
-                  s.crossOrigin = 'anonymous';
-                  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + pubId;
-                  document.head.appendChild(s);
-                }
-              })();
-            `,
           }}
         />
         {/* Organization structured data */}
