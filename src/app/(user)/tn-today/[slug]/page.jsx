@@ -1,6 +1,7 @@
 // Server Component — fetches article data for metadata/SEO at request time.
 // The TnTodayArticle client component below handles all interactivity (untouched).
 import React from 'react';
+import { notFound } from 'next/navigation';
 
 // ISR: regenerate every hour — article edits (corrections, updates) surface
 // to Google without a full redeploy. Also updates lastModified in sitemap.
@@ -35,7 +36,8 @@ async function fetchArticle(slug) {
 
 // ── Next.js generateMetadata — runs on server, injects <head> before any JS ───
 export async function generateMetadata({ params }) {
-  const article = await fetchArticle(params.slug);
+  const { slug } = await params;
+  const article = await fetchArticle(slug);
 
   if (!article) {
     return {
@@ -47,7 +49,7 @@ export async function generateMetadata({ params }) {
   const title = article.seo_title || article.title;
   const description = article.seo_description || article.subtitle || article.summary || '';
   const image = article.social_image || article.featured_image || `${SITE_URL}/og-image.png`;
-  const canonical = article.canonical_url || `${SITE_URL}/tn-today/${article.slug}`;
+  const canonical = `${SITE_URL}/tn-today/${article.slug}/`;
   const publishDate = article.publish_date || article.created_date;
   const modifyDate = article.updated_date || publishDate;
 
@@ -80,7 +82,12 @@ export async function generateMetadata({ params }) {
 
 // ── Page component — server renders JSON-LD, client component handles UI ──────
 export default async function Page({ params }) {
-  const article = await fetchArticle(params.slug);
+  const { slug } = await params;
+  const article = await fetchArticle(slug);
+
+  if (!article) {
+    notFound();
+  }
 
   // Build Article JSON-LD for Google News / article rich results
   const jsonLd = article
@@ -105,7 +112,7 @@ export default async function Page({ params }) {
         },
         mainEntityOfPage: {
           '@type': 'WebPage',
-          '@id': article.canonical_url || `${SITE_URL}/tn-today/${article.slug}`,
+          '@id': `${SITE_URL}/tn-today/${article.slug}/`,
         },
         keywords: article.seo_keywords || '',
         articleSection: article.category || 'general',
@@ -119,8 +126,8 @@ export default async function Page({ params }) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-          { '@type': 'ListItem', position: 2, name: 'TN Today', item: `${SITE_URL}/tn-today` },
-          { '@type': 'ListItem', position: 3, name: article.title, item: `${SITE_URL}/tn-today/${article.slug}` },
+          { '@type': 'ListItem', position: 2, name: 'TN Today', item: `${SITE_URL}/tn-today/` },
+          { '@type': 'ListItem', position: 3, name: article.title, item: `${SITE_URL}/tn-today/${article.slug}/` },
         ],
       }
     : null;
