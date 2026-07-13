@@ -16,7 +16,7 @@ function getSupabase() {
 }
 
 // Stable date: does not change within a given UTC day — prevents sitemap churn
-const TODAY = new Date().toISOString().slice(0, 10) + 'T00:00:00.000Z';
+const FALLBACK_DATE = '2026-06-30T00:00:00.000Z';
 
 export default async function sitemap() {
   const entries = [];
@@ -24,7 +24,7 @@ export default async function sitemap() {
   // ── Level 1: Homepage ─────────────────────────────────────────────────────
   entries.push({
     url: `${SITE_URL}/`,
-    lastModified: TODAY,
+    lastModified: FALLBACK_DATE,
     changeFrequency: 'hourly',
     priority: 1.0,
   });
@@ -33,7 +33,7 @@ export default async function sitemap() {
   DISTRICTS.forEach(city => {
     entries.push({
       url: `${SITE_URL}/${city.slug}/`,
-      lastModified: TODAY,
+      lastModified: FALLBACK_DATE,
       changeFrequency: 'daily',
       priority: 0.8,
     });
@@ -45,8 +45,8 @@ export default async function sitemap() {
 
     // Fetch distinct (district_slug, category_slug) pairs with active posts
     const { data: activePairs, error } = await supabase
-      .from('post')
-      .select('district_slug, category_slug')
+      .from('unified_explore_feed')
+      .select('district_slug, category_slug, created_date, updated_date')
       .eq('status', 'active')
       .not('district_slug', 'is', null)
       .not('category_slug', 'is', null);
@@ -64,7 +64,7 @@ export default async function sitemap() {
         seen.add(key);
         entries.push({
           url: `${SITE_URL}/${p.district_slug}/${p.category_slug}/`,
-          lastModified: TODAY,
+          ...(p.updated_date || p.created_date ? { lastModified: p.updated_date || p.created_date } : {}),
           changeFrequency: 'daily',
           priority: 0.7,
         });
@@ -77,7 +77,7 @@ export default async function sitemap() {
       CATEGORIES.forEach(issue => {
         entries.push({
           url: `${SITE_URL}/${city}/${issue.slug}/`,
-          lastModified: TODAY,
+          lastModified: FALLBACK_DATE,
           changeFrequency: 'daily',
           priority: 0.7,
         });
