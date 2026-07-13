@@ -243,9 +243,30 @@ export function cleanupStructuredData() {
 export function applySEOSettings(settings) {
   if (!settings || typeof window === 'undefined') return;
 
-  // Google AdSense publisher ID — injected at runtime from admin panel
+  // Keep advertising and analytics tags blocked until the visitor has consented.
+  let consentAccepted = false;
+  try {
+    consentAccepted = localStorage.getItem('VizhiTN_cookie_consent') === 'accepted';
+  } catch {
+    consentAccepted = false;
+  }
+
+  // Google AdSense publisher ID and slots — safe public identifiers.
   const adsPubId = settings.adsense_publisher_id || settings.google_adsense_id;
-  if (adsPubId && !document.getElementById('adsense-script')) {
+  const adsEnabled = settings.adsense_enabled === true || settings.adsense_enabled === 'true';
+  window.__ADSENSE_PUB_ID__ = adsPubId || null;
+  window.__ADSENSE_SLOTS__ = {
+    banner: settings.adsense_slot_banner || '',
+    sidebar: settings.adsense_slot_sidebar || '',
+    infeed: settings.adsense_slot_infeed || '',
+  };
+
+  if (
+    consentAccepted &&
+    adsEnabled &&
+    /^ca-pub-\d+$/.test(adsPubId || '') &&
+    !document.getElementById('adsense-script')
+  ) {
     const script = document.createElement('script');
     script.id = 'adsense-script';
     script.async = true;
@@ -254,17 +275,32 @@ export function applySEOSettings(settings) {
     document.head.appendChild(script);
   }
 
-  // Google Analytics / Tag Manager
-  const gaId = settings.google_analytics_id || settings.ga_measurement_id;
-  if (gaId && !document.getElementById('gtag-script')) {
+  // Prefer GTM when configured so analytics and Google Ads events are managed once.
+  const gtmId = settings.seo_gtm_id || settings.google_tag_manager_id;
+  const gaId = settings.seo_ga4_id || settings.google_analytics_id || settings.ga_measurement_id;
+
+  if (consentAccepted && /^GTM-[A-Z0-9]+$/.test(gtmId || '') && !document.getElementById('gtm-script')) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+    const script = document.createElement('script');
+    script.id = 'gtm-script';
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
+    document.head.appendChild(script);
+  } else if (
+    consentAccepted &&
+    /^(G|AW)-[A-Z0-9]+$/.test(gaId || '') &&
+    !document.getElementById('gtag-script')
+  ) {
     const script = document.createElement('script');
     script.id = 'gtag-script';
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
     document.head.appendChild(script);
-    const init = document.createElement('script');
-    init.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${gaId}');`;
-    document.head.appendChild(init);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', gaId);
   }
 
   // Custom site title override
