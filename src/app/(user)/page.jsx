@@ -3,10 +3,9 @@ import Home from '@/views/Home';
 import { HomeCityLinks, AllCategoryLinks } from '@/components/seo/InternalLinks';
 
 // Title deliberately excludes "| VizhiTN" — the root layout template adds it.
-// Result: "Know what's happening in your area right now | VizhiTN"
 export const metadata = {
-  title: "Know what's happening in your area right now",
-  description: "Report civic issues, see live alerts, find stays & jobs in Tamil Nadu. All in one place, verified by citizens.",
+  title: "Tamil Nadu Civic Complaints, Local Alerts & Community Updates",
+  description: "Report civic complaints and track power cuts, water issues, road problems, scams, jobs and local alerts across Tamil Nadu. Community-verified updates on VizhiTN.",
   alternates: {
     // Self-canonical on homepage prevents www vs non-www duplication
     canonical: 'https://www.vizhitn.in/',
@@ -53,13 +52,19 @@ export default function Page() {
         <Home />
       </Suspense>
 
-      {/* Server-rendered SEO internal links — below the fold, not disruptive to UI.
-          These pass homepage link equity down to district and category hub pages.
-          Googlebot reads these even if JS never runs. */}
-      <div className="sr-only" aria-hidden="true">
-        <HomeCityLinks />
-        <AllCategoryLinks />
-      </div>
+      <section className="border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">Browse Tamil Nadu civic reports by district</h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Find local complaints, alerts and community updates near you.</p>
+            <div className="mt-3"><HomeCityLinks /></div>
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">Explore issues across Tamil Nadu</h2>
+            <div className="mt-3"><AllCategoryLinks /></div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
