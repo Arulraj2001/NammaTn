@@ -316,32 +316,6 @@ export default async function Page({ params }) {
               VizhiTN Civic Alert
             </span>
 
-          {/* Tier + action + system-mode badge */}
-            <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
-                ${normalizedTier === 'elite' ? 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300' :
-                  normalizedTier === 'top'   ? 'bg-green-100  text-green-700  dark:bg-green-950  dark:text-green-300'  :
-                  normalizedTier === 'mid'   ? 'bg-blue-100   text-blue-700   dark:bg-blue-950   dark:text-blue-300'   :
-                                              'bg-slate-100  text-slate-500  dark:bg-slate-800  dark:text-slate-400'}`}
-              >
-                {normalizedTier}
-              </span>
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
-                ${action === 'BOOST'    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
-                  action === 'SUPPRESS' ? 'bg-red-100     text-red-700     dark:bg-red-950     dark:text-red-300'     :
-                                          'bg-slate-100   text-slate-500   dark:bg-slate-800   dark:text-slate-400'}`}
-              >
-                {action}
-              </span>
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
-                ${systemMode === 'BOOST'     ? 'bg-cyan-100    text-cyan-700    dark:bg-cyan-950    dark:text-cyan-300'    :
-                  systemMode === 'RECOVER'   ? 'bg-orange-100  text-orange-700  dark:bg-orange-950  dark:text-orange-300'  :
-                  systemMode === 'STABILIZE' ? 'bg-teal-100    text-teal-700    dark:bg-teal-950    dark:text-teal-300'    :
-                                              'bg-slate-100   text-slate-500   dark:bg-slate-800   dark:text-slate-400'}`}
-              >
-                {systemMode}
-              </span>
-            </div>
           </div>
 
           <h1 className="text-3xl font-extrabold tracking-tight mt-1 sm:text-4xl">
@@ -353,38 +327,6 @@ export default async function Page({ params }) {
               : 'No active reports at this time'}
           </p>
 
-          {/* Machine-readable signals — real-world + stability (Stages 9 + 10) */}
-          <span
-            data-ranking-score={finalRankingScore}
-            data-stable-score={stableRankingScore}
-            data-tier={normalizedTier}
-            data-action={action}
-            data-drift={driftStatus}
-            data-decay={decayFactor}
-            data-recovery={recoveryFactor}
-            data-crawl-priority={crawlPriority}
-            data-link-weight={linkWeight}
-            data-sitemap-priority={sitemapPriority}
-            data-system-mode={systemMode}
-            data-stability-action={stabilityAction}
-            data-consensus={consensusLevel}
-            data-conflict={conflictDetected ? '1' : '0'}
-            data-downstream-frozen={downstreamFrozen ? '1' : '0'}
-            data-alignment-score={alignmentScore}
-            data-mismatch={mismatchDetected ? '1' : '0'}
-            data-real-world-score={realWorldScore ?? ''}
-            data-serp-position={serpPosition ?? ''}
-            data-real-ctr={realCTR ?? ''}
-            data-real-impressions={realImpressions ?? ''}
-            data-trend-velocity={trendVelocity}
-            data-alignment-gap={alignmentGap}
-            data-movement={movementClass}
-            data-position-change={positionChange}
-            data-real-data={hasRealData ? '1' : '0'}
-            data-rw-override={rwOverride ? '1' : '0'}
-            className="hidden"
-            aria-hidden="true"
-          />
         </div>
 
         {/* ── Trending Alert ────────────────────────────────────────────── */}
