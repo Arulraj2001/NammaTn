@@ -95,7 +95,7 @@ export async function generateMetadata({ params }) {
   const intentData      = resolveQueryIntent(city, issue, 0);
   const primaryKw       = intentData.primaryKeywords?.[0] || issueData.descriptionFragment;
   const neighborhoodStr = cityData.neighborhoods?.slice(0, 2).join(' and ') || cityData.name;
-  const title           = `${cityData.name} ${issueData.name} Reports Today | VizhiTN`;
+  const title           = `${cityData.name} ${issueData.name} Reports Today`;
   const description     =
     `Live tracking of ${primaryKw} in ${cityData.name}, Tamil Nadu — covering ${neighborhoodStr} and surrounding areas. ` +
     `View citizen reports, helpline details, and contact for ${issueData.authority || 'relevant authorities'}. Updated hourly.`;
