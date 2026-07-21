@@ -1,13 +1,15 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import Situations from '@/views/Situations';
+import { getActiveSituationUpdates } from '@/lib/publicHubServer';
 
-const Situations = nextDynamic(() => import('@/views/Situations'), { ssr: false });
+export const revalidate = 900;
 
-export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <Situations />
-    </Suspense>
-  );
+export const metadata = {
+  title: 'Live Situations & Local Alerts in Tamil Nadu',
+  description: 'Follow active power cuts, water shortages, traffic disruptions, flooding, emergencies, and verified local situation updates across Tamil Nadu.',
+  alternates: { canonical: '/situations/' },
+};
+
+export default async function Page() {
+  const initialSituations = await getActiveSituationUpdates(30);
+  return <Situations initialSituations={initialSituations} />;
 }

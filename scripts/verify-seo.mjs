@@ -151,4 +151,11 @@ assert.match(explorePage, /export const metadata/, 'Explore must emit server met
 assert.doesNotMatch(explorePage, /ssr:\s*false/, 'Explore must not be a client-only shell');
 assert.match(exploreView, /initialData:\s*\{\s*pages:\s*\[initialPosts\]/, 'Explore infinite feed must hydrate from server data');
 
+const situationsPage = await read('src/app/(user)/situations/page.jsx');
+const situationsView = await read('src/views/Situations.jsx');
+assert.match(situationsPage, /getActiveSituationUpdates/, 'Situations must fetch active updates on the server');
+assert.match(situationsPage, /export const metadata/, 'Situations must emit server metadata');
+assert.doesNotMatch(situationsPage, /ssr:\s*false/, 'Situations must not be a client-only shell');
+assert.match(situationsView, /initialData:\s*!filterDistrict\s*\?\s*initialSituations/, 'Situation filters must hydrate only from the unfiltered server list');
+
 console.log('SEO and Clarity audit checks passed.');

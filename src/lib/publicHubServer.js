@@ -360,3 +360,22 @@ export async function getExplorePosts(limit = 18) {
     return [];
   }
 }
+
+export async function getActiveSituationUpdates(limit = 30) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('situation_update')
+      .select('*')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.warn('[situations] Server update fetch failed:', error.message);
+    return [];
+  }
+}

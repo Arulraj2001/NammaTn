@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Zap, Plus, X } from "lucide-react";
@@ -32,7 +34,7 @@ const SITUATION_TYPES = [
   { value: "other", label: "❗ Other" },
 ];
 
-export default function Situations() {
+export default function Situations({ initialSituations = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
@@ -79,6 +81,7 @@ export default function Situations() {
     queryFn: () => filterDistrict
       ? base44.entities.SituationUpdate.filter({ district_slug: filterDistrict, status: "active" }, "-created_date", 30)
       : getActiveSituations(30),
+    initialData: !filterDistrict ? initialSituations : undefined,
   });
 
   const { data: areas = [] } = useQuery({
