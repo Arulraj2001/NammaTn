@@ -1,13 +1,28 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import QuestionDetail from '@/views/QuestionDetail';
+import { getQuestionDetailData } from '@/lib/publicHubServer';
 
-const QuestionDetail = nextDynamic(() => import('@/views/QuestionDetail'), { ssr: false });
+const SITE_URL = 'https://www.vizhitn.in';
 
-export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <QuestionDetail />
-    </Suspense>
-  );
+export const revalidate = 3600;
+
+export async function generateMetadata({ params }) {
+  const { question } = await getQuestionDetailData(params.id);
+  if (!question) return { title: 'Question Not Found', robots: { index: false } };
+
+  const title = question.title || 'Community Question';
+  const description = (question.content || `A community question from ${question.district_name || 'Tamil Nadu'}.`).slice(0, 160);
+  const canonical = `${SITE_URL}/question/${question.id}/`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    robots: { index: false, follow: true },
+    openGraph: { title, description, url: canonical, type: 'article' },
+  };
+}
+
+export default async function Page({ params }) {
+  const initialData = await getQuestionDetailData(params.id);
+  return <QuestionDetail initialId={params.id} initialData={initialData} />;
 }

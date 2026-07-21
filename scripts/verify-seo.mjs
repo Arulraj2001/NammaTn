@@ -131,4 +131,11 @@ assert.match(areaDetailPage, /getAreaDetailData/, 'Area detail routes must fetch
 assert.match(areaDetailPage, /canonical/, 'Area detail routes must define canonical URLs');
 assert.match(areaDetailView, /initialData:\s*initialData\?\.area/, 'Area detail queries must hydrate from server data');
 
+const questionDetailPage = await read('src/app/(user)/question/[id]/page.jsx');
+const questionDetailView = await read('src/views/QuestionDetail.jsx');
+assert.match(questionDetailPage, /generateMetadata/, 'Question detail routes must emit server metadata');
+assert.match(questionDetailPage, /index:\s*false,\s*follow:\s*true/, 'Thin user questions must remain noindex, follow');
+assert.match(questionDetailPage, /getQuestionDetailData/, 'Question detail routes must fetch initial data on the server');
+assert.match(questionDetailView, /initialData:\s*initialData\?\.question/, 'Question details must hydrate from server data');
+
 console.log('SEO and Clarity audit checks passed.');

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -61,8 +63,9 @@ function AnswerItem({ ans, T, isAuthenticated, user, helpfulMutation, requireAut
   );
 }
 
-export default function QuestionDetail() {
-  const { id } = useParams();
+export default function QuestionDetail({ initialId, initialData }) {
+  const routeParams = useParams();
+  const id = initialId || routeParams.id;
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
@@ -96,8 +99,18 @@ export default function QuestionDetail() {
     }
   }, [user]);
 
-  const { data: question } = useQuery({ queryKey: ["question", id], queryFn: () => getQuestionById(id), enabled: !!id });
-  const { data: answers = [], isLoading: answersLoading } = useQuery({ queryKey: ["answers", id], queryFn: () => getAnswersByQuestion(id), enabled: !!id });
+  const { data: question } = useQuery({
+    queryKey: ["question", id],
+    queryFn: () => getQuestionById(id),
+    initialData: initialData?.question,
+    enabled: !!id,
+  });
+  const { data: answers = [], isLoading: answersLoading } = useQuery({
+    queryKey: ["answers", id],
+    queryFn: () => getAnswersByQuestion(id),
+    initialData: initialData?.answers,
+    enabled: !!id,
+  });
 
   // Fetch question author's profile for trust score
   const { data: questionAuthorProfile = null } = useQuery({

@@ -269,3 +269,22 @@ export async function getAreaDetailData(slug) {
     return empty;
   }
 }
+
+export async function getQuestionDetailData(id) {
+  const supabase = createServerSupabase();
+  const empty = { question: null, answers: [] };
+  if (!supabase || !id) return empty;
+
+  try {
+    const [questionResult, answersResult] = await Promise.all([
+      supabase.from('question').select('*').eq('id', id).maybeSingle(),
+      supabase.from('answer').select('*').eq('question_id', id).eq('status', 'active').order('helpful_count', { ascending: false }).limit(50),
+    ]);
+    if (questionResult.error) throw questionResult.error;
+    if (answersResult.error) throw answersResult.error;
+    return { question: questionResult.data || null, answers: answersResult.data || [] };
+  } catch (error) {
+    console.warn(`[question:${id}] Server detail fetch failed:`, error.message);
+    return empty;
+  }
+}
