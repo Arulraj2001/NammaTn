@@ -189,7 +189,7 @@ export function injectDistrictStructuredData(district) {
     '@type': 'AdministrativeArea',
     name: district.name_en || district.name,
     description: district.description_en || `Civic issues and community discussions for ${district.name_en}, Tamil Nadu.`,
-    url: `${SITE_URL}/district/${district.slug}`,
+    url: `${SITE_URL}/${district.slug}/`,
     containedInPlace: {
       '@type': 'State',
       name: 'Tamil Nadu',

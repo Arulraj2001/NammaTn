@@ -194,4 +194,16 @@ assert.match(postDetailPage, /getPublicPostDetail/, 'Post details must use the b
 assert.match(postDetailView, /initialData:\s*initialPost/, 'Post detail queries must hydrate from server data');
 assert.doesNotMatch(shareBar, /window\.location/, 'Post sharing must be safe during server rendering');
 
+const canonicalDistrictLinkFiles = [
+  'src/components/dashboard/TrendingDistrictRow.jsx',
+  'src/components/civic/DistrictCivicStats.jsx',
+  'src/components/home/TrendingDistricts.jsx',
+  'src/views/Search.jsx',
+  'src/views/PostDetail.jsx',
+  'src/lib/seo.js',
+];
+for (const file of canonicalDistrictLinkFiles) {
+  assert.doesNotMatch(await read(file), /\/district\/\$\{/, `${file} must link directly to canonical district routes`);
+}
+
 console.log('SEO and Clarity audit checks passed.');

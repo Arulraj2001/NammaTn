@@ -12,7 +12,7 @@ export const BUILD_TIME_DISTRICT_SLUGS = [
 ];
 
 // ── District data ─────────────────────────────────────────────────────────────
-// slug    → used in URL (/district/[slug])
+// slug    → used in canonical district URL (/[city]/)
 // name    → display name for page titles and text
 // nearby  → slugs of adjacent districts for "nearby districts" internal links
 export const DISTRICTS = [
