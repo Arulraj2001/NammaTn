@@ -172,4 +172,10 @@ assert.match(askPage, /export const metadata/, 'Ask must emit server metadata');
 assert.doesNotMatch(askPage, /ssr:\s*false/, 'Ask must not be a client-only shell');
 assert.match(askView, /initialData:\s*!filterDistrict\s*\?\s*initialQuestions/, 'Ask filters must hydrate only from the unfiltered server list');
 
+const communityWinsPage = await read('src/app/(user)/community/wins/page.jsx');
+const communityWinsView = await read('src/views/CommunityWins.jsx');
+assert.match(communityWinsPage, /getResolvedCommunityWins/, 'Community Wins must fetch resolved posts on the server');
+assert.doesNotMatch(communityWinsPage, /ssr:\s*false/, 'Community Wins must not be a client-only shell');
+assert.match(communityWinsView, /initialData:\s*initialWins/, 'Community Wins must hydrate from server data');
+
 console.log('SEO and Clarity audit checks passed.');

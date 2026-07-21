@@ -461,7 +461,7 @@ function Pagination({ page, totalPages, onChange }) {
 /* ═══════════════════════════════════════════════════════════ */
 const PAGE_SIZE = 10;
 
-export default function CommunityWins() {
+export default function CommunityWins({ initialWins = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
 
@@ -480,6 +480,7 @@ export default function CommunityWins() {
   const { data: rawPosts = [], isLoading } = useQuery({
     queryKey: ["community-wins-posts"],
     queryFn: () => getCommunityWins(200),
+    initialData: initialWins,
     staleTime: 60_000,
   });
 

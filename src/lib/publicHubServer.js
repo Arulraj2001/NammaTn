@@ -416,3 +416,23 @@ export async function getLatestQuestions(limit = 40) {
     return [];
   }
 }
+
+export async function getResolvedCommunityWins(limit = 200) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('post')
+      .select('*')
+      .eq('status', 'active')
+      .in('civic_status', ['citizen_verified_fixed', 'resolved'])
+      .order('created_date', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return (data || []).filter(isPubliclyVisible);
+  } catch (error) {
+    console.warn('[community-wins] Server post fetch failed:', error.message);
+    return [];
+  }
+}
