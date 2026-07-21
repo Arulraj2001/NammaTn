@@ -412,31 +412,36 @@ function TodayInTN({ situations, emergencies, posts }) {
 }
 
 /* ─── Main TnPulseTab ──────────────────────────────────────── */
-export default function TnPulseTab() {
+export default function TnPulseTab({ initialData }) {
 
   const { data: situations = [], isLoading: l1 } = useQuery({
     queryKey: ["pulse-situations"],
     queryFn: () => getActiveSituations(20),
+    initialData: initialData?.situations,
     staleTime: 60_000,
   });
   const { data: emergencies = [], isLoading: l2 } = useQuery({
     queryKey: ["pulse-emergencies"],
     queryFn: () => getActiveEmergencies(20),
+    initialData: initialData?.emergencies,
     staleTime: 60_000,
   });
   const { data: scams = [], isLoading: l3 } = useQuery({
     queryKey: ["pulse-scams"],
     queryFn: () => getActiveScams(20),
+    initialData: initialData?.scams,
     staleTime: 60_000,
   });
   const { data: questions = [], isLoading: l4 } = useQuery({
     queryKey: ["pulse-questions"],
     queryFn: () => getQuestions(20),
+    initialData: initialData?.questions,
     staleTime: 60_000,
   });
   const { data: posts = [], isLoading: l5 } = useQuery({
     queryKey: ["pulse-all-posts"],
     queryFn: () => getActivePosts(50),
+    initialData: initialData?.posts,
     staleTime: 60_000,
   });
 

@@ -21,7 +21,7 @@ const TABS = [
   { id: "chat", en: "Live Chat", ta: "நேரடி அரட்டை", icon: MessageSquare },
 ];
 
-export default function Community() {
+export default function Community({ initialData }) {
   const [activeTab, setActiveTab] = useState("pulse");
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
@@ -29,6 +29,7 @@ export default function Community() {
   const { data: settings = {} } = useQuery({
     queryKey: ["site-settings"],
     queryFn: getSettingsMap,
+    initialData: initialData?.settings,
     staleTime: 60_000,
   });
 
@@ -99,7 +100,7 @@ export default function Community() {
 
       {/* ── Tab content ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {activeTab === "pulse" && <TnPulseTab />}
+        {activeTab === "pulse" && <TnPulseTab initialData={initialData} />}
         {activeTab === "hall" && <CommunityHallTab />}
         {activeTab === "area" && <AreaDiscussionsTab />}
         {activeTab === "live" && <LiveDiscussionsTab />}

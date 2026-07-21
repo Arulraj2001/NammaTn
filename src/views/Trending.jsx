@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Flame, TrendingUp, MapPin, Tag } from "lucide-react";
 
@@ -11,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrendingCategories } from "@/services/trending";
 import { CATEGORIES } from "@/lib/categories";
 
-export default function Trending() {
+export default function Trending({ initialData }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
 
@@ -23,6 +25,7 @@ export default function Trending() {
   const { data: trendingCats = [] } = useQuery({
     queryKey: ["trending-categories"],
     queryFn: getTrendingCategories,
+    initialData: initialData?.categories,
     staleTime: 180_000,
   });
 
@@ -66,7 +69,7 @@ export default function Trending() {
         <div className="lg:col-span-2 space-y-8">
           {/* Trending Posts */}
           <section>
-            <TrendingTabs limit={9} />
+            <TrendingTabs limit={9} initialPosts={initialData?.posts} />
           </section>
 
           <AdSlot placement="feed" className="w-full" />
@@ -74,7 +77,7 @@ export default function Trending() {
 
         <div className="space-y-6">
           {/* District Ranking */}
-          <DistrictRanking limit={10} />
+          <DistrictRanking limit={10} initialDistricts={initialData?.districts} />
 
           {/* Trending Categories */}
           <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">

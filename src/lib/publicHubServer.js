@@ -1,4 +1,21 @@
 import { createServerSupabase } from '@/lib/serverSupabase';
+import { isPubliclyVisible } from '@/lib/visibility';
+
+const engagementScore = (post) => {
+  const ageHours = (Date.now() - new Date(post.created_date).getTime()) / 3600000;
+  const recency = Math.max(0, 1 - ageHours / 168);
+  return (post.upvotes || 0) * 2 + (post.comment_count || 0) * 3 + recency * 20;
+};
+
+const trendingReason = (post) => {
+  if ((post.verification_count || 0) >= 10) return 'Highly Verified';
+  if ((post.upvotes || 0) >= 20) return 'Most Voted';
+  if ((post.comment_count || 0) >= 10) return 'Hot Discussion';
+  if ((post.still_not_fixed_count || 0) >= 5) return 'Urgent — Not Fixed';
+  if (post.civic_status === 'unresolved_escalated') return 'Escalated';
+  if (post.civic_status === 'citizen_verified_fixed') return 'Resolved';
+  return null;
+};
 
 export async function getActiveScamAlerts(limit = 40) {
   const supabase = createServerSupabase();
@@ -88,6 +105,121 @@ export async function getActiveAreas(limit = 100) {
     return data || [];
   } catch (error) {
     console.warn('[areas] Server area fetch failed:', error.message);
+    return [];
+  }
+}
+
+export async function getCommunityHubData() {
+  const supabase = createServerSupabase();
+  const empty = { settings: {}, situations: [], emergencies: [], scams: [], questions: [], posts: [] };
+  if (!supabase) return empty;
+
+  const requests = [
+    supabase.from('site_settings').select('key,value').order('key', { ascending: true }).limit(200),
+    supabase.from('situation_update').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
+    supabase.from('emergency_post').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
+    supabase.from('scam_alert').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
+    supabase.from('question').select('*').order('created_date', { ascending: false }).limit(20),
+    supabase.from('unified_explore_feed').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(100),
+  ];
+
+  try {
+    const results = await Promise.all(requests);
+    const failed = results.find(result => result.error);
+    if (failed) throw failed.error;
+    const [settings, situations, emergencies, scams, questions, posts] = results.map(result => result.data || []);
+
+    return {
+      settings: Object.fromEntries(settings.map(setting => [setting.key, setting.value])),
+      situations,
+      emergencies,
+      scams,
+      questions,
+      posts: posts.filter(isPubliclyVisible).slice(0, 50),
+    };
+  } catch (error) {
+    console.warn('[community] Server hub fetch failed:', error.message);
+    return empty;
+  }
+}
+
+export async function getTrendingHubData(limit = 9) {
+  const supabase = createServerSupabase();
+  const empty = { posts: [], categories: [], districts: [] };
+  if (!supabase) return empty;
+
+  try {
+    const { data, error } = await supabase
+      .from('post')
+      .select('*')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(300);
+    if (error) throw error;
+
+    const visible = (data || []).filter(isPubliclyVisible);
+    const weekCutoff = Date.now() - 7 * 24 * 3600 * 1000;
+    const posts = visible
+      .filter(post => new Date(post.created_date).getTime() >= weekCutoff)
+      .map(post => ({ ...post, _score: engagementScore(post), _reason: trendingReason(post) }))
+      .sort((a, b) => b._score - a._score)
+      .slice(0, limit);
+    const categoryMap = {};
+    const districtMap = {};
+
+    visible.forEach((post) => {
+      const score = engagementScore(post);
+      if (post.category_slug) {
+        const category = categoryMap[post.category_slug] ||= {
+          slug: post.category_slug,
+          name: post.category_name || post.category_slug,
+          postCount: 0,
+          engagement: 0,
+        };
+        category.postCount += 1;
+        category.engagement += score;
+      }
+      if (post.district_slug) {
+        const district = districtMap[post.district_slug] ||= {
+          slug: post.district_slug,
+          name: post.district_name || post.district_slug,
+          postCount: 0,
+          engagement: 0,
+          recentPosts: [],
+        };
+        district.postCount += 1;
+        district.engagement += score;
+        if (district.recentPosts.length < 3) district.recentPosts.push(post);
+      }
+    });
+
+    return {
+      posts,
+      categories: Object.values(categoryMap).sort((a, b) => b.engagement - a.engagement).slice(0, 8),
+      districts: Object.values(districtMap).sort((a, b) => b.engagement - a.engagement).slice(0, 10),
+    };
+  } catch (error) {
+    console.warn('[trending] Server hub fetch failed:', error.message);
+    return empty;
+  }
+}
+
+export async function getActiveBribePosts(limit = 200) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('post')
+      .select('*')
+      .eq('post_type', 'bribe')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return (data || []).filter(isPubliclyVisible);
+  } catch (error) {
+    console.warn('[bribes] Server report fetch failed:', error.message);
     return [];
   }
 }

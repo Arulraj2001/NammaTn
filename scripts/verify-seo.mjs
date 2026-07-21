@@ -98,4 +98,17 @@ assert.match(areasPage, /getActiveAreas/, 'Areas must fetch initial server data'
 assert.match(areasView, /initialData:\s*initialAreas/, 'Areas must hydrate from server data');
 assert.doesNotMatch(officesPage, /ssr:\s*false/, 'The static offices directory must be server rendered');
 
+const communityPage = await read('src/app/(user)/community/page.jsx');
+const communityView = await read('src/views/Community.jsx');
+const trendingPage = await read('src/app/(user)/trending/page.jsx');
+const trendingView = await read('src/views/Trending.jsx');
+const bribesPage = await read('src/app/(user)/bribes/page.jsx');
+const bribesView = await read('src/views/BribeDashboard.jsx');
+assert.match(communityPage, /getCommunityHubData/, 'Community must fetch its public pulse on the server');
+assert.match(communityView, /initialData:\s*initialData\?\.settings/, 'Community settings must hydrate from server data');
+assert.match(trendingPage, /getTrendingHubData/, 'Trending must fetch initial rankings on the server');
+assert.match(trendingView, /initialPosts=/, 'Trending posts must hydrate from server data');
+assert.match(bribesPage, /getActiveBribePosts/, 'Bribe transparency reports must fetch on the server');
+assert.match(bribesView, /initialData:\s*initialBribePosts/, 'Bribe reports must hydrate from server data');
+
 console.log('SEO and Clarity audit checks passed.');

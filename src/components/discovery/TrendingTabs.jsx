@@ -25,7 +25,7 @@ function TrendingReason({ reason }) {
   );
 }
 
-export default function TrendingTabs({ limit = 9 }) {
+export default function TrendingTabs({ limit = 9, initialPosts }) {
   const [dateTab, setDateTab] = useState("week");
   const [districtFilter, setDistrictFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -42,6 +42,9 @@ export default function TrendingTabs({ limit = 9 }) {
       civicOnly,
       dateRange: dateTab,
     }),
+    initialData: dateTab === "week" && districtFilter === "all" && categoryFilter === "all" && !civicOnly
+      ? initialPosts
+      : undefined,
     staleTime: 120_000,
   });
 

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -90,7 +92,7 @@ function AudioPlayer({ src }) {
   );
 }
 
-export default function BribeDashboard() {
+export default function BribeDashboard({ initialBribePosts }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
 
@@ -111,6 +113,7 @@ export default function BribeDashboard() {
       if (error) throw error;
       return data || [];
     },
+    initialData: initialBribePosts,
     staleTime: 60_000,
   });
 

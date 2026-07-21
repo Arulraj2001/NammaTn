@@ -6,13 +6,14 @@ import { useLanguage } from "@/context/LanguageContext";
 import { getTrendingDistricts } from "@/services/trending";
 import { getDistrictBySlug } from "@/lib/districts";
 
-export default function DistrictRanking({ limit = 8 }) {
+export default function DistrictRanking({ limit = 8, initialDistricts }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
 
   const { data: districts = [], isLoading } = useQuery({
     queryKey: ["trending-districts"],
     queryFn: getTrendingDistricts,
+    initialData: initialDistricts,
     staleTime: 180_000,
   });
 
@@ -43,7 +44,7 @@ export default function DistrictRanking({ limit = 8 }) {
             const name = info ? T(info.name_en, info.name_ta) : d.name || d.slug;
             const pct = Math.round((d.engagement / max) * 100);
             return (
-              <Link key={d.slug} to={`/district/${d.slug}`} className="flex items-center gap-3 group hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl px-2 py-1.5 transition-colors">
+              <Link key={d.slug} to={`/${d.slug}/`} className="flex items-center gap-3 group hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl px-2 py-1.5 transition-colors">
                 <span className={`text-xs font-bold w-5 text-center ${RANK_COLORS[i] || "text-slate-400"}`}>#{i + 1}</span>
                 <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
