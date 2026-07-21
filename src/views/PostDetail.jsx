@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "@/lib/router-compat";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -44,8 +46,9 @@ const TYPE_CONFIG = {
   discussion: { icon: MessageCircle, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20", label_en: "Discussion", label_ta: "விவாதம்" },
 };
 
-export default function PostDetail() {
-  const { id } = useParams();
+export default function PostDetail({ initialId, initialPost, initialComplaintTrackers = [] }) {
+  const routeParams = useParams();
+  const id = initialId || routeParams.id;
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
@@ -60,6 +63,7 @@ export default function PostDetail() {
   const { data: post, isLoading, refetch } = useQuery({
     queryKey: ["post", id],
     queryFn: () => getPostById(id),
+    initialData: initialPost,
     enabled: !!id,
   });
 
@@ -93,6 +97,7 @@ export default function PostDetail() {
       if (error) return [];
       return data || [];
     },
+    initialData: initialComplaintTrackers,
     enabled: !!post?.id && isCivicPost(post),
     staleTime: 60_000,
   });

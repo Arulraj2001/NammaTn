@@ -186,4 +186,12 @@ assert.match(tnTodayArticlePage, /getTnTodayArticle/, 'TN Today articles must us
 assert.match(tnTodayArticleView, /initialData:\s*initialArticle/, 'TN Today article queries must hydrate from server data');
 assert.match(tnTodayServerDetail, /sanitizeHtml/, 'Editorial HTML must be sanitized before server rendering');
 
+const postDetailPage = await read('src/app/(user)/post/[id]/page.jsx');
+const postDetailView = await read('src/views/PostDetail.jsx');
+const shareBar = await read('src/components/sharing/ShareBar.jsx');
+assert.doesNotMatch(postDetailPage, /PostDetailClient/, 'Post detail content must not use a client-only wrapper');
+assert.match(postDetailPage, /getPublicPostDetail/, 'Post details must use the bounded server fetcher');
+assert.match(postDetailView, /initialData:\s*initialPost/, 'Post detail queries must hydrate from server data');
+assert.doesNotMatch(shareBar, /window\.location/, 'Post sharing must be safe during server rendering');
+
 console.log('SEO and Clarity audit checks passed.');
