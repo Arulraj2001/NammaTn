@@ -130,9 +130,13 @@ function EmptyState({ categoryLabel }) {
 }
 
 // ─── Main Archive Page ────────────────────────────────────────────────────────
-export default function TnToday() {
+export default function TnToday({
+  initialArticles = [],
+  initialFeatured = null,
+  initialCategory = '',
+}) {
   const { category: routeCategory } = useParams();
-  const [activeCategory, setActiveCategory] = useState(routeCategory || "");
+  const [activeCategory, setActiveCategory] = useState(routeCategory || initialCategory || "");
   const [searchQ, setSearchQ] = useState("");
 
   const cat = CATEGORIES.find(c => c.value === activeCategory);
@@ -145,14 +149,25 @@ export default function TnToday() {
   });
 
   const { data: featured } = useQuery({
-    queryKey: ["tn-today-featured"],
-    queryFn: getFeaturedTnToday,
+    queryKey: ["tn-today-featured", activeCategory],
+    queryFn: async () => {
+      if (!activeCategory) return getFeaturedTnToday();
+      const [latestInCategory] = await getPublishedTnToday({
+        limit: 1,
+        category: activeCategory,
+      });
+      return latestInCategory || null;
+    },
+    initialData: activeCategory === initialCategory
+      ? (initialFeatured || undefined)
+      : undefined,
     staleTime: 300_000,
   });
 
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ["tn-today-archive", activeCategory],
     queryFn: () => getPublishedTnToday({ limit: 50, category: activeCategory || null }),
+    initialData: activeCategory === initialCategory ? initialArticles : undefined,
     staleTime: 300_000,
   });
 

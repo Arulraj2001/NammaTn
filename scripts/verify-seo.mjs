@@ -57,4 +57,12 @@ for (const file of publicMetadataRoutes) {
   assert.match(source, /canonical:/, `${file} must define a canonical URL`);
 }
 
+const tnTodayPage = await read('src/app/(user)/tn-today/page.jsx');
+const tnTodayCategoryPage = await read('src/app/(user)/tn-today/category/[category]/page.jsx');
+const tnTodayView = await read('src/views/TnToday.jsx');
+assert.doesNotMatch(tnTodayPage, /ssr:\s*false/, 'TN Today archive must be server rendered');
+assert.doesNotMatch(tnTodayCategoryPage, /ssr:\s*false/, 'TN Today category archives must be server rendered');
+assert.match(tnTodayPage, /getTnTodayArchive/, 'TN Today archive must fetch server data');
+assert.match(tnTodayView, /initialData:/, 'TN Today client queries must hydrate with server data');
+
 console.log('SEO and Clarity audit checks passed.');
