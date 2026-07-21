@@ -124,4 +124,11 @@ assert.match(officeDetailPage, /generateMetadata/, 'Office detail routes must em
 assert.match(officeDetailPage, /canonical/, 'Office detail routes must define canonical URLs');
 assert.doesNotMatch(officeDetailView, /window\.location/, 'Office detail rendering must not depend on browser globals');
 
+const areaDetailPage = await read('src/app/(user)/area/[slug]/page.jsx');
+const areaDetailView = await read('src/views/AreaDetail.jsx');
+assert.match(areaDetailPage, /generateMetadata/, 'Area detail routes must emit server metadata');
+assert.match(areaDetailPage, /getAreaDetailData/, 'Area detail routes must fetch initial public data on the server');
+assert.match(areaDetailPage, /canonical/, 'Area detail routes must define canonical URLs');
+assert.match(areaDetailView, /initialData:\s*initialData\?\.area/, 'Area detail queries must hydrate from server data');
+
 console.log('SEO and Clarity audit checks passed.');

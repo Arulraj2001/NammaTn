@@ -223,8 +223,9 @@ function AreaScoreGauge({ score, T }) {
 /* ══════════════════════════════════════════════════════
    MAIN COMPONENT
 ══════════════════════════════════════════════════════ */
-export default function AreaDetail() {
-  const { slug } = useParams();
+export default function AreaDetail({ initialSlug, initialData }) {
+  const routeParams = useParams();
+  const slug = initialSlug || routeParams.slug;
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
@@ -236,6 +237,7 @@ export default function AreaDetail() {
   const { data: area, isLoading: areaLoading } = useQuery({
     queryKey: ["area", slug],
     queryFn: () => getAreaBySlug(slug),
+    initialData: initialData?.area,
     enabled: !!slug,
   });
 
@@ -249,6 +251,7 @@ export default function AreaDetail() {
   const { data: civicPosts = [], isLoading: civicLoading } = useQuery({
     queryKey: ["area-civic-posts", slug],
     queryFn: () => getAreaCivicPosts(slug, 100),
+    initialData: initialData?.civicPosts,
     enabled: !!slug,
     staleTime: 60_000,
   });
@@ -256,6 +259,7 @@ export default function AreaDetail() {
   const { data: scams = [] } = useQuery({
     queryKey: ["area-scams", slug],
     queryFn: () => getActiveScams(30),
+    initialData: initialData?.scams,
     select: (d) => d.filter((s) => s.area_slug === slug),
     staleTime: 60_000,
   });
@@ -263,6 +267,7 @@ export default function AreaDetail() {
   const { data: emergencies = [] } = useQuery({
     queryKey: ["area-emergencies", slug],
     queryFn: () => getActiveEmergencies(20),
+    initialData: initialData?.emergencies,
     select: (d) => d.filter((e) => e.area_slug === slug),
     staleTime: 60_000,
   });

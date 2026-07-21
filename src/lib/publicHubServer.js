@@ -223,3 +223,49 @@ export async function getActiveBribePosts(limit = 200) {
     return [];
   }
 }
+
+export async function getPublicArea(slug) {
+  const supabase = createServerSupabase();
+  if (!supabase || !slug) return null;
+
+  try {
+    const { data, error } = await supabase
+      .from('area')
+      .select('*')
+      .eq('slug', slug)
+      .eq('active', true)
+      .maybeSingle();
+    if (error) throw error;
+    return data || null;
+  } catch (error) {
+    console.warn(`[area:${slug}] Server area fetch failed:`, error.message);
+    return null;
+  }
+}
+
+export async function getAreaDetailData(slug) {
+  const supabase = createServerSupabase();
+  const empty = { area: null, civicPosts: [], scams: [], emergencies: [] };
+  if (!supabase || !slug) return empty;
+
+  try {
+    const results = await Promise.all([
+      supabase.from('area').select('*').eq('slug', slug).eq('active', true).maybeSingle(),
+      supabase.from('post').select('*').eq('area_slug', slug).eq('status', 'active').eq('post_type', 'complaint').order('created_date', { ascending: false }).limit(200),
+      supabase.from('scam_alert').select('*').eq('area_slug', slug).eq('status', 'active').order('created_date', { ascending: false }).limit(30),
+      supabase.from('emergency_post').select('*').eq('area_slug', slug).eq('status', 'active').order('created_date', { ascending: false }).limit(20),
+    ]);
+    const failed = results.find(result => result.error);
+    if (failed) throw failed.error;
+
+    return {
+      area: results[0].data || null,
+      civicPosts: (results[1].data || []).filter(post => post.civic_receipt_id && isPubliclyVisible(post)).slice(0, 100),
+      scams: results[2].data || [],
+      emergencies: results[3].data || [],
+    };
+  } catch (error) {
+    console.warn(`[area:${slug}] Server detail fetch failed:`, error.message);
+    return empty;
+  }
+}
