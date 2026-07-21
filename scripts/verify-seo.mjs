@@ -117,4 +117,11 @@ for (const section of ['emergency', 'faqs', 'guides', 'portals', 'schemes']) {
   assert.doesNotMatch(source, /nextDynamic/, `Awareness ${section} must not be a client-only shell`);
 }
 
+const officeDetailPage = await read('src/app/(user)/office/[slug]/page.jsx');
+const officeDetailView = await read('src/views/OfficeDetail.jsx');
+assert.match(officeDetailPage, /generateStaticParams/, 'Office detail routes must be statically discoverable');
+assert.match(officeDetailPage, /generateMetadata/, 'Office detail routes must emit server metadata');
+assert.match(officeDetailPage, /canonical/, 'Office detail routes must define canonical URLs');
+assert.doesNotMatch(officeDetailView, /window\.location/, 'Office detail rendering must not depend on browser globals');
+
 console.log('SEO and Clarity audit checks passed.');

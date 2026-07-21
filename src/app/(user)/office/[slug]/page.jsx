@@ -1,13 +1,33 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import OfficeDetail from '@/views/OfficeDetail';
+import { OFFICES, getOfficeBySlug } from '@/lib/offices';
 
-const OfficeDetail = nextDynamic(() => import('@/views/OfficeDetail'), { ssr: false });
+const SITE_URL = 'https://www.vizhitn.in';
 
-export default function Page() {
+export function generateStaticParams() {
+  return OFFICES.map(office => ({ slug: office.slug }));
+}
+
+export async function generateMetadata({ params }) {
+  const office = getOfficeBySlug(params.slug);
+  if (!office) return { title: 'Office Not Found', robots: { index: false } };
+
+  const title = `${office.name_en} Status & Citizen Reports in Tamil Nadu`;
+  const description = `Check community-reported waiting times, service status, and citizen experiences for ${office.name_en} locations across Tamil Nadu.`;
+  const canonical = `${SITE_URL}/office/${office.slug}/`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: 'website' },
+  };
+}
+
+export default function Page({ params, searchParams }) {
   return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <OfficeDetail />
-    </Suspense>
+    <OfficeDetail
+      initialSlug={params.slug}
+      initialDistrict={searchParams?.district || ''}
+    />
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useParams, Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,10 +18,10 @@ import { useAuthModal } from "@/context/AuthModalContext";
 const WAIT_LABELS = { less_30min: "< 30 min", "30_60min": "30–60 min", "1_2hrs": "1–2 hrs", "2_3hrs": "2–3 hrs", more_3hrs: "> 3 hrs", not_served: "Not Served" };
 const STATUS_LABELS = { open_normal: { l: "Open (Normal)", c: "text-green-600" }, open_slow: { l: "Open (Slow)", c: "text-yellow-600" }, partial: { l: "Partial Service", c: "text-orange-600" }, closed: { l: "Closed", c: "text-red-600" }, system_down: { l: "System Down", c: "text-red-600" } };
 
-export default function OfficeDetail() {
-  const { slug } = useParams();
-  const urlParams = new URLSearchParams(window.location.search);
-  const defaultDistrict = urlParams.get("district") || "";
+export default function OfficeDetail({ initialSlug, initialDistrict = "" }) {
+  const routeParams = useParams();
+  const slug = initialSlug || routeParams.slug;
+  const defaultDistrict = initialDistrict;
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
