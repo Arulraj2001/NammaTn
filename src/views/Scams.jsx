@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -28,7 +29,7 @@ const SCAM_TYPES = [
   { value: "other", label: "❗ Other Alert" },
 ];
 
-export default function Scams() {
+export default function Scams({ initialScams = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
@@ -76,6 +77,8 @@ export default function Scams() {
     queryFn: () => filterDistrict
       ? base44.entities.ScamAlert.filter({ status: "active", district_slug: filterDistrict }, "-created_date", 40)
       : getActiveScams(40),
+    initialData: filterDistrict ? undefined : initialScams,
+    staleTime: 300_000,
   });
 
   const { data: areas = [] } = useQuery({

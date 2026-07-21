@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Home, Plus, X, Building, Users, Clock, Hotel, MapPin, ChevronDown, ChevronUp } from "lucide-react";
@@ -30,7 +31,7 @@ function ListingSkeleton() {
   return <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 h-64 animate-pulse" />;
 }
 
-export default function Stay() {
+export default function Stay({ initialListings = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
@@ -67,7 +68,8 @@ export default function Stay() {
   const { data: listings = [], isLoading } = useQuery({
     queryKey: ["stay-listings"],
     queryFn: () => getActiveListings(100),
-    staleTime: 30000,
+    initialData: initialListings,
+    staleTime: 300_000,
   });
 
   const filteredListings = useMemo(() => {

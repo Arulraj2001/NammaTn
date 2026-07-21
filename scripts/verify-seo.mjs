@@ -73,4 +73,22 @@ assert.match(cityIssuePage, /params\?\.city/, 'Nested static params must build o
 assert.match(cityIssuePage, /createServerSupabase/, 'City issue data must use bounded server requests');
 assert.match(serverSupabase, /DEFAULT_TIMEOUT_MS\s*=\s*3000/, 'Server Supabase requests need a deployment-safe timeout');
 
+const scamsPage = await read('src/app/(user)/scams/page.jsx');
+const scamsView = await read('src/views/Scams.jsx');
+assert.doesNotMatch(scamsPage, /ssr:\s*false/, 'Scam alerts must be server rendered');
+assert.match(scamsPage, /getActiveScamAlerts/, 'Scam alerts must fetch initial server data');
+assert.match(scamsView, /initialData:\s*filterDistrict/, 'Scam filters must hydrate from server data only for the unfiltered list');
+
+const jobsPage = await read('src/app/(user)/jobs/page.jsx');
+const jobsView = await read('src/views/Jobs.jsx');
+assert.doesNotMatch(jobsPage, /ssr:\s*false/, 'Job alerts must be server rendered');
+assert.match(jobsPage, /getActiveJobAlerts/, 'Job alerts must fetch initial server data');
+assert.match(jobsView, /initialData:\s*!filterDistrict/, 'Job filters must hydrate from the unfiltered server list');
+
+const stayPage = await read('src/app/(user)/stay/page.jsx');
+const stayView = await read('src/views/Stay.jsx');
+assert.doesNotMatch(stayPage, /ssr:\s*false/, 'Stay listings must be server rendered');
+assert.match(stayPage, /getActiveStayListings/, 'Stay listings must fetch initial server data');
+assert.match(stayView, /initialData:\s*initialListings/, 'Stay listings must hydrate from server data');
+
 console.log('SEO and Clarity audit checks passed.');

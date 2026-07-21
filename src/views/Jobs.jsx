@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -24,7 +25,7 @@ const JOB_TYPES = [
   { value: "other", label: "Other" },
 ];
 
-export default function Jobs() {
+export default function Jobs({ initialJobs = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const { isAuthenticated, user } = useAuth();
@@ -71,7 +72,8 @@ export default function Jobs() {
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["jobs", filterDistrict, filterType],
     queryFn: () => getActiveJobs(40, filterDistrict, filterType),
-    staleTime: 30_000,
+    initialData: !filterDistrict && !filterType ? initialJobs : undefined,
+    staleTime: 300_000,
   });
 
   const { data: areas = [] } = useQuery({
