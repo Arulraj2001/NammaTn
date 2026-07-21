@@ -2,7 +2,7 @@
 // City/District hub page — fully server-rendered.
 //
 // SEO PHASE 1 FIXES:
-// - generateStaticParams now covers ALL 38 TN districts (was only 10)
+// - Priority districts pre-render at build; remaining districts generate on demand
 // - Rich unique SSR description per district using neighborhoods data
 // - Visible report count as server-rendered text
 // - FAQ structured data (how to complain in this district)
@@ -12,8 +12,8 @@
 import React from 'react';
 import Link from 'next/link';
 import nextDynamic from 'next/dynamic';
-import { createClient } from '@supabase/supabase-js';
-import { DISTRICT_MAP, DISTRICTS, CATEGORIES, SITE_URL } from '@/lib/seo-data';
+import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORIES, SITE_URL } from '@/lib/seo-data';
+import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
 import { NearbyDistrictLinks, DistrictCategoryLinks } from '@/components/seo/InternalLinks';
 
@@ -22,17 +22,11 @@ export const revalidate = 3600;
 // DistrictDetail renders in server HTML on first request
 const DistrictDetail = nextDynamic(() => import('@/views/DistrictDetail'), { ssr: true });
 
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY,
-  );
-}
-
 // Server-side: fetch recent top reports per district for above-the-fold server HTML
 async function fetchTopReports(districtSlug) {
   try {
-    const supabase = getSupabase();
+    const supabase = createServerSupabase();
+    if (!supabase) return [];
     const { data } = await supabase
       .from('unified_explore_feed')
       .select('id,title_en,content_en,category_slug,area_slug,created_date,upvotes')
@@ -49,7 +43,8 @@ async function fetchTopReports(districtSlug) {
 // Fetch total active report count for the district
 async function fetchReportCount(districtSlug) {
   try {
-    const supabase = getSupabase();
+    const supabase = createServerSupabase();
+    if (!supabase) return 0;
     const { count } = await supabase
       .from('unified_explore_feed')
       .select('id', { count: 'exact', head: true })
@@ -61,9 +56,9 @@ async function fetchReportCount(districtSlug) {
   }
 }
 
-// SEO PHASE 1 FIX: generateStaticParams now covers ALL 38 TN districts
+// Pre-render priority districts; all other valid districts generate on demand.
 export async function generateStaticParams() {
-  return DISTRICTS.map(d => ({ city: d.slug }));
+  return BUILD_TIME_DISTRICT_SLUGS.map(city => ({ city }));
 }
 
 export async function generateMetadata({ params }) {

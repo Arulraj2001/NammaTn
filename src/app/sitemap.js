@@ -3,17 +3,10 @@
 // Fallback to Tier 1 static pairs if DB is unreachable.
 // SEO PHASE 1: Also includes /tn-today/[slug] article URLs.
 
-import { createClient } from '@supabase/supabase-js';
 import { DISTRICTS, CATEGORIES, DISTRICT_MAP, CATEGORY_MAP } from '@/lib/seo-data';
+import { createServerSupabase } from '@/lib/serverSupabase';
 
 const SITE_URL = 'https://www.vizhitn.in';
-
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY,
-  );
-}
 
 export default async function sitemap() {
   const entries = [];
@@ -36,7 +29,8 @@ export default async function sitemap() {
 
   // ── Level 3: City × Issue pages — ONLY those with ≥1 active report ────────
   try {
-    const supabase = getSupabase();
+    const supabase = createServerSupabase();
+    if (!supabase) throw new Error('Supabase is not configured');
 
     // Fetch distinct (district_slug, category_slug) pairs with active posts
     const { data: activePairs, error } = await supabase
@@ -88,7 +82,8 @@ export default async function sitemap() {
 
   // ── TN Today articles (published) ──────────────────────────────────────
   try {
-    const supabase = getSupabase();
+    const supabase = createServerSupabase();
+    if (!supabase) throw new Error('Supabase is not configured');
     const { data: articles } = await supabase
       .from('tn_today')
       .select('slug, updated_date, publish_date')

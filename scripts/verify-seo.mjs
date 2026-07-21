@@ -65,4 +65,12 @@ assert.doesNotMatch(tnTodayCategoryPage, /ssr:\s*false/, 'TN Today category arch
 assert.match(tnTodayPage, /getTnTodayArchive/, 'TN Today archive must fetch server data');
 assert.match(tnTodayView, /initialData:/, 'TN Today client queries must hydrate with server data');
 
+const cityPage = await read('src/app/(user)/[city]/page.jsx');
+const cityIssuePage = await read('src/app/(user)/[city]/[issue]/page.jsx');
+const serverSupabase = await read('src/lib/serverSupabase.js');
+assert.match(cityPage, /BUILD_TIME_DISTRICT_SLUGS/, 'District pre-rendering must use a bounded priority list');
+assert.match(cityIssuePage, /params\?\.city/, 'Nested static params must build only the current parent district');
+assert.match(cityIssuePage, /createServerSupabase/, 'City issue data must use bounded server requests');
+assert.match(serverSupabase, /DEFAULT_TIMEOUT_MS\s*=\s*3000/, 'Server Supabase requests need a deployment-safe timeout');
+
 console.log('SEO and Clarity audit checks passed.');

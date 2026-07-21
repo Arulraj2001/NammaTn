@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createServerSupabase } from '@/lib/serverSupabase';
 
 const ARTICLE_FIELDS = [
   'id', 'title', 'slug', 'subtitle', 'featured_image', 'category',
@@ -7,19 +7,13 @@ const ARTICLE_FIELDS = [
 ].join(',');
 
 export async function getTnTodayArchive(category = null) {
-  const url = process.env.NEXT_PUBLIC_VITE_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
-
-  if (!url || !anonKey) {
+  const supabase = createServerSupabase();
+  if (!supabase) {
     console.warn('[tn-today] Supabase environment variables are unavailable');
     return { articles: [], featured: null };
   }
 
   try {
-    const supabase = createClient(url, anonKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-
     let query = supabase
       .from('tn_today')
       .select(ARTICLE_FIELDS)

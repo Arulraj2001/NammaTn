@@ -6,7 +6,7 @@
 // page.jsx only handles: DB fetch → core call → render.
 //
 // SEO PHASE 1 FIXES:
-// - generateStaticParams covers ALL 38 districts × 6 categories (228 pages)
+// - Priority district/category pages pre-render; remaining valid pages generate on demand
 // - Enriched meta description with neighborhood names
 // - District+category FAQ structured data for rich results
 // - SSR intro paragraph (unique per city+issue) above content modules
@@ -21,8 +21,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { createClient } from '@supabase/supabase-js';
-import { DISTRICT_MAP, DISTRICTS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
+import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
+import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
 
 import { runAutonomousCoreAsync }  from '@/lib/seo/autonomousSeoCore';
@@ -33,17 +33,11 @@ import { DEFAULT_SUBSYSTEM_WEIGHTS, computeWeightAdjustments } from '@/lib/seo/s
 
 export const revalidate = 3600;
 
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY,
-  );
-}
-
 // ── DB FETCH ──────────────────────────────────────────────────────────────────
 async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_date') {
   try {
-    const supabase = getSupabase();
+    const supabase = createServerSupabase();
+    if (!supabase) return { reports: [] };
     const targetSlugs = [issueSlug];
     if (issueSlug === 'electricity')         targetSlugs.push('power-cut');
     if (issueSlug === 'power-cut')           targetSlugs.push('electricity');
@@ -99,10 +93,11 @@ export async function generateMetadata({ params }) {
 }
 
 // ── STATIC PARAMS ─────────────────────────────────────────────────────────────
-// ALL 38 districts × 6 categories = 228 pages pre-rendered at build time
-export async function generateStaticParams() {
+// Keep deployments fast while retaining on-demand ISR for every valid pair.
+export async function generateStaticParams({ params } = {}) {
   const issues = ['power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay'];
-  return DISTRICTS.flatMap(d => issues.map(issue => ({ city: d.slug, issue })));
+  if (!params?.city || !BUILD_TIME_DISTRICT_SLUGS.includes(params.city)) return [];
+  return issues.map(issue => ({ issue }));
 }
 
 // Build district+category-specific FAQ structured data
