@@ -1,13 +1,13 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import React from 'react';
+import HowToUse from '@/views/HowToUse';
 
-const HowToUse = nextDynamic(() => import('@/views/HowToUse'), { ssr: false });
+export const metadata = {
+  title: 'How to Use VizhiTN',
+  description: 'Learn how to report civic issues, share local alerts, verify updates, and participate safely in VizhiTN communities.',
+  alternates: { canonical: '/how-to-use' },
+  openGraph: { title: 'How to Use VizhiTN', description: 'A practical guide to reporting and participating on VizhiTN.', url: '/how-to-use' },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <HowToUse />
-    </Suspense>
-  );
+  return <HowToUse />;
 }

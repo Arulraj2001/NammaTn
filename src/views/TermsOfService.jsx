@@ -171,7 +171,7 @@ export default function TermsOfService() {
       'VizhiTN Terms of Service — read our rules for using the civic platform, content guidelines, disclaimers, and user licensing.',
       'VizhiTN சேவை விதிமுறைகள் — குடிமைத் தளத்தைப் பயன்படுத்துவதற்கான விதிகள், பொறுப்புத் துறப்புகள் மற்றும் உரிம வழிகாட்டிகள்.'
     ),
-    canonical: 'https://vizhitn.in/terms',
+    canonical: 'https://www.vizhitn.in/terms',
   });
 
   return (

@@ -53,13 +53,18 @@ export default function Page() {
         <Home />
       </Suspense>
 
-      {/* Server-rendered SEO internal links — below the fold, not disruptive to UI.
-          These pass homepage link equity down to district and category hub pages.
-          Googlebot reads these even if JS never runs. */}
-      <div className="sr-only" aria-hidden="true">
-        <HomeCityLinks />
-        <AllCategoryLinks />
-      </div>
+      <section className="border-t border-slate-200 bg-white py-10 dark:border-slate-800 dark:bg-slate-900">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
+          <div>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900 dark:text-white">Browse by district</h2>
+            <HomeCityLinks />
+          </div>
+          <div>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900 dark:text-white">Browse by civic issue</h2>
+            <AllCategoryLinks />
+          </div>
+        </div>
+      </section>
     </>
   );
 }

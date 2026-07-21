@@ -15,16 +15,12 @@ function getSupabase() {
   );
 }
 
-// Stable date: does not change within a given UTC day — prevents sitemap churn
-const TODAY = new Date().toISOString().slice(0, 10) + 'T00:00:00.000Z';
-
 export default async function sitemap() {
   const entries = [];
 
   // ── Level 1: Homepage ─────────────────────────────────────────────────────
   entries.push({
     url: `${SITE_URL}/`,
-    lastModified: TODAY,
     changeFrequency: 'hourly',
     priority: 1.0,
   });
@@ -33,7 +29,6 @@ export default async function sitemap() {
   DISTRICTS.forEach(city => {
     entries.push({
       url: `${SITE_URL}/${city.slug}/`,
-      lastModified: TODAY,
       changeFrequency: 'daily',
       priority: 0.8,
     });
@@ -46,29 +41,36 @@ export default async function sitemap() {
     // Fetch distinct (district_slug, category_slug) pairs with active posts
     const { data: activePairs, error } = await supabase
       .from('post')
-      .select('district_slug, category_slug')
+      .select('district_slug, category_slug, created_date, updated_date')
       .eq('status', 'active')
       .not('district_slug', 'is', null)
       .not('category_slug', 'is', null);
 
     if (error) throw error;
 
-    const seen = new Set();
+    const pairDates = new Map();
     (activePairs || []).forEach(p => {
       const key = `${p.district_slug}:${p.category_slug}`;
       if (
-        !seen.has(key) &&
         DISTRICT_MAP[p.district_slug] &&
         CATEGORY_MAP[p.category_slug]
       ) {
-        seen.add(key);
-        entries.push({
-          url: `${SITE_URL}/${p.district_slug}/${p.category_slug}/`,
-          lastModified: TODAY,
-          changeFrequency: 'daily',
-          priority: 0.7,
-        });
+        const changedAt = p.updated_date || p.created_date;
+        const current = pairDates.get(key);
+        if (!current || (changedAt && new Date(changedAt) > new Date(current))) {
+          pairDates.set(key, changedAt || null);
+        }
       }
+    });
+
+    pairDates.forEach((lastModified, key) => {
+      const [districtSlug, categorySlug] = key.split(':');
+      entries.push({
+        url: `${SITE_URL}/${districtSlug}/${categorySlug}/`,
+        ...(lastModified ? { lastModified } : {}),
+        changeFrequency: 'daily',
+        priority: 0.7,
+      });
     });
   } catch (e) {
     console.warn('[sitemap] DB unavailable — falling back to Tier 1 static pairs:', e.message);
@@ -77,7 +79,6 @@ export default async function sitemap() {
       CATEGORIES.forEach(issue => {
         entries.push({
           url: `${SITE_URL}/${city}/${issue.slug}/`,
-          lastModified: TODAY,
           changeFrequency: 'daily',
           priority: 0.7,
         });
@@ -99,7 +100,9 @@ export default async function sitemap() {
       if (!a.slug) return;
       entries.push({
         url: `${SITE_URL}/tn-today/${a.slug}`,
-        lastModified: a.updated_date || a.publish_date || TODAY,
+        ...(a.updated_date || a.publish_date
+          ? { lastModified: a.updated_date || a.publish_date }
+          : {}),
         changeFrequency: 'weekly',
         priority: 0.6,
       });
@@ -109,10 +112,23 @@ export default async function sitemap() {
   }
 
   // ── Utility pages ───────────────────────────────────────────────────
-  ['/about/', '/contact/', '/privacy-policy/', '/terms/', '/how-to-use/'].forEach(path => {
+  CATEGORIES.forEach(category => {
+    entries.push({
+      url: `${SITE_URL}/category/${category.slug}/`,
+      changeFrequency: 'daily',
+      priority: 0.7,
+    });
+  });
+
+  [
+    '/districts', '/areas', '/awareness', '/awareness/emergency',
+    '/awareness/faqs', '/awareness/guides', '/awareness/portals',
+    '/awareness/schemes', '/community', '/community/wins', '/scams',
+    '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
+    '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
+  ].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,
-      lastModified: '2026-06-30T00:00:00.000Z',
       changeFrequency: 'monthly',
       priority: 0.5,
     });

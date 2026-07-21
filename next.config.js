@@ -57,11 +57,11 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://*.clarity.ms",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://hzgrzcablefquddisqkf.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://vizhitn.in https://*.bing.com https://*.bing.net https://unpkg.com https://*.tile.openstreetmap.org https://*.tn.gov.in https://*.gov.in",
-              "connect-src 'self' https://hzgrzcablefquddisqkf.supabase.co wss://hzgrzcablefquddisqkf.supabase.co https://pagead2.googlesyndication.com https://www.google-analytics.com",
+              "img-src 'self' data: blob: https://hzgrzcablefquddisqkf.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://vizhitn.in https://*.bing.com https://*.bing.net https://*.clarity.ms https://c.bing.com https://unpkg.com https://*.tile.openstreetmap.org https://*.tn.gov.in https://*.gov.in",
+              "connect-src 'self' https://hzgrzcablefquddisqkf.supabase.co wss://hzgrzcablefquddisqkf.supabase.co https://pagead2.googlesyndication.com https://www.google-analytics.com https://*.clarity.ms https://c.bing.com",
               "frame-src 'self' https://pagead2.googlesyndication.com",
               "object-src 'none'",
               "base-uri 'self'",
@@ -92,6 +92,12 @@ const nextConfig = {
   // ── Redirects for SEO (old URLs → new) ────────────────────────────────────
   async redirects() {
     return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'vizhitn.in' }],
+        destination: 'https://www.vizhitn.in/:path*',
+        permanent: true,
+      },
       { source: '/privacy', destination: '/privacy-policy', permanent: true },
       { source: '/tos',     destination: '/terms',           permanent: true },
       // Redirect old /district/:slug to canonical /:slug/ — route file removed to save crawl budget

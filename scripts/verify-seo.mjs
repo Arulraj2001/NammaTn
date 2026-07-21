@@ -1,0 +1,60 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import nextConfig from '../next.config.js';
+
+const root = process.cwd();
+const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
+
+const headerRules = await nextConfig.headers();
+const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';
+assert.match(csp, /https:\/\/\*\.clarity\.ms/, 'CSP must allow Clarity resources');
+assert.match(csp, /https:\/\/c\.bing\.com/, 'CSP must allow Clarity collection fallback');
+
+const redirects = await nextConfig.redirects();
+assert.ok(
+  redirects.some(rule => rule.has?.some(condition => condition.type === 'host' && condition.value === 'vizhitn.in')),
+  'A non-www to www redirect is required',
+);
+
+const rootLayout = await read('src/app/layout.jsx');
+assert.match(rootLayout, /VizhiTN_cookie_consent/, 'Clarity must be consent gated');
+assert.doesNotMatch(rootLayout, /alternates:\s*\{\s*canonical:\s*SITE_URL/, 'Root layout must not set a homepage canonical for every route');
+
+const robots = await read('public/robots.txt');
+for (const route of ['/dashboard/', '/me/', '/bookmarks/']) {
+  assert.ok(!robots.includes(`Disallow: ${route}`), `${route} must remain crawlable so noindex can be read`);
+}
+
+const sitemap = await read('src/app/sitemap.js');
+assert.doesNotMatch(sitemap, /\bTODAY\b/, 'Sitemap must not manufacture daily lastModified dates');
+assert.match(sitemap, /updated_date/, 'Dynamic sitemap entries must use real update timestamps');
+assert.match(sitemap, /\/category\/\$\{category\.slug\}/, 'Category hubs must be present in the sitemap');
+
+const privateLayouts = [
+  'src/app/admin/layout.jsx',
+  'src/app/(user)/bookmarks/layout.jsx',
+  'src/app/(user)/dashboard/layout.jsx',
+  'src/app/(user)/me/layout.jsx',
+  'src/app/(user)/create/layout.jsx',
+];
+for (const file of privateLayouts) {
+  assert.match(await read(file), /index:\s*false/, `${file} must emit noindex`);
+}
+
+const publicMetadataRoutes = [
+  'src/app/(user)/about/page.jsx',
+  'src/app/(user)/contact/page.jsx',
+  'src/app/(user)/districts/page.jsx',
+  'src/app/(user)/awareness/page.jsx',
+  'src/app/(user)/how-to-use/page.jsx',
+  'src/app/(user)/privacy-policy/page.jsx',
+  'src/app/(user)/terms/page.jsx',
+];
+for (const file of publicMetadataRoutes) {
+  const source = await read(file);
+  assert.match(source, /export const metadata/, `${file} must export server metadata`);
+  assert.match(source, /canonical:/, `${file} must define a canonical URL`);
+}
+
+console.log('SEO and Clarity audit checks passed.');

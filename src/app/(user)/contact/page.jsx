@@ -1,13 +1,13 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import React from 'react';
+import Contact from '@/views/Contact';
 
-const Contact = nextDynamic(() => import('@/views/Contact'), { ssr: false });
+export const metadata = {
+  title: 'Contact',
+  description: 'Contact VizhiTN for platform support, feedback, content reports, partnerships, or advertising enquiries.',
+  alternates: { canonical: '/contact' },
+  openGraph: { title: 'Contact VizhiTN', description: 'Support, feedback and enquiries for VizhiTN.', url: '/contact' },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <Contact />
-    </Suspense>
-  );
+  return <Contact />;
 }

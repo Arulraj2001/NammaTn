@@ -1,13 +1,17 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import React from 'react';
+import About from '@/views/About';
 
-const About = nextDynamic(() => import('@/views/About'), { ssr: false });
+export const metadata = {
+  title: 'About',
+  description: 'Learn how VizhiTN helps Tamil Nadu residents report civic issues, share verified local updates, and improve their communities.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About VizhiTN',
+    description: 'A people-powered civic information and community platform for Tamil Nadu.',
+    url: '/about',
+  },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <About />
-    </Suspense>
-  );
+  return <About />;
 }

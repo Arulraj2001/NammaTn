@@ -66,7 +66,7 @@ export default function About() {
       "Learn about VizhiTN — our mission, why we were created, our Civic Receipts system, transparency goals, and how we support civic awareness in Tamil Nadu.",
       'VizhiTN பற்றி அறிந்துகொள்ளுங்கள் — எங்கள் நோக்கம், ஏன் உருவாக்கப்பட்டோம், குடிமை ரசீதுகள் முறை மற்றும் தமிழ்நாட்டில் குடிமை விழிப்புணர்வை எவ்வாறு ஆதரிக்கிறோம்.'
     ),
-    canonical: 'https://vizhitn.in/about',
+    canonical: 'https://www.vizhitn.in/about',
   });
 
   return (

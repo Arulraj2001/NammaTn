@@ -1,13 +1,13 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import React from 'react';
+import PrivacyPolicy from '@/views/PrivacyPolicy';
 
-const PrivacyPolicy = nextDynamic(() => import('@/views/PrivacyPolicy'), { ssr: false });
+export const metadata = {
+  title: 'Privacy Policy',
+  description: 'Read how VizhiTN collects, uses, protects, and manages personal data and analytics consent.',
+  alternates: { canonical: '/privacy-policy' },
+  robots: { index: true, follow: true },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <PrivacyPolicy />
-    </Suspense>
-  );
+  return <PrivacyPolicy />;
 }

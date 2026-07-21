@@ -4,9 +4,9 @@ Allow: /
 # ── Private / auth routes ─────────────────────────────────────────────────────
 Disallow: /admin/
 Disallow: /api/
-Disallow: /dashboard/
-Disallow: /me/
-Disallow: /bookmarks/
+
+# Account pages are crawlable only so bots can read their server-rendered
+# noindex directives; they are not included in the sitemap.
 
 # ── Auth pages (no indexable content) ────────────────────────────────────────
 Disallow: /login

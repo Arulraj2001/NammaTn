@@ -125,7 +125,7 @@ export default function PrivacyPolicy() {
       'VizhiTN Privacy Policy — details on data collection, selective location usage, cookies, Google AdSense & Analytics disclosures, and account deletion rights.',
       'VizhiTN தனியுரிமைக் கொள்கை — தரவு சேகரிப்பு, குக்கீகள், Google AdSense & Analytics அறிவிப்புகள் மற்றும் தரவு நீக்க உரிமைகள்.'
     ),
-    canonical: 'https://vizhitn.in/privacy-policy',
+    canonical: 'https://www.vizhitn.in/privacy-policy',
   });
 
   return (

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Mail, MessageSquare, Shield, HelpCircle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";

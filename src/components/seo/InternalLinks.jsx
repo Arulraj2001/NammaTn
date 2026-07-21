@@ -3,26 +3,15 @@
 // All components are server-renderable (no "use client" — pure HTML links).
 //
 // Rules:
-//  1. Anchor text is keyword-rich (city + issue) with dynamic anchor ratio variation
-//  2. Links use canonical paths (trailing slash consistent with sitemap)
-//  3. No duplicate link targets within same page
+//  1. Anchor text describes the destination in natural language
+//  2. Links use canonical paths
+//  3. No duplicate link targets within the same page
 
 import Link from 'next/link';
-import { DISTRICTS, CATEGORIES, DISTRICT_MAP } from '@/lib/seo-data';
+import { CATEGORIES, DISTRICT_MAP } from '@/lib/seo-data';
 
-// Helper to choose anchor text variation (60% Exact Match, 30% Partial, 10% Branded)
-function getWeightedAnchorText(cityName, issueName, index) {
-  const mod = index % 10;
-  if (mod < 6) {
-    // 60% Exact Match: "Chennai Power Cut"
-    return `${cityName} ${issueName}`;
-  } else if (mod < 9) {
-    // 30% Partial Match: "Water supply reports in Coimbatore"
-    return `${issueName} alerts in ${cityName}`;
-  } else {
-    // 10% Branded: "VizhiTN Madurai road problems"
-    return `VizhiTN ${cityName} ${issueName.toLowerCase()}`;
-  }
+function getAnchorText(cityName, issueName) {
+  return `${issueName} in ${cityName}`;
 }
 
 // ── 1. HomeCityLinks ──────────────────────────────────────────────────────────
@@ -49,7 +38,7 @@ export function HomeCityLinks() {
         ))}
         <li>
           <Link
-            href="/districts/"
+            href="/districts"
             className="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline-offset-2 hover:underline transition-colors"
           >
             All Districts →
@@ -66,13 +55,13 @@ export function DistrictCategoryLinks({ districtSlug, districtName }) {
   return (
     <nav aria-label={`Issue categories in ${districtName}`}>
       <ul className="flex flex-wrap gap-2">
-        {CATEGORIES.map((cat, idx) => (
+        {CATEGORIES.map(cat => (
           <li key={cat.slug}>
             <Link
               href={`/${districtSlug}/${cat.slug}/`}
               className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors"
             >
-              {getWeightedAnchorText(districtName, cat.plural, idx)}
+              {getAnchorText(districtName, cat.plural)}
             </Link>
           </li>
         ))}
@@ -129,13 +118,13 @@ export function CategoryDistrictLinks({ categorySlug, categoryName }) {
         {categoryName} Reports by City
       </p>
       <ul className="flex flex-wrap gap-2">
-        {districts.map((d, idx) => (
+        {districts.map(d => (
           <li key={d.slug}>
             <Link
               href={`/${d.slug}/${categorySlug}/`}
               className="text-sm text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 underline-offset-2 hover:underline transition-colors"
             >
-              {getWeightedAnchorText(d.name, categoryName, idx)}
+              {getAnchorText(d.name, categoryName)}
             </Link>
           </li>
         ))}

@@ -1,13 +1,13 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import React from 'react';
+import Districts from '@/views/Districts';
 
-const Districts = nextDynamic(() => import('@/views/Districts'), { ssr: false });
+export const metadata = {
+  title: 'Tamil Nadu Districts',
+  description: 'Browse civic reports, local alerts, and community updates across all 38 districts of Tamil Nadu.',
+  alternates: { canonical: '/districts' },
+  openGraph: { title: 'Tamil Nadu Districts', description: 'Explore local civic information across all 38 Tamil Nadu districts.', url: '/districts' },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <Districts />
-    </Suspense>
-  );
+  return <Districts />;
 }

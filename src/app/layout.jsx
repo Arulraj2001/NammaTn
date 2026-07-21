@@ -7,6 +7,7 @@ import '@/index.css';
 
 const SITE_URL = 'https://www.vizhitn.in';
 const SITE_NAME = 'VizhiTN';
+const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'xp7k5wqipw';
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -74,13 +75,6 @@ export const metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/manifest.json',
-  alternates: {
-    canonical: SITE_URL,
-    languages: {
-      'en-IN': SITE_URL,
-      // ta-IN removed: /ta page does not exist yet
-    },
-  },
   verification: {
     google: 'IQBuc_fauRb_DOB4lJTKjuYjN9aeEMeWCwf5zGx_q2Q',
   },
@@ -109,6 +103,7 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="//pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="//googleads.g.doubleclick.net" />
         <link rel="dns-prefetch" href="//www.googletagservices.com" />
+        <link rel="dns-prefetch" href="//www.clarity.ms" />
         {/* Synchronous theme init — runs before React hydration to prevent CLS */}
         <script
           id="theme-init"
@@ -134,11 +129,11 @@ export default function RootLayout({ children }) {
             `,
           }}
         />
-        {/* Microsoft Clarity analytics */}
+        {/* Microsoft Clarity: load only after analytics consent and never on private routes. */}
         <script
           id="clarity-init"
           dangerouslySetInnerHTML={{
-            __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "xp7k5wqipw");`,
+            __html: `(function(){try{var consent=localStorage.getItem('VizhiTN_cookie_consent');var privateRoute=/^\/(admin|dashboard|me|bookmarks|login|register|forgot-password|reset-password)(\/|$)/.test(location.pathname);if(consent!=='accepted'||privateRoute)return;(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script",${JSON.stringify(CLARITY_PROJECT_ID)});}catch(e){}})();`,
           }}
         />
         {/* Organization structured data */}

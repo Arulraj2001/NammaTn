@@ -1,13 +1,13 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import React from 'react';
+import TermsOfService from '@/views/TermsOfService';
 
-const TermsOfService = nextDynamic(() => import('@/views/TermsOfService'), { ssr: false });
+export const metadata = {
+  title: 'Terms of Service',
+  description: 'Read the terms that govern access to and participation on the VizhiTN civic and community platform.',
+  alternates: { canonical: '/terms' },
+  robots: { index: true, follow: true },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <TermsOfService />
-    </Suspense>
-  );
+  return <TermsOfService />;
 }

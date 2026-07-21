@@ -3,7 +3,7 @@
  * All helpers are idempotent: safe to call on every page mount.
  */
 
-const SITE_URL = 'https://vizhitn.in';
+const SITE_URL = 'https://www.vizhitn.in';
 
 const DEFAULT = {
   title: 'VizhiTN – Tamil Nadu Civic & Community Platform',
@@ -68,10 +68,15 @@ export function setPageMeta({
   canonical,
   noindex = false,
 } = {}) {
-  const t   = title       ? `${title} | VizhiTN` : DEFAULT.title;
+  const t   = title
+    ? (/vizhitn/i.test(title) ? title : `${title} | VizhiTN`)
+    : DEFAULT.title;
   const d   = description || DEFAULT.description;
   const img = image       || DEFAULT.image;
-  const u   = url         || (typeof window !== 'undefined' ? window.location.href : DEFAULT.url);
+  const currentUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}${window.location.pathname}`
+    : DEFAULT.url;
+  const u   = url || currentUrl;
   const canon = canonical || u;
 
   // Title

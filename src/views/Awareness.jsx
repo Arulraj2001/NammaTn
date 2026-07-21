@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
