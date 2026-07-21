@@ -91,4 +91,11 @@ assert.doesNotMatch(stayPage, /ssr:\s*false/, 'Stay listings must be server rend
 assert.match(stayPage, /getActiveStayListings/, 'Stay listings must fetch initial server data');
 assert.match(stayView, /initialData:\s*initialListings/, 'Stay listings must hydrate from server data');
 
+const areasPage = await read('src/app/(user)/areas/page.jsx');
+const areasView = await read('src/views/Areas.jsx');
+const officesPage = await read('src/app/(user)/offices/page.jsx');
+assert.match(areasPage, /getActiveAreas/, 'Areas must fetch initial server data');
+assert.match(areasView, /initialData:\s*initialAreas/, 'Areas must hydrate from server data');
+assert.doesNotMatch(officesPage, /ssr:\s*false/, 'The static offices directory must be server rendered');
+
 console.log('SEO and Clarity audit checks passed.');

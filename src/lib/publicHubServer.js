@@ -72,3 +72,22 @@ export async function getActiveStayListings(limit = 100) {
     return [];
   }
 }
+
+export async function getActiveAreas(limit = 100) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('area')
+      .select('*')
+      .eq('active', true)
+      .order('name_en', { ascending: true })
+      .limit(limit);
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.warn('[areas] Server area fetch failed:', error.message);
+    return [];
+  }
+}

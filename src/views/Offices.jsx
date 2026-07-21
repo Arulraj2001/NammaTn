@@ -1,11 +1,10 @@
+"use client";
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/lib/router-compat";
 import { Building2, Clock, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { OFFICES } from "@/lib/offices";
 import { DISTRICTS } from "@/lib/districts";
-import { getReportsByDistrict } from "@/services/officeReports";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function Offices() {

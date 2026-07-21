@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/lib/router-compat";
@@ -7,7 +8,7 @@ import { getAreas } from "@/services/areas";
 import { DISTRICTS } from "@/lib/districts";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
-export default function Areas() {
+export default function Areas({ initialAreas = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [search, setSearch] = useState("");
@@ -18,6 +19,8 @@ export default function Areas() {
   const { data: areas = [], isLoading } = useQuery({
     queryKey: ["areas"],
     queryFn: () => getAreas(100),
+    initialData: initialAreas,
+    staleTime: 3_600_000,
   });
 
   const filtered = areas.filter((a) => {
