@@ -18,8 +18,9 @@ const SORT_OPTIONS = [
   { value: "-upvotes", en: "Most Voted", ta: "அதிக வாக்குகள்" },
 ];
 
-export default function CategoryDetail() {
-  const { slug } = useParams();
+export default function CategoryDetail({ initialSlug, initialData }) {
+  const routeParams = useParams();
+  const slug = initialSlug || routeParams.slug;
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const category = getCategoryBySlug(slug);
@@ -32,6 +33,7 @@ export default function CategoryDetail() {
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["category-posts", slug],
     queryFn: () => getCategoryPosts(slug, 30),
+    initialData: initialData?.posts,
     enabled: !!slug,
     staleTime: 60_000,
   });
@@ -39,6 +41,7 @@ export default function CategoryDetail() {
   const { data: stats } = useQuery({
     queryKey: ["category-stats", slug],
     queryFn: () => getCategoryStats(slug),
+    initialData: initialData?.stats,
     enabled: !!slug,
     staleTime: 120_000,
   });

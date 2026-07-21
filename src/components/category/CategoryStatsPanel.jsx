@@ -54,7 +54,7 @@ export default function CategoryStatsPanel({ stats, lang }) {
         </h3>
         <div className="space-y-2">
           {stats.topDistricts?.slice(0, 5).map((td) => (
-            <Link key={td.slug} to={`/district/${td.slug}`} className="flex items-center gap-2 group">
+            <Link key={td.slug} to={`/${td.slug}/`} className="flex items-center gap-2 group">
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center mb-0.5">
                   <span className="text-xs text-slate-700 dark:text-slate-300 group-hover:text-blue-600 truncate">{td.name}</span>

@@ -1,13 +1,12 @@
 // src/app/(user)/category/[slug]/page.jsx
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import React from 'react';
 import { CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
 import PageSchema from '@/components/seo/PageSchema';
 import { CategoryDistrictLinks } from '@/components/seo/InternalLinks';
+import CategoryDetail from '@/views/CategoryDetail';
+import { getCategoryHubData } from '@/lib/publicHubServer';
 
 export const revalidate = 3600;
-
-const CategoryDetail = nextDynamic(() => import('@/views/CategoryDetail'), { ssr: false });
 
 function slugToLabel(slug) {
   return slug
@@ -50,6 +49,7 @@ export default async function Page({ params }) {
   const category = CATEGORY_MAP[slug];
   const label = category?.plural ?? slugToLabel(slug);
   const canonicalUrl = `${SITE_URL}/category/${slug}/`;
+  const initialData = await getCategoryHubData(slug);
 
   return (
     <>
@@ -66,15 +66,7 @@ export default async function Page({ params }) {
         ]}
       />
 
-      <Suspense
-        fallback={
-          <div className="min-h-[60vh] w-full flex items-center justify-center">
-            <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
-          </div>
-        }
-      >
-        <CategoryDetail />
-      </Suspense>
+      <CategoryDetail initialSlug={slug} initialData={initialData} />
 
       {/* Internal links: category → district cross-links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-slate-100 dark:border-slate-800">

@@ -138,4 +138,10 @@ assert.match(questionDetailPage, /index:\s*false,\s*follow:\s*true/, 'Thin user 
 assert.match(questionDetailPage, /getQuestionDetailData/, 'Question detail routes must fetch initial data on the server');
 assert.match(questionDetailView, /initialData:\s*initialData\?\.question/, 'Question details must hydrate from server data');
 
+const categoryDetailPage = await read('src/app/(user)/category/[slug]/page.jsx');
+const categoryDetailView = await read('src/views/CategoryDetail.jsx');
+assert.doesNotMatch(categoryDetailPage, /ssr:\s*false/, 'Category hubs must render report content on the server');
+assert.match(categoryDetailPage, /getCategoryHubData/, 'Category hubs must fetch initial public data on the server');
+assert.match(categoryDetailView, /initialData:\s*initialData\?\.posts/, 'Category report queries must hydrate from server data');
+
 console.log('SEO and Clarity audit checks passed.');

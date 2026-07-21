@@ -288,3 +288,56 @@ export async function getQuestionDetailData(id) {
     return empty;
   }
 }
+
+export async function getCategoryHubData(slug) {
+  const supabase = createServerSupabase();
+  const empty = { posts: [], stats: null };
+  if (!supabase || !slug) return empty;
+
+  const targetSlugs = [slug];
+  if (slug === 'electricity') targetSlugs.push('power-cut');
+  if (slug === 'power-cut') targetSlugs.push('electricity');
+  if (slug === 'water-sanitation') targetSlugs.push('water-issue');
+  if (slug === 'water-issue') targetSlugs.push('water-sanitation');
+  if (slug === 'road-infrastructure') targetSlugs.push('road-problem');
+  if (slug === 'road-problem') targetSlugs.push('road-infrastructure');
+
+  try {
+    const { data, error } = await supabase
+      .from('unified_explore_feed')
+      .select('*')
+      .in('category_slug', targetSlugs)
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(200);
+    if (error) throw error;
+
+    const visible = (data || []).filter(isPubliclyVisible);
+    const districtMap = {};
+    const byType = {};
+    visible.forEach((post) => {
+      if (post.district_slug) {
+        districtMap[post.district_slug] = {
+          slug: post.district_slug,
+          name: post.district_name || post.district_slug,
+          count: (districtMap[post.district_slug]?.count || 0) + 1,
+        };
+      }
+      if (post.post_type) byType[post.post_type] = (byType[post.post_type] || 0) + 1;
+    });
+
+    return {
+      posts: visible.slice(0, 30),
+      stats: {
+        totalPosts: visible.length,
+        totalUpvotes: visible.reduce((sum, post) => sum + (post.upvotes || 0), 0),
+        totalComments: visible.reduce((sum, post) => sum + (post.comment_count || 0), 0),
+        topDistricts: Object.values(districtMap).sort((a, b) => b.count - a.count).slice(0, 5),
+        byType,
+      },
+    };
+  } catch (error) {
+    console.warn(`[category:${slug}] Server hub fetch failed:`, error.message);
+    return empty;
+  }
+}
