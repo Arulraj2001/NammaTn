@@ -1,13 +1,15 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import Explore from '@/views/Explore';
+import { getExplorePosts } from '@/lib/publicHubServer';
 
-const Explore = nextDynamic(() => import('@/views/Explore'), { ssr: false });
+export const revalidate = 3600;
 
-export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <Explore />
-    </Suspense>
-  );
+export const metadata = {
+  title: 'Explore Tamil Nadu Civic Reports & Local Updates',
+  description: 'Discover recent Civic Receipts, public complaints, local alerts, discussions, and community updates from across Tamil Nadu.',
+  alternates: { canonical: '/explore/' },
+};
+
+export default async function Page() {
+  const initialPosts = await getExplorePosts(18);
+  return <Explore initialPosts={initialPosts} />;
 }

@@ -341,3 +341,22 @@ export async function getCategoryHubData(slug) {
     return empty;
   }
 }
+
+export async function getExplorePosts(limit = 18) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('unified_explore_feed')
+      .select('*')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(limit * 2);
+    if (error) throw error;
+    return (data || []).filter(isPubliclyVisible).slice(0, limit);
+  } catch (error) {
+    console.warn('[explore] Server feed fetch failed:', error.message);
+    return [];
+  }
+}

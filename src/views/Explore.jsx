@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams, Link } from "@/lib/router-compat";
@@ -58,7 +60,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return R * c; // Distance in km
 };
 
-export default function Explore() {
+export default function Explore({ initialPosts = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [searchParams, setSearchParams] = useSearchParams();
@@ -92,6 +94,7 @@ export default function Explore() {
     queryKey: ["posts", "explore"],
     queryFn: ({ pageParam = null }) => getActivePosts({ limit: PAGE_SIZE, cursor: pageParam }),
     initialPageParam: null,
+    initialData: { pages: [initialPosts], pageParams: [null] },
     getNextPageParam: getNextCursor,
     staleTime: 60_000,
   });
