@@ -186,6 +186,13 @@ assert.match(communityWinsPage, /getResolvedCommunityWins/, 'Community Wins must
 assert.doesNotMatch(communityWinsPage, /ssr:\s*false/, 'Community Wins must not be a client-only shell');
 assert.match(communityWinsView, /initialData:\s*initialWins/, 'Community Wins must hydrate from server data');
 
+const leaderboardPage = await read('src/app/(user)/leaderboard/page.jsx');
+const leaderboardView = await read('src/views/CivicLeaderboard.jsx');
+assert.match(leaderboardPage, /getLeaderboardPosts/, 'Leaderboard must fetch public rankings on the server');
+assert.match(leaderboardPage, /export const metadata/, 'Leaderboard must emit server metadata');
+assert.doesNotMatch(leaderboardPage, /ssr:\s*false/, 'Leaderboard must not be a client-only shell');
+assert.match(leaderboardView, /initialData:\s*initialPosts/, 'Leaderboard rankings must hydrate from server data');
+
 const tnTodayArticlePage = await read('src/app/(user)/tn-today/[slug]/page.jsx');
 const tnTodayArticleView = await read('src/views/TnTodayArticle.jsx');
 const tnTodayServerDetail = await read('src/lib/tnTodayServer.js');

@@ -109,6 +109,26 @@ export async function getActiveAreas(limit = 100) {
   }
 }
 
+export async function getLeaderboardPosts(limit = 200) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('post')
+      .select('*')
+      .eq('post_type', 'complaint')
+      .eq('status', 'active')
+      .order('verification_count', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.warn('[leaderboard] Server post fetch failed:', error.message);
+    return [];
+  }
+}
+
 export async function getCommunityHubData() {
   const supabase = createServerSupabase();
   const empty = { settings: {}, situations: [], emergencies: [], scams: [], questions: [], posts: [] };

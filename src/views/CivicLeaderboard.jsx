@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -9,7 +11,7 @@ import { getDaysOpen } from "@/lib/civicReceipt";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
 import { TRUST_BADGES, LEADERBOARD_CATEGORIES } from "@/lib/civicLeaderboard";
 
-export default function CivicLeaderboard() {
+export default function CivicLeaderboard({ initialPosts = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [activeTab, setActiveTab] = useState("most_verified");
@@ -17,12 +19,7 @@ export default function CivicLeaderboard() {
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["leaderboard-posts"],
     queryFn: () => base44.entities.Post.filter({ post_type: "complaint", status: "active" }, "-verification_count", 200),
-    staleTime: 2 * 60_000,
-  });
-
-  const { data: activities = [] } = useQuery({
-    queryKey: ["leaderboard-activities"],
-    queryFn: () => base44.entities.ContributorActivity.list("-created_date", 500),
+    initialData: initialPosts,
     staleTime: 2 * 60_000,
   });
 

@@ -1,13 +1,14 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import CivicLeaderboard from '@/views/CivicLeaderboard';
+import { getLeaderboardPosts } from '@/lib/publicHubServer';
 
-const CivicLeaderboard = nextDynamic(() => import('@/views/CivicLeaderboard'), { ssr: false });
+export const metadata = {
+  title: 'Tamil Nadu Civic Leaderboard | VizhiTN',
+  description: 'Track Tamil Nadu civic issues with the most community verifications, fastest fixes, longest pending cases, and community-powered wins.',
+  alternates: { canonical: '/leaderboard' },
+  robots: { index: true, follow: true },
+};
 
-export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <CivicLeaderboard />
-    </Suspense>
-  );
+export default async function Page() {
+  const posts = await getLeaderboardPosts();
+  return <CivicLeaderboard initialPosts={posts} />;
 }

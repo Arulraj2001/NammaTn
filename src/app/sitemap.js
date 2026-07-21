@@ -150,7 +150,7 @@ export default async function sitemap() {
     '/awareness/faqs', '/awareness/guides', '/awareness/portals',
     '/awareness/schemes', '/community', '/community/wins', '/scams',
     '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
-    '/explore/', '/help/', '/situations/', '/ask/',
+    '/explore/', '/help/', '/situations/', '/ask/', '/leaderboard',
     '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
   ].forEach(path => {
     entries.push({
