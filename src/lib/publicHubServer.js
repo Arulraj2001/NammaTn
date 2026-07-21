@@ -398,3 +398,21 @@ export async function getActiveEmergencyPosts(limit = 40) {
     return [];
   }
 }
+
+export async function getLatestQuestions(limit = 40) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('question')
+      .select('*')
+      .order('created_date', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.warn('[ask] Server question fetch failed:', error.message);
+    return [];
+  }
+}

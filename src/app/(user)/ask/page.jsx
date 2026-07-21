@@ -1,13 +1,15 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import AskLocal from '@/views/AskLocal';
+import { getLatestQuestions } from '@/lib/publicHubServer';
 
-const AskLocal = nextDynamic(() => import('@/views/AskLocal'), { ssr: false });
+export const revalidate = 1800;
 
-export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <AskLocal />
-    </Suspense>
-  );
+export const metadata = {
+  title: 'Ask Local Questions Across Tamil Nadu',
+  description: 'Ask location-based questions and browse community answers about neighborhoods, civic services, transport, utilities, and daily life across Tamil Nadu.',
+  alternates: { canonical: '/ask/' },
+};
+
+export default async function Page() {
+  const initialQuestions = await getLatestQuestions(40);
+  return <AskLocal initialQuestions={initialQuestions} />;
 }

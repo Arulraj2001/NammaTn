@@ -165,4 +165,11 @@ assert.match(helpPage, /export const metadata/, 'Help must emit server metadata'
 assert.doesNotMatch(helpPage, /ssr:\s*false/, 'Help must not be a client-only shell');
 assert.match(helpView, /initialData:\s*!filterDistrict\s*&&\s*!filterType\s*\?\s*initialEmergencies/, 'Help filters must hydrate only from the unfiltered server list');
 
+const askPage = await read('src/app/(user)/ask/page.jsx');
+const askView = await read('src/views/AskLocal.jsx');
+assert.match(askPage, /getLatestQuestions/, 'Ask must fetch recent questions on the server');
+assert.match(askPage, /export const metadata/, 'Ask must emit server metadata');
+assert.doesNotMatch(askPage, /ssr:\s*false/, 'Ask must not be a client-only shell');
+assert.match(askView, /initialData:\s*!filterDistrict\s*\?\s*initialQuestions/, 'Ask filters must hydrate only from the unfiltered server list');
+
 console.log('SEO and Clarity audit checks passed.');

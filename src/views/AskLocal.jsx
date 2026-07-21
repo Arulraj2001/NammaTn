@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/lib/router-compat";
@@ -15,7 +17,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { supabase } from "@/api/supabaseClient";
 
-export default function AskLocal() {
+export default function AskLocal({ initialQuestions = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
@@ -59,6 +61,7 @@ export default function AskLocal() {
     queryFn: () => filterDistrict
       ? base44.entities.Question.filter({ district_slug: filterDistrict }, "-created_date", 40)
       : getQuestions(40),
+    initialData: !filterDistrict ? initialQuestions : undefined,
   });
 
   const mutation = useMutation({
