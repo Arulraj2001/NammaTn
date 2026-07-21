@@ -1,13 +1,15 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import Help from '@/views/Help';
+import { getActiveEmergencyPosts } from '@/lib/publicHubServer';
 
-const Help = nextDynamic(() => import('@/views/Help'), { ssr: false });
+export const revalidate = 900;
 
-export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <Help />
-    </Suspense>
-  );
+export const metadata = {
+  title: 'Community Emergency Help Requests in Tamil Nadu',
+  description: 'Find and share active blood requirements, ambulance assistance, missing-person alerts, medicine support, and community emergency requests across Tamil Nadu.',
+  alternates: { canonical: '/help/' },
+};
+
+export default async function Page() {
+  const initialEmergencies = await getActiveEmergencyPosts(40);
+  return <Help initialEmergencies={initialEmergencies} />;
 }

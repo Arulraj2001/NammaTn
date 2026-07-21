@@ -379,3 +379,22 @@ export async function getActiveSituationUpdates(limit = 30) {
     return [];
   }
 }
+
+export async function getActiveEmergencyPosts(limit = 40) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('emergency_post')
+      .select('*')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.warn('[help] Server emergency fetch failed:', error.message);
+    return [];
+  }
+}

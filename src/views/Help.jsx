@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -28,7 +30,7 @@ const EMERGENCY_TYPES = [
   { value: "other", label: "❗ Other Emergency" },
 ];
 
-export default function Help() {
+export default function Help({ initialEmergencies = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const qc = useQueryClient();
@@ -80,6 +82,7 @@ export default function Help() {
       if (filterType) filter.emergency_type = filterType;
       return base44.entities.EmergencyPost.filter(filter, "-created_date", 40);
     },
+    initialData: !filterDistrict && !filterType ? initialEmergencies : undefined,
   });
 
   const { data: areas = [] } = useQuery({
