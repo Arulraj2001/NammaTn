@@ -30,6 +30,14 @@ const sitemap = await read('src/app/sitemap.js');
 assert.doesNotMatch(sitemap, /\bTODAY\b/, 'Sitemap must not manufacture daily lastModified dates');
 assert.match(sitemap, /updated_date/, 'Dynamic sitemap entries must use real update timestamps');
 assert.match(sitemap, /\/category\/\$\{category\.slug\}/, 'Category hubs must be present in the sitemap');
+assert.match(sitemap, /PUBLIC_CATEGORIES\.forEach/, 'Category hubs must use the public category taxonomy');
+assert.match(sitemap, /SEO_CATEGORIES\.forEach/, 'City-issue fallbacks must use the SEO issue taxonomy');
+assert.match(sitemap, /\/tn-today\/\$\{a\.slug\}\//, 'TN Today article URLs must match their canonical trailing slash');
+assert.match(sitemap, /OFFICES\.forEach/, 'Static office detail pages must be present in the sitemap');
+assert.match(sitemap, /getActiveAreas\(500\)/, 'Active area detail pages must be present in the sitemap');
+for (const route of ['/explore/', '/help/', '/situations/', '/ask/']) {
+  assert.ok(sitemap.includes(`'${route}'`), `${route} must be present in the sitemap`);
+}
 
 const privateLayouts = [
   'src/app/admin/layout.jsx',

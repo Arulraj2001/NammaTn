@@ -3,7 +3,15 @@
 // Fallback to Tier 1 static pairs if DB is unreachable.
 // SEO PHASE 1: Also includes /tn-today/[slug] article URLs.
 
-import { DISTRICTS, CATEGORIES, DISTRICT_MAP, CATEGORY_MAP } from '@/lib/seo-data';
+import {
+  DISTRICTS,
+  CATEGORIES as SEO_CATEGORIES,
+  DISTRICT_MAP,
+  CATEGORY_MAP,
+} from '@/lib/seo-data';
+import { CATEGORIES as PUBLIC_CATEGORIES } from '@/lib/categories';
+import { OFFICES } from '@/lib/offices';
+import { getActiveAreas } from '@/lib/publicHubServer';
 import { createServerSupabase } from '@/lib/serverSupabase';
 
 const SITE_URL = 'https://www.vizhitn.in';
@@ -70,7 +78,7 @@ export default async function sitemap() {
     console.warn('[sitemap] DB unavailable — falling back to Tier 1 static pairs:', e.message);
     // Fallback: 5 Tier 1 cities × all categories (30 URLs max — safe baseline)
     ['chennai', 'coimbatore', 'madurai', 'salem', 'tiruchirappalli'].forEach(city => {
-      CATEGORIES.forEach(issue => {
+      SEO_CATEGORIES.forEach(issue => {
         entries.push({
           url: `${SITE_URL}/${city}/${issue.slug}/`,
           changeFrequency: 'daily',
@@ -94,7 +102,7 @@ export default async function sitemap() {
     (articles || []).forEach(a => {
       if (!a.slug) return;
       entries.push({
-        url: `${SITE_URL}/tn-today/${a.slug}`,
+        url: `${SITE_URL}/tn-today/${a.slug}/`,
         ...(a.updated_date || a.publish_date
           ? { lastModified: a.updated_date || a.publish_date }
           : {}),
@@ -107,11 +115,33 @@ export default async function sitemap() {
   }
 
   // ── Utility pages ───────────────────────────────────────────────────
-  CATEGORIES.forEach(category => {
+  // Public category hubs use a separate taxonomy from city-issue SEO pages.
+  PUBLIC_CATEGORIES.forEach(category => {
     entries.push({
       url: `${SITE_URL}/category/${category.slug}/`,
       changeFrequency: 'daily',
       priority: 0.7,
+    });
+  });
+
+  OFFICES.forEach(office => {
+    entries.push({
+      url: `${SITE_URL}/office/${office.slug}/`,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    });
+  });
+
+  const areas = await getActiveAreas(500);
+  areas.forEach(area => {
+    if (!area.slug) return;
+    entries.push({
+      url: `${SITE_URL}/area/${area.slug}/`,
+      ...(area.updated_date || area.created_date
+        ? { lastModified: area.updated_date || area.created_date }
+        : {}),
+      changeFrequency: 'daily',
+      priority: 0.6,
     });
   });
 
@@ -120,6 +150,7 @@ export default async function sitemap() {
     '/awareness/faqs', '/awareness/guides', '/awareness/portals',
     '/awareness/schemes', '/community', '/community/wins', '/scams',
     '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
+    '/explore/', '/help/', '/situations/', '/ask/',
     '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
   ].forEach(path => {
     entries.push({
@@ -129,5 +160,5 @@ export default async function sitemap() {
     });
   });
 
-  return entries;
+  return [...new Map(entries.map(entry => [entry.url, entry])).values()];
 }
