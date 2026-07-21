@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Zap, Droplets, CreditCard, AlertTriangle, Ambulance, FileText, ArrowLeft, ChevronDown } from "lucide-react";
 import { Link } from "@/lib/router-compat";

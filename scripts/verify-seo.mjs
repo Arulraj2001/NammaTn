@@ -111,4 +111,10 @@ assert.match(trendingView, /initialPosts=/, 'Trending posts must hydrate from se
 assert.match(bribesPage, /getActiveBribePosts/, 'Bribe transparency reports must fetch on the server');
 assert.match(bribesView, /initialData:\s*initialBribePosts/, 'Bribe reports must hydrate from server data');
 
+for (const section of ['emergency', 'faqs', 'guides', 'portals', 'schemes']) {
+  const source = await read(`src/app/(user)/awareness/${section}/page.jsx`);
+  assert.doesNotMatch(source, /ssr:\s*false/, `Awareness ${section} content must be server rendered`);
+  assert.doesNotMatch(source, /nextDynamic/, `Awareness ${section} must not be a client-only shell`);
+}
+
 console.log('SEO and Clarity audit checks passed.');

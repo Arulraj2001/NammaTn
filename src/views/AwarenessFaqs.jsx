@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { HelpCircle, Search, ChevronDown, ArrowLeft, X } from "lucide-react";
 import { Link } from "@/lib/router-compat";

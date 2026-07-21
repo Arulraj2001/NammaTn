@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Phone, Shield, AlertTriangle, Users, Heart, BookOpen, Zap, Droplets, ExternalLink, ArrowLeft } from "lucide-react";
 import { Link } from "@/lib/router-compat";
