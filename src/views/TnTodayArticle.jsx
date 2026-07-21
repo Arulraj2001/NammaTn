@@ -13,6 +13,8 @@ import {
 import { setPageMeta, injectPostStructuredData } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
+const SITE_URL = "https://www.vizhitn.in";
+
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
   education:      { label: "Education",      color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400", emoji: "🎓" },
@@ -133,13 +135,15 @@ function ArticleSkeleton() {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function TnTodayArticle() {
-  const { slug } = useParams();
+export default function TnTodayArticle({ initialSlug, initialArticle, initialRelatedArticles = [] }) {
+  const routeParams = useParams();
+  const slug = initialSlug || routeParams.slug;
   const navigate = useNavigate();
 
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ["tn-today-article", slug],
     queryFn: () => getTnTodayBySlug(slug),
+    initialData: initialArticle,
     staleTime: 300_000,
     enabled: !!slug,
   });
@@ -147,6 +151,7 @@ export default function TnTodayArticle() {
   const { data: relatedArticles = [] } = useQuery({
     queryKey: ["tn-today-related", article?.category],
     queryFn: () => getPublishedTnToday({ limit: 4, category: article?.category }),
+    initialData: initialRelatedArticles,
     enabled: !!article?.category,
     staleTime: 300_000,
   });
@@ -156,7 +161,7 @@ export default function TnTodayArticle() {
   // SEO & structured data
   useEffect(() => {
     if (!article) return;
-    const canonicalUrl = article.canonical_url || `${window.location.origin}/tn-today/${article.slug}`;
+    const canonicalUrl = article.canonical_url || `${SITE_URL}/tn-today/${article.slug}/`;
     const image = article.social_image || article.featured_image || "";
 
     setPageMeta({
@@ -181,7 +186,7 @@ export default function TnTodayArticle() {
       publisher: {
         "@type": "Organization",
         name: "VizhiTN",
-        logo: { "@type": "ImageObject", url: `${window.location.origin}/logo.png` },
+        logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
       },
       mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
       keywords: article.seo_keywords || "",
@@ -224,7 +229,10 @@ export default function TnTodayArticle() {
 
   const cat = CATEGORY_CONFIG[article.category] || CATEGORY_CONFIG.general;
   const pubDate = article.publish_date ? new Date(article.publish_date) : new Date(article.created_date);
-  const pageUrl = `${window.location.origin}/tn-today/${article.slug}`;
+  const pageUrl = article.canonical_url || `${SITE_URL}/tn-today/${article.slug}/`;
+  const safeArticleHtml = article.safe_content || (
+    typeof window !== "undefined" ? DOMPurify.sanitize(article.content || "") : ""
+  );
 
   const keyFacts = parseLines(article.key_facts).map(line => {
     const [label, ...rest] = line.split(":");
@@ -346,7 +354,7 @@ export default function TnTodayArticle() {
                   "prose-table:border-collapse prose-td:border prose-td:border-slate-200 dark:prose-td:border-slate-700 prose-td:px-3 prose-td:py-2",
                   "prose-th:bg-slate-50 dark:prose-th:bg-slate-800 prose-th:border prose-th:border-slate-200 dark:prose-th:border-slate-700 prose-th:px-3 prose-th:py-2"
                 )}
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
+                dangerouslySetInnerHTML={{ __html: safeArticleHtml }}
               />
             )}
 

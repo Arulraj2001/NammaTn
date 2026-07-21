@@ -178,4 +178,12 @@ assert.match(communityWinsPage, /getResolvedCommunityWins/, 'Community Wins must
 assert.doesNotMatch(communityWinsPage, /ssr:\s*false/, 'Community Wins must not be a client-only shell');
 assert.match(communityWinsView, /initialData:\s*initialWins/, 'Community Wins must hydrate from server data');
 
+const tnTodayArticlePage = await read('src/app/(user)/tn-today/[slug]/page.jsx');
+const tnTodayArticleView = await read('src/views/TnTodayArticle.jsx');
+const tnTodayServerDetail = await read('src/lib/tnTodayServer.js');
+assert.doesNotMatch(tnTodayArticlePage, /TnTodayArticleClient/, 'TN Today article bodies must not use a client-only wrapper');
+assert.match(tnTodayArticlePage, /getTnTodayArticle/, 'TN Today articles must use the bounded server fetcher');
+assert.match(tnTodayArticleView, /initialData:\s*initialArticle/, 'TN Today article queries must hydrate from server data');
+assert.match(tnTodayServerDetail, /sanitizeHtml/, 'Editorial HTML must be sanitized before server rendering');
+
 console.log('SEO and Clarity audit checks passed.');
