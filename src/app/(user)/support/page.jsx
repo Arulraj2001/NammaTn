@@ -1,13 +1,12 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import Support from '@/views/Support';
 
-const Support = nextDynamic(() => import('@/views/Support'), { ssr: false });
+export const metadata = {
+  title: 'Support Tamil Nadu Civic Technology',
+  description: 'Support VizhiTN and help keep Tamil Nadu civic reporting, public-interest information, and community tools accessible to everyone.',
+  alternates: { canonical: '/support' },
+  robots: { index: true, follow: true },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <Support />
-    </Suspense>
-  );
+  return <Support />;
 }

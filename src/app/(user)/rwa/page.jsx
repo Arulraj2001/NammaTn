@@ -1,13 +1,12 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import RWADashboard from '@/views/RWADashboard';
 
-const RWADashboard = nextDynamic(() => import('@/views/RWADashboard'), { ssr: false });
+export const metadata = {
+  title: 'Resident Welfare Association Civic Dashboard',
+  description: 'Discover verified Resident Welfare Associations and coordinate transparent, privacy-conscious civic action across Tamil Nadu communities.',
+  alternates: { canonical: '/rwa' },
+  robots: { index: true, follow: true },
+};
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
-      <RWADashboard />
-    </Suspense>
-  );
+  return <RWADashboard />;
 }

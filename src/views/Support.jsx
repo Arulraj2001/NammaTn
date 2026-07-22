@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -16,6 +18,16 @@ function getSetting(settings, key, fallback = "") {
   return settings.find((s) => s.key === key)?.value || fallback;
 }
 
+function getDonationSession() {
+  if (typeof window === 'undefined') return '';
+  let session = localStorage.getItem('tn_session');
+  if (!session) {
+    session = Math.random().toString(36).slice(2);
+    localStorage.setItem('tn_session', session);
+  }
+  return session;
+}
+
 export default function Support() {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
@@ -31,12 +43,6 @@ export default function Support() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
-
-  const session = (() => {
-    let s = localStorage.getItem("tn_session");
-    if (!s) { s = Math.random().toString(36).slice(2); localStorage.setItem("tn_session", s); }
-    return s;
-  })();
 
   const { data: settings = [] } = useQuery({
     queryKey: ["donation-settings-public"],
@@ -82,7 +88,7 @@ export default function Support() {
     if (finalAmount < minAmount) { setError(T(`Minimum donation is ₹${minAmount}.`, `குறைந்தது ₹${minAmount} நன்கொடை தேவை.`)); return; }
 
     await base44.entities.DonationRecord.create({
-      session_ref: session,
+      session_ref: getDonationSession(),
       email: form.email,
       amount: finalAmount,
       currency: "INR",

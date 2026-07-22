@@ -255,6 +255,19 @@ assert.match(listingsPage, /export const metadata/, 'Local listings must emit se
 assert.doesNotMatch(listingsPage, /ssr:\s*false/, 'Local listings must not be a client-only shell');
 assert.match(listingsView, /initialData:\s*\{\s*pages:\s*\[initialListings\]/, 'Local listing pagination must hydrate from server data');
 
+for (const [route, view] of [
+  ['support', 'Support'],
+  ['rwa', 'RWADashboard'],
+  ['csr', 'CSRDashboard'],
+]) {
+  const routePage = await read(`src/app/(user)/${route}/page.jsx`);
+  const routeView = await read(`src/views/${view}.jsx`);
+  assert.match(routePage, /export const metadata/, `${route} must emit unique server metadata`);
+  assert.match(routePage, new RegExp(`canonical:\\s*['"]\\/${route}['"]`), `${route} must define its canonical URL`);
+  assert.doesNotMatch(routePage, /ssr:\s*false/, `${route} must not be a client-only shell`);
+  assert.match(routeView, /<h1\b/, `${route} must render a crawlable H1`);
+}
+
 const tnTodayArticlePage = await read('src/app/(user)/tn-today/[slug]/page.jsx');
 const tnTodayArticleView = await read('src/views/TnTodayArticle.jsx');
 const tnTodayServerDetail = await read('src/lib/tnTodayServer.js');
