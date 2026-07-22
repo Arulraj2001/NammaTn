@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTnTodayArticle } from '@/lib/tnTodayServer';
 import { getTnTodayCanonical } from '@/lib/tnTodayUrl';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
+import { toMetaDescription } from '@/lib/metaDescription';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -14,7 +15,10 @@ export async function generateMetadata({ params }) {
 
   const title = getPageTitle(article.seo_title || article.title, 'TN Today');
   const socialTitle = getSocialTitle(title);
-  const description = article.seo_description || article.subtitle || article.summary || '';
+  const description = toMetaDescription(
+    article.seo_description || article.subtitle || article.summary,
+    'Tamil Nadu civic news and public-interest update from VizhiTN.',
+  );
   const image = article.social_image || article.featured_image || `${SITE_URL}/og-image.png`;
   const canonical = getTnTodayCanonical(article.slug);
   const publishedTime = article.publish_date || article.created_date;

@@ -25,7 +25,7 @@ export const metadata = {
     template: '%s | VizhiTN',
   },
   description:
-    'VizhiTN is Tamil Nadu\'s public civic platform — report local issues, track resolutions, join live community discussions, access government schemes, and celebrate community wins.',
+    'VizhiTN helps Tamil Nadu residents report civic issues, track resolutions, share local alerts, find public resources, and connect with their community.',
   keywords: [
     'Tamil Nadu civic complaints', 'TN government issues', 'VizhiTN',
     'Tamil Nadu community platform', 'civic issues Tamil Nadu', 'report potholes TN',

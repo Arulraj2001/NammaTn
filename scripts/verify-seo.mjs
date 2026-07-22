@@ -5,6 +5,8 @@ import nextConfig from '../next.config.js';
 import { getTnTodayCanonical } from '../src/lib/tnTodayUrl.js';
 import { getClarityInitScript } from '../src/lib/clarityScript.js';
 import { getPageTitle, getSocialTitle } from '../src/lib/metadataTitle.js';
+import { getDistrictMetaDescription, getCityIssueMetaDescription, toMetaDescription } from '../src/lib/metaDescription.js';
+import { DISTRICTS, CATEGORIES as SEO_CATEGORIES } from '../src/lib/seo-data.js';
 
 const root = process.cwd();
 const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
@@ -17,6 +19,16 @@ assert.equal(
 assert.equal(getPageTitle('Local Update | VizhiTN | VizhiTN'), 'Local Update', 'Repeated site-name suffixes must be removed');
 assert.equal(getSocialTitle('Local Update | VizhiTN'), 'Local Update | VizhiTN', 'Social titles must contain one site-name suffix');
 assert.equal(getSocialTitle('VizhiTN - Ask Local'), 'VizhiTN - Ask Local', 'Already branded legacy titles must not gain another suffix');
+assert.ok(toMetaDescription('word '.repeat(100)).length <= 160, 'Database-authored descriptions must be capped at 160 characters');
+for (const district of DISTRICTS) {
+  assert.ok(getDistrictMetaDescription(district.name).length <= 160, `${district.name} description must fit a search snippet`);
+  for (const category of SEO_CATEGORIES) {
+    assert.ok(
+      getCityIssueMetaDescription(district.name, category.name).length <= 160,
+      `${district.name}/${category.slug} description must fit a search snippet`,
+    );
+  }
+}
 
 const headerRules = await nextConfig.headers();
 const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';

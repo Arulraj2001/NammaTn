@@ -14,6 +14,7 @@ import Link from 'next/link';
 import nextDynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORIES, SITE_URL } from '@/lib/seo-data';
+import { getDistrictMetaDescription } from '@/lib/metaDescription';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
 import { NearbyDistrictLinks, DistrictCategoryLinks } from '@/components/seo/InternalLinks';
@@ -70,13 +71,9 @@ export async function generateMetadata({ params }) {
     notFound();
   }
 
-  const neighborhoodStr = district.neighborhoods?.slice(0, 3).join(', ') || district.name;
   const title = `${district.name} Civic Issue Reports & Alerts`;
   const socialTitle = `${title} | VizhiTN`;
-  const description =
-    `Live citizen reports from ${district.name}, Tamil Nadu — covering ${neighborhoodStr} and surrounding areas. ` +
-    `Track power cuts, water supply failures, road problems, scam alerts, job listings, and more. ` +
-    `Updated hourly by local residents on VizhiTN.`;
+  const description = getDistrictMetaDescription(district.name);
   const canonicalUrl = `${SITE_URL}/${city}`;
 
   return {

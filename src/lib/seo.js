@@ -10,7 +10,7 @@ const SITE_URL = 'https://www.vizhitn.in';
 const DEFAULT = {
   title: 'VizhiTN – Tamil Nadu Civic & Community Platform',
   description:
-    "VizhiTN is Tamil Nadu's public civic platform — report local issues, track resolutions, join live community discussions, access government schemes, and celebrate community wins.",
+    'VizhiTN helps Tamil Nadu residents report civic issues, track resolutions, share local alerts, find public resources, and connect with their community.',
   image: `${SITE_URL}/og-image.png`,
   url: typeof window !== 'undefined' ? window.location.origin : SITE_URL,
   siteName: 'VizhiTN',

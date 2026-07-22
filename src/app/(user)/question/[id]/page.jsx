@@ -1,6 +1,7 @@
 import QuestionDetail from '@/views/QuestionDetail';
 import { notFound } from 'next/navigation';
 import { getQuestionDetailData } from '@/lib/publicHubServer';
+import { toMetaDescription } from '@/lib/metaDescription';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -11,7 +12,10 @@ export async function generateMetadata({ params }) {
   if (!question) notFound();
 
   const title = question.title || 'Community Question';
-  const description = (question.content || `A community question from ${question.district_name || 'Tamil Nadu'}.`).slice(0, 160);
+  const description = toMetaDescription(
+    question.content,
+    `A community question from ${question.district_name || 'Tamil Nadu'}.`,
+  );
   const canonical = `${SITE_URL}/question/${question.id}`;
 
   return {

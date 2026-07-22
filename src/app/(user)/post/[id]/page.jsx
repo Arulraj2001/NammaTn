@@ -2,6 +2,7 @@ import PostDetail from '@/views/PostDetail';
 import { notFound } from 'next/navigation';
 import { getPublicPostDetail } from '@/lib/postServer';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
+import { toMetaDescription } from '@/lib/metaDescription';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -14,7 +15,10 @@ export async function generateMetadata({ params }) {
   const postTitle = getPageTitle(post.title_en || post.title, 'Civic Report');
   const title = `${postTitle} – Civic Report`;
   const socialTitle = getSocialTitle(title);
-  const description = (post.content_en || post.description || `Civic report from ${post.area_name || post.district_name || 'Tamil Nadu'}.`).slice(0, 160);
+  const description = toMetaDescription(
+    post.content_en || post.description,
+    `Civic report from ${post.area_name || post.district_name || 'Tamil Nadu'}.`,
+  );
   const canonical = `${SITE_URL}/post/${post.id}`;
   const image = post.before_photos?.[0] || post.media_urls?.[0] || post.image_url || `${SITE_URL}/og-image.png`;
 

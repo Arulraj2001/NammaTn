@@ -23,6 +23,7 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
+import { getCityIssueMetaDescription } from '@/lib/metaDescription';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
 
@@ -74,13 +75,9 @@ export async function generateMetadata({ params }) {
   }
 
   const intentData      = resolveQueryIntent(city, issue, 0);
-  const primaryKw       = intentData.primaryKeywords?.[0] || issueData.descriptionFragment;
-  const neighborhoodStr = cityData.neighborhoods?.slice(0, 2).join(' and ') || cityData.name;
   const title           = `${cityData.name} ${issueData.name} Reports Today`;
   const socialTitle     = `${title} | VizhiTN`;
-  const description     =
-    `Live tracking of ${primaryKw} in ${cityData.name}, Tamil Nadu — covering ${neighborhoodStr} and surrounding areas. ` +
-    `View citizen reports, helpline details, and contact for ${issueData.authority || 'relevant authorities'}. Updated hourly.`;
+  const description     = getCityIssueMetaDescription(cityData.name, issueData.name);
   const canonicalUrl = `${SITE_URL}/${city}/${issue}`;
 
   return {
