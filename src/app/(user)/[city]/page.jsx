@@ -169,7 +169,7 @@ export default async function Page({ params }) {
         url={canonicalUrl}
         name={`${district.name} Civic Issue Reports & Alerts`}
         description={
-          `Live citizen reports from ${district.name}, Tamil Nadu — power cuts, water issues, ` +
+          `Citizen-submitted reports from ${district.name}, Tamil Nadu — power cuts, water issues, ` +
           `road problems, scam alerts, jobs, and more.`
         }
         breadcrumbs={[
@@ -225,7 +225,7 @@ export default async function Page({ params }) {
           </p>
           <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
             Browse active complaints about power cuts, water supply failures, road damage, scam alerts,
-            job opportunities, and rooms for rent. Every report is verified by the community and updated in real time.
+            job opportunities, and rooms for rent. Reports show community activity and status details when contributors or moderators provide updates.
           </p>
 
           {/* Report count — SSR freshness signal */}

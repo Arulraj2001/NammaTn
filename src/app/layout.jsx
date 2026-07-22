@@ -55,7 +55,7 @@ export const metadata = {
     siteName: SITE_NAME,
     title: 'VizhiTN – Tamil Nadu Civic Complaint & Community Platform',
     description:
-      'Report local civic issues, track real-time resolutions, and connect with your Tamil Nadu community.',
+      'Report local civic issues, track resolution updates, and connect with your Tamil Nadu community.',
     images: [
       {
         url: `${SITE_URL}/og-image.png`,

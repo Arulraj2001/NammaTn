@@ -24,6 +24,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
 import { getCityIssueMetaDescription } from '@/lib/metaDescription';
+import { formatReportDate, getLatestReportDate } from '@/lib/reportFreshness';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
 
@@ -75,7 +76,7 @@ export async function generateMetadata({ params }) {
   }
 
   const intentData      = resolveQueryIntent(city, issue, 0);
-  const title           = `${cityData.name} ${issueData.name} Reports Today`;
+  const title           = `${cityData.name} ${issueData.name} Reports & Updates`;
   const socialTitle     = `${title} | VizhiTN`;
   const description     = getCityIssueMetaDescription(cityData.name, issueData.name);
   const canonicalUrl = `${SITE_URL}/${city}/${issue}`;
@@ -159,7 +160,8 @@ export default async function Page({ params }) {
   }
 
   // ── 3. AUTONOMOUS CORE — single call, 12 systems ──────────────────────────
-  const latestDate = finalReports[0]?.created_date || null;
+  const latestDate = getLatestReportDate(finalReports);
+  const latestDateLabel = formatReportDate(latestDate);
 
   const engine = await runAutonomousCoreAsync(
     city,
@@ -323,11 +325,11 @@ export default async function Page({ params }) {
           </div>
 
           <h1 className="text-3xl font-extrabold tracking-tight mt-1 sm:text-4xl">
-            {cityData.name} {issueData.name} Reports Today
+            {cityData.name} {issueData.name} Reports & Updates
           </h1>
           <p className="text-sm text-slate-500 mt-2">
             {finalReports.length > 0
-              ? `${finalReports.length} active report${finalReports.length !== 1 ? 's' : ''} — updated every hour`
+              ? `${finalReports.length} active report${finalReports.length !== 1 ? 's' : ''}${latestDateLabel ? ` — latest submitted ${latestDateLabel}` : ' from community submissions'}`
               : 'No active reports at this time'}
           </p>
 

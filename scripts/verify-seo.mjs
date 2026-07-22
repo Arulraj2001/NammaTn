@@ -7,6 +7,7 @@ import { getClarityInitScript } from '../src/lib/clarityScript.js';
 import { getPageTitle, getSocialTitle } from '../src/lib/metadataTitle.js';
 import { getDistrictMetaDescription, getCityIssueMetaDescription, toMetaDescription } from '../src/lib/metaDescription.js';
 import { DISTRICTS, CATEGORIES as SEO_CATEGORIES } from '../src/lib/seo-data.js';
+import { formatReportDate, getLatestReportDate } from '../src/lib/reportFreshness.js';
 
 const root = process.cwd();
 const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
@@ -29,6 +30,15 @@ for (const district of DISTRICTS) {
     );
   }
 }
+assert.equal(
+  getLatestReportDate([
+    { created_date: '2026-01-01T00:00:00.000Z' },
+    { created_date: '2026-02-01T00:00:00.000Z' },
+  ]),
+  '2026-02-01T00:00:00.000Z',
+  'Visible freshness must use the latest real report timestamp',
+);
+assert.equal(formatReportDate('2026-02-01T00:00:00.000Z'), '1 Feb 2026', 'Report dates must render deterministically');
 
 const headerRules = await nextConfig.headers();
 const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';
@@ -47,6 +57,15 @@ assert.match(rootLayout, /getClarityInitScript\(CLARITY_PROJECT_ID\)/, 'The layo
 assert.doesNotMatch(rootLayout, /alternates:\s*\{\s*canonical:\s*SITE_URL/, 'Root layout must not set a homepage canonical for every route');
 assert.match(rootLayout, /export const viewport/, 'The root layout must use the Next.js viewport export');
 assert.doesNotMatch(rootLayout, /<meta\s+name=["']viewport["']/, 'The root layout must not manually emit a duplicate viewport tag');
+
+for (const file of [
+  'src/app/(user)/[city]/page.jsx',
+  'src/app/(user)/[city]/[issue]/page.jsx',
+  'src/lib/seo/contentEntropy.js',
+]) {
+  const source = await read(file);
+  assert.doesNotMatch(source, /updated (?:every hour|hourly)|reports today|live tracking/i, `${file} must not promise unsupported freshness`);
+}
 
 const clarityScript = getClarityInitScript('xp7k5wqipw');
 assert.doesNotThrow(

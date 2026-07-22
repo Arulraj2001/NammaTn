@@ -59,10 +59,10 @@ function buildBlocks(cityData, issueData, stats, reports, rankingContext = {}) {
   const intentLead = intentData.dominantIntent === 'navigational'
     ? `Citizens in ${cityData.name} frequently search for direct complaint channels for ${issueData.plural.toLowerCase()}.`
     : intentData.dominantIntent === 'transactional'
-    ? `Report active ${issueData.plural.toLowerCase()} in ${cityData.name} now and track resolution in real-time.`
+    ? `Report active ${issueData.plural.toLowerCase()} in ${cityData.name} and follow status changes submitted by the community.`
     : intentData.dominantIntent === 'investigative'
     ? `Recurring ${issueData.plural.toLowerCase()} in ${cityData.name} may indicate systemic infrastructure gaps.`
-    : `${cityData.name} residents can access live tracking and official complaint data for ${issueData.plural.toLowerCase()}.`;
+    : `${cityData.name} residents can browse community reports and official complaint resources for ${issueData.plural.toLowerCase()}.`;
 
   // Trending urgency prefix
   const trendPrefix = trendVelocity === 'spike'
@@ -120,7 +120,7 @@ function buildBlocks(cityData, issueData, stats, reports, rankingContext = {}) {
         content: `${total > 0
           ? `${total} active ${issueData.plural.toLowerCase()} documented in ${cityData.name} on VizhiTN.`
           : `${cityData.name} currently has no pending ${issueData.plural.toLowerCase()} reports.`
-        } Activity is updated every hour via community submissions and helps authorities prioritize restoration.`,
+        } Activity reflects community submissions and recorded status changes.`,
       }),
     },
     {
@@ -128,7 +128,7 @@ function buildBlocks(cityData, issueData, stats, reports, rankingContext = {}) {
       weight: 1,
       render: () => ({
         title:   `Community Feedback — ${cityData.name}`,
-        content: `VizhiTN users in ${cityData.name} share live status updates on ${issueData.plural.toLowerCase()}. Community upvotes surface the most critical incidents and track which reports received official acknowledgement.`,
+        content: `VizhiTN users in ${cityData.name} share status updates on ${issueData.plural.toLowerCase()}. Community upvotes surface critical incidents and show which reports received official acknowledgement.`,
       }),
     },
     {
@@ -139,8 +139,8 @@ function buildBlocks(cityData, issueData, stats, reports, rankingContext = {}) {
         return {
           title:   `Related Searches in ${cityData.name}`,
           content: keywords
-            ? `People in ${cityData.name} also search for: ${keywords}. VizhiTN tracks all civic issues under these categories with real-time community reports.`
-            : `VizhiTN covers all ${issueData.plural.toLowerCase()} in ${cityData.name} with live tracking and official complaint links.`,
+            ? `People in ${cityData.name} also search for: ${keywords}. VizhiTN organizes community-submitted civic reports under these categories.`
+            : `VizhiTN covers ${issueData.plural.toLowerCase()} in ${cityData.name} with community reports and official complaint links.`,
         };
       },
     },
