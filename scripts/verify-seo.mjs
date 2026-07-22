@@ -2,9 +2,16 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import nextConfig from '../next.config.js';
+import { getTnTodayCanonical } from '../src/lib/tnTodayUrl.js';
 
 const root = process.cwd();
 const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
+
+assert.equal(
+  getTnTodayCanonical('sample-story'),
+  'https://www.vizhitn.in/tn-today/sample-story/',
+  'TN Today canonicals must use the current www VizhiTN article route',
+);
 
 const headerRules = await nextConfig.headers();
 const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';
@@ -203,10 +210,18 @@ assert.match(listingsView, /initialData:\s*\{\s*pages:\s*\[initialListings\]/, '
 const tnTodayArticlePage = await read('src/app/(user)/tn-today/[slug]/page.jsx');
 const tnTodayArticleView = await read('src/views/TnTodayArticle.jsx');
 const tnTodayServerDetail = await read('src/lib/tnTodayServer.js');
+const tnTodayAdmin = await read('src/views/admin/AdminTnToday.jsx');
+const tnTodayService = await read('src/services/tnToday.js');
+const tnTodayCanonicalMigration = await read('supabase/migrations/20260722_tn_today_canonical_cleanup.sql');
 assert.doesNotMatch(tnTodayArticlePage, /TnTodayArticleClient/, 'TN Today article bodies must not use a client-only wrapper');
 assert.match(tnTodayArticlePage, /getTnTodayArticle/, 'TN Today articles must use the bounded server fetcher');
 assert.match(tnTodayArticleView, /initialData:\s*initialArticle/, 'TN Today article queries must hydrate from server data');
 assert.match(tnTodayServerDetail, /sanitizeHtml/, 'Editorial HTML must be sanitized before server rendering');
+assert.doesNotMatch(tnTodayArticlePage, /article\??\.canonical_url/, 'TN Today server metadata must not trust editorial canonical overrides');
+assert.doesNotMatch(tnTodayArticleView, /article\??\.canonical_url/, 'TN Today sharing must not trust editorial canonical overrides');
+assert.doesNotMatch(tnTodayAdmin, /Canonical URL/, 'TN Today admin must not expose arbitrary canonical overrides');
+assert.match(tnTodayService, /canonical_url:\s*null/, 'TN Today writes must clear legacy canonical overrides');
+assert.match(tnTodayCanonicalMigration, /SET canonical_url = NULL/, 'Legacy TN Today canonical overrides must be cleared');
 
 const postDetailPage = await read('src/app/(user)/post/[id]/page.jsx');
 const postDetailView = await read('src/views/PostDetail.jsx');

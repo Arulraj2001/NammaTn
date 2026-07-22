@@ -44,7 +44,7 @@ const EMPTY_FORM = {
   author_name: "VizhiTN Editorial Team", publish_date: "", status: "draft",
   reading_time: 5, content: "", summary: "", why_it_matters: "",
   key_facts: "", timeline: "", official_sources: "", related_civic_links: "",
-  seo_title: "", seo_description: "", seo_keywords: "", canonical_url: "",
+  seo_title: "", seo_description: "", seo_keywords: "",
   social_image: "", is_featured: false,
 };
 
@@ -543,16 +543,10 @@ export default function AdminTnToday() {
                 placeholder="Chennai Metro, Tamil Nadu, public transport, infrastructure" />
             </Field>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field label="Canonical URL" hint="Overrides auto-generated canonical">
-                <Input value={form.canonical_url} onChange={e => setField("canonical_url", e.target.value)}
-                  placeholder={`https://vizhitn.in/tn-today/${form.slug}`} />
-              </Field>
-              <Field label="Social Share Image URL" hint="Fallback to featured image if blank">
-                <Input value={form.social_image} onChange={e => setField("social_image", e.target.value)}
-                  placeholder="https://..." />
-              </Field>
-            </div>
+            <Field label="Social Share Image URL" hint="Fallback to featured image if blank">
+              <Input value={form.social_image} onChange={e => setField("social_image", e.target.value)}
+                placeholder="https://..." />
+            </Field>
           </div>
 
           {/* SEO preview */}

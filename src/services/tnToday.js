@@ -2,6 +2,10 @@ import { supabase } from "@/api/supabaseClient";
 
 const TABLE = "tn_today";
 
+// Canonicals are derived from the published VizhiTN slug. Never persist an
+// editorial override that could transfer ownership to another host or slug.
+const withCanonicalOwnership = (payload) => ({ ...payload, canonical_url: null });
+
 // ─── Public reads ─────────────────────────────────────────────────────────────
 
 /** Get the featured (pinned) published article for homepage */
@@ -83,7 +87,7 @@ export const adminGetTnTodayById = async (id) => {
 export const createTnToday = async (payload) => {
   const { data, error } = await supabase
     .from(TABLE)
-    .insert(payload)
+    .insert(withCanonicalOwnership(payload))
     .select()
     .single();
   if (error) throw error;
@@ -94,7 +98,7 @@ export const createTnToday = async (payload) => {
 export const updateTnToday = async (id, payload) => {
   const { data, error } = await supabase
     .from(TABLE)
-    .update({ ...payload, updated_date: new Date().toISOString() })
+    .update({ ...withCanonicalOwnership(payload), updated_date: new Date().toISOString() })
     .eq("id", id)
     .select()
     .single();

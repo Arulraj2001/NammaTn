@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { setPageMeta, injectPostStructuredData } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { getTnTodayCanonical } from "@/lib/tnTodayUrl";
 
 const SITE_URL = "https://www.vizhitn.in";
 
@@ -161,7 +162,7 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
   // SEO & structured data
   useEffect(() => {
     if (!article) return;
-    const canonicalUrl = article.canonical_url || `${SITE_URL}/tn-today/${article.slug}/`;
+    const canonicalUrl = getTnTodayCanonical(article.slug);
     const image = article.social_image || article.featured_image || "";
 
     setPageMeta({
@@ -229,7 +230,7 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
 
   const cat = CATEGORY_CONFIG[article.category] || CATEGORY_CONFIG.general;
   const pubDate = article.publish_date ? new Date(article.publish_date) : new Date(article.created_date);
-  const pageUrl = article.canonical_url || `${SITE_URL}/tn-today/${article.slug}/`;
+  const pageUrl = getTnTodayCanonical(article.slug);
   const safeArticleHtml = article.safe_content || (
     typeof window !== "undefined" ? DOMPurify.sanitize(article.content || "") : ""
   );

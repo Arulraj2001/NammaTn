@@ -1,5 +1,6 @@
 import TnTodayArticle from '@/views/TnTodayArticle';
 import { getTnTodayArticle } from '@/lib/tnTodayServer';
+import { getTnTodayCanonical } from '@/lib/tnTodayUrl';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -12,7 +13,7 @@ export async function generateMetadata({ params }) {
   const title = article.seo_title || article.title;
   const description = article.seo_description || article.subtitle || article.summary || '';
   const image = article.social_image || article.featured_image || `${SITE_URL}/og-image.png`;
-  const canonical = article.canonical_url || `${SITE_URL}/tn-today/${article.slug}/`;
+  const canonical = getTnTodayCanonical(article.slug);
   const publishedTime = article.publish_date || article.created_date;
   const modifiedTime = article.updated_date || publishedTime;
 
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { article, relatedArticles } = await getTnTodayArticle(params.slug);
-  const canonical = article?.canonical_url || `${SITE_URL}/tn-today/${params.slug}/`;
+  const canonical = getTnTodayCanonical(article?.slug || params.slug);
 
   const articleSchema = article ? {
     '@context': 'https://schema.org',
