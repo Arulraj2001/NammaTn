@@ -11,7 +11,7 @@ const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
 
 assert.equal(
   getTnTodayCanonical('sample-story'),
-  'https://www.vizhitn.in/tn-today/sample-story/',
+  'https://www.vizhitn.in/tn-today/sample-story',
   'TN Today canonicals must use the current www VizhiTN article route',
 );
 assert.equal(getPageTitle('Local Update | VizhiTN | VizhiTN'), 'Local Update', 'Repeated site-name suffixes must be removed');
@@ -24,6 +24,7 @@ assert.match(csp, /https:\/\/\*\.clarity\.ms/, 'CSP must allow Clarity resources
 assert.match(csp, /https:\/\/c\.bing\.com/, 'CSP must allow Clarity collection fallback');
 
 const redirects = await nextConfig.redirects();
+assert.equal(nextConfig.trailingSlash, false, 'All non-homepage routes must use the no-trailing-slash policy');
 assert.ok(
   redirects.some(rule => rule.has?.some(condition => condition.type === 'host' && condition.value === 'vizhitn.in')),
   'A non-www to www redirect is required',
@@ -66,11 +67,22 @@ assert.match(sitemap, /updated_date/, 'Dynamic sitemap entries must use real upd
 assert.match(sitemap, /\/category\/\$\{category\.slug\}/, 'Category hubs must be present in the sitemap');
 assert.match(sitemap, /PUBLIC_CATEGORIES\.forEach/, 'Category hubs must use the public category taxonomy');
 assert.match(sitemap, /SEO_CATEGORIES\.forEach/, 'City-issue fallbacks must use the SEO issue taxonomy');
-assert.match(sitemap, /\/tn-today\/\$\{a\.slug\}\//, 'TN Today article URLs must match their canonical trailing slash');
+assert.match(sitemap, /\/tn-today\/\$\{a\.slug\}`/, 'TN Today article URLs must match the no-trailing-slash policy');
 assert.match(sitemap, /OFFICES\.forEach/, 'Static office detail pages must be present in the sitemap');
 assert.match(sitemap, /getActiveAreas\(500\)/, 'Active area detail pages must be present in the sitemap');
-for (const route of ['/explore/', '/help/', '/situations/', '/ask/']) {
+for (const route of ['/explore', '/help', '/situations', '/ask']) {
   assert.ok(sitemap.includes(`'${route}'`), `${route} must be present in the sitemap`);
+}
+for (const routeTemplate of [
+  '${city.slug}/',
+  '${districtSlug}/${categorySlug}/',
+  '${city}/${issue.slug}/',
+  '/tn-today/${a.slug}/',
+  '/category/${category.slug}/',
+  '/office/${office.slug}/',
+  '/area/${area.slug}/',
+]) {
+  assert.ok(!sitemap.includes(routeTemplate), `Sitemap template must omit trailing slash: ${routeTemplate}`);
 }
 
 const privateLayouts = [

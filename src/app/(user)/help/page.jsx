@@ -6,7 +6,7 @@ export const revalidate = 900;
 export const metadata = {
   title: 'Community Emergency Help Requests in Tamil Nadu',
   description: 'Find and share active blood requirements, ambulance assistance, missing-person alerts, medicine support, and community emergency requests across Tamil Nadu.',
-  alternates: { canonical: '/help/' },
+  alternates: { canonical: '/help' },
 };
 
 export default async function Page() {

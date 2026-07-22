@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
 
   const title = question.title || 'Community Question';
   const description = (question.content || `A community question from ${question.district_name || 'Tamil Nadu'}.`).slice(0, 160);
-  const canonical = `${SITE_URL}/question/${question.id}/`;
+  const canonical = `${SITE_URL}/question/${question.id}`;
 
   return {
     title,

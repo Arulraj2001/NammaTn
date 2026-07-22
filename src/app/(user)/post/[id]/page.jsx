@@ -15,7 +15,7 @@ export async function generateMetadata({ params }) {
   const title = `${postTitle} – Civic Report`;
   const socialTitle = getSocialTitle(title);
   const description = (post.content_en || post.description || `Civic report from ${post.area_name || post.district_name || 'Tamil Nadu'}.`).slice(0, 160);
-  const canonical = `${SITE_URL}/post/${post.id}/`;
+  const canonical = `${SITE_URL}/post/${post.id}`;
   const image = post.before_photos?.[0] || post.media_urls?.[0] || post.image_url || `${SITE_URL}/og-image.png`;
 
   return {
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const { post, complaintTrackers } = await getPublicPostDetail(params.id);
   if (!post) notFound();
-  const canonical = `${SITE_URL}/post/${params.id}/`;
+  const canonical = `${SITE_URL}/post/${params.id}`;
   const title = post?.title_en || post?.title || 'Civic Report';
 
   const postSchema = post ? {
@@ -63,11 +63,11 @@ export default async function Page({ params }) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Explore', item: `${SITE_URL}/explore/` },
+      { '@type': 'ListItem', position: 2, name: 'Explore', item: `${SITE_URL}/explore` },
       ...(post.district_slug ? [{
         '@type': 'ListItem', position: 3,
         name: post.district_name || post.district_slug.replace(/-/g, ' '),
-        item: `${SITE_URL}/${post.district_slug}/`,
+        item: `${SITE_URL}/${post.district_slug}`,
       }] : []),
       { '@type': 'ListItem', position: post.district_slug ? 4 : 3, name: title, item: canonical },
     ],

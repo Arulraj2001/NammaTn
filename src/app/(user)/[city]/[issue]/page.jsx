@@ -81,7 +81,7 @@ export async function generateMetadata({ params }) {
   const description     =
     `Live tracking of ${primaryKw} in ${cityData.name}, Tamil Nadu — covering ${neighborhoodStr} and surrounding areas. ` +
     `View citizen reports, helpline details, and contact for ${issueData.authority || 'relevant authorities'}. Updated hourly.`;
-  const canonicalUrl = `${SITE_URL}/${city}/${issue}/`;
+  const canonicalUrl = `${SITE_URL}/${city}/${issue}`;
 
   return {
     title,
@@ -238,7 +238,7 @@ export default async function Page({ params }) {
   const positionChange  = rwPos.positionChange ?? 0;
   const hasRealData     = rwFeedback.hasRealData ?? false;
 
-  const canonicalUrl = `${SITE_URL}/${city}/${issue}/`;
+  const canonicalUrl = `${SITE_URL}/${city}/${issue}`;
 
 
   return (
@@ -249,7 +249,7 @@ export default async function Page({ params }) {
         description={`Track ${issueData.name.toLowerCase()} in ${cityData.name}, Tamil Nadu.`}
         breadcrumbs={[
           { name: 'Home',         url: SITE_URL },
-          { name: cityData.name,  url: `${SITE_URL}/${city}/` },
+          { name: cityData.name,  url: `${SITE_URL}/${city}` },
           { name: issueData.name, url: canonicalUrl },
         ]}
         dateModified={boost.lastModified}
@@ -285,7 +285,7 @@ export default async function Page({ params }) {
         <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1">
           <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
           <span aria-hidden="true">›</span>
-          <Link href={`/${city}/`} className="hover:text-blue-600 transition-colors">{cityData.name}</Link>
+          <Link href={`/${city}`} className="hover:text-blue-600 transition-colors">{cityData.name}</Link>
           <span aria-hidden="true">›</span>
           <span className="text-slate-600 dark:text-slate-300 font-medium">{issueData.plural}</span>
         </nav>

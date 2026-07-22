@@ -79,7 +79,7 @@ export default function DistrictCivicStats({ districtSlug, districtName }) {
       )}
 
       <Link
-        to={`/${districtSlug}/`}
+        to={`/${districtSlug}`}
         className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
       >
         {T("View all civic issues →", "அனைத்து சிக்கல்களையும் காண →")}

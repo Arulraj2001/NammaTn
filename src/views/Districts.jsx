@@ -79,7 +79,7 @@ export default function Districts() {
       >
         {filtered.map((d) => (
           <motion.div key={d.slug} variants={{ hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1 } }}>
-            <Link to={`/${d.slug}/`}>
+            <Link to={`/${d.slug}`}>
               <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-1 transition-all duration-200 text-center group">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-3">
                   <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />

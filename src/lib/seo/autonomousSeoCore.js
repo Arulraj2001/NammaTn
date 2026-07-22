@@ -166,7 +166,7 @@ export function runAutonomousCore(inputs = {}) {
 
   // ── Guard ─────────────────────────────────────────────────────────────────
   if (!DISTRICT_MAP[citySlug] || !CATEGORY_MAP[issueSlug]) {
-    return _nullDecision(`/${citySlug}/${issueSlug}/`);
+    return _nullDecision(`/${citySlug}/${issueSlug}`);
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -377,7 +377,7 @@ export function runAutonomousCore(inputs = {}) {
 
   return {
     // ── Stabilized primary outputs (contract surface) ─────────────────────
-    pageSlug:           `/${citySlug}/${issueSlug}/`,
+    pageSlug:           `/${citySlug}/${issueSlug}`,
     finalRankingScore:  parseFloat(finalScore.toFixed(4)),
     stableRankingScore: parseFloat(stableRankingScore.toFixed(4)),
     normalizedTier:     finalTier,
@@ -542,7 +542,7 @@ export async function runAutonomousCoreAsync(
   // ════════════════════════════════════════════════════════════════════════════
 
   // 10a: Fetch real GSC signals (async; falls back to neutral stub if no API key)
-  const pageSlug   = `/${citySlug}/${issueSlug}/`;
+  const pageSlug   = `/${citySlug}/${issueSlug}`;
   const gscSignals = await collectGscSignals(pageSlug, { daysBack: 28 });
 
   // 10b: Build position tracking result (stateData.positionHistory from caller/KV store)
@@ -607,7 +607,7 @@ export async function runAutonomousCoreAsync(
   );
 
   // 10f: Single Correction Pass — collect all proposed corrections and apply only one
-  const pageSlugForQueue = `/${citySlug}/${issueSlug}/`;
+  const pageSlugForQueue = `/${citySlug}/${issueSlug}`;
   const correctionProposals = buildCorrectionProposals({
     pageSlug:          pageSlugForQueue,
     stabilityDecision: realWorldStabilized,

@@ -6,7 +6,7 @@ export const revalidate = 1800;
 export const metadata = {
   title: 'Ask Local Questions Across Tamil Nadu',
   description: 'Ask location-based questions and browse community answers about neighborhoods, civic services, transport, utilities, and daily life across Tamil Nadu.',
-  alternates: { canonical: '/ask/' },
+  alternates: { canonical: '/ask' },
 };
 
 export default async function Page() {

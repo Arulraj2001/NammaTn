@@ -29,7 +29,7 @@ export function HomeCityLinks() {
         {districts.map(d => (
           <li key={d.slug}>
             <Link
-              href={`/${d.slug}/`}
+              href={`/${d.slug}`}
               className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors"
             >
               {d.name} Hub
@@ -58,7 +58,7 @@ export function DistrictCategoryLinks({ districtSlug, districtName }) {
         {CATEGORIES.map(cat => (
           <li key={cat.slug}>
             <Link
-              href={`/${districtSlug}/${cat.slug}/`}
+              href={`/${districtSlug}/${cat.slug}`}
               className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors"
             >
               {getAnchorText(districtName, cat.plural)}
@@ -91,7 +91,7 @@ export function NearbyDistrictLinks({ districtSlug }) {
         {nearbyDistricts.map(d => (
           <li key={d.slug}>
             <Link
-              href={`/${d.slug}/`}
+              href={`/${d.slug}`}
               className="text-sm text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 underline-offset-2 hover:underline transition-colors"
             >
               {d.name}
@@ -121,7 +121,7 @@ export function CategoryDistrictLinks({ categorySlug, categoryName }) {
         {districts.map(d => (
           <li key={d.slug}>
             <Link
-              href={`/${d.slug}/${categorySlug}/`}
+              href={`/${d.slug}/${categorySlug}`}
               className="text-sm text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 underline-offset-2 hover:underline transition-colors"
             >
               {getAnchorText(d.name, categoryName)}
@@ -142,7 +142,7 @@ export function AllCategoryLinks() {
         {CATEGORIES.map(cat => (
           <li key={cat.slug}>
             <Link
-              href={`/category/${cat.slug}/`}
+              href={`/category/${cat.slug}`}
               className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors"
             >
               {cat.plural} in Tamil Nadu

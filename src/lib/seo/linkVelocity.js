@@ -34,11 +34,11 @@ export function getOutboundLinks(currentCity, currentIssue, trendingPairs = [], 
 
   const candidates = [];
   const seen = new Set();
-  seen.add(`/${currentCity}/${currentIssue}/`); // Exclude current page
+  seen.add(`/${currentCity}/${currentIssue}`); // Exclude current page
 
   // Type A: Other issues in the same city (70% weight)
   CATEGORIES.forEach(cat => {
-    const href = `/${currentCity}/${cat.slug}/`;
+    const href = `/${currentCity}/${cat.slug}`;
     if (!seen.has(href)) {
       seen.add(href);
       candidates.push({ href, city: currentCity, issue: cat.slug, type: 'same-city', baseWeight: 2.0 });
@@ -49,7 +49,7 @@ export function getOutboundLinks(currentCity, currentIssue, trendingPairs = [], 
   const nearby = currentCityData.nearby || [];
   nearby.forEach(citySlug => {
     if (DISTRICT_MAP[citySlug]) {
-      const href = `/${citySlug}/${currentIssue}/`;
+      const href = `/${citySlug}/${currentIssue}`;
       if (!seen.has(href)) {
         seen.add(href);
         candidates.push({ href, city: citySlug, issue: currentIssue, type: 'adjacent-city', baseWeight: 1.5 });
@@ -62,7 +62,7 @@ export function getOutboundLinks(currentCity, currentIssue, trendingPairs = [], 
   nearby
     .filter(slug => HIGH_TRAFFIC_CITIES.includes(slug))
     .forEach(citySlug => {
-      const href = `/${citySlug}/`;
+      const href = `/${citySlug}`;
       if (!seen.has(href)) {
         seen.add(href);
         candidates.push({ href, city: citySlug, issue: '', type: 'general-hub', baseWeight: 1.0 });

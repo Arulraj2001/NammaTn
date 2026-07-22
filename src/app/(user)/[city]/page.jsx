@@ -77,7 +77,7 @@ export async function generateMetadata({ params }) {
     `Live citizen reports from ${district.name}, Tamil Nadu — covering ${neighborhoodStr} and surrounding areas. ` +
     `Track power cuts, water supply failures, road problems, scam alerts, job listings, and more. ` +
     `Updated hourly by local residents on VizhiTN.`;
-  const canonicalUrl = `${SITE_URL}/${city}/`;
+  const canonicalUrl = `${SITE_URL}/${city}`;
 
   return {
     title,
@@ -152,7 +152,7 @@ function buildDistrictFAQ(district) {
 export default async function Page({ params }) {
   const { city } = await params;
   const district = DISTRICT_MAP[city];
-  const canonicalUrl = `${SITE_URL}/${city}/`;
+  const canonicalUrl = `${SITE_URL}/${city}`;
 
   if (!district) {
     notFound();
@@ -246,7 +246,7 @@ export default async function Page({ params }) {
             {CATEGORIES.map(cat => (
               <li key={cat.slug}>
                 <Link
-                  href={`/${city}/${cat.slug}/`}
+                  href={`/${city}/${cat.slug}`}
                   className="inline-block px-3 py-1.5 text-xs font-semibold rounded-full bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                 >
                   {cat.plural}
@@ -325,7 +325,7 @@ export default async function Page({ params }) {
                 return (
                   <li key={slug}>
                     <Link
-                      href={`/${slug}/`}
+                      href={`/${slug}`}
                       className="text-xs text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors underline underline-offset-2"
                     >
                       {nearby.name}

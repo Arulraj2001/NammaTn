@@ -54,13 +54,13 @@ export function buildOptimizedLinks(
   const currentCityData = DISTRICT_MAP[currentCity];
   if (!currentCityData) return [];
 
-  const seen       = new Set([`/${currentCity}/${currentIssue}/`]);
+  const seen       = new Set([`/${currentCity}/${currentIssue}`]);
   const candidates = [];
 
   // ── Type A: Same city, other issues (70% budget) ──────────────────────────
   CATEGORIES.forEach(cat => {
     if (cat.slug === currentIssue) return;
-    const href = `/${currentCity}/${cat.slug}/`;
+    const href = `/${currentCity}/${cat.slug}`;
     if (seen.has(href)) return;
     seen.add(href);
 
@@ -76,7 +76,7 @@ export function buildOptimizedLinks(
   const nearby = currentCityData.nearby || [];
   nearby.forEach(citySlug => {
     if (!DISTRICT_MAP[citySlug]) return;
-    const href = `/${citySlug}/${currentIssue}/`;
+    const href = `/${citySlug}/${currentIssue}`;
     if (seen.has(href)) return;
     seen.add(href);
 
@@ -92,7 +92,7 @@ export function buildOptimizedLinks(
   nearby
     .filter(slug => HIGH_TRAFFIC_CITIES.has(slug))
     .forEach(citySlug => {
-      const href = `/${citySlug}/`;
+      const href = `/${citySlug}`;
       if (seen.has(href)) return;
       seen.add(href);
       candidates.push({ href, city: citySlug, issue: '', type: 'C', weight: 1.0 });

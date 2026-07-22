@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
   const district = area.district_name_en || area.district_name || 'Tamil Nadu';
   const title = `${area.name_en} Civic Issues, Alerts & Local Updates`;
   const description = `Track public complaints, resolved issues, alerts, and community updates in ${area.name_en}, ${district}.`;
-  const canonical = `${SITE_URL}/area/${area.slug}/`;
+  const canonical = `${SITE_URL}/area/${area.slug}`;
 
   return {
     title,

@@ -14,7 +14,7 @@ export async function generateMetadata({ params }) {
 
   const title = `${office.name_en} Status & Citizen Reports in Tamil Nadu`;
   const description = `Check community-reported waiting times, service status, and citizen experiences for ${office.name_en} locations across Tamil Nadu.`;
-  const canonical = `${SITE_URL}/office/${office.slug}/`;
+  const canonical = `${SITE_URL}/office/${office.slug}`;
 
   return {
     title,

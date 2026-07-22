@@ -6,6 +6,6 @@ export function getTnTodayCanonical(slug) {
     : '';
 
   return normalizedSlug
-    ? `${SITE_URL}/tn-today/${encodeURIComponent(normalizedSlug)}/`
-    : `${SITE_URL}/tn-today/`;
+    ? `${SITE_URL}/tn-today/${encodeURIComponent(normalizedSlug)}`
+    : `${SITE_URL}/tn-today`;
 }

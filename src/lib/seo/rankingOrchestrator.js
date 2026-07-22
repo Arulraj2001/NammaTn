@@ -217,7 +217,7 @@ export function orchestratePage(inputs = {}) {
 
   // ── 8. Assembled output ───────────────────────────────────────────────────
   return {
-    pageSlug:          `/${citySlug}/${issueSlug}/`,
+    pageSlug:          `/${citySlug}/${issueSlug}`,
     finalRankingScore,
     tierLevel,
     indexPriority:     resolveIndexPriority(tierLevel),
@@ -375,7 +375,7 @@ export async function buildSitemapFleet() {
 // ─────────────────────────────────────────────────────────────────────────────
 function _nullDecision(citySlug, issueSlug) {
   return {
-    pageSlug:          `/${citySlug}/${issueSlug}/`,
+    pageSlug:          `/${citySlug}/${issueSlug}`,
     finalRankingScore: 0,
     tierLevel:         'dormant',
     indexPriority:     5,

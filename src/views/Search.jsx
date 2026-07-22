@@ -204,7 +204,7 @@ export default function Search() {
           <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden mb-4 shadow-lg">
             {suggestions.map((s, i) => (
-              <Link key={i} to={s.type === "district" ? `/${s.slug}/` : `/category/${s.slug}/`}
+              <Link key={i} to={s.type === "district" ? `/${s.slug}` : `/category/${s.slug}`}
                 className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors border-b last:border-0 border-slate-100 dark:border-slate-700">
                 {s.type === "district" ? <MapPin className="w-4 h-4 text-green-500 flex-shrink-0" /> : <span className="text-base">{s.icon}</span>}
                 <span className="text-sm text-slate-700 dark:text-slate-300">{s.label}</span>
@@ -351,7 +351,7 @@ export default function Search() {
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">{T("Browse by District", "மாவட்டம் வாரியாக")}</p>
           <div className="flex flex-wrap gap-2">
             {DISTRICTS.slice(0, 14).map((d) => (
-              <Link key={d.slug} to={`/${d.slug}/`}
+              <Link key={d.slug} to={`/${d.slug}`}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600 transition-colors">
                 <MapPin className="w-3 h-3" />{T(d.name_en, d.name_ta)}
               </Link>

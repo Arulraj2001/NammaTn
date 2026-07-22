@@ -28,7 +28,7 @@ export async function generateMetadata({ params }) {
   const description =
     `Browse all ${label.toLowerCase()} reports across Tamil Nadu submitted by citizens. ` +
     `Track ${category?.descriptionFragment ?? label.toLowerCase()} on VizhiTN.`;
-  const canonicalUrl = `${SITE_URL}/category/${slug}/`;
+  const canonicalUrl = `${SITE_URL}/category/${slug}`;
 
   return {
     title,
@@ -54,7 +54,7 @@ export default async function Page({ params }) {
   if (!publicCategory) notFound();
   const category = CATEGORY_MAP[slug];
   const label = category?.plural ?? publicCategory.name_en ?? slugToLabel(slug);
-  const canonicalUrl = `${SITE_URL}/category/${slug}/`;
+  const canonicalUrl = `${SITE_URL}/category/${slug}`;
   const initialData = await getCategoryHubData(slug);
 
   return (
@@ -67,7 +67,7 @@ export default async function Page({ params }) {
         }
         breadcrumbs={[
           { name: 'Home', url: SITE_URL },
-          { name: 'Explore', url: `${SITE_URL}/explore/` },
+          { name: 'Explore', url: `${SITE_URL}/explore` },
           { name: label, url: canonicalUrl },
         ]}
       />

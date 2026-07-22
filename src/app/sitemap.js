@@ -29,7 +29,7 @@ export default async function sitemap() {
   // ── Level 2: City hub pages (all 38 — hubs have editorial value regardless of post count) ──
   DISTRICTS.forEach(city => {
     entries.push({
-      url: `${SITE_URL}/${city.slug}/`,
+      url: `${SITE_URL}/${city.slug}`,
       changeFrequency: 'daily',
       priority: 0.8,
     });
@@ -68,7 +68,7 @@ export default async function sitemap() {
     pairDates.forEach((lastModified, key) => {
       const [districtSlug, categorySlug] = key.split(':');
       entries.push({
-        url: `${SITE_URL}/${districtSlug}/${categorySlug}/`,
+        url: `${SITE_URL}/${districtSlug}/${categorySlug}`,
         ...(lastModified ? { lastModified } : {}),
         changeFrequency: 'daily',
         priority: 0.7,
@@ -80,7 +80,7 @@ export default async function sitemap() {
     ['chennai', 'coimbatore', 'madurai', 'salem', 'tiruchirappalli'].forEach(city => {
       SEO_CATEGORIES.forEach(issue => {
         entries.push({
-          url: `${SITE_URL}/${city}/${issue.slug}/`,
+          url: `${SITE_URL}/${city}/${issue.slug}`,
           changeFrequency: 'daily',
           priority: 0.7,
         });
@@ -102,7 +102,7 @@ export default async function sitemap() {
     (articles || []).forEach(a => {
       if (!a.slug) return;
       entries.push({
-        url: `${SITE_URL}/tn-today/${a.slug}/`,
+        url: `${SITE_URL}/tn-today/${a.slug}`,
         ...(a.updated_date || a.publish_date
           ? { lastModified: a.updated_date || a.publish_date }
           : {}),
@@ -118,7 +118,7 @@ export default async function sitemap() {
   // Public category hubs use a separate taxonomy from city-issue SEO pages.
   PUBLIC_CATEGORIES.forEach(category => {
     entries.push({
-      url: `${SITE_URL}/category/${category.slug}/`,
+      url: `${SITE_URL}/category/${category.slug}`,
       changeFrequency: 'daily',
       priority: 0.7,
     });
@@ -126,7 +126,7 @@ export default async function sitemap() {
 
   OFFICES.forEach(office => {
     entries.push({
-      url: `${SITE_URL}/office/${office.slug}/`,
+      url: `${SITE_URL}/office/${office.slug}`,
       changeFrequency: 'monthly',
       priority: 0.6,
     });
@@ -136,7 +136,7 @@ export default async function sitemap() {
   areas.forEach(area => {
     if (!area.slug) return;
     entries.push({
-      url: `${SITE_URL}/area/${area.slug}/`,
+      url: `${SITE_URL}/area/${area.slug}`,
       ...(area.updated_date || area.created_date
         ? { lastModified: area.updated_date || area.created_date }
         : {}),
@@ -150,7 +150,7 @@ export default async function sitemap() {
     '/awareness/faqs', '/awareness/guides', '/awareness/portals',
     '/awareness/schemes', '/community', '/community/wins', '/scams',
     '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
-    '/explore/', '/help/', '/situations/', '/ask/', '/leaderboard', '/listings',
+    '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
     '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
   ].forEach(path => {
     entries.push({

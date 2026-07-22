@@ -11,7 +11,7 @@ export default function ShareBar({ post, lang = "en", compact = false }) {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const url = `https://www.vizhitn.in/post/${post.id}/`;
+  const url = `https://www.vizhitn.in/post/${post.id}`;
   const text = buildShareText(post, lang);
 
   const shareLinks = [

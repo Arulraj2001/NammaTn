@@ -7,6 +7,8 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Canonical URL policy: every non-homepage route omits the trailing slash.
+  trailingSlash: false,
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 
@@ -101,7 +103,7 @@ const nextConfig = {
       { source: '/privacy', destination: '/privacy-policy', permanent: true },
       { source: '/tos',     destination: '/terms',           permanent: true },
       // Redirect old /district/:slug to canonical /:slug/ — route file removed to save crawl budget
-      { source: '/district/:slug', destination: '/:slug/', permanent: true },
+      { source: '/district/:slug', destination: '/:slug', permanent: true },
     ];
   },
 

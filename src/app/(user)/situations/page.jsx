@@ -6,7 +6,7 @@ export const revalidate = 900;
 export const metadata = {
   title: 'Live Situations & Local Alerts in Tamil Nadu',
   description: 'Follow active power cuts, water shortages, traffic disruptions, flooding, emergencies, and verified local situation updates across Tamil Nadu.',
-  alternates: { canonical: '/situations/' },
+  alternates: { canonical: '/situations' },
 };
 
 export default async function Page() {

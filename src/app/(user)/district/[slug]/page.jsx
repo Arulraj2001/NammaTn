@@ -7,5 +7,5 @@ import { DISTRICT_MAP } from '@/lib/seo-data';
 export default async function Page({ params }) {
   const { slug } = await params;
   if (!DISTRICT_MAP[slug]) notFound();
-  permanentRedirect(`/${slug}/`);
+  permanentRedirect(`/${slug}`);
 }

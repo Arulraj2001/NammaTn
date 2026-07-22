@@ -123,7 +123,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
     injectPostStructuredData(post);
     injectBreadcrumbStructuredData([
       { name: "Home", url: window.location.origin },
-      { name: post.district_name || "District", url: `https://www.vizhitn.in/${post.district_slug}/` },
+      { name: post.district_name || "District", url: `https://www.vizhitn.in/${post.district_slug}` },
       { name: post.title_en, url: window.location.href },
     ]);
     return () => cleanupStructuredData();
@@ -420,7 +420,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
                   {T("More from", "இதிலிருந்து மேலும்")} {post.district_name}
                 </p>
-                <Link to={`/${post.district_slug}/`} className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                <Link to={`/${post.district_slug}`} className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
                   {T("View all district posts →", "மாவட்ட பதிவுகளை பார்க்க →")}
                 </Link>
               </div>

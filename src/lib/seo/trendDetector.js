@@ -116,7 +116,7 @@ export async function detectTrends({ topN = 10, minCount = 2 } = {}) {
     return qualified.slice(0, topN).map((item, idx) => ({
       ...item,
       rank:       idx + 1,
-      href:       `/${item.city}/${item.issue}/`,
+      href:       `/${item.city}/${item.issue}`,
       trendLabel: buildTrendLabel(item.velocity, item.count, item.issueName, item.cityName),
     }));
 

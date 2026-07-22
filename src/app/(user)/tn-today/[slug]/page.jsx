@@ -65,7 +65,7 @@ export default async function Page({ params }) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'TN Today', item: `${SITE_URL}/tn-today/` },
+      { '@type': 'ListItem', position: 2, name: 'TN Today', item: `${SITE_URL}/tn-today` },
       { '@type': 'ListItem', position: 3, name: article.title, item: canonical },
     ],
   } : null;
