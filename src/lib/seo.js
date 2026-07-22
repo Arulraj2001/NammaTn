@@ -3,6 +3,8 @@
  * All helpers are idempotent: safe to call on every page mount.
  */
 
+import { getSocialTitle } from './metadataTitle';
+
 const SITE_URL = 'https://www.vizhitn.in';
 
 const DEFAULT = {
@@ -68,9 +70,7 @@ export function setPageMeta({
   canonical,
   noindex = false,
 } = {}) {
-  const t   = title
-    ? (/vizhitn/i.test(title) ? title : `${title} | VizhiTN`)
-    : DEFAULT.title;
+  const t   = title ? getSocialTitle(title) : DEFAULT.title;
   const d   = description || DEFAULT.description;
   const img = image       || DEFAULT.image;
   const currentUrl = typeof window !== 'undefined'

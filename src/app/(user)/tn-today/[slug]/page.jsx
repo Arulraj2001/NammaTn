@@ -2,6 +2,7 @@ import TnTodayArticle from '@/views/TnTodayArticle';
 import { notFound } from 'next/navigation';
 import { getTnTodayArticle } from '@/lib/tnTodayServer';
 import { getTnTodayCanonical } from '@/lib/tnTodayUrl';
+import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -11,7 +12,8 @@ export async function generateMetadata({ params }) {
   const { article } = await getTnTodayArticle(params.slug);
   if (!article) notFound();
 
-  const title = article.seo_title || article.title;
+  const title = getPageTitle(article.seo_title || article.title, 'TN Today');
+  const socialTitle = getSocialTitle(title);
   const description = article.seo_description || article.subtitle || article.summary || '';
   const image = article.social_image || article.featured_image || `${SITE_URL}/og-image.png`;
   const canonical = getTnTodayCanonical(article.slug);
@@ -24,13 +26,13 @@ export async function generateMetadata({ params }) {
     keywords: article.seo_keywords || '',
     alternates: { canonical },
     openGraph: {
-      type: 'article', title, description, url: canonical, siteName: 'VizhiTN', locale: 'en_IN',
+      type: 'article', title: socialTitle, description, url: canonical, siteName: 'VizhiTN', locale: 'en_IN',
       images: [{ url: image, width: 1200, height: 630, alt: title }],
       publishedTime, modifiedTime,
       authors: [article.author_name || 'VizhiTN Editorial Team'],
       section: article.category || 'general',
     },
-    twitter: { card: 'summary_large_image', title, description, images: [image] },
+    twitter: { card: 'summary_large_image', title: socialTitle, description, images: [image] },
   };
 }
 

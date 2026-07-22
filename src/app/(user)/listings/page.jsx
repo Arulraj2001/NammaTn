@@ -2,7 +2,7 @@ import LocalListings from '@/views/LocalListings';
 import { getPublicLocalListings } from '@/lib/publicHubServer';
 
 export const metadata = {
-  title: 'Verified Local Services in Tamil Nadu | VizhiTN',
+  title: 'Verified Local Services in Tamil Nadu',
   description: 'Find verified local businesses, community-recommended providers, and useful services across Tamil Nadu districts and areas.',
   alternates: { canonical: '/listings' },
   robots: { index: true, follow: true },

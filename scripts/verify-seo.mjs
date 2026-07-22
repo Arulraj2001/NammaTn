@@ -4,6 +4,7 @@ import path from 'node:path';
 import nextConfig from '../next.config.js';
 import { getTnTodayCanonical } from '../src/lib/tnTodayUrl.js';
 import { getClarityInitScript } from '../src/lib/clarityScript.js';
+import { getPageTitle, getSocialTitle } from '../src/lib/metadataTitle.js';
 
 const root = process.cwd();
 const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
@@ -13,6 +14,9 @@ assert.equal(
   'https://www.vizhitn.in/tn-today/sample-story/',
   'TN Today canonicals must use the current www VizhiTN article route',
 );
+assert.equal(getPageTitle('Local Update | VizhiTN | VizhiTN'), 'Local Update', 'Repeated site-name suffixes must be removed');
+assert.equal(getSocialTitle('Local Update | VizhiTN'), 'Local Update | VizhiTN', 'Social titles must contain one site-name suffix');
+assert.equal(getSocialTitle('VizhiTN - Ask Local'), 'VizhiTN - Ask Local', 'Already branded legacy titles must not gain another suffix');
 
 const headerRules = await nextConfig.headers();
 const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';

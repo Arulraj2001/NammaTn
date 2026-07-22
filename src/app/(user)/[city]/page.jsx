@@ -71,7 +71,8 @@ export async function generateMetadata({ params }) {
   }
 
   const neighborhoodStr = district.neighborhoods?.slice(0, 3).join(', ') || district.name;
-  const title = `${district.name} Civic Issue Reports & Alerts | VizhiTN`;
+  const title = `${district.name} Civic Issue Reports & Alerts`;
+  const socialTitle = `${title} | VizhiTN`;
   const description =
     `Live citizen reports from ${district.name}, Tamil Nadu — covering ${neighborhoodStr} and surrounding areas. ` +
     `Track power cuts, water supply failures, road problems, scam alerts, job listings, and more. ` +
@@ -83,7 +84,7 @@ export async function generateMetadata({ params }) {
     description,
     alternates: { canonical: canonicalUrl },
     openGraph: {
-      title,
+      title: socialTitle,
       description,
       url: canonicalUrl,
       type: 'website',

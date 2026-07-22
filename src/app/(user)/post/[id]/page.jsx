@@ -1,6 +1,7 @@
 import PostDetail from '@/views/PostDetail';
 import { notFound } from 'next/navigation';
 import { getPublicPostDetail } from '@/lib/postServer';
+import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -10,8 +11,9 @@ export async function generateMetadata({ params }) {
   const { post } = await getPublicPostDetail(params.id);
   if (!post) notFound();
 
-  const postTitle = post.title_en || post.title || 'Civic Report';
-  const title = `${postTitle} – Civic Report | VizhiTN`;
+  const postTitle = getPageTitle(post.title_en || post.title, 'Civic Report');
+  const title = `${postTitle} – Civic Report`;
+  const socialTitle = getSocialTitle(title);
   const description = (post.content_en || post.description || `Civic report from ${post.area_name || post.district_name || 'Tamil Nadu'}.`).slice(0, 160);
   const canonical = `${SITE_URL}/post/${post.id}/`;
   const image = post.before_photos?.[0] || post.media_urls?.[0] || post.image_url || `${SITE_URL}/og-image.png`;
@@ -22,11 +24,11 @@ export async function generateMetadata({ params }) {
     alternates: { canonical },
     robots: { index: false, follow: true },
     openGraph: {
-      type: 'article', title, description, url: canonical, siteName: 'VizhiTN', locale: 'en_IN',
+      type: 'article', title: socialTitle, description, url: canonical, siteName: 'VizhiTN', locale: 'en_IN',
       images: [{ url: image, width: 1200, height: 630, alt: postTitle }],
       publishedTime: post.created_date,
     },
-    twitter: { card: 'summary_large_image', title, description, images: [image] },
+    twitter: { card: 'summary_large_image', title: socialTitle, description, images: [image] },
   };
 }
 

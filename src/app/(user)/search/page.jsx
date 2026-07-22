@@ -3,7 +3,7 @@ import SearchClient from './SearchClient';
 
 // Search is an interactive UI with no crawlable content — noindex it
 export const metadata = {
-  title: 'Search | VizhiTN',
+  title: 'Search',
   robots: { index: false, follow: true },
 };
 
