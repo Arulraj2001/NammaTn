@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import nextConfig from '../next.config.js';
 import { getTnTodayCanonical } from '../src/lib/tnTodayUrl.js';
+import { getClarityInitScript } from '../src/lib/clarityScript.js';
 
 const root = process.cwd();
 const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
@@ -25,8 +26,16 @@ assert.ok(
 );
 
 const rootLayout = await read('src/app/layout.jsx');
-assert.match(rootLayout, /VizhiTN_cookie_consent/, 'Clarity must be consent gated');
+assert.match(rootLayout, /getClarityInitScript\(CLARITY_PROJECT_ID\)/, 'The layout must use the verified Clarity script generator');
 assert.doesNotMatch(rootLayout, /alternates:\s*\{\s*canonical:\s*SITE_URL/, 'Root layout must not set a homepage canonical for every route');
+
+const clarityScript = getClarityInitScript('xp7k5wqipw');
+assert.doesNotThrow(
+  () => new Function(clarityScript),
+  'The exact Clarity inline script emitted by the layout must be valid JavaScript',
+);
+assert.match(clarityScript, /consent!=='accepted'/, 'Clarity must remain consent gated');
+assert.match(clarityScript, /path===prefix/, 'Clarity must remain disabled on private route prefixes');
 
 const robots = await read('public/robots.txt');
 for (const route of ['/dashboard/', '/me/', '/bookmarks/']) {
