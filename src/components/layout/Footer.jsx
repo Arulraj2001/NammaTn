@@ -5,6 +5,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getSettingsMap } from "@/services/admin/settings";
+import { openCookiePreferences } from '@/lib/cookieConsent';
 
 /* ── Link columns: content from 2nd image ─────────────────── */
 const FOOTER_COLUMNS = [
@@ -223,6 +224,10 @@ export default function Footer() {
             <Link to="/privacy-policy" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               {T("Privacy Policy", "தனியுரிமை")}
             </Link>
+            <span className="text-slate-300 dark:text-slate-600">|</span>
+            <button type="button" onClick={openCookiePreferences} className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              {T("Cookie preferences", "குக்கீ விருப்பங்கள்")}
+            </button>
             <span className="text-slate-300 dark:text-slate-600">|</span>
             <Link to="/terms" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               {T("Terms", "ழெவிடுகள்")}

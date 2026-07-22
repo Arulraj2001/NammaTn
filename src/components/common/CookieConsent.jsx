@@ -2,9 +2,10 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
+import { COOKIE_CONSENT_KEY, COOKIE_PREFERENCES_EVENT } from '@/lib/cookieConsent';
 
 /**
- * CookieConsent — GDPR + India DPDP compliant cookie consent banner.
+ * CookieConsent — privacy consent controls for optional analytics and advertising.
  *
  * Behaviour:
  *  - Shown at bottom of viewport on first visit (no prior choice in localStorage)
@@ -13,8 +14,8 @@ import { useLanguage } from '@/context/LanguageContext';
  *  - Once any choice is made the banner never re-appears
  *
  * Design:
- *  - Fixed bottom bar; full-width pill on mobile, floating card (max-w-2xl) on md+
- *  - White/dark background, rounded-2xl, subtle shadow
+ *  - Compact bottom card capped at half the mobile viewport
+ *  - Equal-weight accept and reject controls
  *  - Slides up from below with CSS transition
  *  - z-[100] so it clears all other UI layers
  */
@@ -31,17 +32,22 @@ export default function CookieConsent() {
   useEffect(() => {
     setMounted(true);
     try {
-      const choice = localStorage.getItem('VizhiTN_cookie_consent');
+      const choice = localStorage.getItem(COOKIE_CONSENT_KEY);
       if (!choice) {
-        // Slight delay so the slide-in transition is visible
-        // Delay to 3s — outside Lighthouse CLS measurement window (2.5s)
-        const timer = setTimeout(() => setVisible(true), 3000);
+        // Schedule after mount so the compact slide-in transition remains visible.
+        const timer = setTimeout(() => setVisible(true), 0);
         return () => clearTimeout(timer);
       }
     } catch {
       // localStorage blocked (private mode, etc.) — show banner to be safe
-      setTimeout(() => setVisible(true), 3000);
+      setTimeout(() => setVisible(true), 0);
     }
+  }, []);
+
+  useEffect(() => {
+    const openPreferences = () => setVisible(true);
+    window.addEventListener(COOKIE_PREFERENCES_EVENT, openPreferences);
+    return () => window.removeEventListener(COOKIE_PREFERENCES_EVENT, openPreferences);
   }, []);
 
   // Auto-focus Accept button when banner becomes visible
@@ -68,14 +74,14 @@ export default function CookieConsent() {
   }, []);
 
   const handleAccept = () => {
-    try { localStorage.setItem('VizhiTN_cookie_consent', 'accepted'); } catch {}
+    try { localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted'); } catch {}
     setVisible(false);
     // Reload after transition to initialise AdSense with consent
     setTimeout(() => window.location.reload(), 400);
   };
 
   const handleReject = () => {
-    try { localStorage.setItem('VizhiTN_cookie_consent', 'rejected'); } catch {}
+    try { localStorage.setItem(COOKIE_CONSENT_KEY, 'rejected'); } catch {}
     setVisible(false);
   };
 
@@ -87,7 +93,7 @@ export default function CookieConsent() {
       aria-live="polite"
       aria-label={T('Cookie consent banner', 'குக்கீ சம்மத பேனர்')}
       className={`
-        fixed bottom-0 inset-x-0 z-[100] flex justify-center px-4 pb-4 md:pb-6
+        fixed bottom-0 inset-x-0 z-[100] flex justify-center px-3 pb-3 md:pb-5
         pointer-events-none
       `}
     >
@@ -100,18 +106,18 @@ export default function CookieConsent() {
         onKeyDown={handleKeyDown}
         className={`
           pointer-events-auto
-          w-full max-w-2xl
+          w-full max-w-xl max-h-[50dvh] overflow-y-auto
           bg-white dark:bg-slate-900
           border border-slate-200 dark:border-slate-700
-          rounded-2xl shadow-2xl shadow-slate-900/10 dark:shadow-black/40
-          px-5 py-5 md:px-7 md:py-6
-          transition-transform duration-500 ease-out will-change-transform
-          ${visible ? 'translate-y-0' : 'translate-y-[calc(100%+2rem)]'}
+          rounded-xl shadow-xl shadow-slate-900/10 dark:shadow-black/40
+          px-4 py-3.5 md:px-5 md:py-4
+          transition-transform duration-200 ease-out will-change-transform
+          ${visible ? 'translate-y-0' : 'translate-y-[calc(100%+1.5rem)]'}
         `}
       >
         {/* Header row */}
-        <div className="flex items-start gap-3 mb-3">
-          <span className="text-2xl leading-none select-none" aria-hidden="true">🍪</span>
+        <div className="flex items-start gap-2 mb-1.5">
+          <span className="text-lg leading-none select-none" aria-hidden="true">🍪</span>
           <div className="flex-1 min-w-0">
             <h2 id="cookie-heading" className="text-base font-semibold text-slate-900 dark:text-slate-50 leading-snug">
               {T('We use cookies', 'நாங்கள் குக்கீகளை பயன்படுத்துகிறோம்')}
@@ -120,10 +126,10 @@ export default function CookieConsent() {
         </div>
 
         {/* Body */}
-        <p id="cookie-desc" className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+        <p id="cookie-desc" className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-snug mb-3">
           {T(
-            'VizhiTN uses cookies for essential functionality, analytics, and personalised ads (Google AdSense). By clicking \u2018Accept All\u2019, you consent to our use of cookies as described in our ',
-            'VizhiTN அத்தியாவசிய செயல்பாடுகள், பகுப்பாய்வு மற்றும் தனிப்பயனாக்கப்பட்ட விளம்பரங்களுக்கு (Google AdSense) குக்கீகளைப் பயன்படுத்துகிறது. \u2018அனைத்தையும் ஏற்கவும்\u2019 என்பதைக் கிளிக் செய்வதன் மூலம், எங்கள் ',
+            'VizhiTN uses optional analytics and advertising cookies. Accept them or continue without non-essential cookies. See our ',
+            'VizhiTN விருப்ப பகுப்பாய்வு மற்றும் விளம்பர குக்கீகளைப் பயன்படுத்துகிறது. அவற்றை ஏற்கலாம் அல்லது அவை இல்லாமல் தொடரலாம். எங்கள் ',
           )}
           <Link
             href="/privacy-policy"
@@ -132,24 +138,24 @@ export default function CookieConsent() {
             {T('Privacy Policy', 'தனியுரிமைக் கொள்கை')}
           </Link>
           {T(
-            '\u2019.',
-            ' இல் விவரிக்கப்பட்டுள்ளபடி குக்கீகளை பயன்படுத்த ஒப்புக்கொள்கிறீர்கள்.',
+            '.',
+            ' பார்க்கவும்.',
           )}
         </p>
 
         {/* Action row */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+        <div className="grid grid-cols-2 gap-2">
           {/* Accept All */}
           <button
             ref={acceptRef}
             onClick={handleAccept}
             className="
-              flex-1 sm:flex-none
               inline-flex items-center justify-center
-              px-5 py-2.5
-              bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800
-              text-white text-sm font-semibold
-              rounded-xl
+              min-h-11 px-3 py-2
+              bg-white dark:bg-slate-900 border border-indigo-500
+              text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40
+              text-xs sm:text-sm font-semibold leading-tight
+              rounded-lg
               transition-colors duration-150
               focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2
             "
@@ -161,13 +167,12 @@ export default function CookieConsent() {
           <button
             onClick={handleReject}
             className="
-              flex-1 sm:flex-none
               inline-flex items-center justify-center
-              px-5 py-2.5
-              bg-transparent border border-slate-300 dark:border-slate-600
-              text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800
-              text-sm font-medium
-              rounded-xl
+              min-h-11 px-3 py-2
+              bg-white dark:bg-slate-900 border border-indigo-500
+              text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40
+              text-xs sm:text-sm font-semibold leading-tight
+              rounded-lg
               transition-colors duration-150
               focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2
             "
@@ -175,14 +180,6 @@ export default function CookieConsent() {
             {T('Reject Non-Essential', 'அத்தியாவசியமற்றவற்றை நிராகரிக்கவும்')}
           </button>
         </div>
-
-        {/* India DPDP compliance note */}
-        <p className="mt-3 text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
-          {T(
-            'Compliant with GDPR and India\u2019s Digital Personal Data Protection Act 2023 (DPDP).',
-            'GDPR மற்றும் இந்தியாவின் டிஜிட்டல் தனிப்பட்ட தரவு பாதுகாப்பு சட்டம் 2023 (DPDP) இன் படி இணக்கமானது.',
-          )}
-        </p>
       </div>
     </div>
   );

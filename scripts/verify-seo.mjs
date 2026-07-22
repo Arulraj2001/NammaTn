@@ -33,6 +33,8 @@ assert.ok(
 const rootLayout = await read('src/app/layout.jsx');
 assert.match(rootLayout, /getClarityInitScript\(CLARITY_PROJECT_ID\)/, 'The layout must use the verified Clarity script generator');
 assert.doesNotMatch(rootLayout, /alternates:\s*\{\s*canonical:\s*SITE_URL/, 'Root layout must not set a homepage canonical for every route');
+assert.match(rootLayout, /export const viewport/, 'The root layout must use the Next.js viewport export');
+assert.doesNotMatch(rootLayout, /<meta\s+name=["']viewport["']/, 'The root layout must not manually emit a duplicate viewport tag');
 
 const clarityScript = getClarityInitScript('xp7k5wqipw');
 assert.doesNotThrow(
@@ -41,6 +43,13 @@ assert.doesNotThrow(
 );
 assert.match(clarityScript, /consent!=='accepted'/, 'Clarity must remain consent gated');
 assert.match(clarityScript, /path===prefix/, 'Clarity must remain disabled on private route prefixes');
+
+const cookieConsent = await read('src/components/common/CookieConsent.jsx');
+const footer = await read('src/components/layout/Footer.jsx');
+assert.match(cookieConsent, /COOKIE_PREFERENCES_EVENT/, 'Cookie preferences must be reopenable after an initial choice');
+assert.match(cookieConsent, /grid grid-cols-2/, 'Mobile consent choices must remain compact and equally positioned');
+assert.match(cookieConsent, /max-h-\[50dvh\]/, 'The cookie card must not cover most of a mobile viewport');
+assert.match(footer, /openCookiePreferences/, 'The footer must expose persistent cookie preferences');
 
 const robots = await read('public/robots.txt');
 for (const route of ['/dashboard/', '/me/', '/bookmarks/']) {

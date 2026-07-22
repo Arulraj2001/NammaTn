@@ -10,6 +10,14 @@ const SITE_URL = 'https://www.vizhitn.in';
 const SITE_NAME = 'VizhiTN';
 const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'xp7k5wqipw';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#4f46e5',
+  colorScheme: 'light dark',
+};
+
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -86,10 +94,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#4f46e5" />
-        <meta name="color-scheme" content="light dark" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
