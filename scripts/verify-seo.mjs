@@ -42,6 +42,20 @@ for (const route of ['/dashboard/', '/me/', '/bookmarks/']) {
   assert.ok(!robots.includes(`Disallow: ${route}`), `${route} must remain crawlable so noindex can be read`);
 }
 
+const adsTxt = await read('public/ads.txt');
+assert.doesNotMatch(adsTxt, /PLACEHOLDER|X{8,}/i, 'ads.txt must never publish a placeholder seller ID');
+const adsTxtRecords = adsTxt
+  .split(/\r?\n/)
+  .map(line => line.trim())
+  .filter(line => line && !line.startsWith('#'));
+for (const record of adsTxtRecords) {
+  assert.match(
+    record,
+    /^[^,\s]+,\s*pub-\d{16},\s*(?:DIRECT|RESELLER),\s*[a-f0-9]+$/i,
+    `Invalid ads.txt seller record: ${record}`,
+  );
+}
+
 const sitemap = await read('src/app/sitemap.js');
 assert.doesNotMatch(sitemap, /\bTODAY\b/, 'Sitemap must not manufacture daily lastModified dates');
 assert.match(sitemap, /updated_date/, 'Dynamic sitemap entries must use real update timestamps');
