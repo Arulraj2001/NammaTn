@@ -38,7 +38,8 @@ export async function getTnTodayArchive(category = null) {
 
 export async function getTnTodayArticle(slug) {
   const supabase = createServerSupabase();
-  if (!supabase || !slug) return { article: null, relatedArticles: [] };
+  if (!slug) return { article: null, relatedArticles: [] };
+  if (!supabase) throw new Error('Supabase is not configured');
 
   try {
     const { data: article, error } = await supabase
@@ -80,6 +81,6 @@ export async function getTnTodayArticle(slug) {
     };
   } catch (error) {
     console.warn(`[tn-today:${slug}] Server article fetch failed:`, error.message);
-    return { article: null, relatedArticles: [] };
+    throw error;
   }
 }

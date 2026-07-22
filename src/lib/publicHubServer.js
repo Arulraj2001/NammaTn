@@ -268,7 +268,8 @@ export async function getActiveBribePosts(limit = 200) {
 
 export async function getPublicArea(slug) {
   const supabase = createServerSupabase();
-  if (!supabase || !slug) return null;
+  if (!slug) return null;
+  if (!supabase) throw new Error('Supabase is not configured');
 
   try {
     const { data, error } = await supabase
@@ -281,14 +282,15 @@ export async function getPublicArea(slug) {
     return data || null;
   } catch (error) {
     console.warn(`[area:${slug}] Server area fetch failed:`, error.message);
-    return null;
+    throw error;
   }
 }
 
 export async function getAreaDetailData(slug) {
   const supabase = createServerSupabase();
   const empty = { area: null, civicPosts: [], scams: [], emergencies: [] };
-  if (!supabase || !slug) return empty;
+  if (!slug) return empty;
+  if (!supabase) throw new Error('Supabase is not configured');
 
   try {
     const results = await Promise.all([
@@ -308,14 +310,15 @@ export async function getAreaDetailData(slug) {
     };
   } catch (error) {
     console.warn(`[area:${slug}] Server detail fetch failed:`, error.message);
-    return empty;
+    throw error;
   }
 }
 
 export async function getQuestionDetailData(id) {
   const supabase = createServerSupabase();
   const empty = { question: null, answers: [] };
-  if (!supabase || !id) return empty;
+  if (!id) return empty;
+  if (!supabase) throw new Error('Supabase is not configured');
 
   try {
     const [questionResult, answersResult] = await Promise.all([
@@ -327,7 +330,7 @@ export async function getQuestionDetailData(id) {
     return { question: questionResult.data || null, answers: answersResult.data || [] };
   } catch (error) {
     console.warn(`[question:${id}] Server detail fetch failed:`, error.message);
-    return empty;
+    throw error;
   }
 }
 

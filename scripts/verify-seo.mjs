@@ -243,4 +243,25 @@ for (const file of canonicalDistrictLinkFiles) {
   assert.doesNotMatch(await read(file), /\/district\/\$\{/, `${file} must link directly to canonical district routes`);
 }
 
+const real404Routes = [
+  'src/app/(user)/[city]/page.jsx',
+  'src/app/(user)/[city]/[issue]/page.jsx',
+  'src/app/(user)/category/[slug]/page.jsx',
+  'src/app/(user)/tn-today/[slug]/page.jsx',
+  'src/app/(user)/area/[slug]/page.jsx',
+  'src/app/(user)/office/[slug]/page.jsx',
+  'src/app/(user)/post/[id]/page.jsx',
+  'src/app/(user)/question/[id]/page.jsx',
+  'src/app/(user)/district/[slug]/page.jsx',
+];
+for (const file of real404Routes) {
+  const source = await read(file);
+  assert.match(source, /import \{[^}]*notFound[^}]*\} from 'next\/navigation'/, `${file} must use Next.js notFound`);
+  assert.match(source, /notFound\(\)/, `${file} must return a real HTTP 404 for missing content`);
+}
+
+const postServer = await read('src/lib/postServer.js');
+assert.doesNotMatch(postServer, /catch \(error\)[\s\S]*?return empty;/, 'Post lookup failures must not be misclassified as missing content');
+assert.match(tnTodayServerDetail, /catch \(error\)[\s\S]*?throw error;/, 'TN Today lookup failures must remain server errors, not false 404s');
+
 console.log('SEO and Clarity audit checks passed.');

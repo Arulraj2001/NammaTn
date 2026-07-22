@@ -1,4 +1,5 @@
 import AreaDetail from '@/views/AreaDetail';
+import { notFound } from 'next/navigation';
 import { getAreaDetailData, getPublicArea } from '@/lib/publicHubServer';
 
 const SITE_URL = 'https://www.vizhitn.in';
@@ -7,7 +8,7 @@ export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const area = await getPublicArea(params.slug);
-  if (!area) return { title: 'Area Not Found', robots: { index: false } };
+  if (!area) notFound();
 
   const district = area.district_name_en || area.district_name || 'Tamil Nadu';
   const title = `${area.name_en} Civic Issues, Alerts & Local Updates`;
@@ -24,5 +25,6 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const initialData = await getAreaDetailData(params.slug);
+  if (!initialData.area) notFound();
   return <AreaDetail initialSlug={params.slug} initialData={initialData} />;
 }

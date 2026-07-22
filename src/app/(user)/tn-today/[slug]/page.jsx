@@ -1,4 +1,5 @@
 import TnTodayArticle from '@/views/TnTodayArticle';
+import { notFound } from 'next/navigation';
 import { getTnTodayArticle } from '@/lib/tnTodayServer';
 import { getTnTodayCanonical } from '@/lib/tnTodayUrl';
 
@@ -8,7 +9,7 @@ export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const { article } = await getTnTodayArticle(params.slug);
-  if (!article) return { title: 'Story Not Found', robots: { index: false } };
+  if (!article) notFound();
 
   const title = article.seo_title || article.title;
   const description = article.seo_description || article.subtitle || article.summary || '';
@@ -35,6 +36,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { article, relatedArticles } = await getTnTodayArticle(params.slug);
+  if (!article) notFound();
   const canonical = getTnTodayCanonical(article?.slug || params.slug);
 
   const articleSchema = article ? {

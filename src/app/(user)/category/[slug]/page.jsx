@@ -1,6 +1,8 @@
 // src/app/(user)/category/[slug]/page.jsx
 import React from 'react';
+import { notFound } from 'next/navigation';
 import { CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
+import { getCategoryBySlug } from '@/lib/categories';
 import PageSchema from '@/components/seo/PageSchema';
 import { CategoryDistrictLinks } from '@/components/seo/InternalLinks';
 import CategoryDetail from '@/views/CategoryDetail';
@@ -17,8 +19,10 @@ function slugToLabel(slug) {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
+  const publicCategory = getCategoryBySlug(slug);
+  if (!publicCategory) notFound();
   const category = CATEGORY_MAP[slug];
-  const label = category?.plural ?? slugToLabel(slug);
+  const label = category?.plural ?? publicCategory.name_en ?? slugToLabel(slug);
 
   const title = `${label} Reports in Tamil Nadu`;
   const description =
@@ -46,8 +50,10 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { slug } = await params;
+  const publicCategory = getCategoryBySlug(slug);
+  if (!publicCategory) notFound();
   const category = CATEGORY_MAP[slug];
-  const label = category?.plural ?? slugToLabel(slug);
+  const label = category?.plural ?? publicCategory.name_en ?? slugToLabel(slug);
   const canonicalUrl = `${SITE_URL}/category/${slug}/`;
   const initialData = await getCategoryHubData(slug);
 

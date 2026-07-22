@@ -12,6 +12,7 @@
 import React from 'react';
 import Link from 'next/link';
 import nextDynamic from 'next/dynamic';
+import { notFound } from 'next/navigation';
 import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORIES, SITE_URL } from '@/lib/seo-data';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
@@ -66,7 +67,7 @@ export async function generateMetadata({ params }) {
   const district = DISTRICT_MAP[city];
 
   if (!district) {
-    return { title: 'District Reports | VizhiTN', robots: { index: false, follow: false } };
+    notFound();
   }
 
   const neighborhoodStr = district.neighborhoods?.slice(0, 3).join(', ') || district.name;
@@ -153,12 +154,7 @@ export default async function Page({ params }) {
   const canonicalUrl = `${SITE_URL}/${city}/`;
 
   if (!district) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-4">
-        <h1 className="text-xl font-bold">District Not Found</h1>
-        <Link href="/" className="mt-4 text-blue-600 underline">Return Home</Link>
-      </div>
-    );
+    notFound();
   }
 
   // Fetch data server-side — present in HTML on first crawl

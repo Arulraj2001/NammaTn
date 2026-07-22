@@ -1,4 +1,5 @@
 import PostDetail from '@/views/PostDetail';
+import { notFound } from 'next/navigation';
 import { getPublicPostDetail } from '@/lib/postServer';
 
 const SITE_URL = 'https://www.vizhitn.in';
@@ -7,7 +8,7 @@ export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const { post } = await getPublicPostDetail(params.id);
-  if (!post) return { title: 'Report Not Found', robots: { index: false } };
+  if (!post) notFound();
 
   const postTitle = post.title_en || post.title || 'Civic Report';
   const title = `${postTitle} – Civic Report | VizhiTN`;
@@ -31,6 +32,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { post, complaintTrackers } = await getPublicPostDetail(params.id);
+  if (!post) notFound();
   const canonical = `${SITE_URL}/post/${params.id}/`;
   const title = post?.title_en || post?.title || 'Civic Report';
 

@@ -21,6 +21,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
@@ -69,7 +70,7 @@ export async function generateMetadata({ params }) {
   const issueData = CATEGORY_MAP[issue];
 
   if (!cityData || !issueData) {
-    return { title: 'Civic Report Page | VizhiTN', robots: { index: false } };
+    notFound();
   }
 
   const intentData      = resolveQueryIntent(city, issue, 0);
@@ -145,12 +146,7 @@ export default async function Page({ params }) {
   const issueData = CATEGORY_MAP[issue];
 
   if (!cityData || !issueData) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-4">
-        <h1 className="text-xl font-bold">Invalid District or Category</h1>
-        <Link href="/" className="mt-4 text-blue-600 underline">Return Home</Link>
-      </div>
-    );
+    notFound();
   }
 
   // ── 1. DB fetch ───────────────────────────────────────────────────────────

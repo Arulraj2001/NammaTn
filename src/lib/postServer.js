@@ -4,7 +4,8 @@ import { isPubliclyVisible } from '@/lib/visibility';
 export async function getPublicPostDetail(id) {
   const supabase = createServerSupabase();
   const empty = { post: null, complaintTrackers: [] };
-  if (!supabase || !id) return empty;
+  if (!id) return empty;
+  if (!supabase) throw new Error('Supabase is not configured');
 
   try {
     const [postResult, situationResult, scamResult, emergencyResult] = await Promise.all([
@@ -77,6 +78,6 @@ export async function getPublicPostDetail(id) {
     return { post, complaintTrackers };
   } catch (error) {
     console.warn(`[post:${id}] Server detail fetch failed:`, error.message);
-    return empty;
+    throw error;
   }
 }
