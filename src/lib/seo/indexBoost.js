@@ -8,13 +8,12 @@
  * @param {string} issue - category slug
  * @param {string|null} lastIndexedDate - ISO date from a real seo_index_log table. Null = unknown.
  * @param {number} reportCount - live report count from Supabase query on the page
- * @returns {{ boostActive, lastModified, feedOrder, linkWeightMultiplier, recentActivityBlock }}
+ * @returns {{ boostActive, feedOrder, linkWeightMultiplier, recentActivityBlock }}
  */
 export function evaluateIndexBoost(city, issue, lastIndexedDate, reportCount = 0) {
   // Safe default — used for all new/unknown pages and zero-report pages
   const safeDefault = {
     boostActive: false,
-    lastModified: new Date().toISOString().slice(0, 10) + 'T00:00:00.000Z', // Stable: date-only
     feedOrder: 'created_date',
     linkWeightMultiplier: 1.0,
     recentActivityBlock: null,
@@ -45,7 +44,6 @@ export function evaluateIndexBoost(city, issue, lastIndexedDate, reportCount = 0
 
   return {
     boostActive: true,
-    lastModified: freshTimestamp.toISOString(),
     feedOrder: 'updated_date',
     linkWeightMultiplier: 2.0,
     recentActivityBlock: {

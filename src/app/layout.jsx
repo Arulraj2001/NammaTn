@@ -2,6 +2,7 @@ import React from 'react';
 import Providers from './providers';
 import '@/index.css';
 import { getClarityInitScript } from '@/lib/clarityScript';
+import { ORGANIZATION_ID, WEBSITE_ID } from '@/lib/schemaIdentity';
 
 // AdSense pub ID is injected at runtime by the admin panel via window.__ADSENSE_PUB_ID__
 // See: AdminMonetization.jsx → AdSense Settings tab
@@ -26,12 +27,6 @@ export const metadata = {
   },
   description:
     'VizhiTN helps Tamil Nadu residents report civic issues, track resolutions, share local alerts, find public resources, and connect with their community.',
-  keywords: [
-    'Tamil Nadu civic complaints', 'TN government issues', 'VizhiTN',
-    'Tamil Nadu community platform', 'civic issues Tamil Nadu', 'report potholes TN',
-    'Tamil Nadu water supply complaint', 'TN pulse live feed', 'community wins TN',
-    'citizen awareness Tamil Nadu', 'government schemes Tamil Nadu', 'RTI Tamil Nadu',
-  ],
   authors: [{ name: 'VizhiTN Team', url: SITE_URL }],
   creator: 'VizhiTN',
   publisher: 'VizhiTN',
@@ -148,6 +143,7 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
+              '@id': ORGANIZATION_ID,
               name: 'VizhiTN',
               url: SITE_URL,
               logo: `${SITE_URL}/logo.png`,
@@ -163,10 +159,6 @@ export default function RootLayout({ children }) {
                 contactType: 'customer support',
                 url: `${SITE_URL}/contact`,
               },
-              sameAs: [
-                'https://twitter.com/VizhiTN',
-                'https://www.facebook.com/VizhiTN',
-              ],
             }),
           }}
         />
@@ -177,8 +169,10 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
+              '@id': WEBSITE_ID,
               name: 'VizhiTN',
               url: SITE_URL,
+              publisher: { '@id': ORGANIZATION_ID },
               potentialAction: {
                 '@type': 'SearchAction',
                 target: {

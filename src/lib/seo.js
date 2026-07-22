@@ -145,23 +145,6 @@ export function injectPostStructuredData(post) {
 }
 
 /**
- * FAQPage structured data — appears as expandable FAQs in Google results.
- * @param {Array<{question: string, answer: string}>} faqs
- */
-export function injectFAQStructuredData(faqs) {
-  if (!faqs?.length) return;
-  injectScript('tn-ld-faq', {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map(({ question, answer }) => ({
-      '@type': 'Question',
-      name: question,
-      acceptedAnswer: { '@type': 'Answer', text: answer },
-    })),
-  });
-}
-
-/**
  * BreadcrumbList structured data.
  * @param {Array<{name: string, url: string}>} items
  */

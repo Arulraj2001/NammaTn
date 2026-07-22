@@ -1,6 +1,5 @@
 // src/components/seo/PageSchema.jsx
-// FIX 8: dateModified is stable — defaults to date-only (YYYY-MM-DD) not live timestamp.
-// Prevents crawl inconsistency from dateModified changing on every ISR render.
+import { ORGANIZATION_ID, WEBSITE_ID } from '@/lib/schemaIdentity';
 
 /**
  * @param {object} props
@@ -8,16 +7,9 @@
  * @param {string} props.name           - Page title (matches <title> tag)
  * @param {string} props.description    - Page description (matches meta description)
  * @param {Array}  props.breadcrumbs    - [{name, url}] — first item should be Home
- * @param {string} [props.dateModified] - ISO string; if omitted uses today's UTC date (stable)
+ * @param {string} [props.dateModified] - ISO string from a real content or data change
  */
 export default function PageSchema({ url, name, description, breadcrumbs, dateModified }) {
-  const SITE_URL = 'https://www.vizhitn.in';
-
-  // FIX 8: Stable date — does not change mid-day within an ISR window.
-  // Passes a consistent signal to Google on re-crawl of the same ISR-cached page.
-  const stableDate = dateModified
-    ?? new Date().toISOString().slice(0, 10) + 'T00:00:00.000Z';
-
   const webPageLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -26,13 +18,11 @@ export default function PageSchema({ url, name, description, breadcrumbs, dateMo
     name,
     description,
     inLanguage: 'en-IN',
-    dateModified: stableDate,
+    ...(dateModified ? { dateModified } : {}),
     isPartOf: {
-      '@type': 'WebSite',
-      '@id': `${SITE_URL}/#website`,
-      name: 'VizhiTN',
-      url: SITE_URL,
+      '@id': WEBSITE_ID,
     },
+    publisher: { '@id': ORGANIZATION_ID },
     breadcrumb: { '@id': `${url}#breadcrumb` },
     potentialAction: {
       '@type': 'ReadAction',

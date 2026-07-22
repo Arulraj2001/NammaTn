@@ -5,7 +5,7 @@
 // - Priority districts pre-render at build; remaining districts generate on demand
 // - Rich unique SSR description per district using neighborhoods data
 // - Visible report count as server-rendered text
-// - FAQ structured data (how to complain in this district)
+// - AdministrativeArea and breadcrumb structured data
 // - AdministrativeArea schema for geo-entity signals
 // - "About VizhiTN" E-E-A-T paragraph for trust signals
 
@@ -95,57 +95,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// Build district-specific FAQ structured data
-function buildDistrictFAQ(district) {
-  const name = district.name;
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `How do I report a civic issue in ${name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `You can report any civic issue in ${name} by visiting VizhiTN (vizhitn.in), clicking "Report Issue", and selecting ${name} as your district. Your report will be visible to the community and relevant authorities instantly.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `What is the TANGEDCO helpline for power cuts in ${name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `The TANGEDCO helpline for electricity and power cut complaints in ${name} is 1912. You can also post power outage reports on VizhiTN so other residents in ${name} stay informed.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `How to complain about water supply failure in ${name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `For water supply failures in ${name}, contact the TWAD Board or the Municipal Corporation water department at helpline 1800 425 3555. Post a report on VizhiTN to alert your neighbours.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `Where can I report road problems and potholes in ${name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `Report road damage and potholes in ${name} to the Tamil Nadu Highways Department at 1800 425 0110, or to the ${name} Municipal Corporation. Track reports and resolution progress on VizhiTN.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `Is VizhiTN available in ${name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `Yes. VizhiTN covers all 38 districts of Tamil Nadu including ${name}. Residents of ${district.neighborhoods?.slice(0, 3).join(', ') || name} and surrounding areas can report issues, browse local alerts, find jobs and stays, and connect with the community.`,
-        },
-      },
-    ],
-  };
-}
-
 export default async function Page({ params }) {
   const { city } = await params;
   const district = DISTRICT_MAP[city];
@@ -161,8 +110,6 @@ export default async function Page({ params }) {
     fetchReportCount(city),
   ]);
 
-  const faqSchema = buildDistrictFAQ(district);
-
   return (
     <>
       <PageSchema
@@ -176,12 +123,6 @@ export default async function Page({ params }) {
           { name: 'Home', url: SITE_URL },
           { name: district.name, url: canonicalUrl },
         ]}
-      />
-
-      {/* FAQ Structured Data — district-specific Q&A for rich results */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       {/* AdministrativeArea schema — geo-entity signal for local SEO */}

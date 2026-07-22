@@ -4,6 +4,7 @@ import { getTnTodayArticle } from '@/lib/tnTodayServer';
 import { getTnTodayCanonical } from '@/lib/tnTodayUrl';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 import { toMetaDescription } from '@/lib/metaDescription';
+import { getArticleAuthor, getPublisherSchema } from '@/lib/schemaIdentity';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -27,7 +28,6 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
-    keywords: article.seo_keywords || '',
     alternates: { canonical },
     openGraph: {
       type: 'article', title: socialTitle, description, url: canonical, siteName: 'VizhiTN', locale: 'en_IN',
@@ -48,17 +48,14 @@ export default async function Page({ params }) {
   const articleSchema = article ? {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
+    '@id': `${canonical}#article`,
     headline: article.seo_title || article.title,
     description: article.seo_description || article.subtitle || '',
     image: article.social_image || article.featured_image ? [article.social_image || article.featured_image] : [],
     datePublished: article.publish_date || article.created_date,
     dateModified: article.updated_date || article.publish_date || article.created_date,
-    author: { '@type': 'Person', name: article.author_name || 'VizhiTN Editorial Team' },
-    publisher: {
-      '@type': 'Organization',
-      name: 'VizhiTN',
-      logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
-    },
+    author: getArticleAuthor(article.author_name),
+    publisher: getPublisherSchema(),
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     keywords: article.seo_keywords || '',
     articleSection: article.category || 'general',

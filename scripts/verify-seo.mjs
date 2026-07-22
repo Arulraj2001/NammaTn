@@ -9,6 +9,7 @@ import { getDistrictMetaDescription, getCityIssueMetaDescription, toMetaDescript
 import { DISTRICTS, CATEGORIES as SEO_CATEGORIES } from '../src/lib/seo-data.js';
 import { formatReportDate, getLatestReportDate } from '../src/lib/reportFreshness.js';
 import { getCityIssueRobots, shouldIndexCityIssuePage } from '../src/lib/programmaticIndexing.js';
+import { ORGANIZATION_ID, WEBSITE_ID, getArticleAuthor, getPublisherSchema } from '../src/lib/schemaIdentity.js';
 
 const root = process.cwd();
 const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
@@ -64,6 +65,11 @@ assert.deepEqual(
   },
   'Zero-report pages must remain crawlable while excluded from search results',
 );
+assert.equal(ORGANIZATION_ID, 'https://www.vizhitn.in/#organization', 'Organization schema needs one stable ID');
+assert.equal(WEBSITE_ID, 'https://www.vizhitn.in/#website', 'WebSite schema needs one stable ID');
+assert.equal(getPublisherSchema()['@id'], ORGANIZATION_ID, 'Article publishers must reference the site Organization');
+assert.equal(getArticleAuthor().url, 'https://www.vizhitn.in', 'Editorial-team authorship must resolve to the publisher');
+assert.equal(getArticleAuthor('Named Contributor').url, 'https://www.vizhitn.in/about', 'Named authors must include a public URL');
 
 const headerRules = await nextConfig.headers();
 const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';
@@ -82,6 +88,11 @@ assert.match(rootLayout, /getClarityInitScript\(CLARITY_PROJECT_ID\)/, 'The layo
 assert.doesNotMatch(rootLayout, /alternates:\s*\{\s*canonical:\s*SITE_URL/, 'Root layout must not set a homepage canonical for every route');
 assert.match(rootLayout, /export const viewport/, 'The root layout must use the Next.js viewport export');
 assert.doesNotMatch(rootLayout, /<meta\s+name=["']viewport["']/, 'The root layout must not manually emit a duplicate viewport tag');
+assert.match(rootLayout, /'@id': ORGANIZATION_ID/, 'The root Organization must expose its stable ID');
+assert.match(rootLayout, /'@id': WEBSITE_ID/, 'The root WebSite must expose its stable ID');
+assert.match(rootLayout, /publisher: \{ '@id': ORGANIZATION_ID \}/, 'The WebSite must reference the root Organization');
+assert.doesNotMatch(rootLayout, /\bkeywords\s*:/, 'The unused meta keywords tag must not be emitted');
+assert.doesNotMatch(rootLayout, /sameAs:/, 'Organization schema must not claim unverified social profiles');
 
 for (const file of [
   'src/app/(user)/[city]/page.jsx',
@@ -186,12 +197,23 @@ assert.match(tnTodayView, /initialData:/, 'TN Today client queries must hydrate 
 
 const cityPage = await read('src/app/(user)/[city]/page.jsx');
 const cityIssuePage = await read('src/app/(user)/[city]/[issue]/page.jsx');
+const pageSchema = await read('src/components/seo/PageSchema.jsx');
+const legacySeoHelpers = await read('src/lib/seo.js');
+const indexBoost = await read('src/lib/seo/indexBoost.js');
 const serverSupabase = await read('src/lib/serverSupabase.js');
 assert.match(cityPage, /BUILD_TIME_DISTRICT_SLUGS/, 'District pre-rendering must use a bounded priority list');
 assert.match(cityIssuePage, /params\?\.city/, 'Nested static params must build only the current parent district');
 assert.match(cityIssuePage, /createServerSupabase/, 'City issue data must use bounded server requests');
 assert.match(cityIssuePage, /getCityIssueRobots/, 'City issue metadata must noindex confirmed zero-report pages');
 assert.match(cityIssuePage, /dataAvailable/, 'City issue pages must distinguish empty results from data outages');
+assert.doesNotMatch(cityPage, /FAQPage/, 'District templates must not emit non-visible FAQ schema');
+assert.doesNotMatch(cityIssuePage, /FAQPage/, 'City/issue templates must not emit scaled FAQ schema');
+assert.match(cityIssuePage, /dateModified=\{latestDate \|\| undefined\}/, 'Programmatic modification dates must come from real reports');
+assert.doesNotMatch(pageSchema, /new Date\(/, 'Generic WebPage schema must not fabricate a current modification date');
+assert.match(pageSchema, /dateModified \? \{ dateModified \} : \{\}/, 'WebPage schema must omit unknown modification dates');
+assert.match(pageSchema, /'@id': WEBSITE_ID/, 'WebPage schema must reference the shared WebSite entity');
+assert.doesNotMatch(legacySeoHelpers, /FAQPage/, 'Unused global helpers must not reintroduce generic FAQ schema');
+assert.doesNotMatch(indexBoost, /lastModified/, 'Ranking heuristics must not manufacture schema modification dates');
 assert.match(serverSupabase, /DEFAULT_TIMEOUT_MS\s*=\s*3000/, 'Server Supabase requests need a deployment-safe timeout');
 
 const scamsPage = await read('src/app/(user)/scams/page.jsx');
@@ -338,6 +360,9 @@ assert.match(tnTodayArticleView, /initialData:\s*initialArticle/, 'TN Today arti
 assert.match(tnTodayServerDetail, /sanitizeHtml/, 'Editorial HTML must be sanitized before server rendering');
 assert.doesNotMatch(tnTodayArticlePage, /article\??\.canonical_url/, 'TN Today server metadata must not trust editorial canonical overrides');
 assert.doesNotMatch(tnTodayArticleView, /article\??\.canonical_url/, 'TN Today sharing must not trust editorial canonical overrides');
+assert.match(tnTodayArticlePage, /getArticleAuthor\(article\.author_name\)/, 'Article schema authors must include a public identity URL');
+assert.match(tnTodayArticlePage, /getPublisherSchema\(\)/, 'Article schema must reference the shared publisher identity');
+assert.doesNotMatch(tnTodayArticleView, /tn-ld-tn-today|"@type": "NewsArticle"/, 'TN Today must not inject a duplicate client-side article schema');
 assert.doesNotMatch(tnTodayAdmin, /Canonical URL/, 'TN Today admin must not expose arbitrary canonical overrides');
 assert.match(tnTodayService, /canonical_url:\s*null/, 'TN Today writes must clear legacy canonical overrides');
 assert.match(tnTodayCanonicalMigration, /SET canonical_url = NULL/, 'Legacy TN Today canonical overrides must be cleared');

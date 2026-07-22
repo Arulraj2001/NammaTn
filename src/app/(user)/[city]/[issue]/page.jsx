@@ -8,7 +8,7 @@
 // SEO PHASE 1 FIXES:
 // - Priority district/category pages pre-render; remaining valid pages generate on demand
 // - Enriched meta description with neighborhood names
-// - District+category FAQ structured data for rich results
+// - Evidence-based structured data with real report modification dates
 // - SSR intro paragraph (unique per city+issue) above content modules
 // - Breadcrumb nav added server-side
 //
@@ -30,7 +30,6 @@ import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
 
 import { runAutonomousCoreAsync }  from '@/lib/seo/autonomousSeoCore';
-import { resolveQueryIntent }      from '@/lib/seo/queryIntentEngine';
 import { evaluateIndexBoost }      from '@/lib/seo/indexBoost';
 import { isPageTrending }          from '@/lib/seo/trendDetector';
 import { DEFAULT_SUBSYSTEM_WEIGHTS, computeWeightAdjustments } from '@/lib/seo/selfImprovingSeoLoop';
@@ -52,7 +51,7 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
 
     const { data: reports, error } = await supabase
       .from('unified_explore_feed')
-      .select('id,title:title_en,description:content_en,area_slug,district_slug,category_slug,post_type,created_date,status,upvotes,downvotes')
+      .select('id,title:title_en,description:content_en,area_slug,district_slug,category_slug,post_type,created_date,updated_date,status,upvotes,downvotes')
       .eq('district_slug', citySlug)
       .in('category_slug', targetSlugs)
       .eq('status', 'active')
@@ -78,7 +77,6 @@ export async function generateMetadata({ params }) {
     notFound();
   }
 
-  const intentData      = resolveQueryIntent(city, issue, 0);
   const title           = `${cityData.name} ${issueData.name} Reports & Updates`;
   const socialTitle     = `${title} | VizhiTN`;
   const description     = getCityIssueMetaDescription(cityData.name, issueData.name);
@@ -93,7 +91,6 @@ export async function generateMetadata({ params }) {
     robots,
     openGraph:  { title: socialTitle, description, url: canonicalUrl, type: 'website',
       images: [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: title }] },
-    keywords:   intentData.localKeywords?.slice(0, 5).join(', '),
   };
 }
 
@@ -103,44 +100,6 @@ export async function generateStaticParams({ params } = {}) {
   const issues = ['power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay'];
   if (!params?.city || !BUILD_TIME_DISTRICT_SLUGS.includes(params.city)) return [];
   return issues.map(issue => ({ issue }));
-}
-
-// Build district+category-specific FAQ structured data
-function buildCategoryFAQ(cityData, issueData) {
-  const city  = cityData.name;
-  const issue = issueData.name;
-  const auth  = issueData.authority || 'the relevant government authority';
-  const line  = issueData.helpline  || '1912';
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `How do I report a ${issue.toLowerCase()} in ${city}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `Report a ${issue.toLowerCase()} in ${city} on VizhiTN by clicking "Report Issue" and selecting ${city} and the ${issue} category. Your report is instantly visible to the community and relevant officials.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `What is the helpline for ${issue.toLowerCase()} in ${city}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `For ${issue.toLowerCase()} in ${city}, contact ${auth} at helpline ${line}. You can also track the issue and see if others in ${city} have faced the same problem on VizhiTN.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `How long does it take to resolve ${issue.toLowerCase()} in ${city}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `Resolution times for ${issue.toLowerCase()} in ${city} vary by severity. On VizhiTN, you can track the status of your report and see historical resolution data from past community reports in ${city}.`,
-        },
-      },
-    ],
-  };
 }
 
 // ── SERVER COMPONENT ──────────────────────────────────────────────────────────
@@ -257,19 +216,8 @@ export default async function Page({ params }) {
           { name: cityData.name,  url: `${SITE_URL}/${city}` },
           { name: issueData.name, url: canonicalUrl },
         ]}
-        dateModified={boost.lastModified}
+        dateModified={latestDate || undefined}
       />
-
-      {/* FAQ Structured Data — city+issue specific Q&A for rich results */}
-      {(() => {
-        const faqSchema = buildCategoryFAQ(cityData, issueData);
-        return (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-          />
-        );
-      })()}
 
       {/* Civic authority schema — one clean entity, no spam */}
       {authorityData?.schemaCivicEntity && (

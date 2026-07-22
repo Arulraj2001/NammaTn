@@ -10,11 +10,9 @@ import {
   MessageSquare, ArrowLeft, CheckCircle2, AlertCircle, BookOpen,
   Clipboard, Copy, Hash, ArrowRight
 } from "lucide-react";
-import { setPageMeta, injectPostStructuredData } from "@/lib/seo";
+import { setPageMeta } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { getTnTodayCanonical } from "@/lib/tnTodayUrl";
-
-const SITE_URL = "https://www.vizhitn.in";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -174,43 +172,9 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
       type: "article",
     });
 
-    // Article JSON-LD
-    const schema = {
-      "@context": "https://schema.org",
-      "@type": "NewsArticle",
-      headline: article.seo_title || article.title,
-      description: article.seo_description || article.subtitle || "",
-      image: image ? [image] : [],
-      datePublished: article.publish_date || article.created_date,
-      dateModified: article.updated_date || article.publish_date || article.created_date,
-      author: { "@type": "Person", name: article.author_name || "VizhiTN Editorial Team" },
-      publisher: {
-        "@type": "Organization",
-        name: "VizhiTN",
-        logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
-      },
-      mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
-      keywords: article.seo_keywords || "",
-      articleSection: article.category || "general",
-    };
-    const existing = document.getElementById("tn-ld-tn-today");
-    if (existing) {
-      existing.text = JSON.stringify(schema);
-    } else {
-      const script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.id = "tn-ld-tn-today";
-      script.text = JSON.stringify(schema);
-      document.head.appendChild(script);
-    }
-
     // Increment view count (fire and forget)
     if (article.id) incrementTnTodayView(article.id).catch(() => {});
 
-    return () => {
-      const el = document.getElementById("tn-ld-tn-today");
-      if (el) el.text = "";
-    };
   }, [article]);
 
   if (isLoading) return <ArticleSkeleton />;
