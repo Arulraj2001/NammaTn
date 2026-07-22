@@ -1,5 +1,6 @@
 import React from 'react';
 import Awareness from '@/views/Awareness';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Citizen Awareness and Government Resources',
@@ -9,5 +10,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <Awareness />;
+  return <><Breadcrumbs items={[{ name: 'Awareness', href: '/awareness' }]} /><Awareness /></>;
 }

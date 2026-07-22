@@ -1,5 +1,6 @@
 import Explore from '@/views/Explore';
 import { getExplorePosts } from '@/lib/publicHubServer';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const revalidate = 3600;
 
@@ -11,5 +12,5 @@ export const metadata = {
 
 export default async function Page() {
   const initialPosts = await getExplorePosts(18);
-  return <Explore initialPosts={initialPosts} />;
+  return <><Breadcrumbs items={[{ name: 'Explore', href: '/explore' }]} /><Explore initialPosts={initialPosts} /></>;
 }

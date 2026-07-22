@@ -1,4 +1,5 @@
 import RWADashboard from '@/views/RWADashboard';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Resident Welfare Association Civic Dashboard',
@@ -8,5 +9,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <RWADashboard />;
+  return <><Breadcrumbs items={[{ name: 'RWA Dashboard', href: '/rwa' }]} /><RWADashboard /></>;
 }

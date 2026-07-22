@@ -1,5 +1,6 @@
 import React from 'react';
 import About from '@/views/About';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'About',
@@ -13,5 +14,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <About />;
+  return <><Breadcrumbs items={[{ name: 'About VizhiTN', href: '/about' }]} /><About /></>;
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import Contact from '@/views/Contact';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Contact',
@@ -9,5 +10,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <Contact />;
+  return <><Breadcrumbs items={[{ name: 'Contact', href: '/contact' }]} /><Contact /></>;
 }

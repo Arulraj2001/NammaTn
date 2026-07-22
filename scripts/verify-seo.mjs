@@ -10,6 +10,7 @@ import { DISTRICTS, CATEGORIES as SEO_CATEGORIES } from '../src/lib/seo-data.js'
 import { formatReportDate, getLatestReportDate } from '../src/lib/reportFreshness.js';
 import { getCityIssueRobots, shouldIndexCityIssuePage } from '../src/lib/programmaticIndexing.js';
 import { ORGANIZATION_ID, WEBSITE_ID, getArticleAuthor, getPublisherSchema } from '../src/lib/schemaIdentity.js';
+import { TN_TODAY_CATEGORY_MAP } from '../src/lib/tnTodayCategories.js';
 
 const root = process.cwd();
 const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
@@ -70,6 +71,7 @@ assert.equal(WEBSITE_ID, 'https://www.vizhitn.in/#website', 'WebSite schema need
 assert.equal(getPublisherSchema()['@id'], ORGANIZATION_ID, 'Article publishers must reference the site Organization');
 assert.equal(getArticleAuthor().url, 'https://www.vizhitn.in', 'Editorial-team authorship must resolve to the publisher');
 assert.equal(getArticleAuthor('Named Contributor').url, 'https://www.vizhitn.in/about', 'Named authors must include a public URL');
+assert.ok(TN_TODAY_CATEGORY_MAP.infrastructure, 'TN Today routes and navigation must share one category inventory');
 
 const headerRules = await nextConfig.headers();
 const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';
@@ -144,9 +146,14 @@ assert.match(sitemap, /\/category\/\$\{category\.slug\}/, 'Category hubs must be
 assert.match(sitemap, /PUBLIC_CATEGORIES\.forEach/, 'Category hubs must use the public category taxonomy');
 assert.doesNotMatch(sitemap, /SEO_CATEGORIES|Tier 1 static pairs/, 'Sitemap outages must not add unverified city/issue URLs');
 assert.match(sitemap, /\/tn-today\/\$\{a\.slug\}`/, 'TN Today article URLs must match the no-trailing-slash policy');
+assert.match(sitemap, /\/tn-today\/category\/\$\{category\}`/, 'Published TN Today categories must be present in the sitemap');
+assert.match(sitemap, /publishedCategories/, 'TN Today category archives need published-article evidence before sitemap inclusion');
 assert.match(sitemap, /OFFICES\.forEach/, 'Static office detail pages must be present in the sitemap');
 assert.match(sitemap, /getActiveAreas\(500\)/, 'Active area detail pages must be present in the sitemap');
 for (const route of ['/explore', '/help', '/situations', '/ask']) {
+  assert.ok(sitemap.includes(`'${route}'`), `${route} must be present in the sitemap`);
+}
+for (const route of ['/support', '/rwa', '/csr']) {
   assert.ok(sitemap.includes(`'${route}'`), `${route} must be present in the sitemap`);
 }
 for (const routeTemplate of [
@@ -194,6 +201,29 @@ assert.doesNotMatch(tnTodayPage, /ssr:\s*false/, 'TN Today archive must be serve
 assert.doesNotMatch(tnTodayCategoryPage, /ssr:\s*false/, 'TN Today category archives must be server rendered');
 assert.match(tnTodayPage, /getTnTodayArchive/, 'TN Today archive must fetch server data');
 assert.match(tnTodayView, /initialData:/, 'TN Today client queries must hydrate with server data');
+assert.match(tnTodayCategoryPage, /TN_TODAY_CATEGORY_MAP/, 'TN Today category routes must validate a shared category inventory');
+assert.match(tnTodayCategoryPage, /notFound\(\)/, 'Unknown TN Today categories must return a real 404');
+assert.match(tnTodayCategoryPage, /generateMetadata/, 'TN Today category archives must emit canonical server metadata');
+assert.match(tnTodayCategoryPage, /<Breadcrumbs/, 'TN Today category archives must expose visible breadcrumbs');
+
+const breadcrumbs = await read('src/components/seo/Breadcrumbs.jsx');
+assert.match(breadcrumbs, /aria-label="Breadcrumb"/, 'Shared breadcrumbs must expose navigation semantics');
+assert.match(breadcrumbs, /BreadcrumbList/, 'Shared visible breadcrumbs must include matching structured data');
+assert.match(breadcrumbs, /aria-current="page"/, 'Shared breadcrumbs must identify the current page');
+for (const file of [
+  'src/app/(user)/about/page.jsx',
+  'src/app/(user)/areas/page.jsx',
+  'src/app/(user)/awareness/guides/page.jsx',
+  'src/app/(user)/contact/page.jsx',
+  'src/app/(user)/offices/page.jsx',
+  'src/app/(user)/privacy-policy/page.jsx',
+  'src/app/(user)/terms/page.jsx',
+  'src/app/(user)/support/page.jsx',
+  'src/app/(user)/rwa/page.jsx',
+  'src/app/(user)/csr/page.jsx',
+]) {
+  assert.match(await read(file), /<Breadcrumbs/, `${file} must render the shared breadcrumb trail`);
+}
 
 const cityPage = await read('src/app/(user)/[city]/page.jsx');
 const cityIssuePage = await read('src/app/(user)/[city]/[issue]/page.jsx');
@@ -374,6 +404,9 @@ assert.doesNotMatch(postDetailPage, /PostDetailClient/, 'Post detail content mus
 assert.match(postDetailPage, /getPublicPostDetail/, 'Post details must use the bounded server fetcher');
 assert.match(postDetailView, /initialData:\s*initialPost/, 'Post detail queries must hydrate from server data');
 assert.doesNotMatch(shareBar, /window\.location/, 'Post sharing must be safe during server rendering');
+assert.match(postDetailPage, /<Breadcrumbs/, 'Civic reports must expose server-rendered visible breadcrumbs');
+assert.match(postDetailPage, /CATEGORY_MAP/, 'Civic reports must link contextually to their district/category guide');
+assert.doesNotMatch(postDetailView, /injectPostStructuredData|injectBreadcrumbStructuredData/, 'Post schema must not be duplicated client-side');
 
 const canonicalDistrictLinkFiles = [
   'src/components/dashboard/TrendingDistrictRow.jsx',

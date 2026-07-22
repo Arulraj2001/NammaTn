@@ -1,4 +1,5 @@
 import CSRDashboard from '@/views/CSRDashboard';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Tamil Nadu CSR Civic Impact Dashboard',
@@ -8,5 +9,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <CSRDashboard />;
+  return <><Breadcrumbs items={[{ name: 'CSR Dashboard', href: '/csr' }]} /><CSRDashboard /></>;
 }

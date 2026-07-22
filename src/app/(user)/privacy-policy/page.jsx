@@ -1,5 +1,6 @@
 import React from 'react';
 import PrivacyPolicy from '@/views/PrivacyPolicy';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Privacy Policy',
@@ -9,5 +10,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <PrivacyPolicy />;
+  return <><Breadcrumbs items={[{ name: 'Privacy Policy', href: '/privacy-policy' }]} /><PrivacyPolicy /></>;
 }

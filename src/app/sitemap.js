@@ -12,6 +12,7 @@ import { CATEGORIES as PUBLIC_CATEGORIES } from '@/lib/categories';
 import { OFFICES } from '@/lib/offices';
 import { getActiveAreas } from '@/lib/publicHubServer';
 import { createServerSupabase } from '@/lib/serverSupabase';
+import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -86,13 +87,15 @@ export default async function sitemap() {
     if (!supabase) throw new Error('Supabase is not configured');
     const { data: articles } = await supabase
       .from('tn_today')
-      .select('slug, updated_date, publish_date')
+      .select('slug, category, updated_date, publish_date')
       .eq('status', 'published')
       .order('publish_date', { ascending: false })
       .limit(500);
 
+    const publishedCategories = new Set();
     (articles || []).forEach(a => {
       if (!a.slug) return;
+      if (TN_TODAY_CATEGORY_MAP[a.category]) publishedCategories.add(a.category);
       entries.push({
         url: `${SITE_URL}/tn-today/${a.slug}`,
         ...(a.updated_date || a.publish_date
@@ -100,6 +103,14 @@ export default async function sitemap() {
           : {}),
         changeFrequency: 'weekly',
         priority: 0.6,
+      });
+    });
+
+    publishedCategories.forEach(category => {
+      entries.push({
+        url: `${SITE_URL}/tn-today/category/${category}`,
+        changeFrequency: 'weekly',
+        priority: 0.5,
       });
     });
   } catch (e) {
@@ -143,6 +154,7 @@ export default async function sitemap() {
     '/awareness/schemes', '/community', '/community/wins', '/scams',
     '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
     '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
+    '/support', '/rwa', '/csr',
     '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
   ].forEach(path => {
     entries.push({

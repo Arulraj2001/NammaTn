@@ -1,6 +1,7 @@
 import OfficeDetail from '@/views/OfficeDetail';
 import { notFound } from 'next/navigation';
 import { OFFICES, getOfficeBySlug } from '@/lib/offices';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -25,11 +26,18 @@ export async function generateMetadata({ params }) {
 }
 
 export default function Page({ params, searchParams }) {
-  if (!getOfficeBySlug(params.slug)) notFound();
+  const office = getOfficeBySlug(params.slug);
+  if (!office) notFound();
   return (
-    <OfficeDetail
-      initialSlug={params.slug}
-      initialDistrict={searchParams?.district || ''}
-    />
+    <>
+      <Breadcrumbs items={[
+        { name: 'Government Offices', href: '/offices' },
+        { name: office.name_en, href: `/office/${params.slug}` },
+      ]} />
+      <OfficeDetail
+        initialSlug={params.slug}
+        initialDistrict={searchParams?.district || ''}
+      />
+    </>
   );
 }

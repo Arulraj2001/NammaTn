@@ -1,5 +1,6 @@
 import CivicLeaderboard from '@/views/CivicLeaderboard';
 import { getLeaderboardPosts } from '@/lib/publicHubServer';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Tamil Nadu Civic Leaderboard',
@@ -10,5 +11,5 @@ export const metadata = {
 
 export default async function Page() {
   const posts = await getLeaderboardPosts();
-  return <CivicLeaderboard initialPosts={posts} />;
+  return <><Breadcrumbs items={[{ name: 'Civic Leaderboard', href: '/leaderboard' }]} /><CivicLeaderboard initialPosts={posts} /></>;
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import Districts from '@/views/Districts';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Tamil Nadu Districts',
@@ -9,5 +10,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <Districts />;
+  return <><Breadcrumbs items={[{ name: 'Districts', href: '/districts' }]} /><Districts /></>;
 }

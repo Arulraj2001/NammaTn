@@ -1,5 +1,6 @@
 import React from 'react';
 import HowToUse from '@/views/HowToUse';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'How to Use VizhiTN',
@@ -9,5 +10,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <HowToUse />;
+  return <><Breadcrumbs items={[{ name: 'How to Use', href: '/how-to-use' }]} /><HowToUse /></>;
 }

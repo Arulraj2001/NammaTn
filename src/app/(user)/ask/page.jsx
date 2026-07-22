@@ -1,5 +1,6 @@
 import AskLocal from '@/views/AskLocal';
 import { getLatestQuestions } from '@/lib/publicHubServer';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const revalidate = 1800;
 
@@ -11,5 +12,5 @@ export const metadata = {
 
 export default async function Page() {
   const initialQuestions = await getLatestQuestions(40);
-  return <AskLocal initialQuestions={initialQuestions} />;
+  return <><Breadcrumbs items={[{ name: 'Ask Local', href: '/ask' }]} /><AskLocal initialQuestions={initialQuestions} /></>;
 }

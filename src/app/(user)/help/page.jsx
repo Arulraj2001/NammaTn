@@ -1,5 +1,6 @@
 import Help from '@/views/Help';
 import { getActiveEmergencyPosts } from '@/lib/publicHubServer';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const revalidate = 900;
 
@@ -11,5 +12,5 @@ export const metadata = {
 
 export default async function Page() {
   const initialEmergencies = await getActiveEmergencyPosts(40);
-  return <Help initialEmergencies={initialEmergencies} />;
+  return <><Breadcrumbs items={[{ name: 'Emergency Help', href: '/help' }]} /><Help initialEmergencies={initialEmergencies} /></>;
 }

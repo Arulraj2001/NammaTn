@@ -1,6 +1,7 @@
 import AreaDetail from '@/views/AreaDetail';
 import { notFound } from 'next/navigation';
 import { getAreaDetailData, getPublicArea } from '@/lib/publicHubServer';
+import { BreadcrumbJsonLd } from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -26,5 +27,14 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const initialData = await getAreaDetailData(params.slug);
   if (!initialData.area) notFound();
-  return <AreaDetail initialSlug={params.slug} initialData={initialData} />;
+  const areaName = initialData.area.name_en || initialData.area.name || params.slug;
+  return (
+    <>
+      <BreadcrumbJsonLd items={[
+        { name: 'Areas', href: '/areas' },
+        { name: areaName, href: `/area/${params.slug}` },
+      ]} />
+      <AreaDetail initialSlug={params.slug} initialData={initialData} />
+    </>
+  );
 }

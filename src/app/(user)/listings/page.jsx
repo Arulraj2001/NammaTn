@@ -1,5 +1,6 @@
 import LocalListings from '@/views/LocalListings';
 import { getPublicLocalListings } from '@/lib/publicHubServer';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Verified Local Services in Tamil Nadu',
@@ -10,5 +11,5 @@ export const metadata = {
 
 export default async function Page() {
   const listings = await getPublicLocalListings();
-  return <LocalListings initialListings={listings} />;
+  return <><Breadcrumbs items={[{ name: 'Local Services', href: '/listings' }]} /><LocalListings initialListings={listings} /></>;
 }

@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { getPublicPostDetail } from '@/lib/postServer';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 import { toMetaDescription } from '@/lib/metaDescription';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
+import { CATEGORY_MAP } from '@/lib/seo-data';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -41,6 +43,7 @@ export default async function Page({ params }) {
   if (!post) notFound();
   const canonical = `${SITE_URL}/post/${params.id}`;
   const title = post?.title_en || post?.title || 'Civic Report';
+  const category = CATEGORY_MAP[post.category_slug];
 
   const postSchema = post ? {
     '@context': 'https://schema.org',
@@ -62,25 +65,23 @@ export default async function Page({ params }) {
     },
   } : null;
 
-  const breadcrumbSchema = post ? {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Explore', item: `${SITE_URL}/explore` },
-      ...(post.district_slug ? [{
-        '@type': 'ListItem', position: 3,
-        name: post.district_name || post.district_slug.replace(/-/g, ' '),
-        item: `${SITE_URL}/${post.district_slug}`,
-      }] : []),
-      { '@type': 'ListItem', position: post.district_slug ? 4 : 3, name: title, item: canonical },
-    ],
-  } : null;
+  const breadcrumbItems = [
+    { name: 'Explore', href: '/explore' },
+    ...(post.district_slug ? [{
+      name: post.district_name || post.district_slug.replace(/-/g, ' '),
+      href: `/${post.district_slug}`,
+    }] : []),
+    ...(post.district_slug && category ? [{
+      name: category.name,
+      href: `/${post.district_slug}/${category.slug}`,
+    }] : []),
+    { name: title, href: `/post/${params.id}` },
+  ];
 
   return (
     <>
       {postSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(postSchema) }} />}
-      {breadcrumbSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />}
+      <Breadcrumbs items={breadcrumbItems} />
       <PostDetail
         initialId={params.id}
         initialPost={post}

@@ -1,5 +1,6 @@
 import Situations from '@/views/Situations';
 import { getActiveSituationUpdates } from '@/lib/publicHubServer';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const revalidate = 900;
 
@@ -11,5 +12,5 @@ export const metadata = {
 
 export default async function Page() {
   const initialSituations = await getActiveSituationUpdates(30);
-  return <Situations initialSituations={initialSituations} />;
+  return <><Breadcrumbs items={[{ name: 'Local Alerts', href: '/situations' }]} /><Situations initialSituations={initialSituations} /></>;
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import TermsOfService from '@/views/TermsOfService';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
   title: 'Terms of Service',
@@ -9,5 +10,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <TermsOfService />;
+  return <><Breadcrumbs items={[{ name: 'Terms of Service', href: '/terms' }]} /><TermsOfService /></>;
 }

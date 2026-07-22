@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import PostSkeleton from "@/components/posts/PostSkeleton";
 import BookmarkButton from "@/components/posts/BookmarkButton";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { injectPostStructuredData, injectBreadcrumbStructuredData, cleanupStructuredData } from "@/lib/seo";
 import ShareBar from "@/components/sharing/ShareBar";
 import PublicTrustBar from "@/components/engagement/PublicTrustBar";
 import RelatedPosts from "@/components/discovery/RelatedPosts";
@@ -117,17 +116,6 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
     url: typeof window !== "undefined" ? window.location.href : undefined,
     type: "article",
   });
-
-  useEffect(() => {
-    if (!post) return;
-    injectPostStructuredData(post);
-    injectBreadcrumbStructuredData([
-      { name: "Home", url: window.location.origin },
-      { name: post.district_name || "District", url: `https://www.vizhitn.in/${post.district_slug}` },
-      { name: post.title_en, url: window.location.href },
-    ]);
-    return () => cleanupStructuredData();
-  }, [post?.id]);
 
   const handleVote = async (reactionType) => {
     if (!post || votingLoading) return;
