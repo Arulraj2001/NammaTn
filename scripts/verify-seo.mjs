@@ -8,6 +8,7 @@ import { getPageTitle, getSocialTitle } from '../src/lib/metadataTitle.js';
 import { getDistrictMetaDescription, getCityIssueMetaDescription, toMetaDescription } from '../src/lib/metaDescription.js';
 import { DISTRICTS, CATEGORIES as SEO_CATEGORIES } from '../src/lib/seo-data.js';
 import { formatReportDate, getLatestReportDate } from '../src/lib/reportFreshness.js';
+import { getCityIssueRobots, shouldIndexCityIssuePage } from '../src/lib/programmaticIndexing.js';
 
 const root = process.cwd();
 const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
@@ -39,6 +40,30 @@ assert.equal(
   'Visible freshness must use the latest real report timestamp',
 );
 assert.equal(formatReportDate('2026-02-01T00:00:00.000Z'), '1 Feb 2026', 'Report dates must render deterministically');
+assert.equal(
+  shouldIndexCityIssuePage({ dataAvailable: true, reportCount: 0 }),
+  false,
+  'Confirmed zero-report city/issue pages must be noindex',
+);
+assert.equal(
+  shouldIndexCityIssuePage({ dataAvailable: true, reportCount: 1 }),
+  true,
+  'City/issue pages with report evidence must remain indexable',
+);
+assert.equal(
+  shouldIndexCityIssuePage({ dataAvailable: false, reportCount: 0 }),
+  true,
+  'A data outage must not be mistaken for a confirmed empty page',
+);
+assert.deepEqual(
+  getCityIssueRobots({ dataAvailable: true, reportCount: 0 }),
+  {
+    index: false,
+    follow: true,
+    googleBot: { index: false, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
+  },
+  'Zero-report pages must remain crawlable while excluded from search results',
+);
 
 const headerRules = await nextConfig.headers();
 const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';
@@ -106,7 +131,7 @@ assert.doesNotMatch(sitemap, /\bTODAY\b/, 'Sitemap must not manufacture daily la
 assert.match(sitemap, /updated_date/, 'Dynamic sitemap entries must use real update timestamps');
 assert.match(sitemap, /\/category\/\$\{category\.slug\}/, 'Category hubs must be present in the sitemap');
 assert.match(sitemap, /PUBLIC_CATEGORIES\.forEach/, 'Category hubs must use the public category taxonomy');
-assert.match(sitemap, /SEO_CATEGORIES\.forEach/, 'City-issue fallbacks must use the SEO issue taxonomy');
+assert.doesNotMatch(sitemap, /SEO_CATEGORIES|Tier 1 static pairs/, 'Sitemap outages must not add unverified city/issue URLs');
 assert.match(sitemap, /\/tn-today\/\$\{a\.slug\}`/, 'TN Today article URLs must match the no-trailing-slash policy');
 assert.match(sitemap, /OFFICES\.forEach/, 'Static office detail pages must be present in the sitemap');
 assert.match(sitemap, /getActiveAreas\(500\)/, 'Active area detail pages must be present in the sitemap');
@@ -165,6 +190,8 @@ const serverSupabase = await read('src/lib/serverSupabase.js');
 assert.match(cityPage, /BUILD_TIME_DISTRICT_SLUGS/, 'District pre-rendering must use a bounded priority list');
 assert.match(cityIssuePage, /params\?\.city/, 'Nested static params must build only the current parent district');
 assert.match(cityIssuePage, /createServerSupabase/, 'City issue data must use bounded server requests');
+assert.match(cityIssuePage, /getCityIssueRobots/, 'City issue metadata must noindex confirmed zero-report pages');
+assert.match(cityIssuePage, /dataAvailable/, 'City issue pages must distinguish empty results from data outages');
 assert.match(serverSupabase, /DEFAULT_TIMEOUT_MS\s*=\s*3000/, 'Server Supabase requests need a deployment-safe timeout');
 
 const scamsPage = await read('src/app/(user)/scams/page.jsx');

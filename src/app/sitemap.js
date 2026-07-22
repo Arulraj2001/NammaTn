@@ -1,11 +1,10 @@
 // src/app/sitemap.js
 // FIX 3 & 9: Only includes /[city]/[issue]/ URLs with ≥1 active report in DB.
-// Fallback to Tier 1 static pairs if DB is unreachable.
+// If DB evidence is unavailable, omit city/issue pairs rather than inventing URLs.
 // SEO PHASE 1: Also includes /tn-today/[slug] article URLs.
 
 import {
   DISTRICTS,
-  CATEGORIES as SEO_CATEGORIES,
   DISTRICT_MAP,
   CATEGORY_MAP,
 } from '@/lib/seo-data';
@@ -75,17 +74,10 @@ export default async function sitemap() {
       });
     });
   } catch (e) {
-    console.warn('[sitemap] DB unavailable — falling back to Tier 1 static pairs:', e.message);
-    // Fallback: 5 Tier 1 cities × all categories (30 URLs max — safe baseline)
-    ['chennai', 'coimbatore', 'madurai', 'salem', 'tiruchirappalli'].forEach(city => {
-      SEO_CATEGORIES.forEach(issue => {
-        entries.push({
-          url: `${SITE_URL}/${city}/${issue.slug}`,
-          changeFrequency: 'daily',
-          priority: 0.7,
-        });
-      });
-    });
+    // Do not manufacture indexable city/category URLs without report evidence.
+    // Existing URLs remain crawlable; they are simply omitted from this sitemap
+    // until the data source is available again.
+    console.warn('[sitemap] DB unavailable — omitting unverified city/issue pairs:', e.message);
   }
 
   // ── TN Today articles (published) ──────────────────────────────────────

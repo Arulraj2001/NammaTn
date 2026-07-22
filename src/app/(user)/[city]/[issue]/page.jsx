@@ -24,6 +24,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
 import { getCityIssueMetaDescription } from '@/lib/metaDescription';
+import { getCityIssueRobots } from '@/lib/programmaticIndexing';
 import { formatReportDate, getLatestReportDate } from '@/lib/reportFreshness';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
@@ -40,7 +41,7 @@ export const revalidate = 3600;
 async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_date') {
   try {
     const supabase = createServerSupabase();
-    if (!supabase) return { reports: [] };
+    if (!supabase) return { reports: [], dataAvailable: false };
     const targetSlugs = [issueSlug];
     if (issueSlug === 'electricity')         targetSlugs.push('power-cut');
     if (issueSlug === 'power-cut')           targetSlugs.push('electricity');
@@ -49,7 +50,7 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
     if (issueSlug === 'road-infrastructure') targetSlugs.push('road-problem');
     if (issueSlug === 'road-problem')        targetSlugs.push('road-infrastructure');
 
-    const { data: reports } = await supabase
+    const { data: reports, error } = await supabase
       .from('unified_explore_feed')
       .select('id,title:title_en,description:content_en,area_slug,district_slug,category_slug,post_type,created_date,status,upvotes,downvotes')
       .eq('district_slug', citySlug)
@@ -58,10 +59,12 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
       .order(orderField, { ascending: false })
       .limit(20);
 
-    return { reports: reports || [] };
+    if (error) throw error;
+
+    return { reports: reports || [], dataAvailable: true };
   } catch (e) {
     console.error('[SEO Page] Fetch error:', e.message);
-    return { reports: [] };
+    return { reports: [], dataAvailable: false };
   }
 }
 
@@ -80,12 +83,14 @@ export async function generateMetadata({ params }) {
   const socialTitle     = `${title} | VizhiTN`;
   const description     = getCityIssueMetaDescription(cityData.name, issueData.name);
   const canonicalUrl = `${SITE_URL}/${city}/${issue}`;
+  const { reports, dataAvailable } = await fetchCityIssueData(city, issue);
+  const robots = getCityIssueRobots({ dataAvailable, reportCount: reports.length });
 
   return {
     title,
     description,
     alternates: { canonical: canonicalUrl },
-    robots:     { index: true, follow: true, googleBot: { index: true, follow: true, 'max-snippet': -1 } },
+    robots,
     openGraph:  { title: socialTitle, description, url: canonicalUrl, type: 'website',
       images: [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: title }] },
     keywords:   intentData.localKeywords?.slice(0, 5).join(', '),
@@ -149,14 +154,15 @@ export default async function Page({ params }) {
   }
 
   // ── 1. DB fetch ───────────────────────────────────────────────────────────
-  const { reports } = await fetchCityIssueData(city, issue);
+  const { reports, dataAvailable } = await fetchCityIssueData(city, issue);
 
   // ── 2. ISR freshness (indexBoost — unchanged) ─────────────────────────────
   const boost = evaluateIndexBoost(city, issue, null, reports.length);
   let finalReports = reports;
   if (boost.boostActive && boost.feedOrder !== 'created_date' && reports.length > 0) {
-    const { reports: reordered } = await fetchCityIssueData(city, issue, boost.feedOrder);
-    finalReports = reordered;
+    const { reports: reordered, dataAvailable: reorderedDataAvailable } =
+      await fetchCityIssueData(city, issue, boost.feedOrder);
+    if (reorderedDataAvailable) finalReports = reordered;
   }
 
   // ── 3. AUTONOMOUS CORE — single call, 12 systems ──────────────────────────
@@ -551,7 +557,9 @@ export default async function Page({ params }) {
           ) : (
             <div className="bg-slate-100 dark:bg-slate-900/50 p-6 rounded-xl text-center space-y-3">
               <p className="text-xs text-slate-500">
-                No active complaints submitted recently in this category.
+                {dataAvailable
+                  ? 'No active complaints submitted recently in this category.'
+                  : 'The community report feed is temporarily unavailable. Please check again shortly.'}
               </p>
               {issueData.authority && (
                 <div className="max-w-md mx-auto p-4 bg-white dark:bg-slate-900 border rounded-lg text-left">
