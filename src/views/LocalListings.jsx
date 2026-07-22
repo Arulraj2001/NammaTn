@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/api/supabaseClient";
@@ -59,7 +61,7 @@ const getPublicLocalListings = async ({ cursor = null, limit = PAGE_SIZE }) => {
   return page.slice(0, limit);
 };
 
-export default function LocalListings() {
+export default function LocalListings({ initialListings = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const { isAuthenticated } = useAuth();
@@ -90,6 +92,7 @@ export default function LocalListings() {
   } = useInfiniteQuery({
     queryKey: ["local-listings-public"],
     queryFn: ({ pageParam = null }) => getPublicLocalListings({ cursor: pageParam, limit: PAGE_SIZE }),
+    initialData: { pages: [initialListings], pageParams: [null] },
     initialPageParam: null,
     getNextPageParam: getNextCursor,
     staleTime: 60_000,

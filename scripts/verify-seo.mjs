@@ -193,6 +193,13 @@ assert.match(leaderboardPage, /export const metadata/, 'Leaderboard must emit se
 assert.doesNotMatch(leaderboardPage, /ssr:\s*false/, 'Leaderboard must not be a client-only shell');
 assert.match(leaderboardView, /initialData:\s*initialPosts/, 'Leaderboard rankings must hydrate from server data');
 
+const listingsPage = await read('src/app/(user)/listings/page.jsx');
+const listingsView = await read('src/views/LocalListings.jsx');
+assert.match(listingsPage, /getPublicLocalListings/, 'Local listings must fetch approved entries on the server');
+assert.match(listingsPage, /export const metadata/, 'Local listings must emit server metadata');
+assert.doesNotMatch(listingsPage, /ssr:\s*false/, 'Local listings must not be a client-only shell');
+assert.match(listingsView, /initialData:\s*\{\s*pages:\s*\[initialListings\]/, 'Local listing pagination must hydrate from server data');
+
 const tnTodayArticlePage = await read('src/app/(user)/tn-today/[slug]/page.jsx');
 const tnTodayArticleView = await read('src/views/TnTodayArticle.jsx');
 const tnTodayServerDetail = await read('src/lib/tnTodayServer.js');

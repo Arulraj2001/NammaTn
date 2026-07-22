@@ -129,6 +129,28 @@ export async function getLeaderboardPosts(limit = 200) {
   }
 }
 
+export async function getPublicLocalListings(limit = 24) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('local_listing')
+      .select('*')
+      .eq('status', 'active')
+      .or('moderation_status.is.null,moderation_status.neq.hidden')
+      .or('is_publicly_visible.is.null,is_publicly_visible.eq.true')
+      .or('report_count.is.null,report_count.lt.5')
+      .order('created_date', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.warn('[listings] Server listing fetch failed:', error.message);
+    return [];
+  }
+}
+
 export async function getCommunityHubData() {
   const supabase = createServerSupabase();
   const empty = { settings: {}, situations: [], emergencies: [], scams: [], questions: [], posts: [] };
