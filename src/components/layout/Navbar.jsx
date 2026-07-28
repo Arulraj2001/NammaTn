@@ -172,7 +172,7 @@ export default function Navbar() {
           }
         `}</style>
       )}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      <header className={`fixed top-0 left-0 right-0 z-50 flex flex-col transition-all duration-300 ${
         scrolled ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur shadow-sm border-b border-slate-200 dark:border-slate-700"
         : "bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700"
       }`}>
@@ -325,7 +325,7 @@ export default function Navbar() {
 
         {/* Ticker Row */}
         {showAnnouncement && (
-          <div className={`w-full h-8 relative flex items-center overflow-hidden border-t text-[11px] font-medium leading-none select-none ${bgClass}`}>
+          <div className={`order-first w-full h-8 relative flex items-center overflow-hidden border-b text-[11px] font-medium leading-none select-none ${bgClass}`}>
             {/* Pinned Label / Icon */}
             <div className="absolute left-0 top-0 bottom-0 flex items-center gap-1.5 px-3 z-20 font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-r border-slate-200 dark:border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
               {announcementIcon}
