@@ -2,6 +2,7 @@
 // Translates legacy Base44 SDK calls into native Supabase client queries.
 
 import { supabase } from "@/api/supabaseClient";
+import { sanitizeUploadFile } from "@/lib/sanitizeUpload";
 
 function camelToSnake(str) {
   return str
@@ -221,9 +222,12 @@ const authMock = {
 const integrationsMock = {
   Core: {
     async UploadFile({ file }) {
-      const fileExt = file.name.split('.').pop();
+      const preparedFile = await sanitizeUploadFile(file);
+      const fileExt = preparedFile.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const { data, error } = await supabase.storage.from('media').upload(fileName, file);
+      const { data, error } = await supabase.storage
+        .from('media')
+        .upload(fileName, preparedFile, { contentType: preparedFile.type });
       if (error) throw error;
       const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(fileName);
       let file_url = publicUrl;

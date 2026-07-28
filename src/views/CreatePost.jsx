@@ -227,6 +227,7 @@ export default function CreatePost() {
     const district = DISTRICTS.find((d) => d.slug === clean.district_slug);
     const category = CATEGORIES.find((c) => c.slug === clean.category_slug);
     const selectedArea = areas.find(a => a.slug === areaSlug);
+    const moderationStatus = user?.role === "admin" ? "approved" : "pending";
 
     // Civic receipt fields for complaints/alerts
     const civicFields = isCivicType ? {
@@ -241,7 +242,7 @@ export default function CreatePost() {
       still_not_fixed_count: 0,
       escalation_level: 0,
       is_publicly_visible: true,
-      moderation_status: settings.auto_approve_posts === "false" ? "pending" : "approved",
+      moderation_status: moderationStatus,
       timeline_events: [
         makeTimelineEvent(
           T("Civic Receipt created on VizhiTN", "VizhiTN-ல் குடிமை ரசீது உருவாக்கப்பட்டது"),
@@ -275,7 +276,7 @@ export default function CreatePost() {
       comment_count: 0,
       status: "active",
       is_publicly_visible: true,
-      moderation_status: settings.auto_approve_posts === "false" ? "pending" : "approved",
+      moderation_status: moderationStatus,
       created_by_id: user?.id,
       created_by: user?.full_name || user?.email,
       ...civicFields,
@@ -311,7 +312,7 @@ export default function CreatePost() {
                 {T("Bribe Report Logged!", "லஞ்சப் பதிவு சமர்ப்பிக்கப்பட்டது!")}
               </h2>
               <p className="text-slate-500 dark:text-slate-400 text-sm mb-2">
-                {T("Thank you for contributing to public transparency. Your report is now anonymous and tracked.", "பொது வெளிப்படைத்தன்மைக்கு பங்களித்தமைக்கு நன்றி. உங்கள் பதிவு இப்போது அநாமதேயமாக கண்காணிக்கப்படும்.")}
+                {T("Thank you for contributing to public transparency. Your anonymous report was submitted for moderation review.", "பொது வெளிப்படைத்தன்மைக்கு பங்களித்தமைக்கு நன்றி. உங்கள் அநாமதேய பதிவு மதிப்பாய்வுக்காக சமர்ப்பிக்கப்பட்டது.")}
               </p>
               <p className="text-xs text-slate-400 mt-2">{T("Redirecting to Bribe Dashboard...", "லஞ்ச கண்காணிப்பு பலகைக்கு திருப்பி விடுகிறது...")}</p>
             </>
@@ -327,7 +328,7 @@ export default function CreatePost() {
                 <p className="text-lg font-mono font-bold text-blue-600 mb-2">{submittedPost.civic_receipt_id}</p>
               )}
               <p className="text-slate-500 dark:text-slate-400 text-sm mb-1">
-                {T("Your issue is now publicly documented.", "உங்கள் சிக்கல் இப்போது பொதுவில் ஆவணப்படுத்தப்பட்டது.")}
+                {T("Your issue was recorded and is awaiting moderation before public listing.", "உங்கள் சிக்கல் பதிவு செய்யப்பட்டது; பொதுவில் பட்டியலிடுவதற்கு முன் மதிப்பாய்வுக்காக காத்திருக்கிறது.")}
               </p>
               <p className="text-xs text-blue-600 font-medium mb-1">
                 {T("Add an official complaint ID when available.", "கிடைக்கும்போது அதிகாரப்பூர்வ புகார் ID சேர்க்கவும்.")}
@@ -338,10 +339,10 @@ export default function CreatePost() {
             <>
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                {T("Post Shared!", "பதிவு பகிரப்பட்டது!")}
+                {T("Post Submitted!", "பதிவு சமர்ப்பிக்கப்பட்டது!")}
               </h2>
               <p className="text-slate-500 dark:text-slate-400">
-                {T("Redirecting to explore...", "ஆராய்வுக்கு திருப்பி விடுகிறது...")}
+                {T("Your post is awaiting moderation. Redirecting to explore...", "உங்கள் பதிவு மதிப்பாய்வுக்காக காத்திருக்கிறது. ஆராய்வுக்கு திருப்பி விடுகிறது...")}
               </p>
             </>
           )}

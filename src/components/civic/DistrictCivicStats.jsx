@@ -61,7 +61,7 @@ export default function DistrictCivicStats({ districtSlug, districtName }) {
 
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-5">
         <StatBox label={T("Total", "மொத்தம்")} value={stats.total} cls="bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800 text-blue-600" />
-        <StatBox label={T("Verified", "சரிபார்க்கப்பட்டது")} value={stats.verified} cls="bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800 text-indigo-600" />
+        <StatBox label={T("Confirmed", "உறுதிப்படுத்தியது")} value={stats.verified} cls="bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800 text-indigo-600" />
         <StatBox label={T("Needs Complaint", "புகார் தேவை")} value={stats.needsComplaint} cls="bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-800 text-orange-600" />
         <StatBox label={T("Follow-up", "தொடர்")} value={stats.followup} cls="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-800 text-yellow-600" />
         <StatBox label={T("Fixed ✓", "சரி ✓")} value={stats.fixed} cls="bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800 text-green-600" />

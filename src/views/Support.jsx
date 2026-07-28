@@ -444,7 +444,7 @@ export default function Support() {
                   <span className="text-xs text-slate-500 font-semibold truncate max-w-[160px]">
                     {screenshot ? T("✓ Screenshot uploaded", "✓ பதிவேற்றப்பட்டது") : uploading ? T("Uploading...", "பதிவேற்றுகிறது...") : T("Upload Screenshot", "ஸ்கிரீன்ஷாட் பதிவேற்றவும்")}
                   </span>
-                  <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                  <input type="file" className="hidden" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleFileChange} />
                 </label>
                 <p className="text-[10px] text-slate-400 mt-1 text-right">{T("JPG, PNG up to 5MB", "JPG, PNG 5MB வரை")}</p>
               </div>

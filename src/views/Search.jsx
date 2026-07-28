@@ -35,7 +35,7 @@ const CIVIC_STATUS_OPTIONS = [
   { value: "civic_only", en: "Civic Receipts Only", ta: "குடிமை ரசீதுகள் மட்டும்" },
   { value: "has_complaint", en: "Has Complaint ID", ta: "புகார் ID உள்ளது" },
   { value: "no_complaint", en: "Complaint Needed", ta: "புகார் தேவை" },
-  { value: "community_verified", en: "Community Verified", ta: "சமுதாயம் சரிபார்த்தது" },
+  { value: "community_verified", en: "Community Confirmed", ta: "சமூகம் உறுதிப்படுத்தியது" },
   { value: "under_followup", en: "Under Follow-up", ta: "பின்தொடர்ச்சியில்" },
   { value: "unresolved_escalated", en: "Escalated", ta: "நடவடிக்கை எடுக்கப்பட்டது" },
   { value: "citizen_verified_fixed", en: "Citizen Verified Fixed", ta: "குடிமகன் சரிபார்த்த தீர்வு" },

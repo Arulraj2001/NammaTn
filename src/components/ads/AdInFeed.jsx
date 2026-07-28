@@ -1,5 +1,6 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useAdEligibility } from '@/hooks/useAdEligibility';
 
 /**
  * AdInFeed — Google AdSense native in-feed ad
@@ -9,19 +10,10 @@ import React, { useEffect, useRef, useState } from 'react';
  */
 export default function AdInFeed({ className = '', slot = '' }) {
   const adRef = useRef(null);
-  const [consent, setConsent] = useState(false);
-  const [ready, setReady] = useState(false);
+  const { eligible, ready } = useAdEligibility();
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('VizhiTN_cookie_consent') === 'accepted';
-      setConsent(stored);
-    } catch {}
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!consent) return;
+    if (!eligible) return;
     const pubId = window.__ADSENSE_PUB_ID__;
     if (!pubId || pubId === 'ca-pub-PLACEHOLDER') return;
     try {
@@ -29,7 +21,7 @@ export default function AdInFeed({ className = '', slot = '' }) {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       }
     } catch (e) { console.warn('AdSense in-feed error', e); }
-  }, [consent]);
+  }, [eligible]);
 
   if (!ready) return null;
 
@@ -37,7 +29,7 @@ export default function AdInFeed({ className = '', slot = '' }) {
   const isProd = typeof window !== 'undefined' && !window.location.hostname.includes('localhost');
 
   // Silently return null — don't disrupt feed
-  if (!consent || !pubId || pubId === 'ca-pub-PLACEHOLDER' || !slot || !isProd) {
+  if (!eligible || !pubId || pubId === 'ca-pub-PLACEHOLDER' || !slot || !isProd) {
     return null;
   }
 

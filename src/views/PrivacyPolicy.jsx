@@ -38,17 +38,17 @@ const SECTIONS = [
     ta: 'உங்கள் தகவலை நாங்கள் எவ்வாறு பயன்படுத்துகிறோம்',
     items_en: [
       'To provide, maintain, and optimize our localized civic search, directory, and discussion features.',
-      'To verify the legitimacy of community-reported civic issues and local scam alerts, helping filter out spam and false reports.',
+      'To moderate community-reported civic issues and local scam alerts, helping filter spam and flag claims that need review.',
       'To display relevant regional news and chat boards matching your selected district and area.',
-      'To display advertisements served by Google AdSense to cover server hosting, database, and API costs.',
+      'If advertising is enabled, to display consent-gated advertisements on eligible, non-sensitive pages to support operating costs.',
       'To monitor platform activity, resolve technical errors, and secure user databases against malicious hacking.',
       'To compile anonymous, aggregated statistics regarding search queries, portal visits, and scheme guides to improve user experience.'
     ],
     items_ta: [
       'உள்ளூர்மயமாக்கப்பட்ட குடிமைத் தேடல், கோப்புகள் மற்றும் விவாத அம்சங்களை வழங்க மற்றும் மேம்படுத்த.',
-      'உள்ளூர் குடிமைப் புகார்கள் மற்றும் மோசடி எச்சரிக்கைகளின் நம்பகத்தன்மையைச் சரிபார்த்து, பொய்யான புகாரளிப்பைத் தடுக்க.',
+      'சமூக குடிமைப் புகார்கள் மற்றும் மோசடி எச்சரிக்கைகளை மிதப்படுத்தி, ஸ்பேமை வடிகட்டி, மதிப்பாய்வு தேவைப்படும் கூற்றுகளைக் குறிக்க.',
       'நீங்கள் தேர்ந்தெடுத்த மாவட்டத்திற்குப் பொருந்தும் உள்ளூர்ச் செய்திகள் மற்றும் அரட்டைப் பலகைகளைக் காண்பிக்க.',
-      'சேவையக ஹோஸ்டிங் மற்றும் தரவுத்தள செலவுகளை ஈடுகட்ட Google AdSense மூலமாக விளம்பரங்களைக் காண்பிக்க.',
+      'விளம்பரம் இயக்கப்பட்டால், ஒப்புதல் பெற்ற பிறகு தகுதியான மற்றும் உணர்வுபூர்வமற்ற பக்கங்களில் இயக்கச் செலவுகளுக்கான விளம்பரங்களைக் காண்பிக்க.',
       'தளத்தின் செயல்பாடுகளைக் கண்காணிக்க, தொழில்நுட்பப் பிழைகளைத் தீர்க்க மற்றும் பயனர் தரவுத்தளங்களைப் பாதுகாக்க.',
       'பயனர் அனுபவத்தை மேம்படுத்த தேடல்கள் மற்றும் வழிகாட்டிகளின் வருகைகள் பற்றிய அநாமதேய புள்ளிவிவரங்களைத் தொகுக்க.'
     ]
@@ -57,16 +57,16 @@ const SECTIONS = [
     id: 'google-adsense',
     en: 'Google AdSense & Advertising',
     ta: 'Google AdSense மற்றும் விளம்பரம்',
-    content_en: 'We partner with Google AdSense to display non-intrusive advertisements on VizhiTN. Google, as a third-party vendor, uses cookies to serve ads on our site. Google\'s use of advertising cookies enables it and its partners to serve ads to our users based on their visit to VizhiTN and/or other sites on the Internet. Users may opt out of personalized advertising at any time by visiting Google\'s Ads Settings. We do not control Google\'s ad selection algorithms or third-party cookies.',
-    content_ta: 'VizhiTN இல் விளம்பரங்களைக் காண்பிக்க நாங்கள் Google AdSense உடன் இணைந்துள்ளோம். கூகுள் ஒரு மூன்றாம் தரப்பு வழங்குநராக விளம்பரங்களை வழங்க குக்கீகளைப் பயன்படுத்துகிறது. இதன் மூலம் பயனர்கள் இந்த இணையதளத்திற்கு அல்லது பிற இணையதளங்களுக்குச் சென்றதன் அடிப்படையில் தனிப்பயனாக்கப்பட்ட விளம்பரங்களைக் கூகுள் காட்டுகிறது. பயனர்கள் கூகுளின் விளம்பர அமைப்புகள் (Ads Settings) பக்கத்திற்குச் சென்று தனிப்பயனாக்கப்பட்ட விளம்பரங்களில் இருந்து எந்த நேரத்திலும் விலகலாம்.',
+    content_en: 'VizhiTN may use Google AdSense after a genuine publisher relationship is configured. The current public ads.txt file does not authorize an advertising seller. If AdSense is enabled, its script loads only after advertising consent and is excluded from sensitive routes. Google may use cookies to select and measure ads; users can reject non-essential cookies through VizhiTN cookie preferences and manage personalized advertising in Google Ads Settings.',
+    content_ta: 'உண்மையான வெளியீட்டாளர் உறவு அமைக்கப்பட்ட பிறகு VizhiTN Google AdSense ஐப் பயன்படுத்தலாம். தற்போதைய பொது ads.txt கோப்பு எந்த விளம்பர விற்பனையாளரையும் அங்கீகரிக்கவில்லை. AdSense இயக்கப்பட்டால், விளம்பர ஒப்புதலுக்குப் பிறகு மட்டுமே அதன் ஸ்கிரிப்ட் ஏற்றப்படும்; உணர்வுபூர்வமான பக்கங்களில் அது விலக்கப்படும். VizhiTN குக்கீ விருப்பங்களில் அத்தியாவசியமற்ற குக்கீகளை பயனர்கள் நிராகரிக்கலாம்.',
     link: { url: 'https://adssettings.google.com', text_en: 'Opt out of personalised advertising via Google Ads Settings →', text_ta: 'கூகுள் விளம்பர அமைப்புகள் மூலம் தனிப்பயனாக்கப்பட்ட விளம்பரங்களை முடக்கவும் →' }
   },
   {
     id: 'google-analytics',
     en: 'Google Analytics & Site Traffic',
     ta: 'Google Analytics மற்றும் தளப் போக்குவரத்து',
-    content_en: 'To understand user flows and optimize usability, we use Google Analytics. Google Analytics collects anonymous browser information, screen resolutions, session durations, and pages viewed. IP address anonymization is enabled by default on VizhiTN, meaning your complete IP address is never stored or processed by Google. You can disable this analytics tracking in your browser settings or install the Google Analytics Opt-out browser extension.',
-    content_ta: 'பயனர்கள் தளத்தை எவ்வாறு பயன்படுத்துகிறார்கள் என்பதைப் புரிந்துகொள்ள Google Analytics ஐப் பயன்படுத்துகிறோம். இது முற்றிலும் அநாமதேய உலாவித் தகவல்கள், அமர்வு கால அளவுகள் மற்றும் பார்வையிட்ட பக்கங்களை மட்டுமே சேகரிக்கிறது. VizhiTN இல் ஐபி முகவரி அநாமதேயமாக்கல் (IP Anonymization) செயல்படுத்தப்பட்டுள்ளது, எனவே உங்கள் முழுமையான ஐபி முகவரியைக் கூகுள் சேமிக்காது.'
+    content_en: 'VizhiTN may use consent-gated analytics tools, including Microsoft Clarity and Google Analytics when configured, to understand page use and technical problems. Analytics does not load unless the user accepts non-essential cookies, and it is disabled on private account routes. The data collected and retention behavior depend on the configured provider; users can withdraw consent at any time through Cookie Preferences.',
+    content_ta: 'தளப் பயன்பாடு மற்றும் தொழில்நுட்பச் சிக்கல்களைப் புரிந்துகொள்ள, அமைக்கப்பட்டிருந்தால் Microsoft Clarity மற்றும் Google Analytics உள்ளிட்ட ஒப்புதல் சார்ந்த பகுப்பாய்வுக் கருவிகளை VizhiTN பயன்படுத்தலாம். அத்தியாவசியமற்ற குக்கீகளை பயனர் ஏற்றுக்கொள்ளாவிட்டால் பகுப்பாய்வு ஏற்றப்படாது; தனிப்பட்ட கணக்குப் பக்கங்களிலும் அது முடக்கப்படும். குக்கீ விருப்பங்கள் மூலம் ஒப்புதலை எப்போது வேண்டுமானாலும் திரும்பப் பெறலாம்.'
   },
   {
     id: 'supabase-storage',

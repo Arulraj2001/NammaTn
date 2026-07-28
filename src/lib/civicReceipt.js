@@ -15,8 +15,8 @@ export const CIVIC_STATUSES = [
   },
   {
     key: "community_verified",
-    label: "Community Verified",
-    label_ta: "சமுதாயம் சரிபார்த்தது",
+    label: "Community Confirmed",
+    label_ta: "சமூகம் உறுதிப்படுத்தியது",
     color: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
     dot: "bg-indigo-500",
     step: 2,
@@ -30,8 +30,8 @@ export const CIVIC_STATUSES = [
     color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
     dot: "bg-orange-400",
     step: 3,
-    description: "Community verified — file an official complaint to proceed.",
-    description_ta: "சமுதாயம் சரிபார்த்தது — தொடர அதிகாரப்பூர்வ புகார் தாக்கல் செய்யவும்.",
+    description: "Community confirmed — file an official complaint to proceed.",
+    description_ta: "சமூகம் உறுதிப்படுத்தியது — தொடர அதிகாரப்பூர்வ புகார் தாக்கல் செய்யவும்.",
   },
   {
     key: "complaint_filed",

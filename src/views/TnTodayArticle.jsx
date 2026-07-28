@@ -270,7 +270,13 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
               </span>
               <span className="flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5" />
-                {article.author_name || "VizhiTN Editorial Team"}
+                {(article.author_name && article.author_name !== "VizhiTN Editorial Team") ? (
+                  article.author_name
+                ) : (
+                  <Link to="/authors/vizhitn-editorial-team" className="hover:text-blue-600 hover:underline">
+                    VizhiTN Editorial Team
+                  </Link>
+                )}
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5" />

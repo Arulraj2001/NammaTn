@@ -26,7 +26,7 @@ const TYPES = [
 
 const CIVIC_STATUS_FILTERS = [
   { value: "all", en: "All Statuses", ta: "அனைத்து நிலைகளும்" },
-  { value: "community_verified", en: "Community Verified", ta: "சமுதாயம் சரிபார்த்தது" },
+  { value: "community_verified", en: "Community Confirmed", ta: "சமூகம் உறுதிப்படுத்தியது" },
   { value: "complaint_filed", en: "Complaint Filed", ta: "புகார் தாக்கல்" },
   { value: "under_followup", en: "Under Follow-up", ta: "பின்தொடர்ச்சியில்" },
   { value: "unresolved_escalated", en: "Escalated", ta: "நடவடிக்கை எடுக்கப்பட்டது" },

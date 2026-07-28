@@ -148,7 +148,7 @@ export default function CivicReceiptActions({ post, onRefresh }) {
       const postWithNewCount = { ...post, verification_count: count };
       const newStatus = computeNextStatus(postWithNewCount, "verify");
       const eventText = count >= 3
-        ? T("Issue community verified!", "சமுதாயம் சரிபார்த்தது!")
+        ? T("Issue community confirmed!", "சமூகம் உறுதிப்படுத்தியது!")
         : T("Citizen confirmed this issue", "குடிமகன் இந்த சிக்கலை உறுதிப்படுத்தினார்");
       await doUpdate(
         { verification_count: count, civic_status: newStatus },
@@ -412,7 +412,7 @@ export default function CivicReceiptActions({ post, onRefresh }) {
           ? T("✓ Verified", "✓ சரிபார்க்கப்பட்டது")
           : count >= 3
             ? T(`${count}/5 — ${5 - count} needed for Official Complaint`, `${count}/5 — அதிகாரப்பூர்வ புகாருக்கு ${5 - count} தேவை`)
-            : T(`${count}/5 — ${3 - count} needed for Community Verified`, `${count}/5 — சமுதாய சரிபார்ப்புக்கு ${3 - count} தேவை`);
+            : T(`${count}/5 — ${3 - count} needed for Community Confirmed`, `${count}/5 — சமூக உறுதிப்படுத்தலுக்கு ${3 - count} தேவை`);
         return (
           <div className="space-y-1">
             <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">

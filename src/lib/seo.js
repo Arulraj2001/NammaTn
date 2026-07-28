@@ -4,6 +4,7 @@
  */
 
 import { getSocialTitle } from './metadataTitle';
+import { canLoadAdvertising } from './adSafety';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -233,7 +234,13 @@ export function applySEOSettings(settings) {
 
   // Google AdSense publisher ID — injected at runtime from admin panel
   const adsPubId = settings.adsense_publisher_id || settings.google_adsense_id;
-  if (adsPubId && !document.getElementById('adsense-script')) {
+  window.__ADSENSE_PUB_ID__ = adsPubId || null;
+  if (
+    adsPubId &&
+    adsPubId !== 'ca-pub-PLACEHOLDER' &&
+    canLoadAdvertising(window.location.pathname, window.localStorage) &&
+    !document.getElementById('adsense-script')
+  ) {
     const script = document.createElement('script');
     script.id = 'adsense-script';
     script.async = true;

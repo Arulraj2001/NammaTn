@@ -1,6 +1,8 @@
 export const SITE_URL = 'https://www.vizhitn.in';
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
+export const EDITORIAL_TEAM_URL = `${SITE_URL}/authors/vizhitn-editorial-team`;
+export const EDITORIAL_TEAM_ID = `${EDITORIAL_TEAM_URL}#team`;
 
 export function getPublisherSchema() {
   return {
@@ -22,9 +24,9 @@ export function getArticleAuthor(authorName) {
   if (isEditorialTeam) {
     return {
       '@type': 'Organization',
-      '@id': ORGANIZATION_ID,
+      '@id': EDITORIAL_TEAM_ID,
       name,
-      url: SITE_URL,
+      url: EDITORIAL_TEAM_URL,
     };
   }
 

@@ -4,6 +4,7 @@ import { validateFile } from "@/lib/security";
 import { supabase } from "@/api/supabaseClient";
 import { formatBytes } from "@/lib/performance";
 import { useLanguage } from "@/context/LanguageContext";
+import { sanitizeUploadFile } from "@/lib/sanitizeUpload";
 
 const MAX_FILES = 5;
 
@@ -88,13 +89,14 @@ export default function MediaUploader({ onUrlsChange, maxFiles = MAX_FILES, cust
       prev.map((f) => (f.id === entry.id ? { ...f, status: "uploading" } : f))
     );
     try {
-      const fileExt = entry.file.name.split('.').pop();
+      const preparedFile = await sanitizeUploadFile(entry.file);
+      const fileExt = preparedFile.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { data, error } = await supabase.storage
         .from('media')
-        .upload(filePath, entry.file);
+        .upload(filePath, preparedFile, { contentType: preparedFile.type });
 
       if (error) throw error;
 
@@ -114,10 +116,10 @@ export default function MediaUploader({ onUrlsChange, maxFiles = MAX_FILES, cust
         onUrlsChange(updated.filter((f) => f.url).map((f) => f.url));
         return updated;
       });
-    } catch {
+    } catch (error) {
       setFiles((prev) =>
         prev.map((f) =>
-          f.id === entry.id ? { ...f, status: "error", error: "Upload failed. Try again." } : f
+          f.id === entry.id ? { ...f, status: "error", error: error?.message || "Upload failed. Try again." } : f
         )
       );
     }
@@ -165,8 +167,8 @@ export default function MediaUploader({ onUrlsChange, maxFiles = MAX_FILES, cust
         <Upload className="w-8 h-8 mx-auto mb-2 text-slate-400" />
         <p className="text-sm text-slate-500 dark:text-slate-400">
           {T(
-            `Click or drag to upload (images, video, audio, PDF — max 10 MB each)`,
-            `கிளிக் அல்லது இழுக்கவும் (படங்கள், வீடியோ, ஆடியோ, PDF - அதிகபட்சம் 10 MB)`
+            `Click or drag to upload (images, video, or audio — max 10 MB each)`,
+            `கிளிக் அல்லது இழுக்கவும் (படங்கள், வீடியோ அல்லது ஆடியோ - அதிகபட்சம் 10 MB)`
           )}
         </p>
         <p className="text-xs text-slate-400 mt-1">
@@ -176,11 +178,17 @@ export default function MediaUploader({ onUrlsChange, maxFiles = MAX_FILES, cust
       <input
         ref={inputRef}
         type="file"
-        accept="image/*,video/*,audio/*,.pdf"
+        accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/ogg,audio/mpeg,audio/ogg,audio/wav,audio/webm"
         multiple
         className="hidden"
         onChange={(e) => processFiles(Array.from(e.target.files || []))}
       />
+      <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        {T(
+          "Image metadata, including stored GPS details, is removed before upload. Do not upload faces, addresses, IDs, or private documents unless necessary and permitted.",
+          "படங்களில் சேமிக்கப்பட்ட GPS உள்ளிட்ட மெட்டாடேட்டா பதிவேற்றத்திற்கு முன் நீக்கப்படும். அவசியமும் அனுமதியும் இல்லாமல் முகங்கள், முகவரிகள், அடையாள அட்டைகள் அல்லது தனிப்பட்ட ஆவணங்களைப் பதிவேற்ற வேண்டாம்."
+        )}
+      </p>
 
       {/* File list */}
       {files.length > 0 && (

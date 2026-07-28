@@ -4,12 +4,13 @@ import path from 'node:path';
 import nextConfig from '../next.config.js';
 import { getTnTodayCanonical } from '../src/lib/tnTodayUrl.js';
 import { getClarityInitScript } from '../src/lib/clarityScript.js';
+import { canLoadAdvertising, getAdSenseInitScript, isAdEligiblePath } from '../src/lib/adSafety.js';
 import { getPageTitle, getSocialTitle } from '../src/lib/metadataTitle.js';
 import { getDistrictMetaDescription, getCityIssueMetaDescription, toMetaDescription } from '../src/lib/metaDescription.js';
 import { DISTRICTS, CATEGORIES as SEO_CATEGORIES } from '../src/lib/seo-data.js';
 import { formatReportDate, getLatestReportDate } from '../src/lib/reportFreshness.js';
 import { getCityIssueRobots, shouldIndexCityIssuePage } from '../src/lib/programmaticIndexing.js';
-import { ORGANIZATION_ID, WEBSITE_ID, getArticleAuthor, getPublisherSchema } from '../src/lib/schemaIdentity.js';
+import { EDITORIAL_TEAM_URL, ORGANIZATION_ID, WEBSITE_ID, getArticleAuthor, getPublisherSchema } from '../src/lib/schemaIdentity.js';
 import { TN_TODAY_CATEGORY_MAP } from '../src/lib/tnTodayCategories.js';
 
 const root = process.cwd();
@@ -69,7 +70,7 @@ assert.deepEqual(
 assert.equal(ORGANIZATION_ID, 'https://www.vizhitn.in/#organization', 'Organization schema needs one stable ID');
 assert.equal(WEBSITE_ID, 'https://www.vizhitn.in/#website', 'WebSite schema needs one stable ID');
 assert.equal(getPublisherSchema()['@id'], ORGANIZATION_ID, 'Article publishers must reference the site Organization');
-assert.equal(getArticleAuthor().url, 'https://www.vizhitn.in', 'Editorial-team authorship must resolve to the publisher');
+assert.equal(getArticleAuthor().url, EDITORIAL_TEAM_URL, 'Editorial-team authorship must resolve to its public profile');
 assert.equal(getArticleAuthor('Named Contributor').url, 'https://www.vizhitn.in/about', 'Named authors must include a public URL');
 assert.ok(TN_TODAY_CATEGORY_MAP.infrastructure, 'TN Today routes and navigation must share one category inventory');
 
@@ -87,6 +88,7 @@ assert.ok(
 
 const rootLayout = await read('src/app/layout.jsx');
 assert.match(rootLayout, /getClarityInitScript\(CLARITY_PROJECT_ID\)/, 'The layout must use the verified Clarity script generator');
+assert.match(rootLayout, /getAdSenseInitScript\(\)/, 'The layout must use the consent- and route-gated AdSense script generator');
 assert.doesNotMatch(rootLayout, /alternates:\s*\{\s*canonical:\s*SITE_URL/, 'Root layout must not set a homepage canonical for every route');
 assert.match(rootLayout, /export const viewport/, 'The root layout must use the Next.js viewport export');
 assert.doesNotMatch(rootLayout, /<meta\s+name=["']viewport["']/, 'The root layout must not manually emit a duplicate viewport tag');
@@ -113,12 +115,29 @@ assert.doesNotThrow(
 assert.match(clarityScript, /consent!=='accepted'/, 'Clarity must remain consent gated');
 assert.match(clarityScript, /path===prefix/, 'Clarity must remain disabled on private route prefixes');
 
+assert.equal(isAdEligiblePath('/districts'), true, 'Public directory pages may be eligible for advertising');
+for (const route of ['/admin', '/post/example', '/help', '/scams', '/bribes', '/search', '/create', '/contact', '/ask', '/situations', '/community']) {
+  assert.equal(isAdEligiblePath(route), false, `${route} must be excluded from advertising`);
+}
+const acceptedStorage = { getItem: () => 'accepted' };
+const rejectedStorage = { getItem: () => 'rejected' };
+assert.equal(canLoadAdvertising('/districts', acceptedStorage), true, 'Advertising requires an eligible path and explicit consent');
+assert.equal(canLoadAdvertising('/districts', rejectedStorage), false, 'Advertising must remain disabled without consent');
+assert.equal(canLoadAdvertising('/post/example', acceptedStorage), false, 'Consent must not override sensitive-route exclusions');
+const adSenseScript = getAdSenseInitScript();
+assert.doesNotThrow(() => new Function(adSenseScript), 'The exact AdSense loader emitted by the layout must be valid JavaScript');
+assert.match(adSenseScript, /consent!=='accepted'/, 'The AdSense loader must be consent gated');
+assert.match(adSenseScript, /blockedRoute/, 'The AdSense loader must enforce route exclusions');
+
 const cookieConsent = await read('src/components/common/CookieConsent.jsx');
 const footer = await read('src/components/layout/Footer.jsx');
 assert.match(cookieConsent, /COOKIE_PREFERENCES_EVENT/, 'Cookie preferences must be reopenable after an initial choice');
 assert.match(cookieConsent, /grid grid-cols-2/, 'Mobile consent choices must remain compact and equally positioned');
 assert.match(cookieConsent, /max-h-\[50dvh\]/, 'The cookie card must not cover most of a mobile viewport');
 assert.match(footer, /openCookiePreferences/, 'The footer must expose persistent cookie preferences');
+for (const route of ['/editorial-policy', '/verification-methodology', '/community-guidelines', '/ownership-and-funding']) {
+  assert.ok(footer.includes(route), `${route} must be discoverable from the footer`);
+}
 
 const robots = await read('public/robots.txt');
 for (const route of ['/dashboard/', '/me/', '/bookmarks/']) {
@@ -156,6 +175,13 @@ for (const route of ['/explore', '/help', '/situations', '/ask']) {
 for (const route of ['/support', '/rwa', '/csr']) {
   assert.ok(sitemap.includes(`'${route}'`), `${route} must be present in the sitemap`);
 }
+for (const route of [
+  '/editorial-policy', '/corrections', '/verification-methodology', '/community-guidelines',
+  '/moderation-policy', '/ownership-and-funding', '/sources', '/advertising-policy',
+  '/authors', '/authors/vizhitn-editorial-team',
+]) {
+  assert.ok(sitemap.includes(`'${route}'`), `${route} must be present in the sitemap`);
+}
 for (const routeTemplate of [
   '${city.slug}/',
   '${districtSlug}/${categorySlug}/',
@@ -187,11 +213,63 @@ const publicMetadataRoutes = [
   'src/app/(user)/how-to-use/page.jsx',
   'src/app/(user)/privacy-policy/page.jsx',
   'src/app/(user)/terms/page.jsx',
+  'src/app/(user)/editorial-policy/page.jsx',
+  'src/app/(user)/corrections/page.jsx',
+  'src/app/(user)/verification-methodology/page.jsx',
+  'src/app/(user)/community-guidelines/page.jsx',
+  'src/app/(user)/moderation-policy/page.jsx',
+  'src/app/(user)/ownership-and-funding/page.jsx',
+  'src/app/(user)/sources/page.jsx',
+  'src/app/(user)/advertising-policy/page.jsx',
+  'src/app/(user)/authors/page.jsx',
+  'src/app/(user)/authors/vizhitn-editorial-team/page.jsx',
 ];
 for (const file of publicMetadataRoutes) {
   const source = await read(file);
   assert.match(source, /export const metadata/, `${file} must export server metadata`);
   assert.match(source, /canonical:/, `${file} must define a canonical URL`);
+}
+
+const trustDocuments = await read('src/lib/trustDocuments.js');
+const trustDocumentView = await read('src/components/trust/TrustDocument.jsx');
+const privacyPolicy = await read('src/views/PrivacyPolicy.jsx');
+assert.match(trustDocuments, /Community confirmation:.*not government or editorial verification/, 'Community signals must be distinguished from fact-checking');
+assert.match(trustDocuments, /does not contain a verified legal-entity name/, 'Ownership disclosure must not invent an operator identity');
+assert.match(trustDocuments, /no advertising seller is authorized/, 'Funding disclosure must match the current ads.txt state');
+assert.match(trustDocumentView, /aria-label="Trust center policies"/, 'Trust policies must cross-link through a visible navigation');
+assert.doesNotMatch(privacyPolicy, /We partner with Google AdSense/, 'Privacy disclosures must not claim an unverified advertising partnership');
+assert.match(privacyPolicy, /current public ads\.txt file does not authorize/, 'Privacy and funding disclosures must match ads.txt');
+
+for (const file of [
+  'src/components/media/MediaUploader.jsx',
+  'src/components/community/ShareWinModal.jsx',
+  'src/api/base44Client.js',
+  'src/services/groundIntelligence.js',
+]) {
+  assert.match(await read(file), /sanitizeUploadFile/, `${file} must sanitize images before public storage upload`);
+}
+const uploadSanitizer = await read('src/lib/sanitizeUpload.js');
+assert.match(uploadSanitizer, /context\.drawImage/, 'Image uploads must be re-encoded from pixels to remove embedded metadata');
+assert.match(uploadSanitizer, /throw new Error\('This file format cannot be prepared safely/, 'Unsupported upload formats must fail closed');
+assert.match(uploadSanitizer, /hasExpectedSignature/, 'Upload MIME declarations must be checked against file signatures');
+assert.match(uploadSanitizer, /The file contents do not match the selected file type/, 'MIME-signature mismatches must fail closed');
+assert.match(await read('src/components/media/MediaUploader.jsx'), /stored GPS details.*removed before upload/, 'Uploaders must warn contributors about metadata and private evidence');
+assert.match(await read('src/services/groundIntelligence.js'), /Unsupported evidence file type/, 'Evidence uploads must validate file types at the upload service boundary');
+const createPostView = await read('src/views/CreatePost.jsx');
+assert.match(createPostView, /user\?\.role === "admin" \? "approved" : "pending"/, 'Non-admin public reports must enter moderation as pending');
+const ugcMigration = await read('supabase/migrations/20260722_ugc_rate_limits_and_moderation.sql');
+assert.match(ugcMigration, /CREATE TABLE IF NOT EXISTS public\.ugc_submission_event/, 'UGC limits must be enforced at the database boundary');
+assert.match(ugcMigration, /pg_advisory_xact_lock/, 'Parallel UGC submissions must not race through server limits');
+assert.match(ugcMigration, /NEW\.moderation_status := 'pending'/, 'The database must enforce pending moderation for non-admin reports');
+assert.match(ugcMigration, /COALESCE\(moderation_status, 'approved'\) = 'approved'/, 'Public report access must exclude pending moderation');
+
+for (const file of [
+  'src/components/ads/AdSlot.jsx',
+  'src/components/ads/AdBanner.jsx',
+  'src/components/ads/AdSidebar.jsx',
+  'src/components/ads/AdInFeed.jsx',
+]) {
+  assert.match(await read(file), /useAdEligibility/, `${file} must enforce shared consent and route eligibility`);
 }
 
 const tnTodayPage = await read('src/app/(user)/tn-today/page.jsx');

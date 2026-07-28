@@ -1,4 +1,5 @@
 import { supabase } from "@/api/supabaseClient";
+import { sanitizeUploadFile } from "@/lib/sanitizeUpload";
 
 // ============================================================
 // CATEGORY → CIVIC RECEIPT DEPARTMENT MAPPING
@@ -169,13 +170,20 @@ export async function createGroundEvent(formData) {
 export async function uploadEvidence(eventId, files, options = {}) {
   const results = [];
   for (const file of files) {
-    const ext = file.name.split(".").pop();
+    const allowedTypes = new Set([
+      "image/jpeg", "image/png", "image/webp", "image/gif",
+      "video/mp4", "video/webm", "video/ogg",
+    ]);
+    if (!allowedTypes.has(file.type)) throw new Error("Unsupported evidence file type.");
+    if (file.size > 50 * 1024 * 1024) throw new Error("Evidence files must be 50 MB or smaller.");
+    const preparedFile = await sanitizeUploadFile(file);
+    const ext = preparedFile.name.split(".").pop();
     const path = `events/${eventId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const isVideo = file.type.startsWith("video/");
+    const isVideo = preparedFile.type.startsWith("video/");
 
     const { error: storageError } = await supabase.storage
       .from("gi-evidence")
-      .upload(path, file, { cacheControl: "3600", upsert: false });
+      .upload(path, preparedFile, { cacheControl: "3600", upsert: false, contentType: preparedFile.type });
 
     if (storageError) { console.error("Upload error:", storageError); continue; }
 
@@ -188,7 +196,7 @@ export async function uploadEvidence(eventId, files, options = {}) {
         type:          isVideo ? "video" : "photo",
         url:           publicUrl,
         thumbnail_url: isVideo ? null : publicUrl,
-        file_size:     file.size,
+        file_size:     preparedFile.size,
         caption:       options.caption || null,
         status:        "approved",
         is_anonymous:  options.is_anonymous || false,
@@ -367,7 +375,7 @@ async function checkAndAutoVerify(eventId) {
       .eq("id", eventId);
     await addTimelineEntry(eventId, {
       type: "verified",
-      content: `Community Verified — ${event.witness_count} witnesses, ${event.evidence_count} evidence items`,
+      content: `Community Confirmed — ${event.witness_count} witnesses, ${event.evidence_count} evidence items`,
       is_system: true,
     });
   }

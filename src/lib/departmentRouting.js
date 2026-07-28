@@ -262,7 +262,7 @@ export const getEscalationLevel = (post) => {
     if (daysOpen > route.follow_up_days) return { level: 3, label: "Follow-up Needed", color: "orange" };
     return { level: 2, label: "Official Complaint Filed", color: "blue" };
   }
-  if (status === "community_verified") return { level: 1, label: "Community Verified", color: "indigo" };
+  if (status === "community_verified") return { level: 1, label: "Community Confirmed", color: "indigo" };
   return { level: 0, label: "Reported", color: "slate" };
 };
 

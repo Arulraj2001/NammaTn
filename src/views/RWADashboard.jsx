@@ -78,7 +78,7 @@ function AreaCivicStats({ districtSlug }) {
 
   const statCards = [
     { label: T("Total Issues", "மொத்த சிக்கல்கள்"), value: stats.total, cls: "bg-blue-50 dark:bg-blue-900/20 border-blue-100 text-blue-700" },
-    { label: T("Community Verified", "சமூகம் சரிபார்த்தது"), value: stats.verified, cls: "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 text-indigo-700" },
+    { label: T("Community Confirmed", "சமூகம் உறுதிப்படுத்தியது"), value: stats.verified, cls: "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 text-indigo-700" },
     { label: T("Needs Complaint ID", "புகார் ID தேவை"), value: stats.needsComplaint, cls: "bg-orange-50 dark:bg-orange-900/20 border-orange-100 text-orange-700" },
     { label: T("Complaint Filed", "புகார் தாக்கல்"), value: stats.complaintFiled, cls: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 text-yellow-700" },
     { label: T("Under Follow-up", "கண்காணிப்பில்"), value: stats.underFollowup, cls: "bg-amber-50 dark:bg-amber-900/20 border-amber-100 text-amber-700" },

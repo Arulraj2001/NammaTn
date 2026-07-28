@@ -136,7 +136,7 @@ export default function HomeHero({ userLocation, setUserLocation }) {
             </div>
 
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-              {T("All in one place. Verified by citizens.", "ஒரே இடத்தில். குடிமக்களால் சரிபார்க்கப்பட்டது.")}
+              {T("All in one place. Reported by citizens.", "ஒரே இடத்தில். குடிமக்களால் தெரிவிக்கப்பட்டது.")}
             </p>
 
             <div className="flex flex-wrap gap-3 mb-6">

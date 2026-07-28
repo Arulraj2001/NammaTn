@@ -12,6 +12,7 @@ import { supabase } from "@/api/supabaseClient";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { generateCivicReceiptId, makeTimelineEvent } from "@/lib/civicReceipt";
+import { sanitizeUploadFile } from "@/lib/sanitizeUpload";
 
 /* ─── Reusable field components ────────────────────────────── */
 function Label({ children, required }) {
@@ -116,7 +117,10 @@ function PhotoUpload({ label, value, onChange, sublabel }) {
           </div>
         )}
       </div>
-      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFile} />
+      <p className="mt-1 text-[10px] leading-4 text-slate-500">
+        Image metadata, including stored GPS details, is removed before upload. Avoid faces, addresses, and private documents.
+      </p>
     </div>
   );
 }
@@ -182,13 +186,13 @@ export default function ShareWinModal({ onClose }) {
 
   const uploadPhoto = async (photoObj) => {
     if (!photoObj || !photoObj.file) return null;
-    const file = photoObj.file;
+    const file = await sanitizeUploadFile(photoObj.file);
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
     const filePath = `${fileName}`;
     const { data, error } = await supabase.storage
       .from('media')
-      .upload(filePath, file);
+      .upload(filePath, file, { contentType: file.type });
     if (error) throw error;
     const { data: { publicUrl } } = supabase.storage
       .from('media')

@@ -70,7 +70,6 @@ const ALLOWED_MIME_TYPES = new Set([
   "audio/ogg",
   "audio/wav",
   "audio/webm",
-  "application/pdf",
 ]);
 
 const DANGEROUS_EXTENSIONS = new Set([

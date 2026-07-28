@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ExternalLink } from "lucide-react";
+import { useAdEligibility } from "@/hooks/useAdEligibility";
 
 async function fetchAds(placement) {
   const now = new Date().toISOString().split("T")[0];
@@ -27,19 +28,24 @@ export default function AdSlot({ placement, className = "" }) {
   const ref = useRef(null);
   const [picked, setPicked] = useState(null);
   const [tracked, setTracked] = useState(false);
+  const { eligible, ready } = useAdEligibility();
 
   const { data: ads = [] } = useQuery({
     queryKey: ["ads-slot", placement],
     queryFn: () => fetchAds(placement),
     staleTime: 5 * 60_000,
+    enabled: eligible,
   });
 
   useEffect(() => {
-    if (ads.length > 0) {
+    if (!eligible) {
+      setPicked(null);
+      setTracked(false);
+    } else if (ads.length > 0) {
       const idx = Math.floor(Math.random() * ads.length);
       setPicked(ads[idx]);
     }
-  }, [ads]);
+  }, [ads, eligible]);
 
   useEffect(() => {
     if (!picked || tracked) return;
@@ -57,7 +63,7 @@ export default function AdSlot({ placement, className = "" }) {
     return () => observer.disconnect();
   }, [picked, tracked]);
 
-  if (!picked) return null;
+  if (!ready || !eligible || !picked) return null;
 
   if (picked.ad_type === "native") {
     return (
@@ -79,7 +85,7 @@ export default function AdSlot({ placement, className = "" }) {
             <div>
               <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-0.5">Sponsored</p>
               <p className="text-sm font-semibold text-slate-800 dark:text-white line-clamp-2">{picked.title}</p>
-              <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">{new URL(picked.redirect_url).hostname} <ExternalLink className="w-3 h-3" /></p>
+              <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">Sponsored link <ExternalLink className="w-3 h-3" /></p>
             </div>
           </div>
         </a>

@@ -2,6 +2,7 @@ import React from 'react';
 import Providers from './providers';
 import '@/index.css';
 import { getClarityInitScript } from '@/lib/clarityScript';
+import { getAdSenseInitScript } from '@/lib/adSafety';
 import { ORGANIZATION_ID, WEBSITE_ID } from '@/lib/schemaIdentity';
 
 // AdSense pub ID is injected at runtime by the admin panel via window.__ADSENSE_PUB_ID__
@@ -99,11 +100,6 @@ export default function RootLayout({ children }) {
         <meta name="DC.language" content="en-IN" />
         {/* Preconnect to critical origins only (max 2 to avoid Lighthouse warning) */}
         <link rel="preconnect" href="https://hzgrzcablefquddisqkf.supabase.co" />
-        {/* DNS prefetch for non-critical third parties (cheaper, non-blocking) */}
-        <link rel="dns-prefetch" href="//pagead2.googlesyndication.com" />
-        <link rel="dns-prefetch" href="//googleads.g.doubleclick.net" />
-        <link rel="dns-prefetch" href="//www.googletagservices.com" />
-        <link rel="dns-prefetch" href="//www.clarity.ms" />
         {/* Synchronous theme init — runs before React hydration to prevent CLS */}
         <script
           id="theme-init"
@@ -115,18 +111,7 @@ export default function RootLayout({ children }) {
         <script
           id="adsense-init"
           dangerouslySetInnerHTML={{
-            __html: `
-              (function(){
-                var pubId = typeof window !== 'undefined' && window.__ADSENSE_PUB_ID__;
-                if (pubId && pubId !== 'ca-pub-PLACEHOLDER') {
-                  var s = document.createElement('script');
-                  s.async = true;
-                  s.crossOrigin = 'anonymous';
-                  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + pubId;
-                  document.head.appendChild(s);
-                }
-              })();
-            `,
+            __html: getAdSenseInitScript(),
           }}
         />
         {/* Microsoft Clarity: load only after analytics consent and never on private routes. */}

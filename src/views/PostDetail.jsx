@@ -156,7 +156,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
   const allPhotos = [...(post.before_photos || []), ...(post.media_urls || [])].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
   const civicStatus = post.civic_status || "reported";
 
-  // Complaint needed nudge: community verified but no complaint ID
+  // Complaint needed nudge: community confirmed but no complaint ID
   const showComplaintNudge = isCivic &&
     (civicStatus === "community_verified" || civicStatus === "complaint_needed") &&
     !post.official_complaint_id;

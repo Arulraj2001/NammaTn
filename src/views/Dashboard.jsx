@@ -219,7 +219,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
             {[
               { label: T("Total Issues", "மொத்த சிக்கல்கள்"), value: civicStats.total, icon: FileText, color: "blue" },
-              { label: T("Community Verified", "சமுதாயம் சரிபார்த்தது"), value: civicStats.verified, icon: Users, color: "indigo" },
+              { label: T("Community Confirmed", "சமூகம் உறுதிப்படுத்தியது"), value: civicStats.verified, icon: Users, color: "indigo" },
               { label: T("Needs Complaint", "புகார் தேவை"), value: civicStats.needsComplaint, icon: AlertTriangle, color: "orange" },
               { label: T("Under Follow-up", "தொடர் கண்காணிப்பு"), value: civicStats.followup, icon: Clock, color: "yellow" },
               { label: T("Claimed Fixed", "சரி செய்யப்பட்டதாக"), value: civicStats.claimedFixed, icon: Shield, color: "teal" },

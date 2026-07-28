@@ -241,7 +241,7 @@ export default function AdminCivicReceipts() {
         {[
           { label: "Total", value: stats.total, cls: "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800 text-blue-600" },
           { label: "Needs Review", value: stats.pending, cls: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-800 text-yellow-600" },
-          { label: "Community Verified", value: stats.verified, cls: "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800 text-indigo-600" },
+          { label: "Community Confirmed", value: stats.verified, cls: "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800 text-indigo-600" },
           { label: "Citizen Fixed", value: stats.fixed, cls: "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800 text-green-600" },
           { label: "Escalated", value: stats.escalated, cls: "bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800 text-red-600" },
         ].map(s => (

@@ -20,19 +20,19 @@ function getContextShareText(post, url) {
     case "community_verified":
       return `✅ ${vCount} citizens confirmed this issue in ${location}.\n\n"${post.title_en}"\n\nOfficial complaint needed. Know the process? Help file it.${base}`;
     case "complaint_needed":
-      return `⚠️ Community verified issue in ${location} waiting for official complaint.\n\n"${post.title_en}" — ${vCount} verified · ${daysOpen} days open\n\nAnyone can file the official complaint. Here's how →${base}`;
+      return `⚠️ Community-confirmed issue in ${location} waiting for official complaint.\n\n"${post.title_en}" — ${vCount} confirmations · ${daysOpen} days open\n\nAnyone can file the official complaint. Here's how →${base}`;
     case "complaint_filed":
-      return `📄 Official complaint filed for "${post.title_en}" in ${location}.\n\nComplaint: ${post.official_complaint_id || "Filed"}\n${vCount} verified · ${daysOpen} days open\n\nTrack progress and follow up →${base}`;
+      return `📄 Official complaint filed for "${post.title_en}" in ${location}.\n\nComplaint: ${post.official_complaint_id || "Filed"}\n${vCount} confirmations · ${daysOpen} days open\n\nTrack progress and follow up →${base}`;
     case "under_followup":
-      return `🔄 Civic issue under follow-up in ${location}.\n\n"${post.title_en}"\n${vCount} verified · ${daysOpen} days open · Complaint filed\n\nHelp keep pressure — share and follow up →${base}`;
+      return `🔄 Civic issue under follow-up in ${location}.\n\n"${post.title_en}"\n${vCount} confirmations · ${daysOpen} days open · Complaint filed\n\nHelp keep pressure — share and follow up →${base}`;
     case "claimed_fixed":
-      return `🔍 "${post.title_en}" in ${location} claims to be fixed.\n\nHelp verify — is it really resolved? Visit and confirm.\n${vCount} verified · ${daysOpen} days open${base}`;
+      return `🔍 "${post.title_en}" in ${location} claims to be fixed.\n\nHelp confirm — is it really resolved? Visit and respond.\n${vCount} confirmations · ${daysOpen} days open${base}`;
     case "citizen_verified_fixed":
       return `🎉 Civic win! "${post.title_en}" in ${location} resolved in ${daysOpen} days.\n\n${vCount} citizens helped verify this issue. Community power works.\n\nSee the proof →${base}`;
     case "unresolved_escalated":
-      return `🔴 "${post.title_en}" in ${location} — UNRESOLVED after ${daysOpen} days.\n\n${vCount} citizens verified · Complaint filed · No resolution\n\nThis needs attention →${base}`;
+      return `🔴 "${post.title_en}" in ${location} — UNRESOLVED after ${daysOpen} days.\n\n${vCount} community confirmations · Complaint filed · No resolution\n\nThis needs attention →${base}`;
     default:
-      return `📋 VizhiTN Civic Receipt: ${post.civic_receipt_id}\n"${post.title_en}"\n📍 ${location}\n📅 ${daysOpen} days open · ${vCount} verified${base}`;
+      return `📋 VizhiTN Civic Receipt: ${post.civic_receipt_id}\n"${post.title_en}"\n📍 ${location}\n📅 ${daysOpen} days open · ${vCount} confirmations${base}`;
   }
 }
 
@@ -127,7 +127,7 @@ export default function CivicShareCard({ post }) {
           </div>
           <div className="text-center">
             <p className="text-white font-bold text-base">{post.verification_count || 0}</p>
-            <p className="text-slate-400">{T("verified", "சரிபார்த்தது")}</p>
+            <p className="text-slate-400">{T("confirmations", "உறுதிப்படுத்தல்கள்")}</p>
           </div>
           <div className="text-center">
             <p className="text-white font-bold text-base">{post.still_not_fixed_count || 0}</p>

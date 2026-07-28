@@ -156,6 +156,9 @@ export default async function sitemap() {
     '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
     '/support', '/rwa', '/csr',
     '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
+    '/editorial-policy', '/corrections', '/verification-methodology',
+    '/community-guidelines', '/moderation-policy', '/ownership-and-funding',
+    '/sources', '/advertising-policy', '/authors', '/authors/vizhitn-editorial-team',
   ].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,

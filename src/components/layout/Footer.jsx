@@ -61,8 +61,14 @@ const FOOTER_COLUMNS = [
       { path: "/how-to-use",     en: "How to Use",     ta: "பயன்படுத்துவது எப்படி" },
       { path: "/support",        en: "Support",        ta: "ஆதரவு" },
       { path: "/contact",        en: "Contact",        ta: "தொடர்பு" },
+      { path: "/editorial-policy", en: "Editorial Policy", ta: "தலையங்கக் கொள்கை" },
+      { path: "/verification-methodology", en: "Verification", ta: "சரிபார்ப்பு முறை" },
+      { path: "/community-guidelines", en: "Community Guidelines", ta: "சமூக வழிகாட்டுதல்கள்" },
+      { path: "/ownership-and-funding", en: "Ownership & Funding", ta: "உரிமை மற்றும் நிதி" },
       { path: "/privacy-policy", en: "Privacy Policy", ta: "தனியுரிமை கொள்கை" },
-      { path: "/terms",          en: "Terms of Service",ta: "ழெவிடுகள்" },
+      { path: "/advertising-policy", en: "Advertising Policy", ta: "விளம்பரக் கொள்கை" },
+      { path: "/authors",        en: "Authors",         ta: "ஆசிரியர்கள்" },
+      { path: "/terms",          en: "Terms of Service",ta: "விதிமுறைகள்" },
     ],
   },
 ];
@@ -145,7 +151,7 @@ export default function Footer() {
               <span className="font-extrabold text-blue-600 text-base leading-none">VizhiTN</span>
             </Link>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
-              {T("Community Verified.", "சமூகத்தால் சரிபார்க்கப்பட்டது.")}
+              {T("Community Reported.", "சமூகத்தால் தெரிவிக்கப்பட்டது.")}
             </p>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug mb-4">
               {T("People Powered.", "மக்களால் இயக்கப்படுகிறது.")}
@@ -230,16 +236,16 @@ export default function Footer() {
             </button>
             <span className="text-slate-300 dark:text-slate-600">|</span>
             <Link to="/terms" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              {T("Terms", "ழெவிடுகள்")}
+              {T("Terms", "விதிமுறைகள்")}
             </Link>
             <span className="text-slate-300 dark:text-slate-600">|</span>
             <Link to="/about" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               {T("About", "பற்றி")}
             </Link>
             <span className="text-slate-300 dark:text-slate-600">|</span>
-            <a href="mailto:advertise@vizhitn.in" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              {T("Advertise", "விளம்பரம்")}
-            </a>
+            <Link to="/advertising-policy" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              {T("Advertising Policy", "விளம்பரக் கொள்கை")}
+            </Link>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
             {T("Made with", "அன்போடு செய்யப்பட்டது")}

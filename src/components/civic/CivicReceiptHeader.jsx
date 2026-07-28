@@ -132,7 +132,7 @@ export default function CivicReceiptHeader({ post }) {
         {(post.verification_count || 0) > 0 && (
           <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300">
             <Shield className="w-3 h-3 inline mr-1" />
-            {post.verification_count} {T("community verified", "சமுதாயம் சரிபார்த்தது")}
+            {post.verification_count} {T("community confirmations", "சமூக உறுதிப்படுத்தல்கள்")}
           </span>
         )}
         {(post.official_complaint_id) && (
@@ -151,8 +151,8 @@ export default function CivicReceiptHeader({ post }) {
       <div className="px-5 pb-4">
         <p className="text-xs text-slate-400 dark:text-slate-500 italic">
           {T(
-            "VizhiTN helps citizens document, verify, route, track, and prove local issues. VizhiTN is not a government office.",
-            "VizhiTN குடிமக்கள் உள்ளூர் சிக்கல்களை ஆவணப்படுத்த, சரிபார்க்க, கண்காணிக்க உதவுகிறது. VizhiTN ஒரு அரசு அலுவலகம் அல்ல."
+            "Community confirmations are user signals, not an official or editorial fact-check. VizhiTN is not a government office.",
+            "சமூக உறுதிப்படுத்தல்கள் பயனர் சமிக்ஞைகள் மட்டுமே; அவை அரசு அல்லது தலையங்க உண்மைச் சரிபார்ப்பு அல்ல. VizhiTN ஒரு அரசு அலுவலகம் அல்ல."
           )}
         </p>
       </div>

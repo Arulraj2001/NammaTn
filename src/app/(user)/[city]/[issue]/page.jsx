@@ -457,7 +457,7 @@ export default async function Page({ params }) {
             {cityData.neighborhoods?.length > 0 && (
               <>, including {cityData.neighborhoods.slice(0, 3).join(', ')}, and nearby areas</>
             )}.
-            {' '}All reports are submitted by citizens on VizhiTN and verified by the community.
+            {' '}Reports are submitted by citizens. Community confirmations are signals from other users, not official verification.
             {issueData.helpline && (
               <> For urgent {issueData.name.toLowerCase()} issues in {cityData.name}, call{' '}
               <strong>{issueData.authority || 'the helpline'}</strong> at <strong>{issueData.helpline}</strong>.</>

@@ -175,7 +175,7 @@ export default function AdminAds() {
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-600 mb-1 block">Banner Image</label>
-                <input type="file" accept="image/*" onChange={handleImageUpload} className="text-sm" />
+                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleImageUpload} className="text-sm" />
                 {uploading && <p className="text-xs text-slate-400 mt-1">Uploading...</p>}
                 {dialog.data.image_url && (
                   <img src={dialog.data.image_url} alt="" className="mt-2 rounded-lg h-24 object-cover" />

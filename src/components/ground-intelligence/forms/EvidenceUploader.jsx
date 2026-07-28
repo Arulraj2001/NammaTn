@@ -6,7 +6,12 @@ import { Upload, X, Film, Image as ImageIcon, AlertCircle } from 'lucide-react';
 const MAX_FILES   = 10;
 const MAX_SIZE_MB = 50;
 const MAX_SIZE_B  = MAX_SIZE_MB * 1024 * 1024;
-const ACCEPTED    = ['image/', 'video/'];
+const MAX_IMAGE_SIZE_MB = 20;
+const MAX_IMAGE_SIZE_B = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+const ACCEPTED = new Set([
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+  'video/mp4', 'video/webm', 'video/ogg',
+]);
 
 function humanSize(bytes) {
   if (bytes < 1024)        return `${bytes} B`;
@@ -15,7 +20,7 @@ function humanSize(bytes) {
 }
 
 function isAccepted(file) {
-  return ACCEPTED.some((prefix) => file.type.startsWith(prefix));
+  return ACCEPTED.has(file.type);
 }
 
 export default function EvidenceUploader({ files = [], onChange }) {
@@ -32,6 +37,10 @@ export default function EvidenceUploader({ files = [], onChange }) {
       Array.from(incoming).forEach((file) => {
         if (!isAccepted(file)) {
           newErrors.push(`"${file.name}" — unsupported type. Only images and videos allowed.`);
+          return;
+        }
+        if (file.type.startsWith('image/') && file.size > MAX_IMAGE_SIZE_B) {
+          newErrors.push(`"${file.name}" is too large (${humanSize(file.size)}). Images are limited to ${MAX_IMAGE_SIZE_MB} MB.`);
           return;
         }
         if (file.size > MAX_SIZE_B) {
@@ -92,7 +101,7 @@ export default function EvidenceUploader({ files = [], onChange }) {
         ref={inputRef}
         type="file"
         multiple
-        accept="image/*,video/*"
+        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/ogg"
         className="hidden"
         onChange={onInputChange}
         aria-label="Upload evidence files"
@@ -139,7 +148,7 @@ export default function EvidenceUploader({ files = [], onChange }) {
               {dragOver ? 'Drop files here' : 'Tap to add photos or videos'}
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-              Drag &amp; drop on desktop — up to {MAX_FILES} files, {MAX_SIZE_MB} MB each
+              Drag &amp; drop — up to {MAX_FILES} files; images {MAX_IMAGE_SIZE_MB} MB, videos {MAX_SIZE_MB} MB
             </p>
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
@@ -161,6 +170,10 @@ export default function EvidenceUploader({ files = [], onChange }) {
           )}
         </div>
       )}
+
+      <p className="px-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+        Image metadata, including stored GPS details, is removed before upload. Do not include faces, addresses, IDs, or private documents unless necessary and permitted.
+      </p>
 
       {isAtCapacity && (
         <p className="text-xs text-amber-600 dark:text-amber-400 font-medium px-1">
@@ -205,7 +218,6 @@ export default function EvidenceUploader({ files = [], onChange }) {
                   </div>
                 ) : (
                   /* Image thumbnail */
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={previewUrl}
                     alt={file.name}

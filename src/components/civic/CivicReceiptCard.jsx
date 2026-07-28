@@ -49,7 +49,7 @@ export default function CivicReceiptCard({ post }) {
             <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{post.district_name}{post.area_name ? `, ${post.area_name}` : ""}</span>
             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{days} {T("days open", "நாட்கள்")}</span>
             {(post.verification_count || 0) > 0 && (
-              <span className="flex items-center gap-1 text-indigo-500"><Users className="w-3 h-3" />{post.verification_count} {T("verified", "சரிபார்க்கப்பட்டது")}</span>
+              <span className="flex items-center gap-1 text-indigo-500"><Users className="w-3 h-3" />{post.verification_count} {T("confirmations", "உறுதிப்படுத்தல்கள்")}</span>
             )}
           </div>
         </div>

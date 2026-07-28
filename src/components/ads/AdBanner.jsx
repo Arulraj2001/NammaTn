@@ -1,5 +1,6 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useAdEligibility } from '@/hooks/useAdEligibility';
 
 /**
  * AdBanner — Google AdSense horizontal banner
@@ -9,15 +10,10 @@ import React, { useEffect, useRef, useState } from 'react';
  */
 export default function AdBanner({ className = '', slot = '' }) {
   const adRef = useRef(null);
-  const [consent, setConsent] = useState(false);
+  const { eligible, ready } = useAdEligibility();
 
   useEffect(() => {
-    // Check cookie consent
-    try { setConsent(localStorage.getItem('VizhiTN_cookie_consent') === 'accepted'); } catch {}
-  }, []);
-
-  useEffect(() => {
-    if (!consent) return;
+    if (!eligible) return;
     const pubId = window.__ADSENSE_PUB_ID__;
     if (!pubId || pubId === 'ca-pub-PLACEHOLDER') return;
     try {
@@ -25,12 +21,14 @@ export default function AdBanner({ className = '', slot = '' }) {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       }
     } catch (e) { console.warn('AdSense error', e); }
-  }, [consent]);
+  }, [eligible]);
 
   const pubId = typeof window !== 'undefined' ? window.__ADSENSE_PUB_ID__ : null;
   const isProd = typeof window !== 'undefined' && !window.location.hostname.includes('localhost');
 
-  if (!consent || !pubId || pubId === 'ca-pub-PLACEHOLDER' || !slot || !isProd) {
+  if (!ready || !eligible) return null;
+
+  if (!pubId || pubId === 'ca-pub-PLACEHOLDER' || !slot || !isProd) {
     // Show labeled placeholder in dev/no-consent
     return (
       <div
