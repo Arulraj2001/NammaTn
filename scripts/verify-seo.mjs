@@ -528,6 +528,7 @@ const performanceFooter = await read('src/components/layout/Footer.jsx');
 const areaPulse = await read('src/components/home/MyAreaPulse.jsx');
 const accessibilityCookieConsent = await read('src/components/common/CookieConsent.jsx');
 const globalStyles = await read('src/index.css');
+const publicHubServer = await read('src/lib/publicHubServer.js');
 assert.match(homePage, /export const revalidate = 60/, 'Homepage live data must use a bounded server cache');
 assert.match(homePage, /getHomepageData\(\)/, 'Homepage status data must be fetched during server rendering');
 assert.match(homeHero, /enabled:\s*mapEnabled/, 'Interactive map queries must wait until the map is requested');
@@ -549,5 +550,10 @@ assert.match(accessibilityCookieConsent, /previousFocusRef\.current\?\.focus/, '
 assert.match(homeHero, /<details\b/, 'The homepage map must provide a keyboard-accessible list alternative');
 assert.match(globalStyles, /prefers-reduced-motion:\s*reduce/, 'Animations must respect reduced-motion preferences');
 assert.match(globalStyles, /:focus-visible/, 'Interactive elements must have a consistent visible focus indicator');
+assert.match(
+  publicHubServer,
+  /\.select\('id,slug,name_en,name_ta,district_name,district_slug'\)/,
+  'Homepage areas must request columns that exist in the public area schema',
+);
 
 console.log('SEO and Clarity audit checks passed.');

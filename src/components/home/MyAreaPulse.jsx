@@ -182,8 +182,10 @@ function AreaPickerModal({ areas, onSelect, onClose }) {
                 <p className="text-sm font-medium text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                   {area.name_en}
                 </p>
-                {area.district_name_en && (
-                  <p className="text-[11px] text-slate-400">{area.district_name_en}</p>
+                {(area.district_name_en || area.district_name) && (
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300">
+                    {area.district_name_en || area.district_name}
+                  </p>
                 )}
               </div>
             </button>
@@ -333,7 +335,7 @@ export default function MyAreaPulse({ allAreas = [], initialData }) {
   ];
 
   const areaLabel = activeArea
-    ? `${activeArea.name_en}${activeArea.district_name_en ? `, ${activeArea.district_name_en}` : ""}`
+    ? `${activeArea.name_en}${(activeArea.district_name_en || activeArea.district_name) ? `, ${activeArea.district_name_en || activeArea.district_name}` : ""}`
     : T("All of Tamil Nadu", "தமிழ்நாடு முழுவதும்");
 
   return (

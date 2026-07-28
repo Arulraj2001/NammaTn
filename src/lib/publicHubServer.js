@@ -128,7 +128,7 @@ export async function getHomepageData() {
     const results = await Promise.all([
       supabase
         .from('area')
-        .select('id,slug,name_en,name_ta,district_name_en')
+        .select('id,slug,name_en,name_ta,district_name,district_slug')
         .eq('active', true)
         .order('name_en', { ascending: true })
         .limit(100),
