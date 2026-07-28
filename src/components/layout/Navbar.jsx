@@ -73,6 +73,7 @@ export default function Navbar() {
   const { lang, setLang } = useLanguage();
   const location = useLocation();
   const megaRef = useRef(null);
+  const megaButtonRef = useRef(null);
 
   const { data: settings = {} } = useQuery({
     queryKey: ["site-settings"],
@@ -119,6 +120,18 @@ export default function Navbar() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => {
+    if (!megaOpen) return undefined;
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setMegaOpen(false);
+        megaButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [megaOpen]);
 
   const announcementType = settings.announcement_type || "info";
   let bgClass = "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-900/40";
@@ -167,7 +180,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16 gap-3">
 
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+            <Link to="/" aria-label={T("VizhiTN home", "VizhiTN முகப்பு")} className="flex items-center gap-2 flex-shrink-0">
               <img src={settings.site_logo_url || "/favicon-32x32.png"} alt="" width="32" height="32" className="w-8 h-8 rounded-lg object-contain" />
               <div className="hidden sm:block">
                 <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">VizhiTN</span>
@@ -196,7 +209,11 @@ export default function Navbar() {
               {/* Directory dropdown */}
               <div ref={megaRef} className="relative">
                 <button
+                  ref={megaButtonRef}
                   onClick={() => setMegaOpen(!megaOpen)}
+                  aria-expanded={megaOpen}
+                  aria-controls="desktop-directory-menu"
+                  aria-haspopup="true"
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     megaOpen ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
@@ -209,6 +226,8 @@ export default function Navbar() {
 
                 {megaOpen && (
                     <div
+                      id="desktop-directory-menu"
+                      aria-label={T("Services directory", "சேவைகள் அடைவு")}
                       className="absolute top-full left-0 mt-2 w-[680px] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 z-50 scrollbar-thin animate-in fade-in slide-in-from-top-2 duration-150"
                     >
                       <div className="grid grid-cols-2 gap-6">
@@ -265,15 +284,15 @@ export default function Navbar() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-1 flex-shrink-0">
-              <Link to="/search" aria-label="Search" className="hidden md:flex p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <Link to="/search" aria-label={T("Search", "தேடல்")} className="hidden md:flex p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <Search className="w-4 h-4" />
               </Link>
 
               <button
                 onClick={() => setLang(lang === "en" ? "ta" : "en")}
                 className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
-                title="Switch Language"
-                aria-label="Switch Language"
+                title={lang === "en" ? "தமிழ் மொழிக்கு மாற்றவும்" : "Switch to English"}
+                aria-label={lang === "en" ? "TA / தமிழ் — தமிழ் மொழிக்கு மாற்றவும்" : "EN / English — switch to English"}
               >
                 <Globe className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">{lang === "en" ? "தமிழ்" : "English"}</span>
@@ -283,21 +302,19 @@ export default function Navbar() {
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                aria-label="Toggle Theme"
+                aria-label={theme === "dark" ? T("Use light theme", "ஒளி தோற்றத்தைப் பயன்படுத்து") : T("Use dark theme", "இருள் தோற்றத்தைப் பயன்படுத்து")}
               >
                 {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
 
-              <Link to="/bookmarks" aria-label="Bookmarks" className="hidden md:flex p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <Link to="/bookmarks" aria-label={T("Bookmarks", "சேமித்தவை")} className="hidden md:flex p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <Bookmark className="w-4 h-4" />
               </Link>
 
               {/* Create CTA — desktop only */}
-              <Link to="/create" className="hidden lg:block ml-1">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap">
-                  <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                  {T("Log Issue", "பதிவு செய்க")}
-                </button>
+              <Link to="/create" className="hidden lg:flex ml-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors items-center gap-1.5 shadow-sm whitespace-nowrap">
+                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                {T("Log Issue", "பதிவு செய்க")}
               </Link>
 
 
@@ -328,7 +345,7 @@ export default function Navbar() {
             <button
               onClick={handleDismissAnnouncement}
               className="absolute right-0 top-0 bottom-0 px-3 flex items-center z-20 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-[-2px_0_5px_rgba(0,0,0,0.05)]"
-              aria-label="Dismiss Announcement"
+              aria-label={T("Dismiss announcement", "அறிவிப்பை மூடு")}
             >
               <X className="w-3.5 h-3.5" />
             </button>

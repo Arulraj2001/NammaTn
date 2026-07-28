@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   Home, PlusCircle, Zap, X, FileText,
@@ -80,6 +80,9 @@ export default function MobileNav() {
   const location = useLocation();
   const { lang } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const menuButtonRef = useRef(null);
+  const closeButtonRef = useRef(null);
 
   const { data: settings = {} } = useQuery({
     queryKey: ["site-settings"],
@@ -88,6 +91,46 @@ export default function MobileNav() {
   });
 
   const T = (en, ta) => lang === "ta" ? ta : en;
+
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+    requestAnimationFrame(() => menuButtonRef.current?.focus());
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu();
+        return;
+      }
+      if (event.key !== "Tab" || !menuRef.current) return;
+      const focusable = [...menuRef.current.querySelectorAll(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )];
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeMenu, menuOpen]);
 
   return (
     <>
@@ -122,8 +165,11 @@ export default function MobileNav() {
 
           {/* Services tab */}
           <button
+            ref={menuButtonRef}
             onClick={() => setMenuOpen(true)}
-            aria-label="Open services"
+            aria-label={T("Services menu", "சேவைகள் பட்டி")}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-services-dialog"
             className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-all ${
               menuOpen ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"
             }`}
@@ -139,10 +185,17 @@ export default function MobileNav() {
       {menuOpen && (
           <div className="fixed inset-0 z-[60] md:hidden animate-in fade-in duration-150">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/50" onClick={() => setMenuOpen(false)} />
+            <div className="absolute inset-0 bg-black/50" onClick={closeMenu} aria-hidden="true" />
 
             {/* Sheet */}
-            <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-3xl max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
+            <div
+              ref={menuRef}
+              id="mobile-services-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="mobile-services-heading"
+              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-3xl max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom duration-200"
+            >
               {/* Handle */}
               <div className="flex justify-center pt-3 pb-1">
                 <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
@@ -151,20 +204,21 @@ export default function MobileNav() {
               <div className="px-4 pb-6">
                 {/* Header */}
                 <div className="flex items-center justify-between py-3 mb-2">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                  <h2 id="mobile-services-heading" className="text-lg font-bold text-slate-900 dark:text-white">
                     {T("Explore VizhiTN", "VizhiTN ஆராய்க")}
                   </h2>
                   <button
-                    onClick={() => setMenuOpen(false)}
+                    ref={closeButtonRef}
+                    onClick={closeMenu}
                     className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500"
-                    aria-label="Close menu"
+                    aria-label={T("Close services menu", "சேவைகள் பட்டியை மூடு")}
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
                 {/* Create CTA Card */}
-                <Link to="/create" onClick={() => setMenuOpen(false)}>
+                <Link to="/create" onClick={closeMenu}>
                   <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 mb-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
                       <FileText className="w-5 h-5 text-white" />
@@ -211,7 +265,7 @@ export default function MobileNav() {
                           <Link
                             key={item.path}
                             to={item.path}
-                            onClick={() => setMenuOpen(false)}
+                            onClick={closeMenu}
                             className={`flex items-start gap-2.5 p-3 rounded-2xl border transition-all active:scale-[0.97] ${
                               active
                                 ? "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700"

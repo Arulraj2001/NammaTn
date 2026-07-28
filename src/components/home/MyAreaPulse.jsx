@@ -91,7 +91,7 @@ function PulseCard({ count, icon, label, sub, color, bg, border, to, loading }) 
         )}
         <Icon className={`w-4 h-4 ${color} my-1`} />
         <p className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-snug mt-1">{label}</p>
-        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{sub}</p>
+        <p className="text-[10px] text-slate-700 dark:text-slate-300 mt-0.5 leading-snug">{sub}</p>
       </div>
     </Link>
   );
@@ -102,6 +102,38 @@ function AreaPickerModal({ areas, onSelect, onClose }) {
   const [search, setSearch] = useState("");
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
+  const dialogRef = React.useRef(null);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = [...dialogRef.current.querySelectorAll(
+        'input, button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      )];
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
 
   const filtered = areas.filter((a) => {
     const q = search.toLowerCase();
@@ -111,21 +143,30 @@ function AreaPickerModal({ areas, onSelect, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="area-picker-heading"
         className="w-full sm:max-w-sm bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl shadow-2xl p-5 pb-8 sm:pb-5 max-h-[70vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-slate-800 dark:text-white">
+          <h2 id="area-picker-heading" className="text-sm font-bold text-slate-800 dark:text-white">
             {T("Choose Your Area", "உங்கள் பகுதியை தேர்வு செய்யுங்கள்")}
-          </h3>
-          <button onClick={onClose} className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded-lg">
-            ✕
+          </h2>
+          <button
+            onClick={onClose}
+            aria-label={T("Close area picker", "பகுதி தேர்வை மூடு")}
+            className="min-h-11 min-w-11 text-sm text-slate-500 hover:text-slate-700 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded-lg"
+          >
+            <span aria-hidden="true">×</span>
           </button>
         </div>
         <input
           autoFocus
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          aria-label={T("Search areas", "பகுதிகளைத் தேடு")}
           placeholder={T("Search area…", "பகுதி தேடுங்கள்…")}
           className="w-full mb-3 px-3 py-2.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -168,6 +209,7 @@ export default function MyAreaPulse({ allAreas = [], initialData }) {
   const [selectedArea, setSelectedArea] = useState(() => getSavedArea());
   const [showPicker, setShowPicker] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const areaPickerButtonRef = React.useRef(null);
 
   useEffect(() => {
     setMounted(true);
@@ -180,6 +222,10 @@ export default function MyAreaPulse({ allAreas = [], initialData }) {
 
   const activeArea = mounted ? selectedArea : null;
   const areaSlug = activeArea?.slug || null;
+  const closeAreaPicker = React.useCallback(() => {
+    setShowPicker(false);
+    requestAnimationFrame(() => areaPickerButtonRef.current?.focus());
+  }, []);
 
   /* ── Live data queries ─────────────────────────── */
   const { data: posts = [], isLoading: postsLoading } = useQuery({
@@ -297,7 +343,7 @@ export default function MyAreaPulse({ allAreas = [], initialData }) {
         <AreaPickerModal
           areas={allAreas}
           onSelect={setSelectedArea}
-          onClose={() => setShowPicker(false)}
+          onClose={closeAreaPicker}
         />
       )}
 
@@ -313,18 +359,21 @@ export default function MyAreaPulse({ allAreas = [], initialData }) {
 
               {/* Area badge + change */}
               <button
+                ref={areaPickerButtonRef}
                 onClick={() => setShowPicker(true)}
+                aria-haspopup="dialog"
+                aria-expanded={showPicker}
                 className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors"
               >
                 <MapPin className="w-3 h-3 flex-shrink-0" />
                 <span className="truncate max-w-[160px] sm:max-w-xs">{areaLabel}</span>
                 <Pencil className="w-3 h-3 flex-shrink-0 opacity-60" />
-                <span className="text-blue-500 font-semibold">{T("Change", "மாற்று")}</span>
+                <span className="text-blue-700 dark:text-blue-300 font-semibold">{T("Change", "மாற்று")}</span>
               </button>
 
               {/* Live dot */}
               {!loading && (
-                <span className="flex items-center gap-1 text-[11px] text-green-600 dark:text-green-400 font-medium">
+                <span className="flex items-center gap-1 text-[11px] text-green-700 dark:text-green-300 font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
                   {T("Live", "நேரடி")}
                 </span>

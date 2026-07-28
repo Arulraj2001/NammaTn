@@ -525,6 +525,9 @@ const homeMap = await read('src/components/home/InteractiveHomeMap.jsx');
 const navbar = await read('src/components/layout/Navbar.jsx');
 const mobileNav = await read('src/components/layout/MobileNav.jsx');
 const performanceFooter = await read('src/components/layout/Footer.jsx');
+const areaPulse = await read('src/components/home/MyAreaPulse.jsx');
+const accessibilityCookieConsent = await read('src/components/common/CookieConsent.jsx');
+const globalStyles = await read('src/index.css');
 assert.match(homePage, /export const revalidate = 60/, 'Homepage live data must use a bounded server cache');
 assert.match(homePage, /getHomepageData\(\)/, 'Homepage status data must be fetched during server rendering');
 assert.match(homeHero, /enabled:\s*mapEnabled/, 'Interactive map queries must wait until the map is requested');
@@ -535,5 +538,16 @@ assert.doesNotMatch(navbar, /framer-motion/, 'The shared desktop navigation must
 assert.doesNotMatch(mobileNav, /framer-motion/, 'The shared mobile navigation must not load the animation runtime');
 assert.match(navbar, /\/favicon-32x32\.png/, 'The header must use the correctly sized logo asset');
 assert.match(performanceFooter, /\/favicon-32x32\.png/, 'The footer must use the correctly sized logo asset');
+assert.doesNotMatch(performanceFooter, /<h4\b/, 'Footer headings must not skip directly to heading level four');
+assert.match(navbar, /aria-label=\{lang === "en" \? "TA \/ தமிழ்/, 'The language control name must include its visible label');
+assert.match(navbar, /aria-expanded=\{megaOpen\}/, 'The desktop directory must expose its expanded state');
+assert.match(mobileNav, /role="dialog"/, 'The mobile services sheet must expose dialog semantics');
+assert.match(mobileNav, /event\.key === "Escape"/, 'The mobile services sheet must support Escape');
+assert.match(areaPulse, /aria-labelledby="area-picker-heading"/, 'The area picker must expose its dialog title');
+assert.match(areaPulse, /requestAnimationFrame\(\(\) => areaPickerButtonRef\.current\?\.focus\(\)\)/, 'The area picker must restore focus');
+assert.match(accessibilityCookieConsent, /previousFocusRef\.current\?\.focus/, 'Cookie preferences must restore focus after closing');
+assert.match(homeHero, /<details\b/, 'The homepage map must provide a keyboard-accessible list alternative');
+assert.match(globalStyles, /prefers-reduced-motion:\s*reduce/, 'Animations must respect reduced-motion preferences');
+assert.match(globalStyles, /:focus-visible/, 'Interactive elements must have a consistent visible focus indicator');
 
 console.log('SEO and Clarity audit checks passed.');

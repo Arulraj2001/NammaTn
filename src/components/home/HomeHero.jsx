@@ -88,6 +88,16 @@ export default function HomeHero({ userLocation, setUserLocation, initialData })
     ...stays.map(st => ({ ...st, post_type: "stay" })),
     ...scams.map(sc => ({ ...sc, post_type: "scam" })),
   ], [civicPosts, situations, stays, scams]);
+  const accessibleMapItems = useMemo(
+    () => allMapItems.filter(item => item.latitude && item.longitude).slice(0, 10),
+    [allMapItems],
+  );
+  const getMapItemPath = (item) => {
+    if (item.post_type === "stay" || item.stay_type) return "/stay";
+    if (item.post_type === "scam" || item.scam_type) return "/scams";
+    if (item.post_type === "situation" || item.situation_type) return "/situations";
+    return `/post/${item.id}`;
+  };
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) return;
@@ -214,6 +224,29 @@ export default function HomeHero({ userLocation, setUserLocation, initialData })
                 initialArticle={initialData?.featuredArticle}
               />
             </div>
+            <details className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm dark:border-slate-700 dark:bg-slate-900">
+              <summary className="min-h-11 cursor-pointer py-2 font-semibold text-blue-700 dark:text-blue-300">
+                {T("Browse map updates as a list", "வரைபட புதுப்பிப்புகளைப் பட்டியலாகப் பார்க்கவும்")}
+              </summary>
+              {accessibleMapItems.length ? (
+                <ul className="space-y-1 border-t border-slate-100 pb-2 pt-2 dark:border-slate-800">
+                  {accessibleMapItems.map(item => (
+                    <li key={`${item.post_type}-${item.id}`}>
+                      <Link
+                        to={getMapItemPath(item)}
+                        className="block min-h-11 rounded-lg px-2 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-300"
+                      >
+                        {item.title_en || item.title || item.category_name || T("Local civic update", "உள்ளூர் குடிமை புதுப்பிப்பு")}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="border-t border-slate-100 py-3 text-slate-600 dark:border-slate-800 dark:text-slate-400">
+                  {T("No mapped updates are available right now.", "தற்போது வரைபட புதுப்பிப்புகள் எதுவும் இல்லை.")}
+                </p>
+              )}
+            </details>
           </div>
         </div>
       </div>

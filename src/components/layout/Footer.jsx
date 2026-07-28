@@ -187,9 +187,9 @@ export default function Footer() {
           <div className="flex-1 w-full grid grid-cols-3 sm:grid-cols-5 gap-6 lg:gap-8 text-center sm:text-left">
             {FOOTER_COLUMNS.map((col, idx) => (
               <div key={col.en_title} className={ORDER_CLASSES[idx]}>
-                <h4 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
+                <h2 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
                   {T(col.en_title, col.ta_title)}
-                </h4>
+                </h2>
                 <ul className="space-y-2">
                   {col.links
                     .filter((link) => {
@@ -227,23 +227,23 @@ export default function Footer() {
           </p>
           {/* Legal links — required to be visible for AdSense approval */}
           <div className="flex items-center gap-3 flex-wrap justify-center">
-            <Link to="/privacy-policy" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <Link to="/privacy-policy" className="text-xs text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
               {T("Privacy Policy", "தனியுரிமை")}
             </Link>
             <span className="text-slate-300 dark:text-slate-600">|</span>
-            <button type="button" onClick={openCookiePreferences} className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <button type="button" onClick={openCookiePreferences} className="text-xs text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
               {T("Cookie preferences", "குக்கீ விருப்பங்கள்")}
             </button>
             <span className="text-slate-300 dark:text-slate-600">|</span>
-            <Link to="/terms" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <Link to="/terms" className="text-xs text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
               {T("Terms", "விதிமுறைகள்")}
             </Link>
             <span className="text-slate-300 dark:text-slate-600">|</span>
-            <Link to="/about" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <Link to="/about" className="text-xs text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
               {T("About", "பற்றி")}
             </Link>
             <span className="text-slate-300 dark:text-slate-600">|</span>
-            <Link to="/advertising-policy" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <Link to="/advertising-policy" className="text-xs text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
               {T("Advertising Policy", "விளம்பரக் கொள்கை")}
             </Link>
           </div>

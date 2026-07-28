@@ -113,7 +113,7 @@ export default function NearYouStats({ userLocation, initialData }) {
                   <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-tight mb-0.5">
                     {T(stat.label_en, stat.label_ta)}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] text-slate-700 dark:text-slate-300">
                     {stat.count} {T(stat.sub_en, stat.sub_ta)}
                   </p>
                 </div>

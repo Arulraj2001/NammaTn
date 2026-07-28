@@ -25,6 +25,7 @@ export default function CookieConsent() {
   const [mounted, setMounted] = useState(false);
   const acceptRef = useRef(null);
   const dialogRef = useRef(null);
+  const previousFocusRef = useRef(null);
 
   // Helper: bilingual text
   const T = (en, ta) => (lang === 'ta' ? ta : en);
@@ -53,6 +54,7 @@ export default function CookieConsent() {
   // Auto-focus Accept button when banner becomes visible
   useEffect(() => {
     if (visible && acceptRef.current) {
+      previousFocusRef.current = document.activeElement;
       acceptRef.current.focus();
     }
   }, [visible]);
@@ -83,10 +85,11 @@ export default function CookieConsent() {
   const handleReject = () => {
     try { localStorage.setItem(COOKIE_CONSENT_KEY, 'rejected'); } catch {}
     setVisible(false);
+    requestAnimationFrame(() => previousFocusRef.current?.focus?.());
   };
 
   // Don't render on server or after a choice has been recorded
-  if (!mounted) return null;
+  if (!mounted || !visible) return null;
 
   return (
     <div
@@ -112,7 +115,7 @@ export default function CookieConsent() {
           rounded-xl shadow-xl shadow-slate-900/10 dark:shadow-black/40
           px-4 py-3.5 md:px-5 md:py-4
           transition-transform duration-200 ease-out will-change-transform
-          ${visible ? 'translate-y-0' : 'translate-y-[calc(100%+1.5rem)]'}
+          translate-y-0
         `}
       >
         {/* Header row */}
