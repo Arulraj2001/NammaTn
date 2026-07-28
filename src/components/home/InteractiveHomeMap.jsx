@@ -1,18 +1,10 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Link } from "@/lib/router-compat";
-
-// Load Leaflet CSS dynamically (non-render-blocking)
-if (typeof document !== 'undefined' && !document.getElementById('leaflet-css')) {
-  const link = document.createElement('link');
-  link.id = 'leaflet-css';
-  link.rel = 'stylesheet';
-  link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-  document.head.appendChild(link);
-}
 
 // Color markers definitions
 const createIcon = (color) => L.icon({

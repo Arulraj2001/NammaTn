@@ -3,12 +3,10 @@
 // Client Component (uses LazySection which needs IntersectionObserver)
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { useQuery } from "@tanstack/react-query";
 import HomeTopSection from "@/components/home/HomeTopSection";
 import MyAreaPulse from "@/components/home/MyAreaPulse";
 import QuickActions from "@/components/home/QuickActions";
 import LazySection from "@/components/common/LazySection";
-import { getAreas } from "@/services/areas";
 
 // Below-the-fold sections: loaded only when they scroll near the viewport
 const TopCategories = dynamic(() => import("@/components/home/TopCategories"), { ssr: false });
@@ -17,18 +15,12 @@ const PopularAreasAndServices = dynamic(() => import("@/components/home/PopularA
 const HowToUseSection = dynamic(() => import("@/components/home/HowToUseSection"), { ssr: false });
 const CtaBanner = dynamic(() => import("@/components/home/CtaBanner"), { ssr: false });
 
-export default function Home() {
-  const { data: areas = [] } = useQuery({
-    queryKey: ["home-areas-list"],
-    queryFn: () => getAreas(100),
-    staleTime: 300_000,
-  });
-
+export default function Home({ initialData }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Above-the-fold: load eagerly */}
-      <HomeTopSection />
-      <MyAreaPulse allAreas={areas} />
+      <HomeTopSection initialData={initialData} />
+      <MyAreaPulse allAreas={initialData?.areas} initialData={initialData} />
       <QuickActions />
 
       {/* Below-the-fold: defer until near viewport */}
@@ -63,4 +55,4 @@ export default function Home() {
       </LazySection>
     </div>
   );
-}
+}

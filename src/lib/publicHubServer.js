@@ -109,6 +109,114 @@ export async function getActiveAreas(limit = 100) {
   }
 }
 
+export async function getHomepageData() {
+  const supabase = createServerSupabase();
+  const empty = {
+    areas: [],
+    civicPosts: [],
+    pulseStats: null,
+    situations: [],
+    emergencies: [],
+    scams: [],
+    featuredArticle: null,
+  };
+  if (!supabase) return empty;
+
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  try {
+    const results = await Promise.all([
+      supabase
+        .from('area')
+        .select('id,slug,name_en,name_ta,district_name_en')
+        .eq('active', true)
+        .order('name_en', { ascending: true })
+        .limit(100),
+      supabase
+        .from('unified_explore_feed')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_date', { ascending: false })
+        .limit(40),
+      supabase
+        .from('post')
+        .select('id,civic_status,category_slug,post_type,created_date,status')
+        .gte('created_date', since)
+        .order('created_date', { ascending: false })
+        .limit(500),
+      supabase
+        .from('situation_update')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_date', { ascending: false })
+        .limit(20),
+      supabase
+        .from('emergency_post')
+        .select('id,status,created_date,area_slug,latitude,longitude')
+        .eq('status', 'active')
+        .order('created_date', { ascending: false })
+        .limit(100),
+      supabase
+        .from('scam_alert')
+        .select('*')
+        .in('status', ['active', 'verified'])
+        .order('created_date', { ascending: false })
+        .limit(100),
+      supabase
+        .from('tn_today')
+        .select('id,title,slug,subtitle,featured_image,category,author_name,publish_date,reading_time,summary,is_featured')
+        .eq('status', 'published')
+        .eq('is_featured', true)
+        .order('publish_date', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+    const failed = results.find(result => result.error);
+    if (failed) throw failed.error;
+
+    const [areas, feed, pulsePosts, situations, emergencies, scams, featuredArticle] = results;
+    const pulseRows = pulsePosts.data || [];
+    const emergencyRows = emergencies.data || [];
+    const scamRows = scams.data || [];
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const pulseStats = {
+      openIssues: pulseRows.filter(post =>
+        ['reported', 'open', 'pending', 'under_review', 'in_progress'].includes(post.civic_status),
+      ).length,
+      alerts: pulseRows.filter((post) => {
+        const category = (post.category_slug || '').toLowerCase();
+        return category.includes('water') ||
+          category.includes('power') ||
+          category.includes('electricity') ||
+          category.includes('road') ||
+          post.post_type === 'situation';
+      }).length,
+      emergencies: emergencyRows.length,
+      scams: scamRows.length,
+      resolvedToday: pulseRows.filter(post =>
+        ['resolved', 'citizen_verified_fixed', 'closed'].includes(post.civic_status) &&
+        post.created_date &&
+        new Date(post.created_date) >= todayStart,
+      ).length,
+    };
+
+    return {
+      areas: areas.data || [],
+      civicPosts: (feed.data || []).filter(post => post.civic_receipt_id && isPubliclyVisible(post)).slice(0, 20),
+      pulseStats,
+      situations: situations.data || [],
+      emergencies: emergencyRows.slice(0, 10),
+      scams: scamRows.slice(0, 20),
+      featuredArticle: featuredArticle.data || null,
+    };
+  } catch (error) {
+    console.warn('[homepage] Server data fetch failed:', error.message);
+    return empty;
+  }
+}
+
 export async function getLeaderboardPosts(limit = 200) {
   const supabase = createServerSupabase();
   if (!supabase) return [];

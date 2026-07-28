@@ -60,9 +60,9 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://*.clarity.ms",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://hzgrzcablefquddisqkf.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://vizhitn.in https://*.bing.com https://*.bing.net https://*.clarity.ms https://c.bing.com https://unpkg.com https://*.tile.openstreetmap.org https://*.tn.gov.in https://*.gov.in",
+              "img-src 'self' data: blob: https://hzgrzcablefquddisqkf.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://vizhitn.in https://*.bing.com https://*.bing.net https://*.clarity.ms https://c.bing.com https://*.tile.openstreetmap.org https://unpkg.com https://*.tn.gov.in https://*.gov.in",
               "connect-src 'self' https://hzgrzcablefquddisqkf.supabase.co wss://hzgrzcablefquddisqkf.supabase.co https://pagead2.googlesyndication.com https://www.google-analytics.com https://*.clarity.ms https://c.bing.com",
               "frame-src 'self' https://pagead2.googlesyndication.com",
               "object-src 'none'",

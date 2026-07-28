@@ -47,31 +47,39 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
-export default function HomeHero({ userLocation, setUserLocation }) {
+export default function HomeHero({ userLocation, setUserLocation, initialData }) {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
   const [locating, setLocating] = useState(false);
+  const [mapEnabled, setMapEnabled] = useState(false);
 
   const { data: civicPosts = [] } = useQuery({
     queryKey: ["home-civic-posts"],
     queryFn: () => getActiveCivicPosts(20),
     staleTime: 60_000,
+    enabled: mapEnabled,
+    initialData: initialData?.civicPosts,
   });
   const { data: situations = [] } = useQuery({
     queryKey: ["home-situations"],
     queryFn: () => getActiveSituations(20),
     staleTime: 60_000,
+    enabled: mapEnabled,
+    initialData: initialData?.situations,
   });
   const { data: stays = [] } = useQuery({
     queryKey: ["home-stays"],
     queryFn: () => getActiveListings(20),
     staleTime: 60_000,
+    enabled: mapEnabled,
   });
   const { data: scams = [] } = useQuery({
     queryKey: ["home-scams"],
     queryFn: () => getActiveScams(20),
     staleTime: 60_000,
+    enabled: mapEnabled,
+    initialData: initialData?.scams,
   });
 
   const allMapItems = useMemo(() => [
@@ -87,6 +95,7 @@ export default function HomeHero({ userLocation, setUserLocation }) {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         setUserLocation({ latitude: coords.latitude, longitude: coords.longitude });
+        setMapEnabled(true);
         setLocating(false);
       },
       () => setLocating(false)
@@ -176,14 +185,34 @@ export default function HomeHero({ userLocation, setUserLocation }) {
           {/* RIGHT MAP */}
           <div className="w-full lg:flex-1 flex flex-col gap-4">
             <div className="w-full h-[220px] sm:h-[300px] lg:h-[400px] rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative shadow-lg">
-              <InteractiveHomeMap items={allMapItems} userLocation={userLocation} />
+              {mapEnabled ? (
+                <InteractiveHomeMap items={allMapItems} userLocation={userLocation} />
+              ) : (
+                <div className="absolute inset-0 overflow-hidden bg-[#e8efe8] dark:bg-slate-800" aria-label={T("Static Tamil Nadu map preview", "தமிழ்நாடு வரைபட முன்னோட்டம்")}>
+                  <div className="absolute inset-0 opacity-70 dark:opacity-25" style={{ backgroundImage: "linear-gradient(32deg, transparent 45%, rgba(255,255,255,.9) 46%, rgba(255,255,255,.9) 49%, transparent 50%), linear-gradient(118deg, transparent 40%, rgba(148,163,184,.35) 41%, rgba(148,163,184,.35) 43%, transparent 44%)", backgroundSize: "90px 74px, 130px 110px" }} />
+                  <div className="absolute left-[15%] top-[18%] h-24 w-36 rounded-[45%] bg-emerald-100/80 blur-xl dark:bg-emerald-900/30" />
+                  <div className="absolute bottom-[10%] right-[12%] h-28 w-44 rounded-[50%] bg-blue-100/80 blur-xl dark:bg-blue-900/30" />
+                  {[[24, 35], [44, 58], [63, 31], [72, 67], [37, 76]].map(([left, top], index) => (
+                    <MapPin key={index} aria-hidden="true" className="absolute h-6 w-6 -translate-x-1/2 -translate-y-full fill-blue-600 text-white drop-shadow-md" style={{ left: `${left}%`, top: `${top}%` }} />
+                  ))}
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/10 p-6 dark:bg-slate-950/10">
+                    <button type="button" onClick={() => setMapEnabled(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-blue-200 bg-white px-5 py-2.5 text-sm font-bold text-blue-700 shadow-lg transition-colors hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-600 dark:bg-slate-900 dark:text-blue-300 dark:hover:bg-slate-800">
+                      <MapPin className="h-4 w-4" />
+                      {T("Load interactive map", "ஊடாடும் வரைபடத்தை ஏற்றவும்")}
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="absolute top-3 right-3 z-20">
                 <Link to="/explore"
                   className="flex items-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-all">
                   {T("View full map", "முழு வரைபடம்")} <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
-              <TnTodayCard className="absolute bottom-3 right-3 z-20" />
+              <TnTodayCard
+                className="absolute bottom-3 right-3 z-20 hidden sm:block"
+                initialArticle={initialData?.featuredArticle}
+              />
             </div>
           </div>
         </div>

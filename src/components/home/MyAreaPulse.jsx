@@ -161,7 +161,7 @@ function AreaPickerModal({ areas, onSelect, onClose }) {
 /* ══════════════════════════════════════════════════════
    MAIN COMPONENT
 ══════════════════════════════════════════════════════ */
-export default function MyAreaPulse({ allAreas = [] }) {
+export default function MyAreaPulse({ allAreas = [], initialData }) {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
 
@@ -186,28 +186,32 @@ export default function MyAreaPulse({ allAreas = [] }) {
     queryKey: ["area-pulse-posts", areaSlug],
     queryFn: () => fetchAreaPosts(areaSlug),
     staleTime: 60_000,
+    enabled: Boolean(areaSlug),
   });
 
   const { data: emergencies = [], isLoading: emergLoading } = useQuery({
     queryKey: ["area-pulse-emergencies", areaSlug],
     queryFn: () => fetchAreaEmergencies(areaSlug),
     staleTime: 60_000,
+    enabled: Boolean(areaSlug),
   });
 
   const { data: scams = [], isLoading: scamsLoading } = useQuery({
     queryKey: ["area-pulse-scams", areaSlug],
     queryFn: () => fetchAreaScams(areaSlug),
     staleTime: 60_000,
+    enabled: Boolean(areaSlug),
   });
 
-  const loading = postsLoading || emergLoading || scamsLoading;
+  const loading = Boolean(areaSlug) && (postsLoading || emergLoading || scamsLoading);
+  const initialStats = !areaSlug ? initialData?.pulseStats : null;
 
   /* ── Compute pulse stats from real data ─────────── */
-  const openIssues = posts.filter((p) =>
-    ["reported", "open", "pending", "under_review", "in_progress"].includes(p.status)
+  const openIssues = initialStats?.openIssues ?? posts.filter((p) =>
+    ["reported", "open", "pending", "under_review", "in_progress"].includes(p.civic_status)
   ).length;
 
-  const alerts = posts.filter((p) => {
+  const alerts = initialStats?.alerts ?? posts.filter((p) => {
     const cat = (p.category_slug || "").toLowerCase();
     return (
       cat.includes("water") ||
@@ -218,12 +222,12 @@ export default function MyAreaPulse({ allAreas = [] }) {
     );
   }).length;
 
-  const emergency = emergencies.length;
+  const emergency = initialStats?.emergencies ?? emergencies.length;
 
-  const scamWarnings = scams.length;
+  const scamWarnings = initialStats?.scams ?? scams.length;
 
-  const resolvedToday = posts.filter((p) => {
-    const isResolved = ["resolved", "citizen_verified_fixed", "closed"].includes(p.status);
+  const resolvedToday = initialStats?.resolvedToday ?? posts.filter((p) => {
+    const isResolved = ["resolved", "citizen_verified_fixed", "closed"].includes(p.civic_status);
     const isToday = p.created_date && new Date(p.created_date) >= TODAY_START;
     return isResolved && isToday;
   }).length;

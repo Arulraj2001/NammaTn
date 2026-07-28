@@ -22,7 +22,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
-export default function NearYouStats({ userLocation }) {
+export default function NearYouStats({ userLocation, initialData }) {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
@@ -30,21 +30,25 @@ export default function NearYouStats({ userLocation }) {
     queryKey: ["home-civic-posts"],
     queryFn: () => getActiveCivicPosts(20),
     staleTime: 60_000,
+    initialData: initialData?.civicPosts,
   });
   const { data: situations = [], isLoading: l2 } = useQuery({
     queryKey: ["home-situations"],
     queryFn: () => getActiveSituations(20),
     staleTime: 60_000,
+    initialData: initialData?.situations,
   });
   const { data: scams = [], isLoading: l3 } = useQuery({
     queryKey: ["home-scams"],
     queryFn: () => getActiveScams(20),
     staleTime: 60_000,
+    initialData: initialData?.scams?.slice(0, 20),
   });
   const { data: emergencies = [], isLoading: l4 } = useQuery({
     queryKey: ["home-emergencies"],
     queryFn: () => getActiveEmergencies(10),
     staleTime: 60_000,
+    initialData: initialData?.emergencies?.slice(0, 10),
   });
 
   const loading = l1 || l2 || l3 || l4;

@@ -141,8 +141,8 @@ export default function Footer() {
           <div className="flex-shrink-0 w-full lg:w-64 flex flex-col items-center lg:items-start text-center lg:text-left">
             <Link to="/" className="inline-flex items-center gap-2 mb-2">
               <Image
-                src={settings.site_logo_url || "/apple-touch-icon.png"}
-                alt="VizhiTN"
+                src={settings.site_logo_url || "/favicon-32x32.png"}
+                alt=""
                 width={28}
                 height={28}
                 className="rounded-lg object-contain flex-shrink-0"

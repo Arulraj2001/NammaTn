@@ -1,6 +1,9 @@
 import React, { Suspense } from 'react';
 import Home from '@/views/Home';
 import { HomeCityLinks, AllCategoryLinks } from '@/components/seo/InternalLinks';
+import { getHomepageData } from '@/lib/publicHubServer';
+
+export const revalidate = 60;
 
 // Title deliberately excludes "| VizhiTN" — the root layout template adds it.
 // Result: "Know what's happening in your area right now | VizhiTN"
@@ -46,11 +49,13 @@ function HomeSkeleton() {
   );
 }
 
-export default function Page() {
+export default async function Page() {
+  const initialData = await getHomepageData();
+
   return (
     <>
       <Suspense fallback={<HomeSkeleton />}>
-        <Home />
+        <Home initialData={initialData} />
       </Suspense>
 
       <section className="border-t border-slate-200 bg-white py-10 dark:border-slate-800 dark:bg-slate-900">

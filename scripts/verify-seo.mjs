@@ -519,4 +519,21 @@ const postServer = await read('src/lib/postServer.js');
 assert.doesNotMatch(postServer, /catch \(error\)[\s\S]*?return empty;/, 'Post lookup failures must not be misclassified as missing content');
 assert.match(tnTodayServerDetail, /catch \(error\)[\s\S]*?throw error;/, 'TN Today lookup failures must remain server errors, not false 404s');
 
+const homePage = await read('src/app/(user)/page.jsx');
+const homeHero = await read('src/components/home/HomeHero.jsx');
+const homeMap = await read('src/components/home/InteractiveHomeMap.jsx');
+const navbar = await read('src/components/layout/Navbar.jsx');
+const mobileNav = await read('src/components/layout/MobileNav.jsx');
+const performanceFooter = await read('src/components/layout/Footer.jsx');
+assert.match(homePage, /export const revalidate = 60/, 'Homepage live data must use a bounded server cache');
+assert.match(homePage, /getHomepageData\(\)/, 'Homepage status data must be fetched during server rendering');
+assert.match(homeHero, /enabled:\s*mapEnabled/, 'Interactive map queries must wait until the map is requested');
+assert.match(homeHero, /Load interactive map/, 'The homepage must provide a lightweight map preview');
+assert.match(homeMap, /import 'leaflet\/dist\/leaflet\.css'/, 'Leaflet styles must be bundled locally');
+assert.doesNotMatch(homeMap, /unpkg\.com/, 'The map must not load runtime CSS from a third party');
+assert.doesNotMatch(navbar, /framer-motion/, 'The shared desktop navigation must not load the animation runtime');
+assert.doesNotMatch(mobileNav, /framer-motion/, 'The shared mobile navigation must not load the animation runtime');
+assert.match(navbar, /\/favicon-32x32\.png/, 'The header must use the correctly sized logo asset');
+assert.match(performanceFooter, /\/favicon-32x32\.png/, 'The footer must use the correctly sized logo asset');
+
 console.log('SEO and Clarity audit checks passed.');

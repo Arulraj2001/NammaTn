@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "@/context/LanguageContext";
-import { motion, AnimatePresence } from "framer-motion";
 import UserMenu from "@/components/auth/UserMenu";
 import { useQuery } from "@tanstack/react-query";
 import { getSettingsMap } from "@/services/admin/settings";
@@ -169,7 +168,7 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <img src={settings.site_logo_url || "/apple-touch-icon.png"} alt="VizhiTN" className="w-8 h-8 rounded-lg object-contain" />
+              <img src={settings.site_logo_url || "/favicon-32x32.png"} alt="" width="32" height="32" className="w-8 h-8 rounded-lg object-contain" />
               <div className="hidden sm:block">
                 <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">VizhiTN</span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-none block">
@@ -208,14 +207,9 @@ export default function Navbar() {
                 </button>
 
 
-                <AnimatePresence>
-                  {megaOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.97 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 mt-2 w-[680px] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 z-50 scrollbar-thin"
+                {megaOpen && (
+                    <div
+                      className="absolute top-full left-0 mt-2 w-[680px] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 z-50 scrollbar-thin animate-in fade-in slide-in-from-top-2 duration-150"
                     >
                       <div className="grid grid-cols-2 gap-6">
                         {MEGA_GROUPS.map((group, gi) => (
@@ -264,9 +258,8 @@ export default function Navbar() {
                           </div>
                         ))}
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    </div>
+                )}
               </div>
             </nav>
 
