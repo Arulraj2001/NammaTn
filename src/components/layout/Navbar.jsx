@@ -246,7 +246,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.97 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 mt-2 w-[680px] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 z-50 scrollbar-thin"
+                      className="absolute top-full right-0 mt-2 w-[680px] max-w-[calc(100vw-2rem)] max-h-[80vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-2 border-slate-300 dark:border-slate-700 p-5 z-50 scrollbar-thin"
                     >
                       <div className="grid grid-cols-2 gap-6">
                         {MEGA_GROUPS.map((group, gi) => (
