@@ -191,20 +191,20 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
           <Link to="/tn-today"
             className={cn(
-              "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border",
+              "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border-2",
               !currentCategory
                 ? "bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-slate-900 dark:border-white shadow-sm"
-                : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400"
+                : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:border-blue-500"
             )}>
-            <Tag className="w-3 h-3" /> All Stories
+            <Tag className="w-3.5 h-3.5 text-blue-500" /> All Stories
           </Link>
-          {CATEGORIES.map(cat => (
+          {CATEGORIES.filter(cat => cat.value).map(cat => (
             <Link key={cat.value} to={`/tn-today/category/${cat.value}`}
               className={cn(
-                "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border",
+                "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border-2",
                 currentCategory === cat.value
                   ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400"
+                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:border-blue-500"
               )}>
               <span>{cat.emoji}</span>
               <span>{cat.label}</span>
