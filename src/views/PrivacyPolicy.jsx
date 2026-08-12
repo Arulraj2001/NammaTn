@@ -165,8 +165,8 @@ export default function PrivacyPolicy() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
 
         {/* Quick nav */}
-        <nav className="mb-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl p-5 border border-indigo-100 dark:border-indigo-850">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 mb-3">
+        <nav className="mb-10 bg-indigo-50/80 dark:bg-indigo-950/40 rounded-2xl p-5 border-2 border-indigo-300 dark:border-indigo-800 shadow-sm">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 mb-3">
             {T('Table of Contents', 'உள்ளடக்க அட்டவணை')}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
@@ -174,7 +174,7 @@ export default function PrivacyPolicy() {
               <a
                 key={s.id}
                 href={`#${s.id}`}
-                className="flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="flex items-center gap-1.5 text-xs text-indigo-700 dark:text-indigo-300 font-bold hover:underline"
               >
                 <ChevronRight className="w-3 h-3 flex-shrink-0" />
                 {i + 1}. {T(s.en, s.ta)}

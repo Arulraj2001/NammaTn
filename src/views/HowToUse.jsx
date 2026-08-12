@@ -56,7 +56,7 @@ export default function HowToUse() {
         className="space-y-8"
       >
         {/* 1. Interactive Map */}
-        <motion.div variants={fadeUp} className="p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm space-y-4">
+        <motion.div variants={fadeUp} className="p-6 sm:p-8 rounded-2xl border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 bg-white dark:bg-slate-900 shadow-sm transition-all space-y-4">
           <div className="flex items-center gap-3.5 border-b border-slate-100 dark:border-slate-800 pb-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
               <Map className="w-5. h-5" />

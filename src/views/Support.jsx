@@ -254,7 +254,7 @@ export default function Support() {
         {/* Two Column Layout (UPI Details + Why Support) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: UPI Code and QR */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm flex flex-col justify-between">
+          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border-2 border-slate-300 dark:border-slate-700 p-6 shadow-sm flex flex-col justify-between">
             <div>
               <h2 className="font-bold text-slate-950 dark:text-white mb-1 text-base flex items-center gap-2">
                 <svg className="w-5 h-5 text-emerald-500 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

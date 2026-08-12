@@ -34,8 +34,19 @@ export const getFeaturedTnToday = async () => {
   return data;
 };
 
-/** Get latest published articles for archive */
-export const getPublishedTnToday = async ({ limit = 20, offset = 0, category = null } = {}) => {
+export const getPublishedTnToday = async (arg = null) => {
+  let limit = 50;
+  let offset = 0;
+  let category = null;
+
+  if (typeof arg === "string") {
+    category = arg;
+  } else if (arg && typeof arg === "object") {
+    limit = arg.limit || 50;
+    offset = arg.offset || 0;
+    category = arg.category || null;
+  }
+
   let q = supabase
     .from(TABLE)
     .select("id,title,slug,subtitle,featured_image,category,author_name,publish_date,reading_time,summary,is_featured,view_count")

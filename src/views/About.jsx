@@ -167,7 +167,7 @@ export default function About() {
               return (
                 <div
                   key={i}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:border-indigo-200 dark:hover:border-indigo-800 transition-colors space-y-2"
+                  className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-2xl p-5 hover:shadow-md transition-all space-y-2"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-9 h-9 rounded-xl ${f.color} flex items-center justify-center flex-shrink-0`}>

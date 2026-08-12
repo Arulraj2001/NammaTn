@@ -141,11 +141,15 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
     staleTime: 60_000,
   });
 
+  const [visibleCount, setVisibleCount] = useState(10);
+
   const filtered = articles.filter(a => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return a.title?.toLowerCase().includes(q) || a.subtitle?.toLowerCase().includes(q);
   });
+
+  const displayedArticles = filtered.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
@@ -221,10 +225,25 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
             ))}
           </div>
         ) : filtered.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filtered.map(article => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {displayedArticles.map(article => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+
+            {/* Load More Pagination */}
+            {filtered.length > visibleCount && (
+              <div className="flex justify-center pt-4">
+                <button
+                  onClick={() => setVisibleCount(prev => prev + 10)}
+                  className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 text-slate-800 dark:text-slate-200 font-extrabold px-6 py-3 rounded-2xl shadow-sm hover:shadow-md transition-all text-xs flex items-center gap-2"
+                >
+                  <span>Load More Stories ({filtered.length - visibleCount} remaining)</span>
+                  <ArrowRight className="w-4 h-4 text-blue-500" />
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <EmptyState categoryLabel={activeCategory?.label} />

@@ -40,7 +40,7 @@ export default function Contact() {
         {TOPICS.map((t) => {
           const Icon = t.icon;
           return (
-            <div key={t.en} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-center">
+            <div key={t.en} className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-4 text-center hover:shadow-md transition-all">
               <div className={`w-10 h-10 rounded-xl ${t.color} flex items-center justify-center mx-auto mb-2`}>
                 <Icon className="w-5 h-5" />
               </div>
