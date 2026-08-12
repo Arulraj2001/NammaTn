@@ -101,7 +101,7 @@ export default function TnTodayCard({ className }) {
     <Link 
       to={`/tn-today/${article.slug}`}
       className={cn(
-        "block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-600 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl hover:-translate-y-0.5 transition-all duration-300 w-[240px] group relative text-left z-20",
+        "block bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 border-l-[6px] border-l-blue-600 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300 w-[240px] group relative text-left z-20",
         className
       )}
     >

@@ -237,7 +237,7 @@ export default function Footer() {
               {T("About", "பற்றி")}
             </Link>
             <span className="text-slate-300 dark:text-slate-600">|</span>
-            <a href="mailto:advertise@vizhitn.in" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <a href={`mailto:${settings.contact_email || settings.support_email || "contact@vizhitn.in"}`} className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               {T("Advertise", "விளம்பரம்")}
             </a>
           </div>

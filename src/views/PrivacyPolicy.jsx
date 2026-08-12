@@ -4,6 +4,8 @@ import { Link } from "@/lib/router-compat";
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Shield, Mail, ExternalLink, ChevronRight } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { getSettingsMap } from '@/services/admin/settings';
 
 const SECTIONS = [
   {
@@ -119,6 +121,14 @@ export default function PrivacyPolicy() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === 'ta' ? ta : en;
 
+  const { data: settings = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSettingsMap,
+    staleTime: 60_000,
+  });
+
+  const contactEmail = settings.support_email || settings.contact_email || "support@vizhitn.in";
+
   usePageMeta({
     title: T('Privacy Policy | VizhiTN', 'தனியுரிமைக் கொள்கை | VizhiTN'),
     description: T(
@@ -229,10 +239,10 @@ export default function PrivacyPolicy() {
           </p>
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <a
-              href="mailto:support@vizhitn.in"
+              href={`mailto:${contactEmail}`}
               className="bg-white text-indigo-700 font-semibold px-5 py-2 rounded-xl text-sm hover:bg-indigo-50 transition-colors"
             >
-              support@vizhitn.in
+              {contactEmail}
             </a>
             <Link
               to="/contact"

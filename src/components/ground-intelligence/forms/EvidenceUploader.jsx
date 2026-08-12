@@ -205,7 +205,6 @@ export default function EvidenceUploader({ files = [], onChange }) {
                   </div>
                 ) : (
                   /* Image thumbnail */
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={previewUrl}
                     alt={file.name}

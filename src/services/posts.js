@@ -1,5 +1,6 @@
 import { supabase } from "@/api/supabaseClient";
 import { isPubliclyVisible } from "@/lib/visibility";
+import { notifySearchEngines } from "@/lib/seo/instantIndexing";
 
 const normalizePostPageArgs = (limitOrOptions = 20, sort = "-created_date", cursor = null) => {
   if (typeof limitOrOptions === "object" && limitOrOptions !== null) {
@@ -57,6 +58,18 @@ export const createPost = async (data) => {
     .select()
     .single();
   if (error) throw error;
+
+  // Trigger search engine pings for parent hub URLs activated by this post
+  if (created && created.status === "active") {
+    const urlsToNotify = ["/sitemap.xml"];
+    if (created.district_slug) urlsToNotify.push(`/${created.district_slug}`);
+    if (created.district_slug && created.category_slug) {
+      urlsToNotify.push(`/${created.district_slug}/${created.category_slug}`);
+    }
+    if (created.area_slug) urlsToNotify.push(`/area/${created.area_slug}`);
+    notifySearchEngines(urlsToNotify);
+  }
+
   return created;
 };
 

@@ -15,7 +15,7 @@ function FeaturedCard({ article }) {
   const cat = CATEGORIES.find(c => c.value === article.category);
   return (
     <Link to={`/tn-today/${article.slug}`}
-      className="block relative overflow-hidden rounded-2xl group shadow-lg hover:shadow-xl transition-shadow">
+      className="block relative overflow-hidden rounded-2xl group shadow-lg hover:shadow-xl transition-shadow border-2 border-slate-300 dark:border-slate-700">
       {article.featured_image ? (
         <>
           <img src={article.featured_image} alt={article.title}
@@ -28,11 +28,11 @@ function FeaturedCard({ article }) {
 
       <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-600 text-white uppercase tracking-wide">
+          <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-blue-600 text-white uppercase tracking-wide shadow-sm">
             📰 TN TODAY · TODAY'S STORY
           </span>
           {cat?.value && (
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/20 text-white border border-white/30 uppercase">
+            <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-white/20 text-white border border-white/30 uppercase">
               {cat.emoji} {cat.label}
             </span>
           )}
@@ -41,14 +41,14 @@ function FeaturedCard({ article }) {
           {article.title}
         </h2>
         {article.subtitle && (
-          <p className="text-sm text-white/80 line-clamp-2 mb-3">{article.subtitle}</p>
+          <p className="text-sm text-white/90 font-medium line-clamp-2 mb-3">{article.subtitle}</p>
         )}
-        <div className="flex items-center gap-3 text-white/70 text-xs">
-          <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />
+        <div className="flex items-center gap-3 text-white/80 text-xs font-bold">
+          <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-blue-300" />
             {article.publish_date ? format(new Date(article.publish_date), "d MMM yyyy") : "Today"}
           </span>
-          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{article.reading_time || 5} min read</span>
-          <span className="ml-auto flex items-center gap-1 text-white font-semibold text-sm group-hover:gap-2 transition-all">
+          <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-amber-300" />{article.reading_time || 5} min read</span>
+          <span className="ml-auto flex items-center gap-1 text-white font-extrabold text-sm group-hover:gap-2 transition-all">
             Read Full Story <ArrowRight className="w-4 h-4" />
           </span>
         </div>
@@ -62,37 +62,37 @@ function ArticleCard({ article }) {
   const cat = CATEGORIES.find(c => c.value === article.category);
   return (
     <Link to={`/tn-today/${article.slug}`}
-      className="flex gap-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm transition-all group">
+      className="flex gap-4 bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all duration-200 group">
       {article.featured_image ? (
         <img src={article.featured_image} alt={article.title}
-          className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0 group-hover:opacity-90 transition-opacity" />
+          className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0 group-hover:scale-105 transition-transform duration-300" />
       ) : (
         <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-900/60 flex items-center justify-center flex-shrink-0">
-          <BookOpen className="w-7 h-7 text-blue-400" />
+          <BookOpen className="w-7 h-7 text-blue-500" />
         </div>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
           {cat?.value && (
-            <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full border", cat.color)}>
+            <span className={cn("text-xs font-extrabold px-2.5 py-0.5 rounded-full border shadow-2xs", cat.color)}>
               {cat.emoji} {cat.label}
             </span>
           )}
         </div>
-        <h3 className="font-bold text-slate-900 dark:text-white text-sm leading-snug group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-1">
+        <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-1.5">
           {article.title}
         </h3>
         {article.subtitle && (
-          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-2">{article.subtitle}</p>
+          <p className="text-xs text-slate-700 dark:text-slate-300 line-clamp-2 leading-relaxed mb-2 font-medium">{article.subtitle}</p>
         )}
-        <div className="flex items-center gap-3 text-xs text-slate-400">
+        <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-bold">
           {article.publish_date && (
-            <span className="flex items-center gap-0.5">
-              <Calendar className="w-3 h-3" />{format(new Date(article.publish_date), "d MMM yyyy")}
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5 text-blue-500" />{format(new Date(article.publish_date), "d MMM yyyy")}
             </span>
           )}
-          <span className="flex items-center gap-0.5">
-            <Clock className="w-3 h-3" />{article.reading_time || 5} min
+          <span className="flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5 text-amber-500" />{article.reading_time || 5} min
           </span>
         </div>
       </div>
@@ -106,168 +106,130 @@ function EmptyState({ categoryLabel }) {
     <div className="text-center py-16 px-4">
       <BookOpen className="w-14 h-14 text-slate-300 mx-auto mb-4" />
       <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">
-        {categoryLabel ? `No stories in ${categoryLabel} yet` : "No stories published yet"}
+        No articles published yet
       </h3>
-      <p className="text-slate-500 text-sm max-w-sm mx-auto leading-relaxed">
-        TN Today publishes one important Tamil Nadu story every day. Check back tomorrow for the next headline.
+      <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+        {categoryLabel ? `No articles under "${categoryLabel}".` : "Check back soon for fresh community journalism and guides."}
       </p>
     </div>
   );
 }
 
-// ─── Main Archive Page ────────────────────────────────────────────────────────
-export default function TnToday({
-  initialArticles = [],
-  initialFeatured = null,
-  initialCategory = '',
-}) {
-  const { category: routeCategory } = useParams();
-  const [activeCategory, setActiveCategory] = useState(routeCategory || initialCategory || "");
-  const [searchQ, setSearchQ] = useState("");
+export default function TnToday({ initialArticles = [], initialFeatured = null }) {
+  const { category: currentCategory } = useParams();
+  const [search, setSearch] = useState("");
 
-  const cat = CATEGORIES.find(c => c.value === activeCategory);
+  const activeCategory = CATEGORIES.find(c => c.value === currentCategory);
 
   usePageMeta({
-    title: activeCategory
-      ? `TN Today – ${cat?.label || ""} Stories | VizhiTN`
-      : "TN Today – Tamil Nadu's Daily Headline | VizhiTN",
-    description: "Read Tamil Nadu's most important civic stories, curated daily by the VizhiTN editorial team.",
+    title: activeCategory ? `${activeCategory.label} | TN Today` : "TN Today - Tamil Nadu Community News & Journalism",
+    description: "Daily verified community news, civic updates, scheme breakdowns, and deep dives across Tamil Nadu.",
+    canonical: "https://www.vizhitn.in/tn-today",
   });
 
   const { data: featured } = useQuery({
-    queryKey: ["tn-today-featured", activeCategory],
-    queryFn: async () => {
-      if (!activeCategory) return getFeaturedTnToday();
-      const [latestInCategory] = await getPublishedTnToday({
-        limit: 1,
-        category: activeCategory,
-      });
-      return latestInCategory || null;
-    },
-    initialData: activeCategory === initialCategory
-      ? (initialFeatured || undefined)
-      : undefined,
-    staleTime: 300_000,
+    queryKey: ["tn-today-featured"],
+    queryFn: getFeaturedTnToday,
+    initialData: initialFeatured,
+    staleTime: 60_000,
   });
 
   const { data: articles = [], isLoading } = useQuery({
-    queryKey: ["tn-today-archive", activeCategory],
-    queryFn: () => getPublishedTnToday({ limit: 50, category: activeCategory || null }),
-    initialData: activeCategory === initialCategory ? initialArticles : undefined,
-    staleTime: 300_000,
+    queryKey: ["tn-today-articles", currentCategory],
+    queryFn: () => getPublishedTnToday(currentCategory),
+    initialData: !currentCategory ? initialArticles : undefined,
+    staleTime: 60_000,
   });
 
   const filtered = articles.filter(a => {
-    if (!searchQ) return true;
-    return (
-      a.title?.toLowerCase().includes(searchQ.toLowerCase()) ||
-      a.subtitle?.toLowerCase().includes(searchQ.toLowerCase())
-    );
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return a.title?.toLowerCase().includes(q) || a.subtitle?.toLowerCase().includes(q);
   });
 
-  // Latest story for featured if no explicit featured set
-  const featuredArticle = featured || articles[0];
-  const restArticles = filtered.filter(a => a.id !== featuredArticle?.id);
-
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* ── Editorial header ── */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-        <div className="max-w-5xl mx-auto px-4 py-8">
-          <div className="flex items-start justify-between gap-6 flex-wrap">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-blue-700 flex items-center justify-center">
-                  <span className="text-white font-black text-xs">TN</span>
-                </div>
-                <span className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest">TN TODAY</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
-                Tamil Nadu's Daily Headline
-              </h1>
-              <p className="text-slate-500 dark:text-slate-400 mt-1.5 text-sm">
-                One story a day. What matters most in Tamil Nadu, explained for citizens.
-              </p>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+
+        {/* ── Page Header ────────────────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-2">
+              <BookOpen className="w-3.5 h-3.5" />
+              VizhiTN Public Journalism
             </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Published daily at 8:00 AM IST
-              </div>
-              <p className="text-xs text-slate-400">{articles.length} stories published</p>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+              {activeCategory ? `${activeCategory.emoji} ${activeCategory.label}` : "📰 TN Today"}
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
+              Verified community news, citizen stories, and public service journalism for Tamil Nadu.
+            </p>
+          </div>
+
+          {/* Search bar */}
+          <div className="relative w-full sm:w-72">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+            <Input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search articles..."
+              className="pl-9 pr-8 py-2 rounded-xl text-sm"
+            />
+            {search && (
+              <button onClick={() => setSearch("")} className="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
-      </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-6">
-        {/* ── Category filter ── */}
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-hide">
-          {CATEGORIES.map(c => (
-            <button key={c.value} onClick={() => setActiveCategory(c.value)}
+        {/* ── Category filter pills ───────────────────────────────────────────── */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <Link to="/tn-today"
+            className={cn(
+              "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border",
+              !currentCategory
+                ? "bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-slate-900 dark:border-white shadow-sm"
+                : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400"
+            )}>
+            <Tag className="w-3 h-3" /> All Stories
+          </Link>
+          {CATEGORIES.map(cat => (
+            <Link key={cat.value} to={`/tn-today/category/${cat.value}`}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all flex-shrink-0",
-                activeCategory === c.value
+                "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border",
+                currentCategory === cat.value
                   ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-300"
+                  : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400"
               )}>
-              {c.emoji} {c.label}
-            </button>
+              <span>{cat.emoji}</span>
+              <span>{cat.label}</span>
+            </Link>
           ))}
         </div>
 
-        {/* ── Search ── */}
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input value={searchQ} onChange={e => setSearchQ(e.target.value)}
-            placeholder="Search TN Today stories..." className="pl-9 text-sm" />
-          {searchQ && (
-            <button onClick={() => setSearchQ("")} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <X className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-          )}
-        </div>
-
-        {isLoading ? (
-          <div className="space-y-4">
-            <div className="h-[380px] bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse" />
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-28 bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse" />
-            ))}
-          </div>
-        ) : filtered.length === 0 ? (
-          <EmptyState categoryLabel={cat?.label} />
-        ) : (
-          <div className="space-y-4">
-            {/* Featured hero card */}
-            {!searchQ && !activeCategory && featuredArticle && (
-              <FeaturedCard article={featuredArticle} />
-            )}
-
-            {/* Article list */}
-            {restArticles.map(a => <ArticleCard key={a.id} article={a} />)}
-
-            {/* Category empty fallback */}
-            {restArticles.length === 0 && (activeCategory || searchQ) && (
-              <EmptyState categoryLabel={cat?.label} />
-            )}
-          </div>
+        {/* ── Featured Hero (only on main /tn-today page when no search filter) ── */}
+        {!currentCategory && !search && featured && (
+          <FeaturedCard article={featured} />
         )}
 
-        {/* Archive navigation */}
-        <div className="mt-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
-          <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3 flex items-center gap-2">
-            <Tag className="w-4 h-4 text-blue-500" /> Browse by Category
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.filter(c => c.value).map(c => (
-              <button key={c.value} onClick={() => setActiveCategory(c.value)}
-                className={cn("flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all", c.color || "text-slate-600 bg-slate-50 border-slate-200")}>
-                {c.emoji} {c.label}
-              </button>
+        {/* ── Articles Grid ───────────────────────────────────────────────────── */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="h-28 bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse" />
             ))}
           </div>
-        </div>
+        ) : filtered.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filtered.map(article => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState categoryLabel={activeCategory?.label} />
+        )}
+
       </div>
     </div>
   );

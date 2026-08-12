@@ -1,0 +1,26 @@
+Priority,Timeframe,Area,Action,Impact,Owner,Done
+P0,Today,Technical SEO,"Correct TN Today canonical, Open Graph, share, and schema URLs",Stops ranking equity leaking to alternate domains,Engineering,FALSE
+P0,Today,Technical SEO,"Return real 404/410 for nonexistent dynamic routes",Eliminates soft-404 behavior,Engineering,FALSE
+P0,Today,AdSense,"Remove placeholder publisher ID from ads.txt",Removes obvious incomplete configuration,Engineering,FALSE
+P0,Today,Performance,"Fix invalid Clarity regular expression",Restores clean consent/analytics execution,Engineering,FALSE
+P0,Today,Metadata,"Remove duplicate | VizhiTN brand suffix",Improves SERP titles and trust,Engineering,FALSE
+P1,This week,Indexing,"Rebuild sitemap from intentional canonical indexable inventory",Improves discovery and canonical consistency,SEO/Engineering,FALSE
+P1,This week,Indexing,"Resolve 134 indexable internal pages missing from sitemap",Reduces indexation gaps,SEO/Engineering,FALSE
+P1,This week,Rendering,"Server-render H1 and core content on client-heavy templates",Improves crawlability and resilience,Engineering,FALSE
+P1,This week,Content,"Rewrite 163 overlong meta descriptions",Improves snippet clarity,SEO/Editorial,FALSE
+P1,This week,Content,"Give generic hubs unique content and metadata or noindex them",Reduces low-value inventory risk,Product/Editorial,FALSE
+P1,This week,URLs,"Standardize trailing-slash policy",Reduces duplicate crawl paths,Engineering,FALSE
+P1,This week,Mobile,"Remove duplicate viewport meta and reduce cookie obstruction",Improves mobile UX,Engineering/Design,FALSE
+P1,Days 8-30,Performance,"Defer or replace the live homepage map",Major LCP and CLS improvement,Engineering,FALSE
+P1,Days 8-30,Performance,"Consolidate homepage Supabase requests and cache server-side",Reduces main-thread and network work,Engineering,FALSE
+P1,Days 8-30,Trust,"Publish editorial, verification, corrections, moderation, ownership, and author pages",Improves E-E-A-T and AdSense readiness,Editorial/Legal,FALSE
+P1,Days 8-30,Content,"Noindex or consolidate zero-report templated pages",Reduces scaled low-value content risk,SEO/Editorial,FALSE
+P1,Days 8-30,UGC Safety,"Implement rate limiting, bot defense, upload scanning, EXIF stripping, and moderation",Reduces abuse and policy exposure,Security/Engineering,FALSE
+P2,Days 31-60,Local SEO,"Launch verified RWA/college contributor program",Builds local evidence and citations,Partnerships,FALSE
+P2,Days 31-60,Content,"Publish Tamil content with human editorial review and hreflang",Expands addressable audience,Editorial/Engineering,FALSE
+P2,Days 31-60,CRO,"Add outcome proof and documented resolution case studies",Improves trust and conversion,Editorial/Product,FALSE
+P2,Days 31-60,Performance,"Add real-user LCP INP CLS monitoring by template",Enables field-based optimization,Engineering,FALSE
+P2,Days 61-90,Digital PR,"Publish Tamil Nadu Civic Pulse report and pitch local media",Builds authority and backlinks,PR/Data,FALSE
+P2,Days 61-90,Search Console,"Review indexation and query performance by template",Directs pruning and expansion decisions,SEO,FALSE
+P2,Days 61-90,Quality,"Re-run crawl Lighthouse schema and accessibility tests",Verifies remediation,SEO/Engineering,FALSE
+P3,After day 90,AdSense,"Apply only after low-value, identity, UGC, consent, and placeholder issues are resolved",Improves approval probability,Publisher,FALSE

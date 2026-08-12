@@ -1,10 +1,22 @@
 import { supabase } from "@/api/supabaseClient";
+import { notifySearchEngines } from "@/lib/seo/instantIndexing";
 
 const TABLE = "tn_today";
 
 // Canonicals are derived from the published VizhiTN slug. Never persist an
 // editorial override that could transfer ownership to another host or slug.
 const withCanonicalOwnership = (payload) => ({ ...payload, canonical_url: null });
+
+// Helper to notify search engines of published article URLs
+const triggerArticleIndexing = (article) => {
+  if (article && article.status === "published" && article.slug) {
+    notifySearchEngines([
+      `/tn-today/${article.slug}`,
+      `/tn-today/category/${article.category || "general"}`,
+      "/sitemap.xml",
+    ]);
+  }
+};
 
 // ─── Public reads ─────────────────────────────────────────────────────────────
 
@@ -91,6 +103,7 @@ export const createTnToday = async (payload) => {
     .select()
     .single();
   if (error) throw error;
+  triggerArticleIndexing(data);
   return data;
 };
 
@@ -103,6 +116,7 @@ export const updateTnToday = async (id, payload) => {
     .select()
     .single();
   if (error) throw error;
+  triggerArticleIndexing(data);
   return data;
 };
 

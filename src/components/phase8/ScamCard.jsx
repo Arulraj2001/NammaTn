@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { Link } from "@/lib/router-compat";
 import { base44 } from "@/api/base44Client";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, ShieldAlert } from "lucide-react";
@@ -57,22 +58,26 @@ export default function ScamCard({ item, compact = false }) {
           <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span className="text-xs font-bold text-red-600 dark:text-red-400">
+          <div className="flex items-center gap-2 flex-wrap mb-1.5">
+            <span className="text-xs font-extrabold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800">
               ⚠ {TYPE_LABELS[item.scam_type] || "Scam Alert"}
             </span>
             {item.is_verified && <VerifiedBadge />}
-            <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-              item.warning_level === "critical" ? "bg-red-200 text-red-800" :
-              item.warning_level === "high" ? "bg-orange-200 text-orange-800" :
-              "bg-yellow-200 text-yellow-800"
+            <span className={`text-xs px-2 py-0.5 rounded-full font-extrabold shadow-2xs ${
+              item.warning_level === "critical" ? "bg-red-600 text-white" :
+              item.warning_level === "high" ? "bg-orange-500 text-white" :
+              "bg-amber-500 text-white"
             }`}>
               {item.warning_level?.toUpperCase()}
             </span>
           </div>
-          <p className="font-semibold text-slate-900 dark:text-white text-sm mb-1">{item.title}</p>
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-base mb-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+            <Link to={`/post/${item.id}`} className="hover:underline">
+              {item.title}
+            </Link>
+          </h3>
           {!compact && item.description && (
-            <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-2">
+            <p className="text-xs text-slate-700 dark:text-slate-300 font-medium line-clamp-3 mb-2.5 bg-red-50/50 dark:bg-red-950/20 p-2 rounded-xl border border-red-100 dark:border-red-900/30">
               ⚠ Public awareness: {item.description}
             </p>
           )}

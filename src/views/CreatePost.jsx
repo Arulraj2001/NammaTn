@@ -285,6 +285,17 @@ export default function CreatePost() {
     setSubmittedPost(post);
     setSubmitted(true);
 
+    if (post?.id && typeof window !== "undefined") {
+      try {
+        const local = JSON.parse(localStorage.getItem("vizhi_created_post_ids") || "[]");
+        if (!local.includes(post.id)) {
+          localStorage.setItem("vizhi_created_post_ids", JSON.stringify([post.id, ...local].slice(0, 50)));
+        }
+      } catch (e) {
+        console.error("Failed to save local post id", e);
+      }
+    }
+
     if (selectedType === "bribe") {
       setTimeout(() => navigate("/bribes"), 2000);
     } else if (isCivicType && post?.id) {

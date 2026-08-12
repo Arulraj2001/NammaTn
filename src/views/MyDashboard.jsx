@@ -679,10 +679,55 @@ function MyDashboardContent({ user, lang, activeTab, setActiveTab, logout }) {
   });
 
   const { data: myReceipts = [] } = useQuery({
-    queryKey: ["my-receipts", user?.id],
-    queryFn: () => base44.entities.Post.filter({ created_by_id: user?.id, post_type: "complaint" }, "-created_date", 100),
+    queryKey: ["my-receipts", user?.id, user?.email],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      let localIds = [];
+      if (typeof window !== "undefined") {
+        try {
+          localIds = JSON.parse(localStorage.getItem("vizhi_created_post_ids") || "[]");
+        } catch (e) { console.error(e); }
+      }
+
+      // Query posts by user.id OR user.email
+      const { data: byIdOrEmail = [] } = await supabase
+        .from("posts")
+        .select("*")
+        .or(`created_by_id.eq.${user.id},created_by.eq.${user.email}`);
+
+      // Query any guest posts saved in localStorage
+      let byLocal = [];
+      if (localIds.length > 0) {
+        const { data } = await supabase
+          .from("posts")
+          .select("*")
+          .in("id", localIds);
+        byLocal = data || [];
+      }
+
+      // Merge and deduplicate by post ID
+      const map = new Map();
+      [...(byIdOrEmail || []), ...byLocal].forEach((p) => {
+        if (p && p.id) map.set(p.id, p);
+      });
+      const allPosts = Array.from(map.values()).sort(
+        (a, b) => new Date(b.created_date) - new Date(a.created_date)
+      );
+
+      // Auto-claim unlinked posts in background
+      const unlinked = allPosts.filter((p) => !p.created_by_id && user?.id);
+      if (unlinked.length > 0) {
+        Promise.all(
+          unlinked.map((p) =>
+            supabase.from("posts").update({ created_by_id: user.id, created_by: user.full_name || user.email }).eq("id", p.id)
+          )
+        ).catch(() => {});
+      }
+
+      return allPosts;
+    },
     enabled: !!user?.id,
-    staleTime: 60_000,
+    staleTime: 30_000,
   });
 
   const { data: myActivity = [] } = useQuery({

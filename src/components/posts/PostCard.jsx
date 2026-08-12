@@ -30,16 +30,16 @@ const PostCard = memo(function PostCard({ post }) {
   const firstPhoto = (post.before_photos?.[0] || post.media_urls?.[0]);
 
   return (
-    <article className={`bg-white dark:bg-slate-800 rounded-2xl border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group overflow-hidden ${
-      isCivic ? "border-blue-200 dark:border-blue-800/60" : "border-slate-200 dark:border-slate-700"
+    <article className={`bg-white dark:bg-slate-900 rounded-2xl border-2 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group relative focus-within:z-30 hover:z-30 overflow-visible ${
+      isCivic ? "border-blue-300 dark:border-blue-800/80 hover:border-blue-500" : "border-slate-300 dark:border-slate-700 hover:border-blue-500"
     }`}>
 
       {/* Civic Receipt top bar */}
       {isCivic && (
-        <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-3 py-2 flex items-center justify-between gap-2">
+        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-3.5 py-2 flex items-center justify-between gap-2 rounded-t-xl overflow-hidden border-b border-slate-800">
           <div className="flex items-center gap-1.5">
-            <FileText className="w-3 h-3 text-blue-400" />
-            <span className="text-xs font-mono font-bold text-white tracking-wide">
+            <FileText className="w-3.5 h-3.5 text-blue-400 stroke-[2.5]" />
+            <span className="text-xs font-mono font-bold text-white tracking-wider">
               {post.civic_receipt_id || "CIVIC"}
             </span>
           </div>
@@ -51,35 +51,37 @@ const PostCard = memo(function PostCard({ post }) {
         {/* Type badge + engagement badge */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${type.bg} ${type.color}`}>
-              <TypeIcon className="w-3 h-3" />
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold shadow-2xs ${type.bg} ${type.color}`}>
+              <TypeIcon className="w-3.5 h-3.5 stroke-[2.5]" />
               {T(type.label_en, type.label_ta)}
             </span>
             {badge && <EngagementBadge type={badge} />}
           </div>
-          <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
-            <Clock className="w-3 h-3" />
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-bold flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+            <Clock className="w-3.5 h-3.5 text-slate-400" />
             {post.created_date ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true }) : ""}
           </span>
         </div>
 
-        {/* Title */}
-        <h3 className="font-semibold text-slate-900 dark:text-white text-sm sm:text-base leading-snug mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-          {title}
+        {/* Title — clickable link to post detail */}
+        <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+          <Link to={`/post/${post.id}`} className="hover:underline">
+            {title}
+          </Link>
         </h3>
 
         {/* Content preview */}
         {content && (
-          <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-3 line-clamp-2">
+          <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed mb-3 font-normal line-clamp-2">
             {content}
           </p>
         )}
 
-        {/* Media thumbnail */}
+        {/* Media thumbnail — clickable link to post detail */}
         {firstPhoto && (
-          <div className="mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
-            <img src={firstPhoto} alt={title} className="w-full h-full object-cover" loading="lazy" />
-          </div>
+          <Link to={`/post/${post.id}`} className="block mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
+            <img src={firstPhoto} alt={title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" loading="lazy" />
+          </Link>
         )}
 
         {/* Civic stats row */}

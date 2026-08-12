@@ -17,6 +17,8 @@ const MAIN_NAV = [
   { path: "/", en: "📍 Map", ta: "📍 வரைபடம்" },
   { path: "/explore", en: "⚡ Live Feed", ta: "⚡ நேரடி ஊட்டம்" },
   { path: "/tn-today", en: "📰 TN Today", ta: "📰 TN Today" },
+  { path: "/trending", en: "🔥 Trending", ta: "🔥 டிரெண்டிங்" },
+  { path: "/bribes", en: "🚨 Bribe Log", ta: "🚨 லஞ்சப் பதிவு" },
 ];
 
 
@@ -164,6 +166,35 @@ export default function Navbar() {
         scrolled ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur shadow-sm border-b border-slate-200 dark:border-slate-700"
         : "bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700"
       }`}>
+        {/* Ticker Row — Positioned ABOVE the Navbar */}
+        {showAnnouncement && (
+          <div className={`w-full h-8 relative flex items-center overflow-hidden border-b text-[11px] font-medium leading-none select-none ${bgClass}`}>
+            {/* Pinned Label / Icon */}
+            <div className="absolute left-0 top-0 bottom-0 flex items-center gap-1.5 px-3 z-20 font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-r border-slate-200 dark:border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
+              {announcementIcon}
+              <span>{T("Alert", "அறிவிப்பு")}</span>
+            </div>
+
+            {/* Marquee Content */}
+            <div className="flex-1 h-full overflow-hidden relative flex items-center pl-[90px] pr-[40px]">
+              <div className="marquee-content flex items-center gap-24">
+                <span>{settings.site_announcement}</span>
+                <span>{settings.site_announcement}</span>
+                <span>{settings.site_announcement}</span>
+              </div>
+            </div>
+
+            {/* Dismiss Button */}
+            <button
+              onClick={handleDismissAnnouncement}
+              className="absolute right-0 top-0 bottom-0 px-3 flex items-center z-20 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-[-2px_0_5px_rgba(0,0,0,0.05)]"
+              aria-label="Dismiss Announcement"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-3">
 
@@ -312,35 +343,6 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-
-        {/* Ticker Row */}
-        {showAnnouncement && (
-          <div className={`w-full h-8 relative flex items-center overflow-hidden border-t text-[11px] font-medium leading-none select-none ${bgClass}`}>
-            {/* Pinned Label / Icon */}
-            <div className="absolute left-0 top-0 bottom-0 flex items-center gap-1.5 px-3 z-20 font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-r border-slate-200 dark:border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
-              {announcementIcon}
-              <span>{T("Alert", "அறிவிப்பு")}</span>
-            </div>
-
-            {/* Marquee Content */}
-            <div className="flex-1 h-full overflow-hidden relative flex items-center pl-[90px] pr-[40px]">
-              <div className="marquee-content flex items-center gap-24">
-                <span>{settings.site_announcement}</span>
-                <span>{settings.site_announcement}</span>
-                <span>{settings.site_announcement}</span>
-              </div>
-            </div>
-
-            {/* Dismiss Button */}
-            <button
-              onClick={handleDismissAnnouncement}
-              className="absolute right-0 top-0 bottom-0 px-3 flex items-center z-20 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-[-2px_0_5px_rgba(0,0,0,0.05)]"
-              aria-label="Dismiss Announcement"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
       </header>
     </>
   );
