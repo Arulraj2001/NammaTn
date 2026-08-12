@@ -6,6 +6,7 @@ import {
   updateTnToday, deleteTnToday, generateSlug, estimateReadingTime
 } from "@/services/tnToday";
 import RichEditor from "@/components/tntoday/RichEditor";
+import ImportTnToday from "@/components/tntoday/ImportTnToday";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,7 +14,7 @@ import {
   Plus, Edit, Trash2, Eye, Save, Send, Archive, Star, StarOff,
   Clock, Calendar, Tag, FileText, Globe, Search, X, ArrowLeft,
   CheckCircle2, AlertCircle, BookOpen, ChevronDown, Image, Link2,
-  List, RefreshCw
+  List, RefreshCw, FileJson
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -152,6 +153,7 @@ export default function AdminTnToday() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeEditorTab, setActiveEditorTab] = useState("content"); // "content" | "seo" | "structure"
+  const [importOpen, setImportOpen] = useState(false);
   const qc = useQueryClient();
   const { toast } = useToast();
 
@@ -205,15 +207,17 @@ export default function AdminTnToday() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this article permanently?")) return;
     await deleteTnToday(id);
+    qc.removeQueries({ queryKey: ["tn-today-articles"], exact: false });
+    qc.removeQueries({ queryKey: ["tn-today-featured"], exact: false });
     qc.invalidateQueries({ queryKey: ["admin-tn-today"] });
-    qc.invalidateQueries({ queryKey: ["tn-today-featured"] });
     toast({ description: "Article deleted." });
   };
 
   const handleToggleFeatured = async (article) => {
     await updateTnToday(article.id, { is_featured: !article.is_featured });
+    qc.removeQueries({ queryKey: ["tn-today-articles"], exact: false });
+    qc.removeQueries({ queryKey: ["tn-today-featured"], exact: false });
     qc.invalidateQueries({ queryKey: ["admin-tn-today"] });
-    qc.invalidateQueries({ queryKey: ["tn-today-featured"] });
     toast({ description: article.is_featured ? "Removed from homepage." : "Pinned to homepage!" });
   };
 
@@ -240,8 +244,9 @@ export default function AdminTnToday() {
         toast({ description: "Article created!" });
       }
 
+      qc.removeQueries({ queryKey: ["tn-today-articles"], exact: false });
+      qc.removeQueries({ queryKey: ["tn-today-featured"], exact: false });
       qc.invalidateQueries({ queryKey: ["admin-tn-today"] });
-      qc.invalidateQueries({ queryKey: ["tn-today-featured"] });
     } catch (err) {
       toast({ description: `Error: ${err.message}`, variant: "destructive" });
     } finally {
@@ -267,10 +272,33 @@ export default function AdminTnToday() {
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">Manage daily Tamil Nadu headlines</p>
           </div>
-          <Button onClick={handleNew} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white">
-            <Plus className="w-4 h-4" /> New Article
-          </Button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              onClick={() => setImportOpen(o => !o)}
+              variant="outline"
+              className={cn(
+                "flex items-center gap-2 border-2 transition-all",
+                importOpen
+                  ? "border-blue-500 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30"
+                  : "border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-blue-500"
+              )}
+            >
+              <FileJson className="w-4 h-4" />
+              {importOpen ? "Close Import" : "Import JSON"}
+            </Button>
+            <Button onClick={handleNew} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+              <Plus className="w-4 h-4" /> New Article
+            </Button>
+          </div>
         </div>
+
+        {/* Import Panel */}
+        {importOpen && (
+          <div className="mb-6 bg-white dark:bg-slate-900 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-5 shadow-sm">
+            <ImportTnToday onDone={() => setImportOpen(false)} />
+          </div>
+        )}
+
 
         {/* Stats bar */}
         <div className="grid grid-cols-4 gap-3 mb-5">

@@ -118,6 +118,7 @@ function EmptyState({ categoryLabel }) {
 export default function TnToday({ initialArticles = [], initialFeatured = null }) {
   const { category: currentCategory } = useParams();
   const [search, setSearch] = useState("");
+  const [visibleCount, setVisibleCount] = useState(10);
 
   const activeCategory = CATEGORIES.find(c => c.value === currentCategory);
 
@@ -130,24 +131,30 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
   const { data: featured } = useQuery({
     queryKey: ["tn-today-featured"],
     queryFn: getFeaturedTnToday,
-    initialData: initialFeatured,
-    staleTime: 60_000,
+    // placeholderData avoids hydration mismatch (not stored in cache as truth)
+    placeholderData: initialFeatured || undefined,
+    staleTime: 0,       // always treat as stale → refetch on focus/mount
+    gcTime: 30_000,
   });
 
   const { data: articles = [], isLoading } = useQuery({
-    queryKey: ["tn-today-articles", currentCategory],
-    queryFn: () => getPublishedTnToday(currentCategory),
-    initialData: !currentCategory ? initialArticles : undefined,
-    staleTime: 60_000,
+    queryKey: ["tn-today-articles", currentCategory ?? ""],
+    queryFn: () => getPublishedTnToday(currentCategory || null),
+    placeholderData: !currentCategory ? (initialArticles.length ? initialArticles : undefined) : undefined,
+    staleTime: 0,       // always refetch — deleted articles disappear immediately
+    gcTime: 30_000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
-
-  const [visibleCount, setVisibleCount] = useState(10);
 
   const filtered = articles.filter(a => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return a.title?.toLowerCase().includes(q) || a.subtitle?.toLowerCase().includes(q);
   });
+
+  // Reset visible count when category or search changes
+  React.useEffect(() => { setVisibleCount(10); }, [currentCategory, search]);
 
   const displayedArticles = filtered.slice(0, visibleCount);
 

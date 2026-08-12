@@ -28,19 +28,65 @@ const CATEGORY_CONFIG = {
   general:        { label: "General",        color: "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300", emoji: "📰" },
 };
 
-// ─── Parse pipe-delimited sections ────────────────────────────────────────────
+// ─── JSON-aware field parsers ──────────────────────────────────────────────────
+// Supports both plain newline-delimited text AND JSON arrays stored as strings
+// (from articles imported before the serialiser fix was applied).
+
+function tryParseJSON(text) {
+  if (!text || typeof text !== "string") return null;
+  const t = text.trim();
+  if (!t.startsWith("[") && !t.startsWith("{")) return null;
+  try { return JSON.parse(t); } catch { return null; }
+}
+
+// Converts a JSON array-of-objects into { label, value } pairs for rendering
+function jsonArrayToLabelValue(arr) {
+  return arr.map(item => {
+    if (typeof item === "string") return { label: item, value: "" };
+    // key_facts: { fact: "..." }
+    if (item.fact) return { label: item.fact, value: "" };
+    // timeline: { date: "...", event: "..." }
+    if (item.date && item.event) return { label: item.date, value: item.event };
+    if (item.date) return { label: item.date, value: "" };
+    // official_sources / links: { label: "...", url: "..." }
+    if (item.label && item.url)  return { label: item.label, value: item.url };
+    if (item.url)  return { label: item.url, value: item.url };
+    if (item.label) return { label: item.label, value: "" };
+    return { label: JSON.stringify(item), value: "" };
+  }).filter(r => r.label);
+}
+
 function parseLines(text) {
   if (!text) return [];
+  const json = tryParseJSON(text);
+  if (json) {
+    const arr = Array.isArray(json) ? json : [json];
+    // Return just the label strings (used for key_facts plain text path)
+    return arr.map(item => {
+      if (typeof item === "string") return item;
+      if (item.fact) return item.fact;
+      if (item.date && item.event) return `${item.date}: ${item.event}`;
+      if (item.label) return item.label;
+      return JSON.stringify(item);
+    }).filter(Boolean);
+  }
   return text.split("\n").map(l => l.trim()).filter(Boolean);
 }
+
 function parsePipeLines(text) {
+  if (!text) return [];
+  const json = tryParseJSON(text);
+  if (json) {
+    const arr = Array.isArray(json) ? json : [json];
+    return jsonArrayToLabelValue(arr);
+  }
+  // Plain text path (unchanged)
   return parseLines(text).map(line => {
     if (line.includes("|")) {
       const [left, ...rest] = line.split("|");
       return { label: left?.trim(), value: rest.join("|").trim() };
     }
-    
-    // Check if it has a colon followed by a URL/path
+    // Colon followed by a URL/path
     const colonIndex = line.indexOf(":");
     if (colonIndex !== -1) {
       const label = line.slice(0, colonIndex).trim();
@@ -49,18 +95,17 @@ function parsePipeLines(text) {
         return { label, value };
       }
     }
-
-    // Check if it contains a URL directly
+    // Inline URL
     const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
     if (urlMatch) {
       const url = urlMatch[0];
       const label = line.replace(url, "").trim().replace(/:$/, "").trim();
       return { label: label || url, value: url };
     }
-
     return { label: line, value: "" };
   }).filter(r => r.label);
 }
+
 
 // ─── Share helpers ────────────────────────────────────────────────────────────
 function ShareRow({ url, title }) {
@@ -134,6 +179,10 @@ function ArticleSkeleton() {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
+// Guard: only treat a value as an image URL if it actually looks like one.
+// Text descriptions (stored from JSON import) are safely ignored.
+const isImageUrl = (v) => typeof v === "string" && /^https?:\/\/|^blob:|^data:image\//i.test(v.trim());
+
 export default function TnTodayArticle({ initialSlug, initialArticle, initialRelatedArticles = [] }) {
   const routeParams = useParams();
   const slug = initialSlug || routeParams.slug;
@@ -142,17 +191,18 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ["tn-today-article", slug],
     queryFn: () => getTnTodayBySlug(slug),
-    initialData: initialArticle,
-    staleTime: 300_000,
+    placeholderData: initialArticle || undefined,
+    staleTime: 0,
+    refetchOnMount: true,
     enabled: !!slug,
   });
 
   const { data: relatedArticles = [] } = useQuery({
-    queryKey: ["tn-today-related", article?.category],
+    queryKey: ["tn-today-related", article?.category ?? ""],
     queryFn: () => getPublishedTnToday({ limit: 4, category: article?.category }),
-    initialData: initialRelatedArticles,
+    placeholderData: initialRelatedArticles.length ? initialRelatedArticles : undefined,
     enabled: !!article?.category,
-    staleTime: 300_000,
+    staleTime: 0,
   });
 
   const moreArticles = relatedArticles.filter(a => a.slug !== slug).slice(0, 3);
@@ -199,10 +249,7 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
     typeof window !== "undefined" ? DOMPurify.sanitize(article.content || "") : ""
   );
 
-  const keyFacts = parseLines(article.key_facts).map(line => {
-    const [label, ...rest] = line.split(":");
-    return rest.length > 0 ? { label: label.trim(), value: rest.join(":").trim() } : { label: line, value: "" };
-  });
+  const keyFacts = parsePipeLines(article.key_facts);
   const timelineEvents = parsePipeLines(article.timeline);
   const officialSources = parsePipeLines(article.official_sources);
   const relatedLinks = parsePipeLines(article.related_civic_links);
@@ -284,8 +331,8 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
               </button>
             </div>
 
-            {/* Featured image */}
-            {article.featured_image && (
+            {/* Featured image — only render when value is an actual URL */}
+            {isImageUrl(article.featured_image) && (
               <div className="mb-6 rounded-2xl overflow-hidden shadow-lg">
                 <img src={article.featured_image} alt={article.title}
                   className="w-full h-[260px] sm:h-[380px] object-cover" />
@@ -469,7 +516,7 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
                   {moreArticles.map(a => (
                     <Link key={a.id} to={`/tn-today/${a.slug}`}
                       className="flex gap-2 group hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl p-1 -mx-1 transition-colors">
-                      {a.featured_image ? (
+                      {isImageUrl(a.featured_image) ? (
                         <img src={a.featured_image} alt="" className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
                       ) : (
                         <div className="w-14 h-14 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
