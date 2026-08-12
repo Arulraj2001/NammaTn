@@ -27,7 +27,7 @@ export default function QuickActions() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
           {QUICK_ACTIONS.map((action) => (
             <Link key={action.path + action.en} to={action.path}>
-              <div className="group flex flex-col items-center text-center p-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full">
+              <div className="group flex flex-col items-center text-center p-4 rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full">
                 <div className={`w-10 h-10 rounded-xl ${action.bg} ${action.iconColor} flex items-center justify-center mb-2.5`}>
                   {action.icon}
                 </div>

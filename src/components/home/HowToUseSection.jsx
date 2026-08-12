@@ -67,7 +67,7 @@ export default function HowToUseSection() {
               <Link 
                 key={idx}
                 to="/how-to-use"
-                className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow group flex flex-col justify-between"
+                className="p-5 rounded-2xl border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 bg-white dark:bg-slate-900 hover:shadow-md transition-all group flex flex-col justify-between"
               >
                 <div className="space-y-4">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${step.color} shadow-sm`}>

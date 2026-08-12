@@ -48,7 +48,7 @@ export default function TopCategories() {
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
           {TOP_CATEGORIES.map((cat) => (
             <Link key={cat.slug} to={getCategoryPath(cat.slug)}>
-              <div className={`${cat.bg} ${cat.border} border rounded-2xl p-3 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group h-full`}>
+              <div className={`${cat.bg} ${cat.border} border-2 rounded-2xl p-3 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group h-full`}>
                 <div className={`w-10 h-10 rounded-xl ${cat.iconBg} flex items-center justify-center mx-auto mb-2 text-lg`}>
                   {cat.icon}
                 </div>

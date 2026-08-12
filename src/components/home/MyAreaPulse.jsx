@@ -81,7 +81,7 @@ function PulseCard({ count, icon, label, sub, color, bg, border, to, loading }) 
   const Icon = icon;
   return (
     <Link to={to} className="flex-1 min-w-0">
-      <div className={`flex flex-col items-center justify-center text-center p-3 rounded-2xl border ${bg} ${border} hover:shadow-sm transition-all duration-200 h-full`}>
+      <div className={`flex flex-col items-center justify-center text-center p-3 rounded-2xl border-2 ${bg} ${border} hover:shadow-md transition-all duration-200 h-full`}>
         {loading ? (
           <Loader2 className="w-5 h-5 text-slate-300 animate-spin my-1" />
         ) : (

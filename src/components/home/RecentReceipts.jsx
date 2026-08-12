@@ -78,7 +78,7 @@ export default function RecentReceipts() {
             {recentReceipts.map((post) => {
               const badge = getStatusBadge(post.civic_status);
               return (
-                <div key={post.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 hover:shadow-md transition-all flex flex-col">
+                <div key={post.id} className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 p-4 hover:shadow-md transition-all flex flex-col group">
                   {/* Receipt ID + Status */}
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400">
