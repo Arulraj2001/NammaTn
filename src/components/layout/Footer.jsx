@@ -53,11 +53,11 @@ const FOOTER_COLUMNS = [
     ],
   },
   {
-    en_title: "Help",
-    ta_title: "உதவி",
+    en_title: "Help Centre",
+    ta_title: "உதவி மையம்",
     links: [
       { path: "/about",          en: "About VizhiTN",  ta: "VizhiTN பற்றி" },
-      { path: "/help",           en: "Help",           ta: "உதவி" },
+      { path: "/help",           en: "Help Centre",    ta: "உதவி மையம்" },
       { path: "/how-to-use",     en: "How to Use",     ta: "பயன்படுத்துவது எப்படி" },
       { path: "/support",        en: "Support",        ta: "ஆதரவு" },
       { path: "/contact",        en: "Contact",        ta: "தொடர்பு" },

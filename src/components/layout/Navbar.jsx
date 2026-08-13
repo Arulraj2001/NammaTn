@@ -53,7 +53,7 @@ const MEGA_GROUPS = [
     en_title: "Help & Support",
     ta_title: "உதவி & ஆதரவு",
     items: [
-      { path: "/help", icon: HelpCircle, en: "Help", ta: "உதவி", desc_en: "How to use VizhiTN", desc_ta: "VizhiTN எப்படி பயன்படுத்துவது" },
+      { path: "/help", icon: HelpCircle, en: "Help Centre", ta: "உதவி மையம்", desc_en: "How to use VizhiTN", desc_ta: "VizhiTN எப்படி பயன்படுத்துவது" },
       { path: "/support", icon: Heart, en: "Support", ta: "ஆதரவு", desc_en: "Support and contact us", desc_ta: "எங்களை ஆதரியுங்கள்" },
       { path: "/contact", icon: MessageCircle, en: "Contact", ta: "தொடர்பு", desc_en: "Reach the VizhiTN team", desc_ta: "VizhiTN குழுவை தொடர்பு கொள்ளுங்கள்" },
     ],

@@ -120,8 +120,8 @@ const GROUPS = [
       {
         path: "/help",
         icon: HelpCircle,
-        en: "Help",
-        ta: "உதவி",
+        en: "Help Centre",
+        ta: "உதவி மையம்",
         desc_en: "Learn how to use VizhiTN, create Civic Receipts, verify issues, and track complaint progress.",
         desc_ta: "VizhiTN பயன்படுத்துவது, குடிமை ரசீதுகள் உருவாக்குவது எப்படி என்று அறிந்துகொள்ளுங்கள்.",
         cta_en: "Get Help",

@@ -66,10 +66,10 @@ const MOBILE_MENU_GROUPS = [
     ],
   },
   {
-    en_title: "Help",
-    ta_title: "உதவி",
+    en_title: "Help Centre",
+    ta_title: "உதவி மையம்",
     items: [
-      { path: "/help", icon: HelpCircle, en: "Help", ta: "உதவி", desc_en: "How to use VizhiTN", desc_ta: "VizhiTN பயன்படுத்துவது எப்படி" },
+      { path: "/help", icon: HelpCircle, en: "Help Centre", ta: "உதவி மையம்", desc_en: "How to use VizhiTN", desc_ta: "VizhiTN பயன்படுத்துவது எப்படி" },
       { path: "/how-to-use", icon: HelpCircle, en: "How to Use", ta: "பயன்படுத்துவது எப்படி", desc_en: "Step-by-step feature guides", desc_ta: "வழிமுறைகள் மற்றும் வழிகாட்டிகள்" },
       { path: "/support", icon: Heart, en: "Support", ta: "ஆதரவு", desc_en: "Support the platform", desc_ta: "தளத்தை ஆதரிக்கவும்" },
       { path: "/contact", icon: MessageCircle, en: "Contact", ta: "தொடர்பு", desc_en: "Reach our team", desc_ta: "எங்கள் குழுவை தொடர்பு கொள்ளுங்கள்" },

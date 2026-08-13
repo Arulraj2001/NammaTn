@@ -30,6 +30,8 @@ const CATEGORIES = [
   { value: "agriculture",    label: "🌾 Agriculture",    color: "bg-lime-100 text-lime-700" },
   { value: "technology",     label: "💻 Technology",     color: "bg-cyan-100 text-cyan-700" },
   { value: "social",         label: "👥 Social",         color: "bg-pink-100 text-pink-700" },
+  { value: "india",          label: "🇮🇳 India & Union",  color: "bg-indigo-100 text-indigo-700" },
+  { value: "world",          label: "🌐 World & Global",  color: "bg-teal-100 text-teal-700" },
   { value: "general",        label: "📰 General",        color: "bg-slate-100 text-slate-700" },
 ];
 

@@ -72,7 +72,7 @@ export default function Help({ initialEmergencies = [] }) {
     setShowForm(f => !f);
   };
 
-  usePageMeta({ title: "VizhiTN - Help", description: "Community emergency help requests and assistance across Tamil Nadu." });
+  usePageMeta({ title: "VizhiTN - Help Centre", description: "Community emergency help requests and assistance across Tamil Nadu." });
 
   const { data: emergencies = [], isLoading } = useQuery({
     queryKey: ["emergencies", filterDistrict, filterType],

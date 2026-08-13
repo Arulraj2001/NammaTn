@@ -61,7 +61,7 @@ function serialiseLinks(raw) {
 // ─── JSON field normaliser ──────────────────────────────────────────────────
 const VALID_CATEGORIES = [
   "infrastructure","education","healthcare","environment","economy",
-  "governance","transport","agriculture","technology","social","general"
+  "governance","transport","agriculture","technology","social","india","world","general"
 ];
 
 function normaliseArticle(raw) {
