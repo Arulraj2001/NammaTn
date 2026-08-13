@@ -36,7 +36,7 @@ export default function CivicReceiptHeader({ post }) {
   const isEscalated = currentStatus === "unresolved_escalated";
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-3xl overflow-hidden">
       {/* Top bar — Case File Header */}
       <div className="bg-gradient-to-r from-slate-800 via-slate-850 to-slate-900 dark:from-slate-900 dark:to-black px-5 py-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -46,11 +46,11 @@ export default function CivicReceiptHeader({ post }) {
             </div>
             <div>
               <div className="flex items-center gap-2 mb-0.5">
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">
+                <p className="text-[11px] text-slate-300 font-extrabold uppercase tracking-[0.2em]">
                   {T("PUBLIC CASE FILE", "பொது வழக்கு கோப்பு")}
                 </p>
-                <span className="text-[10px] text-slate-600 font-medium">•</span>
-                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
+                <span className="text-[10px] text-slate-400 font-medium">•</span>
+                <p className="text-[11px] text-slate-300 font-bold uppercase tracking-wider">
                   {T("VizhiTN Civic Receipt", "VizhiTN குடிமை ரசீது")}
                 </p>
               </div>
@@ -76,13 +76,13 @@ export default function CivicReceiptHeader({ post }) {
                   isCompleted
                     ? isCurrent
                       ? `${getProgressColor(currentStatus)} shadow-sm`
-                      : "bg-slate-500"
+                      : "bg-slate-400"
                     : "bg-slate-700"
                 }`}
               />
             );
           })}
-          <span className="text-[10px] text-slate-500 ml-2 flex-shrink-0">
+          <span className="text-xs text-slate-300 font-bold ml-2 flex-shrink-0">
             {isResolved
               ? T("Resolved ✓", "தீர்க்கப்பட்டது ✓")
               : isEscalated
@@ -115,33 +115,33 @@ export default function CivicReceiptHeader({ post }) {
           label={T("Days Open", "திறந்திருக்கும் நாட்கள்")}
           value={isResolved ? T("Closed", "மூடப்பட்டது") : `${days} ${T("days", "நாட்கள்")}`}
           valueClass={
-            isResolved ? "text-green-600 dark:text-green-400"
-            : days > 30 ? "text-red-600 font-bold"
-            : days > 14 ? "text-orange-600"
-            : days > 7 ? "text-yellow-600"
-            : "text-slate-700 dark:text-slate-200"
+            isResolved ? "text-green-600 dark:text-green-400 font-extrabold"
+            : days > 30 ? "text-red-600 font-extrabold"
+            : days > 14 ? "text-orange-600 font-extrabold"
+            : days > 7 ? "text-yellow-600 font-extrabold"
+            : "text-slate-900 dark:text-slate-100 font-extrabold"
           }
         />
       </div>
 
       {/* Urgency + verifications + complaint chips */}
       <div className="px-5 pb-4 flex flex-wrap gap-2">
-        <span className={`text-xs font-semibold px-3 py-1 rounded-full ${urgency.bg} ${urgency.color}`}>
+        <span className={`text-xs font-extrabold px-3 py-1 rounded-full ${urgency.bg} ${urgency.color}`}>
           ⚡ {T(urgency.label, urgency.label_ta)}
         </span>
         {(post.verification_count || 0) > 0 && (
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300">
-            <Shield className="w-3 h-3 inline mr-1" />
+          <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200">
+            <Shield className="w-3.5 h-3.5 inline mr-1" />
             {post.verification_count} {T("community verified", "சமுதாயம் சரிபார்த்தது")}
           </span>
         )}
         {(post.official_complaint_id) && (
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300">
+          <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200">
             📄 {post.official_complaint_id}
           </span>
         )}
         {post.location_text && (
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+          <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200">
             📍 {post.location_text}
           </span>
         )}
@@ -149,7 +149,7 @@ export default function CivicReceiptHeader({ post }) {
 
       {/* VizhiTN disclaimer */}
       <div className="px-5 pb-4">
-        <p className="text-xs text-slate-400 dark:text-slate-500 italic">
+        <p className="text-xs text-slate-600 dark:text-slate-400 font-medium italic">
           {T(
             "VizhiTN helps citizens document, verify, route, track, and prove local issues. VizhiTN is not a government office.",
             "VizhiTN குடிமக்கள் உள்ளூர் சிக்கல்களை ஆவணப்படுத்த, சரிபார்க்க, கண்காணிக்க உதவுகிறது. VizhiTN ஒரு அரசு அலுவலகம் அல்ல."
@@ -160,14 +160,14 @@ export default function CivicReceiptHeader({ post }) {
   );
 }
 
-function MetaItem({ icon: Icon, label, value, valueClass = "text-slate-700 dark:text-slate-200" }) {
+function MetaItem({ icon: Icon, label, value, valueClass = "text-slate-900 dark:text-slate-100 font-extrabold" }) {
   return (
     <div>
       <div className="flex items-center gap-1 mb-0.5">
-        <Icon className="w-3 h-3 text-slate-400" />
-        <span className="text-xs text-slate-400">{label}</span>
+        <Icon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{label}</span>
       </div>
-      <p className={`text-sm font-semibold truncate ${valueClass}`}>{value}</p>
+      <p className={`text-sm truncate ${valueClass}`}>{value}</p>
     </div>
   );
 }

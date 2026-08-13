@@ -129,7 +129,7 @@ export default function ComplaintTrackerPanel({ post, onRefresh }) {
   const escalationColors = { green: "text-green-600", indigo: "text-indigo-600", blue: "text-blue-600", orange: "text-orange-500", red: "text-red-600", slate: "text-slate-500" };
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setExpanded((p) => !p)}
@@ -140,15 +140,15 @@ export default function ComplaintTrackerPanel({ post, onRefresh }) {
             <FileText className="w-4 h-4 text-orange-600" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-bold text-slate-900 dark:text-white">
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white">
               {T("Complaint & Follow-up Tracker", "புகார் & தொடர் கண்காணிப்பு")}
             </p>
-            <p className={`text-xs font-medium ${escalationColors[escalation.color] || "text-slate-500"}`}>
+            <p className={`text-xs font-bold ${escalationColors[escalation.color] || "text-slate-600"}`}>
               {T("Level", "நிலை")} {escalation.level}: {escalation.label} · {daysOpen} {T("days open", "நாட்கள் திறந்தது")}
             </p>
           </div>
         </div>
-        {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+        {expanded ? <ChevronUp className="w-4 h-4 text-slate-600 dark:text-slate-300" /> : <ChevronDown className="w-4 h-4 text-slate-600 dark:text-slate-300" />}
       </button>
 
       {expanded && (

@@ -124,15 +124,15 @@ export default function CommentSection({ postId, postCommentCount }) {
       <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
         <MessageSquare className="w-5 h-5 text-blue-500" />
         {T("Community Discussion", "சமுதாய விவாதம்")}
-        <span className="text-sm font-normal text-slate-400">({comments.filter(c => c.status === "active" || c.status === "flagged").length})</span>
+        <span className="text-sm font-bold text-slate-600 dark:text-slate-300">({comments.filter(c => c.status === "active" || c.status === "flagged").length})</span>
       </h2>
 
       {/* Input area */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 mb-4">
+      <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 mb-4">
         {!isAuthenticated ? (
           <button
             onClick={() => requireAuth(() => {}, T("Sign in to comment", "கருத்து தெரிவிக்க உள்நுழையுங்கள்"))}
-            className="w-full py-3 text-sm text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl hover:bg-blue-100 transition-colors"
+            className="w-full py-3 text-sm text-blue-700 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-800 rounded-xl hover:bg-blue-100 transition-colors"
           >
             {T("Sign in to join the discussion", "விவாதத்தில் சேர உள்நுழையுங்கள்")}
           </button>
@@ -142,24 +142,24 @@ export default function CommentSection({ postId, postCommentCount }) {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={T("Share your thoughts...", "உங்கள் கருத்தை பகிரவும்...")}
-              className="min-h-[90px] bg-transparent border-0 resize-none focus:ring-0 p-0 text-sm"
+              className="min-h-[90px] bg-transparent border-0 resize-none focus:ring-0 p-0 text-sm font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-500"
               maxLength={MAX_COMMENT}
             />
-            <p className="text-xs text-slate-400 mt-1">{SAFETY_REMINDER_EN}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-1">{SAFETY_REMINDER_EN}</p>
 
             {error && (
-              <p className="mt-2 text-xs text-red-500 flex items-center gap-1">⚠ {error}</p>
+              <p className="mt-2 text-xs font-bold text-red-600 flex items-center gap-1">⚠ {error}</p>
             )}
             {safetyWarn && (
-              <p className="mt-2 text-xs text-amber-600 flex items-center gap-1">
-                <ShieldAlert className="w-3 h-3" /> {safetyWarn}
+              <p className="mt-2 text-xs font-bold text-amber-700 flex items-center gap-1">
+                <ShieldAlert className="w-3.5 h-3.5" /> {safetyWarn}
               </p>
             )}
 
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 flex-wrap gap-3">
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 text-xs text-slate-500 cursor-pointer">
-                  <input type="checkbox" checked={isAnon} onChange={(e) => setIsAnon(e.target.checked)} className="accent-blue-600" />
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                  <input type="checkbox" checked={isAnon} onChange={(e) => setIsAnon(e.target.checked)} className="accent-blue-600 w-4 h-4" />
                   {T("Anonymous", "அநாமதேயம்")}
                 </label>
                 {!isAnon && (
@@ -167,7 +167,7 @@ export default function CommentSection({ postId, postCommentCount }) {
                     value={authorName}
                     onChange={(e) => setAuthorName(e.target.value)}
                     placeholder={T("Your name", "உங்கள் பெயர்")}
-                    className="h-8 text-xs w-32 bg-slate-50 dark:bg-slate-700"
+                    className="h-8 text-xs font-medium w-36 bg-slate-100 dark:bg-slate-700 border-slate-300 dark:border-slate-600"
                     maxLength={80}
                   />
                 )}
@@ -176,7 +176,7 @@ export default function CommentSection({ postId, postCommentCount }) {
                 onClick={handleSubmit}
                 disabled={!text.trim() || mutation.isPending}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4"
               >
                 {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 {T("Post", "இடு")}
@@ -190,7 +190,7 @@ export default function CommentSection({ postId, postCommentCount }) {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2].map((i) => (
-            <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-4 animate-pulse">
+            <div key={i} className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 animate-pulse">
               <div className="flex gap-2 mb-2">
                 <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700" />
                 <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded" />
@@ -200,9 +200,9 @@ export default function CommentSection({ postId, postCommentCount }) {
           ))}
         </div>
       ) : comments.length === 0 ? (
-        <div className="text-center py-12 text-slate-400">
-          <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-40" />
-          <p className="text-sm">{T("No comments yet. Start the discussion!", "இன்னும் கருத்துகள் இல்லை.")}</p>
+        <div className="text-center py-12 text-slate-500 font-semibold bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl">
+          <MessageSquare className="w-10 h-10 mx-auto mb-3 text-slate-400" />
+          <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{T("No comments yet. Start the discussion!", "இன்னும் கருத்துகள் இல்லை. விவாதத்தை தொடங்குங்கள்!")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -238,26 +238,26 @@ function CommentItem({ comment, currentUserId, isAdmin, lang, onHide, onRestore,
   if (!isAdmin && (comment.status === "removed" || comment.status === "hidden")) return null;
 
   return (
-    <div className={`bg-white dark:bg-slate-800 border rounded-2xl p-4 ${
-      isHidden ? "border-red-200 dark:border-red-900 opacity-60" :
-      comment.status === "flagged" ? "border-amber-200 dark:border-amber-900" :
-      "border-slate-200 dark:border-slate-700"
+    <div className={`bg-white dark:bg-slate-800 border-2 rounded-2xl p-4 ${
+      isHidden ? "border-red-300 dark:border-red-900 opacity-60" :
+      comment.status === "flagged" ? "border-amber-300 dark:border-amber-900" :
+      "border-slate-300 dark:border-slate-700"
     }`}>
       <div className="flex items-center gap-2 mb-2">
         <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
           <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
         </div>
-        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        <span className="text-sm font-bold text-slate-900 dark:text-white">
           {comment.is_anonymous ? T("Anonymous", "அநாமதேயர்") : comment.author_name || T("Community Member", "சமுதாய உறுப்பினர்")}
         </span>
-        {comment.status === "flagged" && <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Under review</span>}
-        {isHidden && isAdmin && <span className="text-xs text-red-500 bg-red-50 px-1.5 py-0.5 rounded">Hidden</span>}
-        <span className="text-xs text-slate-400 ml-auto">
+        {comment.status === "flagged" && <span className="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Under review</span>}
+        {isHidden && isAdmin && <span className="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded">Hidden</span>}
+        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-auto">
           {comment.created_date ? formatDistanceToNow(new Date(comment.created_date), { addSuffix: true }) : ""}
         </span>
       </div>
 
-      <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed break-words">
+      <p className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed break-words">
         {comment.content}
       </p>
 

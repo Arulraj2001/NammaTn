@@ -64,11 +64,11 @@ export default function ReceiptCredibilityScore({ post, authorTrustScore = 0, co
   ];
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
-        <ShieldCheck className="w-4 h-4 text-slate-400" />
-        <span className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">
+      <div className="px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-2">
+        <ShieldCheck className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+        <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
           {T("Receipt Credibility Score", "ரசீது நம்பகத்தன்மை மதிப்பெண்")}
         </span>
       </div>
@@ -108,13 +108,13 @@ export default function ReceiptCredibilityScore({ post, authorTrustScore = 0, co
         <div className="flex-1 space-y-2.5 min-w-0">
           {factors.map((f) => (
             <div key={f.label} className="flex items-center gap-2">
-              <f.icon className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+              <f.icon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300 truncate">
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200 truncate">
                     {f.label}
                   </span>
-                  <span className="text-[10px] font-semibold text-slate-400 ml-2 flex-shrink-0">
+                  <span className="text-[11px] font-extrabold text-slate-600 dark:text-slate-400 ml-2 flex-shrink-0">
                     {f.detail}
                   </span>
                 </div>

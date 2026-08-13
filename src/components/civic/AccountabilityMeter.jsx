@@ -54,38 +54,38 @@ export default function AccountabilityMeter({ post }) {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3">
+    <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl px-4 py-3.5">
       {/* Header */}
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-slate-400" />
-          <span className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">
+          <Clock className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+          <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
             {T("SLA Tracker", "SLA கண்காணிப்பு")}
           </span>
         </div>
         {zone === "red" && (
-          <span className="flex items-center gap-1 text-[10px] font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
-            <AlertTriangle className="w-3 h-3" />
+          <span className="flex items-center gap-1 text-[11px] font-extrabold text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 px-2.5 py-0.5 rounded-full">
+            <AlertTriangle className="w-3 h-3 text-red-600" />
             {T("Overdue", "காலாவதி")}
           </span>
         )}
       </div>
 
       {/* Gradient bar */}
-      <div className="relative h-2.5 rounded-full bg-slate-100 dark:bg-slate-700 overflow-visible">
+      <div className="relative h-2.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-visible">
         {/* Green zone */}
         <div
-          className="absolute top-0 left-0 h-full rounded-l-full bg-emerald-400/60 dark:bg-emerald-500/40"
+          className="absolute top-0 left-0 h-full rounded-l-full bg-emerald-500/70 dark:bg-emerald-500/50"
           style={{ width: `${followUpPct}%` }}
         />
         {/* Yellow zone */}
         <div
-          className="absolute top-0 h-full bg-amber-400/60 dark:bg-amber-500/40"
+          className="absolute top-0 h-full bg-amber-500/70 dark:bg-amber-500/50"
           style={{ left: `${followUpPct}%`, width: `${escalationPct - followUpPct}%` }}
         />
         {/* Red zone */}
         <div
-          className="absolute top-0 h-full rounded-r-full bg-red-400/60 dark:bg-red-500/40"
+          className="absolute top-0 h-full rounded-r-full bg-red-500/70 dark:bg-red-500/50"
           style={{ left: `${escalationPct}%`, width: `${100 - escalationPct}%` }}
         />
 
@@ -107,16 +107,16 @@ export default function AccountabilityMeter({ post }) {
       </div>
 
       {/* Scale labels */}
-      <div className="relative mt-1 h-4 text-[10px] text-slate-400">
+      <div className="relative mt-1 h-4 text-[11px] font-bold text-slate-600 dark:text-slate-400">
         <span className="absolute left-0">{T("Day 0", "நாள் 0")}</span>
         <span
-          className="absolute -translate-x-1/2 text-emerald-500"
+          className="absolute -translate-x-1/2 text-emerald-600 dark:text-emerald-400 font-extrabold"
           style={{ left: `${followUpPct}%` }}
         >
           {followUp}
         </span>
         <span
-          className="absolute -translate-x-1/2 text-red-400"
+          className="absolute -translate-x-1/2 text-red-600 dark:text-red-400 font-extrabold"
           style={{ left: `${escalationPct}%` }}
         >
           {escalation}
@@ -124,7 +124,7 @@ export default function AccountabilityMeter({ post }) {
       </div>
 
       {/* Summary text */}
-      <p className={`text-xs font-medium mt-1 ${zoneStyles[zone]}`}>
+      <p className={`text-xs font-bold mt-1 ${zoneStyles[zone]}`}>
         {T(
           `Day ${daysOpen} — Follow-up expected by Day ${followUp}, escalation after Day ${escalation}`,
           `நாள் ${daysOpen} — தொடர் நாள் ${followUp}-க்குள், மேல்முறையீடு நாள் ${escalation}-க்குப் பின்`,

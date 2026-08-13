@@ -369,19 +369,19 @@ export default function CivicReceiptActions({ post, onRefresh }) {
 
   const ActionBtn = ({ onClick, icon: Icon, label, doneLabel, isDone, loadKey, color = "slate" }) => {
     const colorMap = {
-      blue: "border-blue-200 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100",
-      green: "border-green-200 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100",
-      red: "border-red-200 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 hover:bg-red-100",
-      orange: "border-orange-200 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 hover:bg-orange-100",
-      slate: "border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50",
-      done: "border-slate-300 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-default opacity-75",
+      blue: "border-2 border-blue-300 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 hover:bg-blue-100 font-bold",
+      green: "border-2 border-green-300 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 hover:bg-green-100 font-bold",
+      red: "border-2 border-red-300 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 hover:bg-red-100 font-bold",
+      orange: "border-2 border-orange-300 bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 hover:bg-orange-100 font-bold",
+      slate: "border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-100 font-bold",
+      done: "border-2 border-slate-400 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold cursor-default opacity-85",
     };
     const cls = isDone ? colorMap.done : (colorMap[color] || colorMap.slate);
     return (
       <button
         onClick={isDone ? undefined : onClick}
         disabled={isLocker(loadKey)}
-        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium border transition-all disabled:opacity-50 ${cls}`}
+        className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold border-2 transition-all disabled:opacity-50 ${cls}`}
       >
         {isLocker(loadKey) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Icon className="w-4 h-4" />}
         <span>{isDone ? doneLabel : label}</span>
@@ -392,13 +392,13 @@ export default function CivicReceiptActions({ post, onRefresh }) {
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+      <p className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
         {T("Community Actions", "சமுதாய நடவடிக்கைகள்")}
       </p>
 
       {!isAuthenticated && (
-        <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl px-3 py-2">
-          <LogIn className="w-3.5 h-3.5 flex-shrink-0" />
+        <div className="flex items-center gap-2 text-xs font-semibold text-amber-800 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-300 dark:border-amber-700 rounded-xl px-3.5 py-2.5">
+          <LogIn className="w-4 h-4 flex-shrink-0 text-amber-600" />
           {T("Sign in to take community actions on this receipt.", "இந்த ரசீதில் சமுதாய நடவடிக்கைகள் எடுக்க உள்நுழையுங்கள்.")}
         </div>
       )}
@@ -415,11 +415,11 @@ export default function CivicReceiptActions({ post, onRefresh }) {
             : T(`${count}/5 — ${3 - count} needed for Community Verified`, `${count}/5 — சமுதாய சரிபார்ப்புக்கு ${3 - count} தேவை`);
         return (
           <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-              <span className="font-medium">{T("Community Verification", "சமுதாய சரிபார்ப்பு")}</span>
+            <div className="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
+              <span>{T("Community Verification", "சமுதாய சரிபார்ப்பு")}</span>
               <span>{label}</span>
             </div>
-            <div className="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+            <div className="h-2.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
               <div className={`h-full rounded-full transition-all duration-500 ${barColor}`} style={{ width: `${pct}%` }} />
             </div>
           </div>
@@ -436,11 +436,11 @@ export default function CivicReceiptActions({ post, onRefresh }) {
           : T(`${count}/3 — ${3 - count} more confirmation${3 - count !== 1 ? "s" : ""} needed to close case`, `${count}/3 — வழக்கை முடிக்க ${3 - count} உறுதிப்படுத்தல் தேவை`);
         return (
           <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-              <span className="font-medium">{T("Fix Verification", "சரிசெய்தல் சரிபார்ப்பு")}</span>
+            <div className="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
+              <span>{T("Fix Verification", "சரிசெய்தல் சரிபார்ப்பு")}</span>
               <span>{label}</span>
             </div>
-            <div className="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+            <div className="h-2.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
               <div className={`h-full rounded-full transition-all duration-500 ${barColor}`} style={{ width: `${pct}%` }} />
             </div>
           </div>
