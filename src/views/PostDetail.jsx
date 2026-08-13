@@ -207,7 +207,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
               )}
 
               {/* Issue description */}
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+              <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-5">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{title}</h2>
                 {content && (
                   <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm whitespace-pre-wrap">{content}</p>
@@ -245,7 +245,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
               <OfficialRouteSection post={post} />
 
               {/* Community actions */}
-              <div data-civic-actions className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+              <div data-civic-actions className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-5">
                 <CivicReceiptActions post={post} onRefresh={() => qc.invalidateQueries({ queryKey: ["post", id] })} />
               </div>
 
@@ -268,7 +268,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
 
               {/* Timeline */}
               {post.timeline_events?.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+                <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-5">
                   <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-blue-500" />
                     {T("Civic Receipt Timeline", "குடிமை ரசீது காலவரிசை")}
@@ -281,7 +281,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
               <CivicShareCard post={post} />
 
               {/* VizhiTN positioning disclaimer */}
-              <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+              <div className="bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4">
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center italic">
                   {T(
                     "VizhiTN does not replace government grievance systems. We help citizens document local issues, find the right authority, file better complaints, track progress, and verify real resolution with public proof.",
@@ -304,7 +304,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
             <motion.article
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl overflow-hidden mb-6"
+              className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-3xl overflow-hidden mb-6"
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">

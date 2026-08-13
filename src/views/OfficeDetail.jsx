@@ -81,7 +81,7 @@ export default function OfficeDetail({ initialSlug, initialDistrict = "" }) {
         <ArrowLeft className="w-4 h-4" /> {T("All Offices", "அனைத்து அலுவலகங்கள்")}
       </Link>
 
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 mb-5">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 mb-5">
         <div className="flex items-center gap-4 mb-3">
           <span className="text-4xl">{office.icon}</span>
           <div>
@@ -184,7 +184,7 @@ export default function OfficeDetail({ initialSlug, initialDistrict = "" }) {
           {reports.map((r) => {
             const statusCfg = STATUS_LABELS[r.office_status] || STATUS_LABELS.open_normal;
             return (
-              <div key={r.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
+              <div key={r.id} className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 p-4 transition-all">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={`text-xs font-semibold ${statusCfg.c}`}>{statusCfg.l}</span>

@@ -392,7 +392,7 @@ export default function AwarenessSchemesPage() {
             const Icon = scheme.icon;
             const isOpen = expandedId === scheme.id;
             return (
-              <div key={scheme.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
+              <div key={scheme.id} className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-2xl overflow-hidden hover:shadow-md transition-all">
                 {/* Header row */}
                 <button
                   className="w-full flex items-start gap-4 p-5 text-left"

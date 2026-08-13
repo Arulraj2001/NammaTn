@@ -159,7 +159,7 @@ export default function Jobs({ initialJobs = [] }) {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 mb-6 space-y-3">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 mb-6 space-y-3">
           <div className="flex items-center justify-between gap-4 mb-2">
             <h3 className="font-semibold text-slate-800 dark:text-white">{T("Post a Work Alert", "வேலை எச்சரிக்கையை பதிவிடுங்கள்")}</h3>
             {isAuthenticated && (
@@ -248,7 +248,7 @@ export default function Jobs({ initialJobs = [] }) {
       {isLoading ? (
         <div className="space-y-3">{Array(4).fill(0).map((_, i) => <div key={i} className="h-24 bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse" />)}</div>
       ) : jobs.length === 0 ? (
-        <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
+        <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700">
           <Briefcase className="w-10 h-10 mx-auto mb-3 text-slate-300" />
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{T("No local job updates yet.", "இன்னும் உள்ளூர் வேலை புதுப்பிப்புகள் இல்லை.")}</p>
           <p className="text-xs text-slate-400 mt-1">{T("Check again later or share a trusted opportunity.", "பின்னர் மீண்டும் சரிபார்க்கவும் அல்லது நம்பகமான வாய்ப்பை பகிரவும்.")}</p>

@@ -12,7 +12,7 @@ export default function DistrictStatsPanel({ stats, lang }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       {/* Metrics */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+      <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4">
         <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">{T("Activity Overview", "செயல்பாடு கண்ணோட்டம்")}</h3>
         <div className="grid grid-cols-2 gap-3">
           {[
@@ -47,7 +47,7 @@ export default function DistrictStatsPanel({ stats, lang }) {
       </div>
 
       {/* Top Categories */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+      <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4">
         <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-1">
           <TrendingUp className="w-3 h-3" /> {T("Top Categories", "முன்னணி வகைகள்")}
         </h3>

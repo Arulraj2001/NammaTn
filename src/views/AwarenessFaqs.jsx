@@ -199,7 +199,7 @@ export default function AwarenessFaqsPage() {
           </div>
         ) : (
           filtered.map((faq, i) => (
-            <div key={faq.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
+            <div key={faq.id} className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-purple-500 rounded-2xl overflow-hidden transition-all">
               <button
                 onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
                 className="w-full flex items-start gap-3 px-5 py-4 text-left"

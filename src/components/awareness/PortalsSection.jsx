@@ -118,7 +118,7 @@ export default function PortalsSection({ lang = "en" }) {
           return (
             <div
               key={portal.id}
-              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 hover:shadow-md transition-shadow flex flex-col items-center text-center"
+              className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-4 hover:shadow-md transition-all flex flex-col items-center text-center"
             >
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2.5 ${portal.color}`}>
                 <Icon className="w-5 h-5" />

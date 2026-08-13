@@ -192,7 +192,7 @@ export default function AwarenessGuidesPage() {
           const isOpen = openId === guide.id;
           const steps = T(guide.steps_en, guide.steps_ta);
           return (
-            <div key={guide.id} id={guide.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
+            <div key={guide.id} id={guide.id} className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl overflow-hidden transition-all">
               <button
                 onClick={() => setOpenId(isOpen ? null : guide.id)}
                 className="w-full flex items-center justify-between p-5 text-left gap-3"

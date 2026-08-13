@@ -133,7 +133,7 @@ export default function AwarenessEmergencyPage() {
               {cat.entries.map((entry) => (
                 <div
                   key={entry.number}
-                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex items-center gap-4 hover:shadow-md transition-shadow"
+                  className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-red-500 rounded-2xl p-4 flex items-center gap-4 hover:shadow-md transition-all"
                 >
                   <a
                     href={`tel:${entry.number.replace(/\s/g, "")}`}

@@ -36,7 +36,7 @@ export default function Offices() {
         {OFFICES.map((office) => (
           <Link key={office.slug}
             to={`/office/${office.slug}${selectedDistrict ? `?district=${selectedDistrict}` : ""}`}
-            className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all group"
+            className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 hover:shadow-md hover:border-blue-500 dark:hover:border-blue-500 transition-all group"
           >
             <div className="text-3xl mb-3">{office.icon}</div>
             <h3 className="font-semibold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 mb-1">

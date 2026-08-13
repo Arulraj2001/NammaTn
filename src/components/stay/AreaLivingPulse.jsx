@@ -53,7 +53,7 @@ export default function AreaLivingPulse({ districtSlug, districtName, areaSlug, 
   const trafficIssues = situations.filter(s => s.situation_type === "traffic").length;
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl border border-indigo-200 dark:border-indigo-800 p-4">
+    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl border-2 border-indigo-300 dark:border-indigo-700 p-4">
       <div className="flex items-center gap-2 mb-3">
         <Activity className="w-4 h-4 text-indigo-600" />
         <h3 className="font-semibold text-indigo-900 dark:text-indigo-200 text-sm">

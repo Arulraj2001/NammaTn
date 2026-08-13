@@ -132,7 +132,7 @@ export default function SchemesSection({ lang = "en" }) {
           return (
             <div
               key={scheme.id}
-              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col"
+              className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-5 hover:shadow-md transition-all flex flex-col"
             >
               <div className="flex items-start gap-3 mb-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${scheme.iconBg}`}>

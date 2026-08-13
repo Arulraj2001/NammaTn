@@ -86,7 +86,7 @@ export default function WhatToDoSection({ lang = "en" }) {
             <Link
               key={guide.id}
               to={`/awareness/guides#${guide.id}`}
-              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 hover:shadow-md transition-shadow flex flex-col items-center text-center group"
+              className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-4 hover:shadow-md transition-all flex flex-col items-center text-center group"
             >
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-3 ${guide.color}`}>
                 <Icon className="w-5 h-5" />

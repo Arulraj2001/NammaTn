@@ -134,10 +134,10 @@ export default function QuickResourceCards({ lang = "en" }) {
           return (
             <div
               key={r.id}
-              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden hover:shadow-md transition-shadow flex flex-col"
+              className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl overflow-hidden hover:shadow-md transition-all flex flex-col"
             >
               {/* Coloured header */}
-              <div className={`px-4 py-3.5 ${r.headerColor} border-b ${r.borderColor}`}>
+              <div className={`px-4 py-3.5 ${r.headerColor} border-b-2 ${r.borderColor}`}>
                 <div className="flex items-center gap-2.5 mb-1">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${r.iconColor}`}>
                     <Icon className="w-4 h-4" />

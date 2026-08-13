@@ -46,7 +46,7 @@ export default function CitizenInfoCard({ lang = "en" }) {
         const items = lang === "ta" ? r.ta_items : r.en_items;
         const title = lang === "ta" ? r.ta_title : r.en_title;
         return (
-          <div key={r.en_title} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+          <div key={r.en_title} className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-4 transition-all">
             <div className="flex items-center gap-2 mb-3">
               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${r.color}`}>
                 <Icon className="w-4 h-4" />

@@ -28,7 +28,7 @@ const TABS = [
 const SKELETON = Array(6).fill(0);
 
 function ListingSkeleton() {
-  return <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 h-64 animate-pulse" />;
+  return <div className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 h-64 animate-pulse" />;
 }
 
 export default function Stay({ initialListings = [] }) {

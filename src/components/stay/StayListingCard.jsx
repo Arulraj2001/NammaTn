@@ -70,7 +70,7 @@ export default function StayListingCard({ listing, onReport }) {
   const maskedWA = listing.whatsapp ? listing.whatsapp.slice(0, 4) + "XXXXXX" : null;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 hover:border-indigo-500 overflow-hidden hover:shadow-md transition-all">
       {/* Images */}
       {listing.image_urls?.length > 0 && (
         <div className="relative h-40 bg-slate-100 dark:bg-slate-700 overflow-hidden">

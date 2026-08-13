@@ -72,7 +72,7 @@ export default function JobCard({ item }) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-md transition-all">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 hover:border-green-500 p-4 hover:shadow-md transition-all">
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
           <Briefcase className="w-5 h-5 text-green-600 dark:text-green-400" />

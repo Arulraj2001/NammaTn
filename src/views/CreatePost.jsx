@@ -401,7 +401,7 @@ export default function CreatePost() {
                 className={`p-3 rounded-2xl border-2 text-left transition-all relative ${
                   selectedType === value
                     ? `${COLOR_MAP[color]} border-2`
-                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300"
+                    : "border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-500"
                 }`}
               >
                 {isCivic && (
