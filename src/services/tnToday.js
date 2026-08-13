@@ -24,7 +24,7 @@ const triggerArticleIndexing = (article) => {
 export const getFeaturedTnToday = async () => {
   const { data, error } = await supabase
     .from(TABLE)
-    .select("id,title,slug,subtitle,featured_image,category,author_name,publish_date,reading_time,summary,is_featured")
+    .select("id,title,title_ta,slug,subtitle,subtitle_ta,featured_image,category,author_name,publish_date,reading_time,summary,summary_ta,is_featured")
     .eq("status", "published")
     .eq("is_featured", true)
     .order("publish_date", { ascending: false })
@@ -49,7 +49,7 @@ export const getPublishedTnToday = async (arg = null) => {
 
   let q = supabase
     .from(TABLE)
-    .select("id,title,slug,subtitle,featured_image,category,author_name,publish_date,reading_time,summary,is_featured,view_count")
+    .select("id,title,title_ta,slug,subtitle,subtitle_ta,featured_image,category,author_name,publish_date,reading_time,summary,summary_ta,is_featured,view_count")
     .eq("status", "published")
     .order("publish_date", { ascending: false })
     .range(offset, offset + limit - 1);
@@ -106,29 +106,64 @@ export const adminGetTnTodayById = async (id) => {
 
 // ─── Admin writes ─────────────────────────────────────────────────────────────
 
+const stripTamilFields = (payload) => {
+  // eslint-disable-next-line no-unused-vars
+  const { title_ta, subtitle_ta, summary_ta, content_ta, why_it_matters_ta, ...clean } = payload;
+  return clean;
+};
+
 /** Create a new article */
 export const createTnToday = async (payload) => {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert(withCanonicalOwnership(payload))
-    .select()
-    .single();
-  if (error) throw error;
-  triggerArticleIndexing(data);
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .insert(withCanonicalOwnership(payload))
+      .select()
+      .single();
+    if (error) throw error;
+    triggerArticleIndexing(data);
+    return data;
+  } catch (err) {
+    if (err.message && (err.message.includes("column") || err.message.includes("schema cache"))) {
+      const { data, error } = await supabase
+        .from(TABLE)
+        .insert(withCanonicalOwnership(stripTamilFields(payload)))
+        .select()
+        .single();
+      if (error) throw error;
+      triggerArticleIndexing(data);
+      return data;
+    }
+    throw err;
+  }
 };
 
 /** Update an existing article */
 export const updateTnToday = async (id, payload) => {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update({ ...withCanonicalOwnership(payload), updated_date: new Date().toISOString() })
-    .eq("id", id)
-    .select()
-    .single();
-  if (error) throw error;
-  triggerArticleIndexing(data);
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .update({ ...withCanonicalOwnership(payload), updated_date: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    triggerArticleIndexing(data);
+    return data;
+  } catch (err) {
+    if (err.message && (err.message.includes("column") || err.message.includes("schema cache"))) {
+      const { data, error } = await supabase
+        .from(TABLE)
+        .update({ ...withCanonicalOwnership(stripTamilFields(payload)), updated_date: new Date().toISOString() })
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      triggerArticleIndexing(data);
+      return data;
+    }
+    throw err;
+  }
 };
 
 /** Delete an article */

@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
+
 // ─── Field serializers (array of objects → plain text expected by article view) ──
 function serialiseKeyFacts(raw) {
   if (!raw) return "";
@@ -80,8 +82,10 @@ function normaliseArticle(raw) {
 
   return {
     title,
+    title_ta:            raw.title_ta || "",
     slug,
     subtitle:            raw.subtitle || raw.subheading || raw.deck || "",
+    subtitle_ta:         raw.subtitle_ta || "",
     featured_image:      raw.featured_image || raw.image || raw.cover_image || "",
     category,
     author_name:         raw.author_name || raw.author || "VizhiTN Editorial Team",
@@ -89,8 +93,11 @@ function normaliseArticle(raw) {
     status:              "draft",
     reading_time:        raw.reading_time || estimateReadingTime(content) || 5,
     content,
+    content_ta:          raw.content_ta || "",
     summary:             raw.summary || raw.excerpt || raw.description || "",
+    summary_ta:          raw.summary_ta || "",
     why_it_matters:      raw.why_it_matters || raw.significance || "",
+    why_it_matters_ta:   raw.why_it_matters_ta || "",
     key_facts:           serialiseKeyFacts(raw.key_facts || raw.facts),
     timeline:            serialiseTimeline(raw.timeline),
     official_sources:    serialiseLinks(raw.official_sources || raw.sources),
@@ -271,7 +278,25 @@ export default function ImportTnToday({ onDone }) {
 
     for (const article of articles) {
       try {
-        await createTnToday(article);
+        const payload = { ...article };
+        // Auto-translate if Tamil version is missing
+        if (!payload.title_ta && payload.title) {
+          payload.title_ta = await translateTextToTamil(payload.title);
+        }
+        if (!payload.subtitle_ta && payload.subtitle) {
+          payload.subtitle_ta = await translateTextToTamil(payload.subtitle);
+        }
+        if (!payload.summary_ta && payload.summary) {
+          payload.summary_ta = await translateTextToTamil(payload.summary);
+        }
+        if (!payload.why_it_matters_ta && payload.why_it_matters) {
+          payload.why_it_matters_ta = await translateTextToTamil(payload.why_it_matters);
+        }
+        if (!payload.content_ta && payload.content) {
+          payload.content_ta = await translateHtmlToTamil(payload.content);
+        }
+
+        await createTnToday(payload);
         success.push(article.title);
       } catch (e) {
         failed.push({ title: article.title, reason: e.message });

@@ -9,16 +9,21 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { TN_TODAY_CATEGORIES as CATEGORIES } from '@/lib/tnTodayCategories';
+import { useLanguage } from "@/context/LanguageContext";
 
 // ─── Featured article hero card ───────────────────────────────────────────────
 function FeaturedCard({ article }) {
+  const { lang } = useLanguage();
   const cat = CATEGORIES.find(c => c.value === article.category);
+  const displayTitle = (lang === "ta" && article.title_ta) ? article.title_ta : article.title;
+  const displaySubtitle = (lang === "ta" && article.subtitle_ta) ? article.subtitle_ta : article.subtitle;
+
   return (
     <Link to={`/tn-today/${article.slug}`}
       className="block relative overflow-hidden rounded-2xl group shadow-lg hover:shadow-xl transition-shadow border-2 border-slate-300 dark:border-slate-700">
       {article.featured_image ? (
         <>
-          <img src={article.featured_image} alt={article.title}
+          <img src={article.featured_image} alt={displayTitle}
             className="w-full h-[300px] sm:h-[400px] object-cover group-hover:scale-[1.01] transition-transform duration-500" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
         </>
@@ -29,7 +34,7 @@ function FeaturedCard({ article }) {
       <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-blue-600 text-white uppercase tracking-wide shadow-sm">
-            📰 TN TODAY · TODAY'S STORY
+            📰 TN TODAY · {lang === "ta" ? "இன்றைய செய்தி" : "TODAY'S STORY"}
           </span>
           {cat?.value && (
             <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-white/20 text-white border border-white/30 uppercase">
@@ -38,10 +43,10 @@ function FeaturedCard({ article }) {
           )}
         </div>
         <h2 className="text-xl sm:text-2xl font-extrabold text-white leading-tight mb-2 group-hover:text-blue-200 transition-colors">
-          {article.title}
+          {displayTitle}
         </h2>
-        {article.subtitle && (
-          <p className="text-sm text-white/90 font-medium line-clamp-2 mb-3">{article.subtitle}</p>
+        {displaySubtitle && (
+          <p className="text-sm text-white/90 font-medium line-clamp-2 mb-3">{displaySubtitle}</p>
         )}
         <div className="flex items-center gap-3 text-white/80 text-xs font-bold">
           <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-blue-300" />
@@ -49,7 +54,7 @@ function FeaturedCard({ article }) {
           </span>
           <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-amber-300" />{article.reading_time || 5} min read</span>
           <span className="ml-auto flex items-center gap-1 text-white font-extrabold text-sm group-hover:gap-2 transition-all">
-            Read Full Story <ArrowRight className="w-4 h-4" />
+            {lang === "ta" ? "முழு கதை வாசியுங்கள்" : "Read Full Story"} <ArrowRight className="w-4 h-4" />
           </span>
         </div>
       </div>
@@ -59,12 +64,16 @@ function FeaturedCard({ article }) {
 
 // ─── Article list card ────────────────────────────────────────────────────────
 function ArticleCard({ article }) {
+  const { lang } = useLanguage();
   const cat = CATEGORIES.find(c => c.value === article.category);
+  const displayTitle = (lang === "ta" && article.title_ta) ? article.title_ta : article.title;
+  const displaySubtitle = (lang === "ta" && article.subtitle_ta) ? article.subtitle_ta : article.subtitle;
+
   return (
     <Link to={`/tn-today/${article.slug}`}
       className="flex gap-4 bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all duration-200 group">
       {article.featured_image ? (
-        <img src={article.featured_image} alt={article.title}
+        <img src={article.featured_image} alt={displayTitle}
           className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0 group-hover:scale-105 transition-transform duration-300" />
       ) : (
         <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-900/60 flex items-center justify-center flex-shrink-0">
@@ -80,10 +89,10 @@ function ArticleCard({ article }) {
           )}
         </div>
         <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-1.5">
-          {article.title}
+          {displayTitle}
         </h3>
-        {article.subtitle && (
-          <p className="text-xs text-slate-700 dark:text-slate-300 line-clamp-2 leading-relaxed mb-2 font-medium">{article.subtitle}</p>
+        {displaySubtitle && (
+          <p className="text-xs text-slate-700 dark:text-slate-300 line-clamp-2 leading-relaxed mb-2 font-medium">{displaySubtitle}</p>
         )}
         <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-bold">
           {article.publish_date && (

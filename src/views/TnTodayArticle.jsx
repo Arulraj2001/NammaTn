@@ -12,7 +12,9 @@ import {
 } from "lucide-react";
 import { setPageMeta } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 import { getTnTodayCanonical } from "@/lib/tnTodayUrl";
+import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -183,15 +185,16 @@ function ArticleSkeleton() {
 // Text descriptions (stored from JSON import) are safely ignored.
 const isImageUrl = (v) => typeof v === "string" && /^https?:\/\/|^blob:|^data:image\//i.test(v.trim());
 
-export default function TnTodayArticle({ initialSlug, initialArticle, initialRelatedArticles = [] }) {
-  const routeParams = useParams();
-  const slug = initialSlug || routeParams.slug;
-  const navigate = useNavigate();
+export default function TnTodayArticle({ initialArticle = null, initialRelatedArticles = [] }) {
+  const { slug } = useParams();
+  const { lang } = useLanguage();
+  const T = (en, ta) => lang === "ta" ? ta : en;
+  const [autoTa, setAutoTa] = React.useState(null);
 
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ["tn-today-article", slug],
     queryFn: () => getTnTodayBySlug(slug),
-    placeholderData: initialArticle || undefined,
+    placeholderData: initialArticle?.slug === slug ? initialArticle : undefined,
     staleTime: 0,
     refetchOnMount: true,
     enabled: !!slug,
@@ -207,6 +210,35 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
 
   const moreArticles = relatedArticles.filter(a => a.slug !== slug).slice(0, 3);
 
+  // On-the-fly translation for articles published before Tamil columns existed
+  useEffect(() => {
+    if (lang === "ta" && article && !article.title_ta && !autoTa) {
+      let isMounted = true;
+      async function translateOnFly() {
+        try {
+          const t = await translateTextToTamil(article.title);
+          const s = await translateTextToTamil(article.subtitle);
+          const w = await translateTextToTamil(article.why_it_matters);
+          const c = await translateHtmlToTamil(article.content);
+          if (isMounted) {
+            setAutoTa({ title_ta: t, subtitle_ta: s, why_it_matters_ta: w, content_ta: c });
+          }
+        } catch {
+          // ignore error
+        }
+      }
+      translateOnFly();
+      return () => { isMounted = false; };
+    }
+  }, [lang, article, autoTa]);
+
+  // Determine bilingual content
+  const displayTitle = (lang === "ta") ? (article?.title_ta || autoTa?.title_ta || article?.title) : article?.title;
+  const displaySubtitle = (lang === "ta") ? (article?.subtitle_ta || autoTa?.subtitle_ta || article?.subtitle) : article?.subtitle;
+  const displayWhyItMatters = (lang === "ta") ? (article?.why_it_matters_ta || autoTa?.why_it_matters_ta || article?.why_it_matters) : article?.why_it_matters;
+  const rawHtml = (lang === "ta") ? (article?.content_ta || autoTa?.content_ta || article?.content) : article?.content;
+  const safeArticleHtml = typeof window !== "undefined" ? DOMPurify.sanitize(rawHtml || "") : "";
+
   // SEO & structured data
   useEffect(() => {
     if (!article) return;
@@ -214,8 +246,8 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
     const image = article.social_image || article.featured_image || "";
 
     setPageMeta({
-      title: article.seo_title || article.title,
-      description: article.seo_description || article.subtitle || article.summary || "",
+      title: displayTitle || article.seo_title || article.title,
+      description: displaySubtitle || article.seo_description || article.subtitle || article.summary || "",
       image,
       url: canonicalUrl,
       canonical: canonicalUrl,
@@ -225,7 +257,7 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
     // Increment view count (fire and forget)
     if (article.id) incrementTnTodayView(article.id).catch(() => {});
 
-  }, [article]);
+  }, [article, displayTitle, displaySubtitle]);
 
   if (isLoading) return <ArticleSkeleton />;
 
@@ -233,10 +265,10 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center py-20">
         <BookOpen className="w-14 h-14 text-slate-300 mb-4" />
-        <h1 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Story Not Found</h1>
-        <p className="text-slate-500 mb-6">This TN Today story isn't available or hasn't been published yet.</p>
+        <h1 className="text-xl font-bold text-slate-800 dark:text-white mb-2">{T("Story Not Found", "செய்தி கிடைக்கவில்லை")}</h1>
+        <p className="text-slate-500 mb-6">{T("This TN Today story isn't available or hasn't been published yet.", "இந்த செய்தி தற்சமயம் கிடைக்கவில்லை.")}</p>
         <Link to="/tn-today" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to TN Today
+          <ArrowLeft className="w-4 h-4" /> {T("Back to TN Today", "TN Today திரும்பவும்")}
         </Link>
       </div>
     );
@@ -245,9 +277,6 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
   const cat = CATEGORY_CONFIG[article.category] || CATEGORY_CONFIG.general;
   const pubDate = article.publish_date ? new Date(article.publish_date) : new Date(article.created_date);
   const pageUrl = getTnTodayCanonical(article.slug);
-  const safeArticleHtml = article.safe_content || (
-    typeof window !== "undefined" ? DOMPurify.sanitize(article.content || "") : ""
-  );
 
   const keyFacts = parsePipeLines(article.key_facts);
   const timelineEvents = parsePipeLines(article.timeline);
@@ -262,11 +291,11 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
           <div className="flex items-center gap-2">
             <span className="font-bold tracking-wide">📰 TN TODAY</span>
             <span className="opacity-60">·</span>
-            <span className="opacity-80">Today's most important story from Tamil Nadu</span>
+            <span className="opacity-80">{T("Today's most important story from Tamil Nadu", "தமிழ்நாட்டின் இன்றைய முக்கியமான செய்தி")}</span>
           </div>
           <div className="flex items-center gap-1 opacity-80">
             <Clock className="w-3 h-3" />
-            <span>Published daily at 8:00 AM</span>
+            <span>{T("Published daily at 8:00 AM", "தினமும் காலை 8:00 மணிக்கு வெளியீடு")}</span>
           </div>
         </div>
       </div>
@@ -274,13 +303,13 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
       {/* ── Breadcrumb ── */}
       <nav className="max-w-6xl mx-auto px-4 py-3" aria-label="Breadcrumb">
         <ol className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
-          <li><Link to="/" className="hover:text-blue-600 transition-colors">Home</Link></li>
+          <li><Link to="/" className="hover:text-blue-600 transition-colors">{T("Home", "முகப்பு")}</Link></li>
           <ChevronRight className="w-3 h-3 flex-shrink-0" />
           <li><Link to="/tn-today" className="hover:text-blue-600 transition-colors">TN Today</Link></li>
           <ChevronRight className="w-3 h-3 flex-shrink-0" />
           <li><Link to={`/tn-today/category/${article.category}`} className="hover:text-blue-600 transition-colors capitalize">{article.category}</Link></li>
           <ChevronRight className="w-3 h-3 flex-shrink-0" />
-          <li className="text-slate-700 dark:text-slate-300 truncate max-w-[200px]">{article.title}</li>
+          <li className="text-slate-700 dark:text-slate-300 truncate max-w-[200px]">{displayTitle}</li>
         </ol>
       </nav>
 
@@ -299,13 +328,13 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
 
             {/* Title */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight mb-3">
-              {article.title}
+              {displayTitle}
             </h1>
 
             {/* Subtitle */}
-            {article.subtitle && (
+            {displaySubtitle && (
               <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-4 font-normal">
-                {article.subtitle}
+                {displaySubtitle}
               </p>
             )}
 
@@ -324,28 +353,30 @@ export default function TnTodayArticle({ initialSlug, initialArticle, initialRel
                 {article.reading_time || 5} min read
               </span>
               <button onClick={() => {
-                navigator.share?.({ title: article.title, url: pageUrl }) ||
+                navigator.share?.({ title: displayTitle, url: pageUrl }) ||
                 navigator.clipboard.writeText(pageUrl);
               }} className="flex items-center gap-1.5 ml-auto text-blue-600 hover:text-blue-700 font-medium">
-                <Share2 className="w-3.5 h-3.5" /> Share
+                <Share2 className="w-3.5 h-3.5" /> {T("Share", "பகிர்")}
               </button>
             </div>
 
             {/* Featured image — only render when value is an actual URL */}
             {isImageUrl(article.featured_image) && (
               <div className="mb-6 rounded-2xl overflow-hidden shadow-lg">
-                <img src={article.featured_image} alt={article.title}
+                <img src={article.featured_image} alt={displayTitle}
                   className="w-full h-[260px] sm:h-[380px] object-cover" />
               </div>
             )}
 
             {/* Why it matters callout */}
-            {article.why_it_matters && (
+            {displayWhyItMatters && (
               <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6">
                 <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide mb-1">Why this matters to Tamil Nadu</p>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{article.why_it_matters}</p>
+                  <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide mb-1">
+                    {T("Why this matters to Tamil Nadu", "இது ஏன் தமிழ்நாட்டிற்கு முக்கியம்")}
+                  </p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{displayWhyItMatters}</p>
                 </div>
               </div>
             )}

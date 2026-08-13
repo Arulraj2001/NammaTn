@@ -14,10 +14,12 @@ import {
   Plus, Edit, Trash2, Eye, Save, Send, Archive, Star, StarOff,
   Clock, Calendar, Tag, FileText, Globe, Search, X, ArrowLeft,
   CheckCircle2, AlertCircle, BookOpen, ChevronDown, Image, Link2,
-  List, RefreshCw, FileJson
+  List, RefreshCw, FileJson, Loader2
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
+
+import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
 
 const CATEGORIES = [
   { value: "infrastructure", label: "🏗️ Infrastructure", color: "bg-blue-100 text-blue-700" },
@@ -43,9 +45,9 @@ const STATUS_COLORS = {
 };
 
 const EMPTY_FORM = {
-  title: "", slug: "", subtitle: "", featured_image: "", category: "general",
+  title: "", title_ta: "", slug: "", subtitle: "", subtitle_ta: "", featured_image: "", category: "general",
   author_name: "VizhiTN Editorial Team", publish_date: "", status: "draft",
-  reading_time: 5, content: "", summary: "", why_it_matters: "",
+  reading_time: 5, content: "", content_ta: "", summary: "", summary_ta: "", why_it_matters: "", why_it_matters_ta: "",
   key_facts: "", timeline: "", official_sources: "", related_civic_links: "",
   seo_title: "", seo_description: "", seo_keywords: "",
   social_image: "", is_featured: false,
@@ -169,6 +171,61 @@ export default function AdminTnToday() {
     !searchQ || a.title.toLowerCase().includes(searchQ.toLowerCase())
   );
 
+  const [langSubTab, setLangSubTab] = useState("en");
+  const [translating, setTranslating] = useState(false);
+
+  const handleAutoTranslate = async () => {
+    if (!form.title && !form.content) {
+      toast({ description: "Please enter English title or content first.", variant: "destructive" });
+      return;
+    }
+    setTranslating(true);
+    try {
+      console.log("[TRANSLATE] Starting translation...");
+      console.log("[TRANSLATE] form.title:", JSON.stringify(form.title?.slice(0, 80)));
+      console.log("[TRANSLATE] form.subtitle:", JSON.stringify(form.subtitle?.slice(0, 80)));
+      console.log("[TRANSLATE] form.content length:", form.content?.length, "chars");
+
+      const title_ta = await translateTextToTamil(form.title);
+      console.log("[TRANSLATE] title_ta result:", JSON.stringify(title_ta?.slice(0, 80)));
+
+      const subtitle_ta = await translateTextToTamil(form.subtitle);
+      console.log("[TRANSLATE] subtitle_ta result:", JSON.stringify(subtitle_ta?.slice(0, 80)));
+
+      const summary_ta = await translateTextToTamil(form.summary);
+      console.log("[TRANSLATE] summary_ta result:", JSON.stringify(summary_ta?.slice(0, 80)));
+
+      const why_it_matters_ta = await translateTextToTamil(form.why_it_matters);
+      console.log("[TRANSLATE] why_it_matters_ta result:", JSON.stringify(why_it_matters_ta?.slice(0, 80)));
+
+      const content_ta = await translateHtmlToTamil(form.content);
+      console.log("[TRANSLATE] content_ta result length:", content_ta?.length, "chars");
+      console.log("[TRANSLATE] content_ta first 200 chars:", JSON.stringify(content_ta?.slice(0, 200)));
+
+      const isSameAsEnglish = title_ta === form.title;
+      console.log("[TRANSLATE] title_ta === form.title (UNCHANGED)?", isSameAsEnglish);
+
+      setForm(prev => ({
+        ...prev,
+        title_ta,
+        subtitle_ta,
+        summary_ta,
+        why_it_matters_ta,
+        content_ta,
+      }));
+      setLangSubTab("ta");
+      toast({ description: isSameAsEnglish
+        ? "⚠️ Translation API may not be reachable. Check browser console (F12) for details."
+        : "⚡ Auto-translated to Tamil! Review or edit in the Tamil tab below."
+      });
+    } catch (err) {
+      console.error("[TRANSLATE] ERROR:", err);
+      toast({ description: `Translation failed: ${err.message}`, variant: "destructive" });
+    } finally {
+      setTranslating(false);
+    }
+  };
+
   const setField = useCallback((key, val) => setForm(f => ({ ...f, [key]: val })), []);
 
   // Auto-generate slug from title
@@ -191,6 +248,7 @@ export default function AdminTnToday() {
   const handleNew = () => {
     setEditingId(null);
     setForm({ ...EMPTY_FORM, publish_date: new Date().toISOString().slice(0, 16) });
+    setLangSubTab("en");
     setView("editor");
     setActiveEditorTab("content");
   };
@@ -410,13 +468,77 @@ export default function AdminTnToday() {
       {/* ── TAB: CONTENT ── */}
       {activeEditorTab === "content" && (
         <div className="space-y-5">
+          {/* Language Switcher Sub-bar & Auto-Translate Action */}
+          <div className="flex items-center justify-between bg-slate-100 dark:bg-slate-800/80 p-2 rounded-2xl border border-slate-200 dark:border-slate-700 flex-wrap gap-2">
+            <div className="flex items-center gap-1 bg-white dark:bg-slate-900 p-1 rounded-xl shadow-xs border border-slate-200 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setLangSubTab("en")}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
+                  langSubTab === "en"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                )}
+              >
+                <span>🇬🇧</span> English Content
+              </button>
+              <button
+                type="button"
+                onClick={() => setLangSubTab("ta")}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
+                  langSubTab === "ta"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                )}
+              >
+                <span>🇮🇳</span> தமிழ் (Tamil Version)
+                {form.title_ta && <span className="w-2 h-2 rounded-full bg-green-400 inline-block" title="Tamil content available" />}
+              </button>
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleAutoTranslate}
+              disabled={translating}
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-sm flex items-center gap-1.5"
+            >
+              {translating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>⚡</span>}
+              {translating ? "Translating to Tamil…" : "Auto-Translate to Tamil (தானியங்கி தமிழாக்கம்)"}
+            </Button>
+          </div>
+
           {/* Core fields */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 space-y-4">
-            <Field label="Headline / Title" required>
-              <Input value={form.title} onChange={e => setField("title", e.target.value)}
-                placeholder="Chennai Metro Phase 2 Construction Reaches New Milestone"
-                className="text-base font-semibold" />
-            </Field>
+            {langSubTab === "en" ? (
+              <>
+                <Field label="Headline / Title (English)" required>
+                  <Input value={form.title} onChange={e => setField("title", e.target.value)}
+                    placeholder="Chennai Metro Phase 2 Construction Reaches New Milestone"
+                    className="text-base font-semibold" />
+                </Field>
+
+                <Field label="Subtitle / Summary (English)" hint="Shown under the headline">
+                  <Input value={form.subtitle} onChange={e => setField("subtitle", e.target.value)}
+                    placeholder="Brief intro that appears under the headline" />
+                </Field>
+              </>
+            ) : (
+              <>
+                <Field label="Headline / Title (தமிழ் தலைப்பு)" hint="Tamil version of headline">
+                  <Input value={form.title_ta || ""} onChange={e => setField("title_ta", e.target.value)}
+                    placeholder="சென்னை மெட்ரோ கட்டம் 2 கட்டுமானம் புதிய மைல்கல்லை எட்டியது"
+                    className="text-base font-semibold" />
+                </Field>
+
+                <Field label="Subtitle / Summary (தமிழ் துணைத் தலைப்பு)" hint="Tamil version of subtitle">
+                  <Input value={form.subtitle_ta || ""} onChange={e => setField("subtitle_ta", e.target.value)}
+                    placeholder="தலைப்பின் கீழ் தோன்றும் சுருக்கமான அறிமுகம்" />
+                </Field>
+              </>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Slug (URL)" required hint="Auto-generated from title">
@@ -437,11 +559,6 @@ export default function AdminTnToday() {
                 </select>
               </Field>
             </div>
-
-            <Field label="Subtitle / Summary" hint="Shown under the headline">
-              <Input value={form.subtitle} onChange={e => setField("subtitle", e.target.value)}
-                placeholder="Brief intro that appears under the headline" />
-            </Field>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Field label="Author Name">
@@ -478,15 +595,32 @@ export default function AdminTnToday() {
 
           {/* Main content editor */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
-            <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-3 flex items-center gap-2">
-              <Edit className="w-4 h-4 text-blue-600" /> Main Article Content
+            <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-3 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Edit className="w-4 h-4 text-blue-600" />
+                {langSubTab === "en" ? "Main Article Content (English)" : "Main Article Content (தமிழ் உள்ளடக்கம்)"}
+              </span>
+              <span className="text-xs font-normal text-slate-500">
+                {langSubTab === "en" ? "Editing English Version" : "Editing Tamil Version"}
+              </span>
             </h3>
-            <RichEditor
-              value={form.content}
-              onChange={v => setField("content", v)}
-              placeholder="Write the full article body here. Use headings, lists, blockquotes, and images..."
-              minHeight="min-h-[400px]"
-            />
+            {langSubTab === "en" ? (
+              <RichEditor
+                key="editor-en"
+                value={form.content}
+                onChange={v => setField("content", v)}
+                placeholder="Write the full article body here in English..."
+                minHeight="min-h-[400px]"
+              />
+            ) : (
+              <RichEditor
+                key="editor-ta"
+                value={form.content_ta || ""}
+                onChange={v => setField("content_ta", v)}
+                placeholder="தமிழ் கட்டுரை உள்ளடக்கத்தை இங்கே எழுதவும் அல்லது 'Auto-Translate' பொத்தானை பயன்படுத்தவும்..."
+                minHeight="min-h-[400px]"
+              />
+            )}
           </div>
         </div>
       )}
