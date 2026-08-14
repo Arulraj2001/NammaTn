@@ -11,6 +11,7 @@ import { CATEGORIES } from "@/lib/categories";
 import PostCard from "@/components/posts/PostCard";
 import PostSkeleton from "@/components/posts/PostSkeleton";
 import { getActivePosts } from "@/services/posts";
+import { isPubliclyVisible } from "@/lib/visibility";
 import AdSlot from "@/components/ads/AdSlot";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
@@ -123,8 +124,8 @@ export default function Explore({ initialPosts = [] }) {
     const userLng = lngParam ? parseFloat(lngParam) : null;
 
     return posts.filter((p) => {
-      // Exclude duplicate_invalid from public feed
-      if (p.civic_status === "duplicate_invalid") return false;
+      // Visibility guard
+      if (!isPubliclyVisible(p)) return false;
 
       // Type filter: "civic" means has civic_receipt_id
       if (typeFilter === "civic") { if (!p.civic_receipt_id) return false; }

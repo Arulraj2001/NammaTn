@@ -8,6 +8,7 @@ import { getCategoryBySlug } from "@/lib/categories";
 import PostCard from "@/components/posts/PostCard";
 import PostSkeleton from "@/components/posts/PostSkeleton";
 import { getCategoryPosts } from "@/services/posts";
+import { isPubliclyVisible } from "@/lib/visibility";
 import { getCategoryStats } from "@/services/analytics";
 import CategoryStatsPanel from "@/components/category/CategoryStatsPanel";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -46,7 +47,7 @@ export default function CategoryDetail({ initialSlug, initialData }) {
     staleTime: 120_000,
   });
 
-  const sorted = [...posts].sort((a, b) => {
+  const sorted = [...posts].filter(isPubliclyVisible).sort((a, b) => {
     if (sort === "-upvotes") return (b.upvotes || 0) - (a.upvotes || 0);
     return new Date(b.created_date) - new Date(a.created_date);
   });
