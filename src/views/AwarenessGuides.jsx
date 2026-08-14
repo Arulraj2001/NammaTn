@@ -5,6 +5,7 @@ import { Zap, Droplets, CreditCard, AlertTriangle, Ambulance, FileText, ArrowLef
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { injectFAQStructuredData } from "@/lib/seo";
 
 const ALL_GUIDES = [
   {
@@ -39,103 +40,101 @@ const ALL_GUIDES = [
     title_en: "Water Supply not available",
     title_ta: "குடிநீர் வழங்கல் இல்லை",
     steps_en: [
-      "Check if your overhead tank is empty — sometimes supply comes at odd hours.",
-      "Contact CMWSSB (Chennai) or TWAD Board (rest of TN) for your area's schedule.",
-      "CMWSSB helpline: 044-45674567 (Chennai residents).",
-      "TWAD helpline: 044-28592828 or visit twad.tn.gov.in.",
-      "For emergency water tanker (Chennai): request via CMWSSB portal.",
+      "Check with neighbours to see if the whole street is affected.",
+      "For Metro Water (Chennai): call 1913 or 044-45674567 to report pipeline issues.",
+      "For TWAD / District Corporation: contact local Ward Councillor or Assistant Engineer (AE).",
+      "Book paid water tanker via chennaimetrowater.tn.gov.in if main supply is delayed.",
+      "Post photos on VizhiTN to document community impact and press for official action.",
     ],
     steps_ta: [
-      "முதலில் உங்கள் மேற்கூரை தொட்டி காலியாக உள்ளதா சரிபார்க்கவும்.",
-      "உங்கள் பகுதியின் நீர் அட்டவணைக்கு CMWSSB அல்லது TWAD தொடர்பு கொள்ளுங்கள்.",
-      "CMWSSB உதவி: 044-45674567 (சென்னை குடியிருப்பாளர்கள்).",
-      "TWAD உதவி: 044-28592828 அல்லது twad.tn.gov.in செல்லுங்கள்.",
-      "அவசர நீர் டேங்கருக்கு CMWSSB இணையதளம் மூலம் கோரிக்கை அனுப்புங்கள்.",
+      "தெரு முழுவதும் பாதிக்கப்பட்டுள்ளதா என அண்டை வீட்டாருடன் சரிபார்க்கவும்.",
+      "சென்னை மெட்ரோ வாட்டர்: 1913 அல்லது 044-45674567 அழைக்கவும்.",
+      "மாவட்ட மாநகராட்சி / TWAD: உள்ளூர் வார்டு பொறியாளரைத் தொடர்பு கொள்ளவும்.",
+      "தேவையெனில் chennaimetrowater.tn.gov.in மூலம் லாரி தண்ணீர் பதிவு செய்யுங்கள்.",
+      "VizhiTN இல் புகைப்படங்களுடன் பதிவிட்டு அதிகாரிகளுக்கு தெரிவிக்கவும்.",
     ],
-    contacts: [{ label: "CMWSSB (Chennai)", number: "044-45674567" }, { label: "TWAD Board", number: "044-28592828" }],
-    portal: "https://www.chennaimetrowater.tn.gov.in",
-    portal_label_en: "CMWSSB Portal",
-    portal_label_ta: "CMWSSB இணையதளம்",
+    contacts: [{ label: "Metro Water Helpline", number: "1913" }],
+    portal: "https://chennaimetrowater.tn.gov.in",
+    portal_label_en: "Metro Water Booking",
+    portal_label_ta: "மெட்ரோ வாட்டர் பதிவு",
   },
   {
     id: "ration-card",
     icon: CreditCard,
-    color: "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
-    title_en: "Ration Card issue",
-    title_ta: "குடும்ப அட்டை சிக்கல்",
+    color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
+    title_en: "Ration Shop (PDS) Issues",
+    title_ta: "ரேஷன் கடை (PDS) பிரச்சினைகள்",
     steps_en: [
-      "Visit tnpds.gov.in to check your ration card status and update mobile number.",
-      "For a new ration card: apply at tnesevai.tn.gov.in or your nearest e-Sevai centre.",
-      "For Aadhaar seeding: visit tnpds.gov.in > Update Aadhaar.",
-      "For allocation issues: contact your local Taluk Supply Office.",
-      "Helpline: 1967 (PDS Consumer Care).",
+      "For missing monthly commodities: check your TNPDS mobile app for shop stock status.",
+      "To report shop closed during working hours or biometric failure: call 1967 or 1800 425 5901.",
+      "File online complaint at tnpds.gov.in with shop number and Smart Card details.",
+      "Contact Taluk Supply Officer (TSO) or District Supply Officer (DSO) at Collectorate.",
+      "Report overcharging or illegal sale of PDS items on VizhiTN.",
     ],
     steps_ta: [
-      "tnpds.gov.in ல் உங்கள் குடும்ப அட்டை நிலை மற்றும் மொபைல் எண் புதுப்பிக்கவும்.",
-      "புதிய குடும்ப அட்டை: tnesevai.tn.gov.in அல்லது அருகிலுள்ள e-Sevai மையம் செல்லுங்கள்.",
-      "ஆதார் இணைப்பு: tnpds.gov.in > Update Aadhaar.",
-      "ஒதுக்கீடு பிரச்சினைகள்: உங்கள் வட்டார வழங்கல் அலுவலகத்தை தொடர்பு கொள்ளுங்கள்.",
-      "உதவி எண்: 1967 (PDS நுகர்வோர் பராமரிப்பு).",
+      "பொருட்கள் இருப்பு விவரங்களை TNPDS செயலியில் பார்க்கவும்.",
+      "கடை மூடப்பட்டிருந்தால் அல்லது கைரேகை சிக்கல் எனில்: 1967 அல்லது 1800 425 5901 அழைக்கவும்.",
+      "tnpds.gov.in இல் உங்கள் ஸ்மார்ட் கார்டு விவரங்களுடன் புகார் பதிவு செய்யுங்கள்.",
+      "வட்ட வழங்கல் அலுவலர் (TSO) அல்லது மாவட்ட வழங்கல் அலுவலரை தொடர்பு கொள்ளவும்.",
+      "கூடுதல் விலை அல்லது சட்டவிரோத விற்பனை பற்றி VizhiTN இல் பதிவிடவும்.",
     ],
-    contacts: [{ label: "PDS Helpline", number: "1967" }],
+    contacts: [{ label: "PDS Toll Free", number: "1967" }, { label: "Consumer Helpline", number: "1800 425 5901" }],
     portal: "https://www.tnpds.gov.in",
-    portal_label_en: "TN PDS Portal",
-    portal_label_ta: "TN PDS இணையதளம்",
+    portal_label_en: "TNPDS Portal",
+    portal_label_ta: "TNPDS இணையதளம்",
   },
   {
     id: "bribery",
     icon: AlertTriangle,
     color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
-    title_en: "Bribery at a Govt Office",
-    title_ta: "அரசு அலுவலகத்தில் லஞ்சம்",
+    title_en: "Demand for Bribery at Govt Office",
+    title_ta: "அரசு அலுவலகத்தில் லஞ்சக் கோரிக்கை",
     steps_en: [
-      "Do NOT pay. Ask for the officer's name, designation, and department in writing.",
-      "Record the conversation on your phone if safe to do so (legal in TN for self-protection).",
-      "Call Anti-Corruption Helpline 1064 (DVAC, available 24×7).",
-      "File online at vigilance.tn.gov.in — your identity is protected.",
-      "File an RTI at rtionline.gov.in asking why your service is being delayed.",
-      "Also report on VizhiTN — community exposure helps.",
+      "Never pay bribe — it is illegal to both offer and accept bribes under Prevention of Corruption Act.",
+      "Record details: date, officer name/designation, office department, amount demanded.",
+      "Contact Directorate of Vigilance and Anti-Corruption (DVAC) TN: 044-24615929 / 24615949 / 24615989.",
+      "DVAC WhatsApp Helpline: 94981 05884 — message secretly with proof details.",
+      "File anonymous Bribe Report on VizhiTN Bribe Watch dashboard to protect your identity.",
     ],
     steps_ta: [
-      "லஞ்சம் கொடுக்காதீர்கள். அதிகாரியின் பெயர், பதவி, துறை கேளுங்கள்.",
-      "பாதுகாப்பாக இருந்தால் உரையாடலை உங்கள் மொபைலில் பதிவு செய்யுங்கள் (TN சட்டம் அனுமதிக்கிறது).",
-      "ஊழல் தடுப்பு உதவி 1064 (DVAC, 24×7) அழைக்கவும்.",
-      "vigilance.tn.gov.in ல் ஆன்லைனில் புகார் அளிக்கவும் — அடையாளம் பாதுகாக்கப்படும்.",
-      "ஏன் சேவை தாமதமாகிறது என்று rtionline.gov.in ல் RTI கோரிக்கை அனுப்புங்கள்.",
-      "VizhiTN இலும் பதிவிடுங்கள் — சமூக அழுத்தம் பயனுள்ளது.",
+      "லஞ்சம் கொடுக்காதீர்கள் — லஞ்சம் வாங்குவதும் கொடுப்பதும் சட்டப்படி குற்றம்.",
+      "அதிகாரி பெயர், பதவி, அலுவலகம், கோரப்பட்ட தொகை போன்ற விவரங்களை குறிக்கவும்.",
+      "DVAC (லஞ்ச ஒழிப்புத் துறை) தொடர்பு கொள்ளவும்: 044-24615929 / 24615949.",
+      "DVAC WhatsApp: 94981 05884 — ஆதாரம் இருந்தால் ரகசியமாக அனுப்பவும்.",
+      "VizhiTN Bribe Watch இல் பெயர் குறிப்பிடாமல் ரகசியமாக புகார் அளிக்கவும்.",
     ],
-    contacts: [{ label: "DVAC Helpline", number: "1064" }, { label: "CM Grievance", number: "1100" }],
-    portal: "https://vigilance.tn.gov.in",
+    contacts: [{ label: "DVAC TN", number: "044-24615929" }, { label: "DVAC WhatsApp", number: "94981 05884" }],
+    portal: "https://www.dvac.tn.gov.in",
     portal_label_en: "DVAC Portal",
     portal_label_ta: "DVAC இணையதளம்",
   },
   {
-    id: "ambulance",
+    id: "medical-emergency",
     icon: Ambulance,
-    color: "bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400",
-    title_en: "Medical Emergency",
-    title_ta: "மருத்துவ அவசர நிலை",
+    color: "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400",
+    title_en: "Medical Emergency & Govt Hospitals",
+    title_ta: "மருத்துவ அவசரநிலை & அரசு மருத்துவமனைகள்",
     steps_en: [
-      "Call 108 immediately — free GVK EMRI ambulance, available 24×7 across Tamil Nadu.",
-      "If cardiac/stroke: call 112 (integrated emergency) for the fastest response.",
-      "CMCHIS card holders get free treatment up to ₹5 lakh at empanelled hospitals.",
-      "For mental health crisis: iCall helpline 9152987821.",
-      "Know your nearest govt hospital: use the CMCHIS hospital finder at cmchis.com.",
+      "Call 108 immediately for free Government Ambulance service.",
+      "For road accident victims: Chief Minister's Innuyir Kappon 48 scheme covers first 48 hours up to ₹1 Lakh in 600+ empaneled hospitals — no cash needed.",
+      "For Chief Minister's Comprehensive Health Insurance Scheme (CMCHIS): call 1800 425 3993.",
+      "For hospital refusal or poor treatment at Govt Primary Health Centre (PHC): call 104 health helpline.",
+      "Share urgent blood/help requests on VizhiTN Help section for local volunteer response.",
     ],
     steps_ta: [
-      "108 அழையுங்கள் — இலவச GVK EMRI ஆம்புலன்ஸ், தமிழ்நாடு முழுவதும் 24×7.",
-      "இதய நோய்/பக்கவாதம்: விரைவான உதவிக்கு 112 அழைக்கவும்.",
-      "CMCHIS அட்டை வைத்திருப்பவர்கள் அங்கீகரிக்கப்பட்ட மருத்துவமனைகளில் ₹5 லட்சம் வரை இலவச சிகிச்சை.",
-      "மனநல நெருக்கடி: iCall 9152987821.",
-      "அருகிலுள்ள அரசு மருத்துவமனை: cmchis.com ல் மருத்துவமனை தேடுங்கள்.",
+      "இலவச அரசு ஆம்புலன்ஸுக்கு உடனடியாக 108 அழைக்கவும்.",
+      "சாலை விபத்து: இன்னுயிர் காப்போம் 48 திட்டம் மூலம் முதல் 48 மணிநேர சிகிச்சை ₹1 லட்சம் வரை இலவசம்.",
+      "முதல்வரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டம்: 1800 425 3993 அழைக்கவும்.",
+      "மருத்துவமனை மறுப்பு அல்லது சிகிச்சை குறைபாடு எனில் 104 நல்வாழ்வு மையத்தை தொடர்பு கொள்ளவும்.",
+      "அவசர ரத்த உதவிக்கு VizhiTN Help பகுதியில் பதிவிடுங்கள்.",
     ],
-    contacts: [{ label: "Free Ambulance", number: "108" }, { label: "Emergency", number: "112" }],
-    portal: "https://www.cmchis.com",
-    portal_label_en: "CMCHIS Portal",
-    portal_label_ta: "CMCHIS இணையதளம்",
+    contacts: [{ label: "Ambulance", number: "108" }, { label: "Health Helpline", number: "104" }, { label: "CMCHIS Insurance", number: "1800 425 3993" }],
+    portal: "https://www.cmchistn.com",
+    portal_label_en: "CMCHIS Insurance Portal",
+    portal_label_ta: "CMCHIS காப்பீட்டு இணையதளம்",
   },
   {
-    id: "scheme",
+    id: "govt-scheme",
     icon: FileText,
     color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
     title_en: "Apply for a Govt Scheme",
@@ -163,13 +162,21 @@ const ALL_GUIDES = [
 
 export default function AwarenessGuidesPage() {
   const { lang } = useLanguage();
-  const T = (en, ta) => lang === "ta" ? ta : en;
+  const T = (en, ta) => (lang === "ta" ? ta : en);
   const [openId, setOpenId] = useState(null);
 
   usePageMeta({
-    title: "Citizen Guides — What To Do | VizhiTN",
-    description: "Step-by-step guides for Tamil Nadu citizens: power cut, water supply, ration card, bribery reporting, medical emergency, government scheme application.",
+    title: "Tamil Nadu Citizen Rights & Helpline Guides | VizhiTN",
+    description: "Step-by-step guides for Tamil Nadu citizens: TANGEDCO power cut, water supply, ration card, bribery reporting, medical emergency, and CM Cell complaints.",
   });
+
+  React.useEffect(() => {
+    const guideFaqs = ALL_GUIDES.map((g) => ({
+      question: g.title_en,
+      answer: g.steps_en.join(" "),
+    }));
+    injectFAQStructuredData(guideFaqs, "awareness-guides");
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -213,33 +220,34 @@ export default function AwarenessGuidesPage() {
                   <ol className="space-y-2.5 mb-5">
                     {steps.map((step, i) => (
                       <li key={i} className="flex gap-3 text-sm text-slate-700 dark:text-slate-300">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center">
+                        <span className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                           {i + 1}
                         </span>
-                        {step}
+                        <span className="leading-relaxed">{step}</span>
                       </li>
                     ))}
                   </ol>
 
-                  <div className="flex flex-wrap gap-2">
-                    {guide.contacts.map((c) => (
-                      <a
-                        key={c.number}
-                        href={c.number.includes("Online") ? "#" : `tel:${c.number.replace(/[\s-]/g, "")}`}
-                        className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-                      >
-                        📞 {c.label}: {c.number}
-                      </a>
-                    ))}
-                    <a
-                      href={guide.portal}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      🌐 {T(guide.portal_label_en, guide.portal_label_ta)}
-                    </a>
-                  </div>
+                  {guide.contacts && (
+                    <div className="flex flex-wrap gap-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                      {guide.contacts.map((c, idx) => (
+                        <div key={idx} className="bg-slate-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-lg text-xs">
+                          <span className="text-slate-500 dark:text-slate-400">{c.label}: </span>
+                          <span className="font-bold text-slate-800 dark:text-white">{c.number}</span>
+                        </div>
+                      ))}
+                      {guide.portal && (
+                        <a
+                          href={guide.portal}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 self-center ml-auto"
+                        >
+                          {T(guide.portal_label_en, guide.portal_label_ta)} ↗
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

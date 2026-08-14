@@ -13,6 +13,7 @@ import { getPublishedTnToday } from "@/services/tnToday";
 import { getDistrictStats } from "@/services/analytics";
 import DistrictStatsPanel from "@/components/district/DistrictStatsPanel";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { injectFAQStructuredData, injectDistrictStructuredData } from "@/lib/seo";
 import AdSlot from "@/components/ads/AdSlot";
 import DistrictCivicStats from "@/components/civic/DistrictCivicStats";
 
@@ -30,10 +31,38 @@ export default function DistrictDetail() {
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const district = getDistrictBySlug(slug);
+  const districtName = district ? district.name_en : "District";
+
   usePageMeta({
-    title: district ? `${T(district.name_en, district.name_ta)} | VizhiTN` : "District | VizhiTN",
-    description: district ? `Community posts, complaints, and updates from ${district.name_en}, Tamil Nadu.` : "",
+    title: district ? `${T(district.name_en, district.name_ta)} Civic Hub & Municipal Complaints | VizhiTN` : "District | VizhiTN",
+    description: district ? `View citizen reports, track municipal complaints, inspect area pulse statistics, and explore local issues across ${district.name_en}, Tamil Nadu.` : "",
   });
+
+  React.useEffect(() => {
+    if (!district) return;
+    injectDistrictStructuredData(district);
+
+    const districtFaqs = [
+      {
+        question: `How do I report a road hazard, pothole, or garbage issue in ${districtName}?`,
+        answer: `You can log a civic receipt on VizhiTN with a photo and location tag. VizhiTN formats the issue into an official complaint ready for ${districtName} Municipal Corporation / District Collectorate.`
+      },
+      {
+        question: `How can I check scheduled TANGEDCO power cuts in ${districtName}?`,
+        answer: `Check active electricity alerts on the ${districtName} Civic Hub. Sub-station maintenance schedules and unscheduled outage updates are verified by local citizens.`
+      },
+      {
+        question: `What is the CM Cell helpline number for ${districtName} grievance escalation?`,
+        answer: `The Tamil Nadu Chief Minister Special Cell toll-free helpline is 1100. Issues logged on VizhiTN generate formatted text ready for submission to the CM Cell portal.`
+      },
+      {
+        question: `How does community verification work in ${districtName}?`,
+        answer: `When local residents verify a logged issue by uploading photos or confirming resolution status, it achieves Community Verified status.`
+      }
+    ];
+
+    injectFAQStructuredData(districtFaqs, slug);
+  }, [district, slug, districtName]);
   const [typeFilter, setTypeFilter] = useState("all");
   const [catFilter, setCatFilter] = useState("all");
 
@@ -232,6 +261,64 @@ export default function DistrictDetail() {
           </div>
         </div>
       )}
+
+      {/* Evergreen Municipal Directory & FAQ Accordion (SEO Powerhouse) */}
+      <div className="mt-12 border-t border-slate-200 dark:border-slate-800 pt-8 space-y-6">
+        <div>
+          <h3 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            🏛️ {T(`${district.name_en} Municipal Directory & Citizen Guide`, `${district.name_en} நகராட்சி வழிகாட்டி மற்றும் கேள்வி பதில்கள்`)}
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            {T(`Essential helpline contacts, civic FAQs, and official escalation channels for ${district.name_en}`, `${district.name_en} முக்கிய உதவி எண்கள் மற்றும் கேள்வி பதில்கள்`)}
+          </p>
+        </div>
+
+        {/* Directory Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <span className="font-bold text-slate-900 dark:text-white block">📍 Collectorate & Administration</span>
+            <p className="text-slate-500 dark:text-slate-400">{district.name_en} District Collectorate</p>
+            <p className="font-semibold text-blue-600 dark:text-blue-400">CM Cell Helpline: 1100</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <span className="font-bold text-slate-900 dark:text-white block">⚡ TANGEDCO / Electricity</span>
+            <p className="text-slate-500 dark:text-slate-400">Power Outage & Line Faults</p>
+            <p className="font-semibold text-amber-600 dark:text-amber-400">Minnagam Helpline: 94987 94987</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <span className="font-bold text-slate-900 dark:text-white block">💧 Water Board & Sanitation</span>
+            <p className="text-slate-500 dark:text-slate-400">TWAD & Municipal Water Supply</p>
+            <p className="font-semibold text-cyan-600 dark:text-cyan-400">Corporation Water Helpline: 1913</p>
+          </div>
+        </div>
+
+        {/* FAQ Accordion List */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-4 text-xs">
+          <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
+            ❓ Frequently Asked Questions about {district.name_en} Civic Issues
+          </h4>
+          <div className="divide-y divide-slate-100 dark:divide-slate-700 space-y-3 pt-1">
+            <div className="pt-2">
+              <p className="font-bold text-slate-800 dark:text-slate-200">How do I report a pothole or road issue in {district.name_en}?</p>
+              <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                You can log a civic receipt on VizhiTN with a photo and location tag. VizhiTN automatically generates a formatted report ready for submission to the {district.name_en} Corporation / Collectorate.
+              </p>
+            </div>
+            <div className="pt-3">
+              <p className="font-bold text-slate-800 dark:text-slate-200">How do I check scheduled power cuts in {district.name_en}?</p>
+              <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                Check active electricity alerts on the {district.name_en} Civic Hub. Maintenance schedules and unscheduled outage updates are posted and verified by local residents.
+              </p>
+            </div>
+            <div className="pt-3">
+              <p className="font-bold text-slate-800 dark:text-slate-200">What is the CM Cell helpline number for grievance escalation?</p>
+              <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                The Tamil Nadu Chief Minister Special Cell toll-free helpline is 1100. Issues logged on VizhiTN generate formatted text ready for submission to the CM Cell portal.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

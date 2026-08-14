@@ -182,6 +182,27 @@ export function injectDistrictStructuredData(district) {
 }
 
 /**
+ * FAQPage structured data for Google rich FAQ snippets.
+ * @param {Array<{question: string, answer: string}>} faqs
+ * @param {string} idSuffix
+ */
+export function injectFAQStructuredData(faqs, idSuffix = 'general') {
+  if (!faqs?.length) return;
+  injectScript(`tn-ld-faq-${idSuffix}`, {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  });
+}
+
+/**
  * GovernmentService structured data for awareness/scheme pages.
  */
 export function injectSchemeStructuredData(scheme) {

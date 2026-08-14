@@ -13,6 +13,7 @@ import { isPubliclyVisible } from "@/lib/visibility";
 import { getCategoryStats } from "@/services/analytics";
 import CategoryStatsPanel from "@/components/category/CategoryStatsPanel";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { injectFAQStructuredData } from "@/lib/seo";
 import AdSlot from "@/components/ads/AdSlot";
 
 const SORT_OPTIONS = [
@@ -27,10 +28,34 @@ export default function CategoryDetail({ initialSlug, initialData }) {
   const T = (en, ta) => lang === "ta" ? ta : en;
   const category = getCategoryBySlug(slug);
   const [sort, setSort] = useState("-created_date");
+
+  const catName = category ? category.name_en : "Category";
+
   usePageMeta({
-    title: category ? `${T(category.name_en, category.name_ta)} | VizhiTN` : "Category | VizhiTN",
-    description: category ? `Browse community posts in the ${category.name_en} category across Tamil Nadu.` : "",
+    title: category ? `${T(category.name_en, category.name_ta)} Civic Reports & Resolution SLA | VizhiTN` : "Category | VizhiTN",
+    description: category ? `Explore community reports, standard resolution timelines, and official complaint helplines for ${category.name_en} across Tamil Nadu.` : "",
   });
+
+  React.useEffect(() => {
+    if (!category) return;
+
+    const catFaqs = [
+      {
+        question: `What is the standard resolution time (SLA) for ${catName} complaints in Tamil Nadu?`,
+        answer: `Municipal service level agreements typically target 24 to 48 hours for urgent outages or leaks, and 7 to 14 days for structural repairs.`
+      },
+      {
+        question: `How can I file an official complaint for ${catName} issues?`,
+        answer: `Log a civic receipt on VizhiTN to generate a pre-filled complaint template. You can copy it to submit directly to the CM Cell portal (1100) or local Municipal Corporation.`
+      },
+      {
+        question: `How do citizens verify fixed ${catName} issues on VizhiTN?`,
+        answer: `Residents upload 'after' proof photos or confirm resolution. Once 3+ citizens verify the fix, the receipt is marked Citizen Verified Fixed.`
+      }
+    ];
+
+    injectFAQStructuredData(catFaqs, slug);
+  }, [category, slug, catName]);
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["category-posts", slug],
@@ -173,6 +198,58 @@ export default function CategoryDetail({ initialSlug, initialData }) {
           </div>
         </div>
       )}
+
+      {/* Evergreen Category SLA Matrix & FAQs (SEO Powerhouse) */}
+      <div className="mt-12 border-t border-slate-200 dark:border-slate-800 pt-8 space-y-6">
+        <div>
+          <h3 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            📋 {T(`${category.name_en} Resolution SLA & Escalation Guide`, `${category.name_en} தீர்வு காலக்கெடு மற்றும் புகார் வழிகாட்டி`)}
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            {T(`Standard civic resolution timelines and official department escalation channels in Tamil Nadu`, `தமிழ்நாடு மாநகராட்சி புகார் தீர்வு காலக்கெடு மற்றும் உதவி எண்கள்`)}
+          </p>
+        </div>
+
+        {/* SLA Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <span className="font-bold text-slate-900 dark:text-white block">⏱️ Target Resolution SLA</span>
+            <p className="text-slate-500 dark:text-slate-400">Emergency & Urgent Faults</p>
+            <p className="font-semibold text-emerald-600 dark:text-emerald-400">24 – 48 Hours</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <span className="font-bold text-slate-900 dark:text-white block">🏛️ Level 1 Escalation</span>
+            <p className="text-slate-500 dark:text-slate-400">Local Ward / Zonal Engineer</p>
+            <p className="font-semibold text-blue-600 dark:text-blue-400">Municipal Corporation</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+            <span className="font-bold text-slate-900 dark:text-white block">🚀 Level 2 Escalation</span>
+            <p className="text-slate-500 dark:text-slate-400">CM Special Cell Helpline</p>
+            <p className="font-semibold text-purple-600 dark:text-purple-400">Toll-Free: 1100</p>
+          </div>
+        </div>
+
+        {/* Category FAQs */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-4 text-xs">
+          <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
+            ❓ Frequently Asked Questions about {category.name_en}
+          </h4>
+          <div className="divide-y divide-slate-100 dark:divide-slate-700 space-y-3 pt-1">
+            <div className="pt-2">
+              <p className="font-bold text-slate-800 dark:text-slate-200">What is the standard resolution time (SLA) for {category.name_en} issues?</p>
+              <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                Municipal service level agreements target 24 to 48 hours for emergency outages and leaks, and 7 to 14 days for structural work.
+              </p>
+            </div>
+            <div className="pt-3">
+              <p className="font-bold text-slate-800 dark:text-slate-200">How can I file an official complaint for {category.name_en}?</p>
+              <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                Log a civic receipt on VizhiTN to generate a pre-filled complaint template ready for the CM Cell portal (1100) or local Corporation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

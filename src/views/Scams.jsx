@@ -9,6 +9,7 @@ import { getActiveScams, createScamAlert } from "@/services/scamAlerts";
 import { getAreasByDistrict } from "@/services/areas";
 import { DISTRICTS } from "@/lib/districts";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { injectFAQStructuredData } from "@/lib/seo";
 import ScamCard from "@/components/phase8/ScamCard";
 import { checkRateLimit, sanitizeText } from "@/lib/security";
 import { useAuth } from "@/lib/AuthContext";
@@ -31,27 +32,34 @@ const SCAM_TYPES = [
 
 export default function Scams({ initialScams = [] }) {
   const { lang } = useLanguage();
-  const T = (en, ta) => lang === "ta" ? ta : en;
+  const T = (en, ta) => (lang === "ta" ? ta : en);
   const qc = useQueryClient();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user: profile } = useAuth();
   const { requireAuth } = useAuthModal();
 
-  // Fetch user profile for trust score
-  const { data: profile = null } = useQuery({
-    queryKey: ["my-profile", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data, error } = await supabase
-        .from("profile")
-        .select("*")
-        .eq("id", user?.id)
-        .maybeSingle();
-      if (error) return null;
-      return data;
-    },
-    enabled: !!user?.id,
-    staleTime: 30_000,
+  usePageMeta({
+    title: "Scam Alerts & Cyber Fraud Helpline Tamil Nadu | VizhiTN",
+    description: "View and report local scam alerts, fake job offers, rental frauds, online UPI cheating, and Cyber Crime helpline 1930 resources in Tamil Nadu.",
   });
+
+  React.useEffect(() => {
+    const scamFaqs = [
+      {
+        question: "How do I report a cyber crime or online financial fraud in Tamil Nadu?",
+        answer: "Call the National Cyber Crime Helpline toll-free at 1930 immediately within the golden hour, or file a complaint online at cybercrime.gov.in."
+      },
+      {
+        question: "How to identify a fake job offer or illegal recruitment agency in Tamil Nadu?",
+        answer: "Verify if the agency is registered under the Ministry of External Affairs Overseas Employment Portal (emigrate.gov.in). Never pay money upfront for government job selection."
+      },
+      {
+        question: "How do I verify rental or property scams on VizhiTN?",
+        answer: "Check the Scam Alerts dashboard for reported phone numbers, UPI IDs, and fraudulent agent patterns before transferring advance tokens."
+      }
+    ];
+    injectFAQStructuredData(scamFaqs, "scam-alerts");
+  }, []);
+
   const [showForm, setShowForm] = useState(false);
   const [filterDistrict, setFilterDistrict] = useState("");
   const [form, setForm] = useState({
@@ -69,8 +77,6 @@ export default function Scams({ initialScams = [] }) {
     }
     setShowForm(f => !f);
   };
-
-  usePageMeta({ title: "VizhiTN - Scam Alerts", description: "View and report local scam alerts, fake jobs, fake rentals, fraud messages, and unsafe activities across Tamil Nadu." });
 
   const { data: scams = [], isLoading } = useQuery({
     queryKey: ["scams", filterDistrict],
