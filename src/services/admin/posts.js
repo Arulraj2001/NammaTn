@@ -32,7 +32,7 @@ export const getAllPosts = async (limitOrOptions = 100, sort = "-created_date", 
   const orderCol = pageCursor ? "created_date" : resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = pageCursor ? false : !resolvedSort.startsWith("-");
   let query = supabase
-    .from("post")
+    .from("unified_explore_feed")
     .select("*")
     .order(orderCol, { ascending })
     .limit(limit);
@@ -42,7 +42,16 @@ export const getAllPosts = async (limitOrOptions = 100, sort = "-created_date", 
   }
 
   const { data, error } = await query;
-  if (error) throw error;
+  if (error) {
+    // Fallback to post table if unified view unavailable
+    const { data: postData, error: postError } = await supabase
+      .from("post")
+      .select("*")
+      .order(orderCol, { ascending })
+      .limit(limit);
+    if (postError) throw postError;
+    return postData || [];
+  }
   return data || [];
 };
 
@@ -58,9 +67,19 @@ export const getPostsByStatus = async (status, limit = 100) => {
 };
 
 export const updatePostStatus = async (id, status) => {
+  const isHidden = status === "removed" || status === "rejected" || status === "hidden";
+  const updateData = { status };
+  if (isHidden) {
+    updateData.is_publicly_visible = false;
+    updateData.moderation_status = "hidden";
+  } else if (status === "active") {
+    updateData.is_publicly_visible = true;
+    updateData.moderation_status = "approved";
+  }
+
   const { data, error } = await supabase
     .from("post")
-    .update({ status })
+    .update(updateData)
     .eq("id", id)
     .select()
     .single();

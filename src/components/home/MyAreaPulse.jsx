@@ -19,7 +19,8 @@ async function fetchAreaPosts(areaSlug) {
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   let q = supabase
     .from("post")
-    .select("id, civic_status, category_slug, post_type, created_date, status")
+    .select("id, civic_status, category_slug, post_type, created_date, status, is_publicly_visible, moderation_status")
+    .eq("status", "active")
     .gte("created_date", since)
     .order("created_date", { ascending: false })
     .limit(500);
@@ -30,7 +31,7 @@ async function fetchAreaPosts(areaSlug) {
 
   const { data, error } = await q;
   if (error) throw error;
-  return data || [];
+  return (data || []).filter((p) => p.status === "active" && p.is_publicly_visible !== false && p.moderation_status !== "hidden");
 }
 
 /* Fetch emergency posts for area */

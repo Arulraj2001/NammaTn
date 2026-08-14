@@ -691,7 +691,7 @@ function MyDashboardContent({ user, lang, activeTab, setActiveTab, logout }) {
 
       // Query posts by user.id OR user.email
       const { data: byIdOrEmail = [] } = await supabase
-        .from("posts")
+        .from("post")
         .select("*")
         .or(`created_by_id.eq.${user.id},created_by.eq.${user.email}`);
 
@@ -699,7 +699,7 @@ function MyDashboardContent({ user, lang, activeTab, setActiveTab, logout }) {
       let byLocal = [];
       if (localIds.length > 0) {
         const { data } = await supabase
-          .from("posts")
+          .from("post")
           .select("*")
           .in("id", localIds);
         byLocal = data || [];
@@ -708,7 +708,7 @@ function MyDashboardContent({ user, lang, activeTab, setActiveTab, logout }) {
       // Merge and deduplicate by post ID
       const map = new Map();
       [...(byIdOrEmail || []), ...byLocal].forEach((p) => {
-        if (p && p.id) map.set(p.id, p);
+        if (p && p.id && p.status !== "removed") map.set(p.id, p);
       });
       const allPosts = Array.from(map.values()).sort(
         (a, b) => new Date(b.created_date) - new Date(a.created_date)
@@ -719,7 +719,7 @@ function MyDashboardContent({ user, lang, activeTab, setActiveTab, logout }) {
       if (unlinked.length > 0) {
         Promise.all(
           unlinked.map((p) =>
-            supabase.from("posts").update({ created_by_id: user.id, created_by: user.full_name || user.email }).eq("id", p.id)
+            supabase.from("post").update({ created_by_id: user.id, created_by: user.full_name || user.email }).eq("id", p.id)
           )
         ).catch(() => {});
       }

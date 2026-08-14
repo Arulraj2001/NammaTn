@@ -71,11 +71,21 @@ export const getLogsByAdmin = async (admin_email, limit = 50) => {
 export const bulkModeratePost = async (ids, status, admin_email = "admin", note = "") => {
   const succeeded = [];
   const failed = [];
+  const isHidden = status === "removed" || status === "rejected" || status === "hidden";
+  const updateData = { status };
+  if (isHidden) {
+    updateData.is_publicly_visible = false;
+    updateData.moderation_status = "hidden";
+  } else if (status === "active") {
+    updateData.is_publicly_visible = true;
+    updateData.moderation_status = "approved";
+  }
+
   for (const id of ids) {
     try {
       const { error } = await supabase
         .from("post")
-        .update({ status })
+        .update(updateData)
         .eq("id", id);
       if (error) throw error;
 

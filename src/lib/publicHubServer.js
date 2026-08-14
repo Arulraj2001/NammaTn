@@ -161,7 +161,7 @@ export async function getCommunityHubData() {
     supabase.from('situation_update').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
     supabase.from('emergency_post').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
     supabase.from('scam_alert').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
-    supabase.from('question').select('*').order('created_date', { ascending: false }).limit(20),
+    supabase.from('question').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
     supabase.from('unified_explore_feed').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(100),
   ];
 

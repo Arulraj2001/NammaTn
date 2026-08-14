@@ -11,6 +11,7 @@ import ReportButton from "@/components/posts/ReportButton";
 import { formatDistanceToNow } from "date-fns";
 import { useLanguage } from "@/context/LanguageContext";
 import { getPostById } from "@/services/posts";
+import { isPubliclyVisible } from "@/lib/visibility";
 import { toggleReaction, getMyReaction } from "@/services/reactions";
 import { Button } from "@/components/ui/button";
 import PostSkeleton from "@/components/posts/PostSkeleton";
@@ -131,18 +132,11 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
   };
 
   if (isLoading) return <div className="max-w-3xl mx-auto px-4 py-8"><PostSkeleton /><PostSkeleton /></div>;
-  if (!post) return (
-    <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-      <p className="text-2xl mb-2">🔍</p>
-      <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">{T("Post Not Found", "பதிவு கண்டுபிடிக்கப்படவில்லை")}</h2>
-      <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">{T("This post may have been removed.", "இந்த பதிவு நீக்கப்பட்டிருக்கலாம்.")}</p>
-      <Link to="/explore" className="inline-flex items-center gap-1 px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">{T("← Back to Explore", "← ஆராய்வுக்கு திரும்பு")}</Link>
-    </div>
-  );
-  if (post.status === "removed") return (
+  if (!post || !isPubliclyVisible(post) || post.status === "removed") return (
     <div className="max-w-3xl mx-auto px-4 py-16 text-center">
       <p className="text-2xl mb-2">🚫</p>
       <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">{T("Post Removed", "பதிவு நீக்கப்பட்டது")}</h2>
+      <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">{T("This post is no longer available.", "இந்த பதிவு இப்போது கிடைப்பதில்லை.")}</p>
       <Link to="/explore" className="inline-flex items-center gap-1 px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">{T("← Back to Explore", "← ஆராய்வுக்கு திரும்பு")}</Link>
     </div>
   );
