@@ -379,7 +379,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
         </main>
 
         {/* Sidebar — Civic Case File dashboard on desktop */}
-        <aside className="w-full lg:w-80 flex-shrink-0 space-y-4 lg:sticky lg:top-20">
+        <aside className="w-full lg:w-80 flex-shrink-0 space-y-4">
           {isCivic ? (
             <>
               <CaseFileSidebar
