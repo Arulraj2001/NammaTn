@@ -379,7 +379,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
         </div>
 
         {/* Sidebar — Civic Case File dashboard on desktop */}
-        <div className="hidden lg:block space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto pr-1 no-scrollbar h-fit">
+        <aside className="hidden lg:block space-y-6 lg:sticky lg:top-20 h-fit">
           {isCivic ? (
             <>
               <CaseFileSidebar
@@ -408,7 +408,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
               </div>
             </>
           )}
-        </div>
+        </aside>
       </div>
 
       {/* Mobile sticky bottom bar — civic receipts only */}
