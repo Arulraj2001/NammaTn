@@ -163,7 +163,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8 relative">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2">
           <Link to="/explore" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -379,7 +379,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
         </div>
 
         {/* Sidebar — Civic Case File dashboard on desktop */}
-        <aside className="hidden lg:block space-y-6 lg:sticky lg:top-20 h-fit">
+        <aside className="hidden lg:block space-y-5 lg:sticky lg:top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar pb-6">
           {isCivic ? (
             <>
               <CaseFileSidebar
