@@ -1,12 +1,13 @@
 import React, { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Search, Eye, RefreshCw, CheckCircle, XCircle, AlertTriangle, Copy, Tag, MapPin, Building2, ListChecks, FileWarning, Camera } from "lucide-react";
+import { Search, Eye, RefreshCw, CheckCircle, XCircle, AlertTriangle, Copy, Tag, MapPin, Building2, ListChecks, FileWarning, Camera, Upload } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { CIVIC_STATUSES, makeTimelineEvent, getUrgency } from "@/lib/civicReceipt";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
+import ImportPosts from "@/components/admin/ImportPosts";
 import { DISTRICTS } from "@/lib/districts";
 import { CATEGORIES } from "@/lib/categories";
 import { DEPARTMENT_ROUTES } from "@/lib/departmentRouting";
@@ -31,6 +32,7 @@ export default function AdminCivicReceipts() {
   const [preview, setPreview] = useState(null);
   const [specialFilter, setSpecialFilter] = useState("all_special");
   const [adminNote, setAdminNote] = useState("");
+  const [importOpen, setImportOpen] = useState(false);
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["admin-civic-receipts"],
@@ -102,10 +104,22 @@ export default function AdminCivicReceipts() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Civic Receipts</h1>
           <p className="text-sm text-slate-500 mt-1">Moderate civic issues, manage routing, review complaints</p>
         </div>
-        <button onClick={refresh} className="flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
-          <RefreshCw className="w-4 h-4" /> Refresh
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setImportOpen((o) => !o)}
+            className="flex items-center gap-1.5 px-3.5 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-sm"
+          >
+            <Upload className="w-4 h-4" /> {importOpen ? "Close Import" : "Bulk Import JSON/CSV"}
+          </button>
+          <button onClick={refresh} className="flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+            <RefreshCw className="w-4 h-4" /> Refresh
+          </button>
+        </div>
       </div>
+
+      {importOpen && (
+        <ImportPosts onDone={() => setImportOpen(false)} />
+      )}
 
       {/* Tabs */}
       <div className="flex gap-2 mb-5 border-b border-slate-200 dark:border-slate-700 pb-3 overflow-x-auto scrollbar-hide">

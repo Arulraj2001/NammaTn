@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Search, Eye, Trash2, Flag, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, Eye, Trash2, Flag, CheckCircle, AlertCircle, Upload, FileJson } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AdminTable, AdminTh, AdminTd, AdminTr } from "@/components/admin/AdminTable";
 import StatusBadge from "@/components/admin/StatusBadge";
@@ -8,6 +8,7 @@ import ModerationActions from "@/components/admin/ModerationActions";
 import BulkActionBar from "@/components/admin/BulkActionBar";
 import ModerationHistory from "@/components/admin/ModerationHistory";
 import AiModerationAssistant from "@/components/admin/moderation/AiModerationAssistant";
+import ImportPosts from "@/components/admin/ImportPosts";
 import { getAllPosts, updatePostStatus, deletePost } from "@/services/admin/posts";
 import { logModerationAction, bulkModeratePost } from "@/services/admin/moderation";
 import { buildReportMap } from "@/services/ai/moderationQueue";
@@ -24,6 +25,7 @@ export default function AdminPosts() {
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState(null);
   const [selected, setSelected] = useState(new Set());
+  const [importOpen, setImportOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -100,10 +102,28 @@ export default function AdminPosts() {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Posts</h1>
-        <p className="text-sm text-slate-500 mt-1">Manage and moderate all posts ({posts.length} total)</p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Posts</h1>
+          <p className="text-sm text-slate-500 mt-1">Manage and moderate all posts ({posts.length} total)</p>
+        </div>
+        <button
+          onClick={() => setImportOpen((o) => !o)}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
+        >
+          {importOpen ? (
+            <>Close Import Panel</>
+          ) : (
+            <>
+              <Upload className="w-4 h-4" /> Bulk Import Posts (JSON/CSV)
+            </>
+          )}
+        </button>
       </div>
+
+      {importOpen && (
+        <ImportPosts onDone={() => setImportOpen(false)} />
+      )}
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
