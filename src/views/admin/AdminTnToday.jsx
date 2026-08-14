@@ -285,10 +285,14 @@ export default function AdminTnToday() {
     if (!form.title.trim()) { toast({ description: "Title is required.", variant: "destructive" }); return; }
     if (!form.slug.trim()) { toast({ description: "Slug is required.", variant: "destructive" }); return; }
 
-    setSaving(true);
-    try {
+      const rawCat = (form.category || "general").toLowerCase().trim();
+      const validCat = ["infrastructure", "education", "healthcare", "environment", "economy", "governance", "transport", "agriculture", "technology", "social", "general"].includes(rawCat)
+        ? rawCat
+        : (rawCat === "india" ? "governance" : "general");
+
       const payload = {
         ...form,
+        category: validCat,
         status: statusOverride || form.status,
         publish_date: form.publish_date ? new Date(form.publish_date).toISOString() : null,
         seo_title: form.seo_title || form.title,

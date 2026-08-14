@@ -62,9 +62,28 @@ function serialiseLinks(raw) {
 
 // ─── JSON field normaliser ──────────────────────────────────────────────────
 const VALID_CATEGORIES = [
-  "infrastructure","education","healthcare","environment","economy",
-  "governance","transport","agriculture","technology","social","india","world","general"
+  "infrastructure", "education", "healthcare", "environment", "economy",
+  "governance", "transport", "agriculture", "technology", "social", "general"
 ];
+
+const CATEGORY_MAP = {
+  india: "governance",
+  national: "governance",
+  politics: "governance",
+  policy: "governance",
+  world: "general",
+  global: "general",
+  international: "general",
+  business: "economy",
+  finance: "economy",
+  tech: "technology",
+  science: "technology",
+  welfare: "social",
+  schemes: "social",
+  infra: "infrastructure",
+  road: "infrastructure",
+  transit: "transport",
+};
 
 function normaliseArticle(raw) {
   const title = (raw.title || "").trim();
@@ -74,9 +93,10 @@ function normaliseArticle(raw) {
     ? raw.slug.toLowerCase().replace(/[^\w-]/g, "").trim().slice(0, 80)
     : generateSlug(title);
 
-  const category = VALID_CATEGORIES.includes(raw.category)
-    ? raw.category
-    : "general";
+  const rawCat = (raw.category || "").toLowerCase().trim();
+  const category = VALID_CATEGORIES.includes(rawCat)
+    ? rawCat
+    : (CATEGORY_MAP[rawCat] || "general");
 
   const content = raw.content || raw.body || raw.article_body || "";
 
