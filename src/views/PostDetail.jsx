@@ -164,7 +164,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8 relative">
       <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <main className="flex-1 min-w-0 lg:min-h-[820px]">
+        <main className="flex-1 min-w-0">
           <Link to="/explore" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             {T("Back to Explore", "ஆராய்வுக்கு திரும்பு")}
