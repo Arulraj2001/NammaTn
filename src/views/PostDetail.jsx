@@ -163,8 +163,8 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8 relative">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-2">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <main className="flex-1 min-w-0">
           <Link to="/explore" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             {T("Back to Explore", "ஆராய்வுக்கு திரும்பு")}
@@ -376,10 +376,10 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
           <AdSlot placement="feed" className="mb-6" />
 
           <CommentSection postId={id} postCommentCount={post.comment_count} />
-        </div>
+        </main>
 
         {/* Sidebar — Civic Case File dashboard on desktop */}
-        <aside className="hidden lg:block space-y-4 lg:sticky lg:top-20 self-start">
+        <aside className="w-full lg:w-80 flex-shrink-0 space-y-4 lg:sticky lg:top-20">
           {isCivic ? (
             <>
               <CaseFileSidebar
