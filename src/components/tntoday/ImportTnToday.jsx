@@ -109,7 +109,7 @@ function normaliseArticle(raw) {
     category,
     author_name:         raw.author_name || raw.author || "VizhiTN Editorial Team",
     publish_date:        raw.publish_date || raw.date || new Date().toISOString(),
-    status:              "draft",
+    status:              raw.status || "published",
     reading_time:        raw.reading_time || estimateReadingTime(content) || 5,
     content,
     content_ta:          raw.content_ta || "",
@@ -323,12 +323,16 @@ export default function ImportTnToday({ onDone }) {
     }
 
     qc.invalidateQueries({ queryKey: ["admin-tn-today"] });
+    qc.invalidateQueries({ queryKey: ["tn-today-articles"] });
     qc.invalidateQueries({ queryKey: ["tn-today-featured"] });
+    qc.invalidateQueries({ queryKey: ["tn-today-related"] });
+    qc.invalidateQueries({ queryKey: ["district-tn-today-news"] });
+    qc.invalidateQueries({ queryKey: ["category-tn-today-news"] });
     setResults({ success, failed });
     setImporting(false);
 
     if (failed.length === 0) {
-      toast({ description: `${success.length} article(s) imported as drafts!` });
+      toast({ description: `${success.length} article(s) imported and published live!` });
     } else {
       toast({ description: `${success.length} imported, ${failed.length} failed.`, variant: "destructive" });
     }
