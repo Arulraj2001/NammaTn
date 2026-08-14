@@ -2,12 +2,13 @@
 import React, { useState } from "react";
 import { useParams, Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight, Newspaper, BookOpen, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryBySlug } from "@/lib/categories";
 import PostCard from "@/components/posts/PostCard";
 import PostSkeleton from "@/components/posts/PostSkeleton";
 import { getCategoryPosts } from "@/services/posts";
+import { getPublishedTnToday } from "@/services/tnToday";
 import { isPubliclyVisible } from "@/lib/visibility";
 import { getCategoryStats } from "@/services/analytics";
 import CategoryStatsPanel from "@/components/category/CategoryStatsPanel";
@@ -37,6 +38,12 @@ export default function CategoryDetail({ initialSlug, initialData }) {
     initialData: initialData?.posts,
     enabled: !!slug,
     staleTime: 60_000,
+  });
+
+  const { data: tnTodayArticles = [] } = useQuery({
+    queryKey: ["category-tn-today-news", slug],
+    queryFn: () => getPublishedTnToday({ limit: 4, category: slug }),
+    staleTime: 120_000,
   });
 
   const { data: stats } = useQuery({
@@ -116,6 +123,54 @@ export default function CategoryDetail({ initialSlug, initialData }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sorted.map((post) => <PostCard key={post.id} post={post} />)}
+        </div>
+      )}
+
+      {/* Reciprocal Internal Links: TN Today News & Awareness Resources */}
+      {tnTodayArticles.length > 0 && (
+        <div className="mt-12 border-t border-slate-200 dark:border-slate-800 pt-8">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div>
+              <h3 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <Newspaper className="w-5 h-5 text-blue-600" />
+                {T(`TN Today Reports in ${category.name_en}`, `${category.name_ta} பற்றிய TN Today செய்திகள்`)}
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {T(`In-depth journalism, state policy updates, and civic guides relating to ${category.name_en}`, `${category.name_en} தொடர்பான முக்கியமான செய்திகள் மற்றும் வழிகாட்டல்கள்`)}
+              </p>
+            </div>
+            <Link to={`/tn-today/category/${slug}`} className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+              {T("View Category Stories", "அனைத்து கட்டுரைகளும்")} <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {tnTodayArticles.slice(0, 4).map((article) => (
+              <Link
+                key={article.id}
+                to={`/tn-today/${article.slug}`}
+                className="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded font-mono block w-fit mb-2">
+                    {article.category || "General"}
+                  </span>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2 leading-snug">
+                    {article.title}
+                  </h4>
+                  {article.subtitle && (
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
+                      {article.subtitle}
+                    </p>
+                  )}
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-[11px] text-blue-600 dark:text-blue-400 font-semibold">
+                  <span>Read Article</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>

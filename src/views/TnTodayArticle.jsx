@@ -8,13 +8,14 @@ import { format } from "date-fns";
 import {
   Clock, Calendar, User, ChevronRight, Share2, ExternalLink,
   MessageSquare, ArrowLeft, CheckCircle2, AlertCircle, BookOpen,
-  Clipboard, Copy, Hash, ArrowRight
+  Clipboard, Copy, Hash, ArrowRight, MapPin, ShieldCheck, FileCheck
 } from "lucide-react";
 import { setPageMeta } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { getTnTodayCanonical } from "@/lib/tnTodayUrl";
 import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
+import { resolveArticleInternalLinks } from "@/lib/seo/internalLinker";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -283,6 +284,8 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const officialSources = parsePipeLines(article.official_sources);
   const relatedLinks = parsePipeLines(article.related_civic_links);
 
+  const seoLinks = resolveArticleInternalLinks(article);
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* ── Top editorial bar ── */}
@@ -487,6 +490,31 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
               <ShareRow url={pageUrl} title={article.title} />
             </div>
 
+            {/* SEO Authority Internal Links Block */}
+            {seoLinks.district && (
+              <div className="mt-6 bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-2xl p-5 border border-slate-800 shadow-md">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div className="space-y-1">
+                    <span className="text-[11px] uppercase tracking-wider font-extrabold text-blue-400 bg-blue-950/80 px-2.5 py-0.5 rounded-md border border-blue-800">
+                      📍 {seoLinks.district.name_en} Civic Hub
+                    </span>
+                    <h4 className="text-base font-bold text-white pt-1">
+                      {seoLinks.districtAnchorText}
+                    </h4>
+                    <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+                      View live citizen reports, track municipal complaints, inspect area pulse statistics, and explore local issues across {seoLinks.district.name_en}.
+                    </p>
+                  </div>
+                  <Link
+                    to={seoLinks.districtUrl}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm whitespace-nowrap self-center"
+                  >
+                    Explore {seoLinks.district.name_en} Hub <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {/* Newsletter CTA */}
             <div className="mt-6 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex-1">
@@ -523,6 +551,34 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                 About this initiative <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
+
+            {/* Related Awareness & Rights Guides */}
+            {seoLinks.awareness.length > 0 && (
+              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" /> Civic Rights & Official Guides
+                </h3>
+                <div className="space-y-2 shadow-none">
+                  {seoLinks.awareness.map((guide, idx) => (
+                    <Link
+                      key={idx}
+                      to={guide.url}
+                      className="block p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-slate-100 dark:border-slate-700 transition-colors group"
+                    >
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.5 rounded font-mono block w-fit mb-1">
+                        {guide.tag}
+                      </span>
+                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 leading-snug">
+                        {guide.title}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+                <Link to="/awareness" className="mt-3 flex items-center gap-1 text-xs text-blue-600 font-medium hover:underline">
+                  All Awareness Guides <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            )}
 
             {/* Quick Facts sidebar */}
             {keyFacts.length > 0 && (
