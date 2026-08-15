@@ -195,7 +195,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ["tn-today-article", slug],
     queryFn: () => getTnTodayBySlug(slug),
-    placeholderData: initialArticle?.slug === slug ? initialArticle : undefined,
+    initialData: initialArticle?.slug === slug ? initialArticle : undefined,
     staleTime: 0,
     refetchOnMount: true,
     enabled: !!slug,
@@ -213,7 +213,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
       }
       return items.slice(0, 3);
     },
-    placeholderData: initialRelatedArticles.length ? initialRelatedArticles : undefined,
+    initialData: initialRelatedArticles.length ? initialRelatedArticles : undefined,
     enabled: !!article,
     staleTime: 0,
   });

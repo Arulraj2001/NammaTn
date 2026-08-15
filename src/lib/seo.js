@@ -182,24 +182,16 @@ export function injectDistrictStructuredData(district) {
 }
 
 /**
- * FAQPage structured data for Google rich FAQ snippets.
+ * FAQ rich snippets are emitted only at the page/component level when the
+ * content is explicitly relevant. This legacy helper intentionally avoids
+ * generic FAQ schema injection to prevent duplicate or low-quality markup.
  * @param {Array<{question: string, answer: string}>} faqs
  * @param {string} idSuffix
  */
 export function injectFAQStructuredData(faqs, idSuffix = 'general') {
   if (!faqs?.length) return;
-  injectScript(`tn-ld-faq-${idSuffix}`, {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((f) => ({
-      '@type': 'Question',
-      name: f.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: f.answer,
-      },
-    })),
-  });
+  // Intentionally no-op: avoid generic FAQ schema injection from the global helper.
+  // Page-specific FAQ schema should be emitted only when the content is clearly scoped.
 }
 
 /**

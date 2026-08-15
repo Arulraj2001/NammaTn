@@ -162,10 +162,10 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8 relative">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-1 pb-24 sm:pb-8 relative">
       <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <main className="flex-1 min-w-0">
-          <Link to="/explore" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors">
+        <main className="flex-1 min-w-0 -mt-2 lg:-mt-3">
+          <Link to="/explore" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white mb-2 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             {T("Back to Explore", "ஆராய்வுக்கு திரும்பு")}
           </Link>
@@ -245,20 +245,6 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
 
               {/* Complaint Tracker */}
               <ComplaintTrackerPanel post={post} onRefresh={() => qc.invalidateQueries({ queryKey: ["post", id] })} />
-
-              {/* Civic Case File Stats & Credibility — mobile only */}
-              <div className="lg:hidden space-y-5">
-                <CaseFileSidebar
-                  post={post}
-                  authorTrustScore={authorProfile?.trust_score || 10}
-                  complaintTrackers={complaintTrackers}
-                />
-                <ReceiptCredibilityScore
-                  post={post}
-                  authorTrustScore={authorProfile?.trust_score || 10}
-                  complaintTrackers={complaintTrackers}
-                />
-              </div>
 
               {/* Timeline */}
               {post.timeline_events?.length > 0 && (

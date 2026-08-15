@@ -140,17 +140,16 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
   const { data: featured } = useQuery({
     queryKey: ["tn-today-featured"],
     queryFn: getFeaturedTnToday,
-    // placeholderData avoids hydration mismatch (not stored in cache as truth)
-    placeholderData: initialFeatured || undefined,
-    staleTime: 0,       // always treat as stale → refetch on focus/mount
+    initialData: initialFeatured || undefined,
+    staleTime: 0,
     gcTime: 30_000,
   });
 
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ["tn-today-articles", currentCategory ?? ""],
     queryFn: () => getPublishedTnToday(currentCategory || null),
-    placeholderData: !currentCategory ? (initialArticles.length ? initialArticles : undefined) : undefined,
-    staleTime: 0,       // always refetch — deleted articles disappear immediately
+    initialData: !currentCategory ? (initialArticles.length ? initialArticles : undefined) : undefined,
+    staleTime: 0,
     gcTime: 30_000,
     refetchOnWindowFocus: true,
     refetchOnMount: true,

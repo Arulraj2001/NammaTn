@@ -1,13 +1,18 @@
-"use client";
-import React, { Suspense } from 'react';
-import nextDynamic from 'next/dynamic';
+import Bookmarks from '@/views/Bookmarks';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
-const Bookmarks = nextDynamic(() => import('@/views/Bookmarks'), { ssr: false });
+export const metadata = {
+  title: 'Saved Posts | VizhiTN',
+  description: 'Track the posts, updates, and discussions you have saved for later on VizhiTN.',
+  alternates: { canonical: '/bookmarks' },
+  robots: { index: false, follow: false },
+};
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="min-h-[60vh] w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
+    <>
+      <Breadcrumbs items={[{ name: 'Saved Posts', href: '/bookmarks' }]} />
       <Bookmarks />
-    </Suspense>
+    </>
   );
 }

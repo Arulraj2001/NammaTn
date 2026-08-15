@@ -334,6 +334,42 @@ export async function getQuestionDetailData(id) {
   }
 }
 
+export async function getCommunityDiscussionDetailData(id) {
+  const supabase = createServerSupabase();
+  const empty = { discussion: null, replies: [] };
+  if (!id) return empty;
+  if (!supabase) throw new Error('Supabase is not configured');
+
+  try {
+    const [discussionResult, repliesResult] = await Promise.all([
+      supabase
+        .from('community_discussion')
+        .select('*')
+        .eq('id', id)
+        .eq('status', 'active')
+        .maybeSingle(),
+      supabase
+        .from('discussion_reply')
+        .select('*')
+        .eq('discussion_id', id)
+        .eq('status', 'active')
+        .order('created_date', { ascending: true })
+        .limit(100),
+    ]);
+
+    if (discussionResult.error) throw discussionResult.error;
+    if (repliesResult.error) throw repliesResult.error;
+
+    return {
+      discussion: discussionResult.data || null,
+      replies: repliesResult.data || [],
+    };
+  } catch (error) {
+    console.warn(`[community:${id}] Server discussion fetch failed:`, error.message);
+    return empty;
+  }
+}
+
 export async function getCategoryHubData(slug) {
   const supabase = createServerSupabase();
   const empty = { posts: [], stats: null };

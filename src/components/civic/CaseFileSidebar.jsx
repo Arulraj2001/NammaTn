@@ -8,10 +8,12 @@ import {
   MessageSquare,
   ThumbsDown,
   User,
+  TrendingUp,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { getDaysOpen } from "@/lib/civicReceipt";
+import { getDaysOpen, getCivicStatus, CIVIC_STATUSES } from "@/lib/civicReceipt";
 import { getEscalationLevel } from "@/lib/departmentRouting";
+import CivicTimeline from "@/components/civic/CivicTimeline";
 
 export default function CaseFileSidebar({ post, authorTrustScore, complaintTrackers }) {
   const { lang } = useLanguage();
@@ -24,6 +26,20 @@ export default function CaseFileSidebar({ post, authorTrustScore, complaintTrack
   const followUpCount = post.follow_up_count || 0;
   const stillNotFixedCount = post.still_not_fixed_count || 0;
   const trustScore = authorTrustScore || 10;
+  const progressValue = Math.min(100, ((escalation.level + 1) / 5) * 100);
+
+  const progressionKeys = [
+    "reported",
+    "community_verified",
+    "complaint_needed",
+    "complaint_filed",
+    "under_followup",
+    "claimed_fixed",
+    "citizen_verified_fixed",
+  ];
+
+  const currentStatusKey = post.civic_status || "reported";
+  const currentIndex = Math.max(0, progressionKeys.indexOf(currentStatusKey) >= 0 ? progressionKeys.indexOf(currentStatusKey) : 0);
 
   const daysColor =
     days > 60
@@ -59,14 +75,41 @@ export default function CaseFileSidebar({ post, authorTrustScore, complaintTrack
         </div>
       </div>
 
-      {/* ── CARD 2: Quick Stats & Escalation Status ── */}
+      {/* ── CARD 2: Case Progress stepper ── */}
+      <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-sm">
+        <div className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3">
+          {T("Case Progress", "கேஸ் முன்னேற்றம்")}
+        </div>
+
+        <div className="relative ml-2 pl-5">
+          <div className="absolute left-[8px] top-1 bottom-1 w-px bg-slate-200 dark:bg-slate-700" />
+
+          {progressionKeys.map((statusKey, idx) => {
+            const status = getCivicStatus(statusKey);
+            const isComplete = idx <= currentIndex;
+            const isActive = statusKey === currentStatusKey;
+            const dotColor = isActive ? "bg-blue-500 border-blue-200" : isComplete ? "bg-slate-400 border-slate-200" : "bg-slate-200 border-slate-200";
+            const labelColor = isActive ? "text-slate-900 dark:text-white font-bold" : "text-slate-600 dark:text-slate-300";
+
+            return (
+              <div key={statusKey} className="relative flex items-start gap-3 pb-3 last:pb-0">
+                <div className={`relative z-10 mt-1 h-4 w-4 rounded-full border-2 ${dotColor}`} />
+                <div className="leading-tight">
+                  <div className={`text-sm ${labelColor}`}>
+                    {T(status.label, status.label_ta)}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── CARD 3: Quick Stats ── */}
       <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-sm space-y-3">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2.5">
           <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
             {T("Quick Stats", "சுருக்கமான புள்ளிவிவரம்")}
-          </span>
-          <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">
-            Level {escalation.level} — {escalation.label}
           </span>
         </div>
 
