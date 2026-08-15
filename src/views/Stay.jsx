@@ -15,6 +15,7 @@ import StayReportModal from "@/components/stay/StayReportModal";
 import AreaLivingPulse from "@/components/stay/AreaLivingPulse";
 import { RENT_RANGES } from "@/components/stay/StayFilters";
 import { DISTRICTS } from "@/lib/districts";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 const TABS = [
   { id: "all", label: "All Stays", icon: Home, filter: null },
@@ -276,6 +277,9 @@ export default function Stay({ initialListings = [] }) {
             )}
           </div>
         </div>
+
+        {/* Universal SEO Cross-Links */}
+        <UniversalCrossLinks pageType="stay" />
       </div>
 
       {/* Report Modal */}

@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { OFFICES } from "@/lib/offices";
 import { DISTRICTS } from "@/lib/districts";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 export default function Offices() {
   const { lang } = useLanguage();
@@ -52,6 +53,9 @@ export default function Offices() {
           </Link>
         ))}
       </div>
+
+      {/* Universal SEO Cross-Links */}
+      <UniversalCrossLinks pageType="offices" />
     </div>
   );
 }

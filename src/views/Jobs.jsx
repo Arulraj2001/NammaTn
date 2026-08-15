@@ -14,6 +14,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import JobCard from "@/components/phase8/JobCard";
 import { checkRateLimit, sanitizeText } from "@/lib/security";
 import { useNotify } from "@/hooks/useNotify";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 const JOB_TYPES = [
   { value: "part_time", label: "Part-time" },
@@ -256,6 +257,9 @@ export default function Jobs({ initialJobs = [] }) {
       ) : (
         <div className="space-y-3">{jobs.map(j => <JobCard key={j.id} item={j} />)}</div>
       )}
+
+      {/* Universal SEO Cross-Links */}
+      <UniversalCrossLinks pageType="jobs" />
     </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { DISTRICTS } from "@/lib/districts";
 import { Input } from "@/components/ui/input";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 const REGIONS = ["all", "north", "south", "central", "west"];
 
@@ -93,6 +94,9 @@ export default function Districts() {
           </motion.div>
         ))}
       </motion.div>
+
+      {/* Universal SEO Cross-Links */}
+      <UniversalCrossLinks pageType="districts" />
     </div>
   );
 }

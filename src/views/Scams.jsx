@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import dynamic from "next/dynamic";
 import { supabase } from "@/api/supabaseClient";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 const LocationPickerMap = dynamic(() => import("@/components/media/LocationPickerMap"), { ssr: false });
 
@@ -259,6 +260,9 @@ export default function Scams({ initialScams = [] }) {
       ) : (
         <div className="space-y-3">{scams.map(s => <ScamCard key={s.id} item={s} />)}</div>
       )}
+
+      {/* Universal SEO Cross-Links */}
+      <UniversalCrossLinks pageType="scams" />
     </div>
     </div>
   );

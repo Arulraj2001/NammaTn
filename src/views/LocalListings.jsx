@@ -11,6 +11,7 @@ import { LISTING_CATEGORIES } from "@/lib/listingCategories";
 import { DISTRICTS } from "@/lib/districts";
 import ListingCard from "@/components/listings/ListingCard";
 import ListingSubmitModal from "@/components/listings/ListingSubmitModal";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 const PAGE_SIZE = 24;
 
@@ -289,6 +290,9 @@ export default function LocalListings({ initialListings = [] }) {
             {T("List for Free", "இலவசமாக பட்டியலிடுங்கள்")}
           </button>
         </div>
+
+        {/* Universal SEO Cross-Links */}
+        <UniversalCrossLinks pageType="listings" />
       </div>
 
       {showSubmit && <ListingSubmitModal onClose={() => { setShowSubmit(false); refetch(); }} />}

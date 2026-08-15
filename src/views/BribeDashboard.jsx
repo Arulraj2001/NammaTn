@@ -12,6 +12,7 @@ import { supabase } from "@/api/supabaseClient";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { DISTRICTS } from "@/lib/districts";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 const DEPT_MAP = {
   "Revenue Department": { en: "Revenue Department", ta: "வருவாய்த்துறை" },
@@ -403,6 +404,9 @@ export default function BribeDashboard({ initialBribePosts }) {
             {T("No recent transparency reports logged yet.", "லஞ்சப் பதிவுகள் எதுவும் இதுவரை இல்லை.")}
           </div>
         )}
+
+        {/* Universal SEO Cross-Links */}
+        <UniversalCrossLinks pageType="bribes" />
       </motion.div>
     </div>
   );
