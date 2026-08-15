@@ -124,6 +124,7 @@ const SAMPLE_POSTS = [
     seo_description: "Salem Corporation completes replacement of 14 street lamps with 60W LEDs along Meyyanur Main Road.",
     seo_keywords: "salem street lights, meyyanur led installation, salem civic update",
     is_indexable: true
+  }
 ];
 
 const POST_FORMAT_SCHEMA = [
