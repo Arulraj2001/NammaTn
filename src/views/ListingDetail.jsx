@@ -3,6 +3,7 @@ import React from "react";
 import { BadgeCheck, MapPin, Phone, Mail, Share2, Flag, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";
+import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 
 export default function ListingDetail({ initialListing }) {
   const { lang } = useLanguage();
@@ -136,6 +137,9 @@ export default function ListingDetail({ initialListing }) {
                 </div>
               </div>
             )}
+
+            {/* Right Sidebar Related Links */}
+            <SidebarRelatedLinks type="listing" />
           </div>
         </div>
 

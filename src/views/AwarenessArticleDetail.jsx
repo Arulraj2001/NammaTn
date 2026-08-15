@@ -7,6 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import FormattedArticleContent from "@/components/awareness/FormattedArticleContent";
 import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
 import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
+import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 
 const FALLBACK_ARTICLES = [
   {
@@ -215,7 +216,7 @@ export default function AwarenessArticleDetail({ article }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
       <AwarenessSubNav activePath="/awareness/articles" />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <Link
           href="/awareness/articles"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-6 hover:underline"
@@ -224,31 +225,45 @@ export default function AwarenessArticleDetail({ article }) {
           <span>{T("Back to Articles", "கட்டுரைகள் பக்கத்திற்கு")}</span>
         </Link>
 
-        <article className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-              {T(activeArticle.category_en, activeArticle.category_ta)}
-            </span>
-            <div className="flex items-center gap-4 text-xs text-slate-400">
-              <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {activeArticle.readTime || "5 min read"}</span>
-              <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> {activeArticle.date || "Aug 15, 2026"}</span>
-            </div>
-          </div>
+        {/* 2-Column Grid: Article Content on Left (col-8), Sidebar Related Links on Right (col-4) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <main className="lg:col-span-8">
+            <article className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  {T(activeArticle.category_en, activeArticle.category_ta)}
+                </span>
+                <div className="flex items-center gap-4 text-xs text-slate-400">
+                  <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {activeArticle.readTime || "5 min read"}</span>
+                  <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> {activeArticle.date || "Aug 15, 2026"}</span>
+                </div>
+              </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
-            {T(activeArticle.title_en, activeArticle.title_ta)}
-          </h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
+                {T(activeArticle.title_en, activeArticle.title_ta)}
+              </h1>
 
-          <p className="mt-4 text-base text-slate-600 dark:text-slate-300 font-medium bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border-l-4 border-emerald-500">
-            {T(activeArticle.summary_en, activeArticle.summary_ta)}
-          </p>
+              <p className="mt-4 text-base text-slate-600 dark:text-slate-300 font-medium bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border-l-4 border-emerald-500">
+                {T(activeArticle.summary_en, activeArticle.summary_ta)}
+              </p>
 
-          <div className="mt-8">
-            <FormattedArticleContent content={contentText} />
-          </div>
-        </article>
+              <div className="mt-8">
+                <FormattedArticleContent content={contentText} />
+              </div>
+            </article>
+          </main>
 
-        {/* Cross-Linking Modules for SEO & User Discovery */}
+          {/* Right-Side Sidebar Quick & Related Links */}
+          <aside className="lg:col-span-4">
+            <SidebarRelatedLinks
+              type="article"
+              category={activeArticle.category_en}
+              currentSlug={activeArticle.slug}
+            />
+          </aside>
+        </div>
+
+        {/* Bottom Cross-Linking Modules */}
         <AwarenessRelatedLinks currentSection="article-detail" />
       </div>
     </div>

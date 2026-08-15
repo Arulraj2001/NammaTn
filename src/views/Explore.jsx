@@ -14,6 +14,7 @@ import { getActivePosts } from "@/services/posts";
 import { isPubliclyVisible } from "@/lib/visibility";
 import AdSlot from "@/components/ads/AdSlot";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 const TYPES = [
   { value: "all", en: "All Types", ta: "அனைத்து வகைகளும்" },
@@ -348,6 +349,9 @@ export default function Explore({ initialPosts = [] }) {
           )}
         </>
       )}
+
+      {/* Universal SEO Cross-Links */}
+      <UniversalCrossLinks pageType="community" />
     </div>
   );
 }

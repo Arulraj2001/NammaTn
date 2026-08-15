@@ -3,6 +3,7 @@ import React from "react";
 import { Home, MapPin, DollarSign, Users, MapPinIcon, Share2, Flag } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";
+import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 
 export default function StayDetail({ initialListing }) {
   const { lang } = useLanguage();
@@ -133,6 +134,9 @@ export default function StayDetail({ initialListing }) {
                 <p className="text-sm font-bold text-green-700 dark:text-green-400">✓ {T("Verified Listing", "சரிபார்க்கப்பட்ட பட்டியல்")}</p>
               </div>
             )}
+
+            {/* Right Sidebar Related Links */}
+            <SidebarRelatedLinks type="stay" />
           </div>
         </div>
 

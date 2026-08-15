@@ -7,6 +7,7 @@ import {
   Map, FileText, AlertTriangle, Users, CheckCircle, 
   Clock, ShieldAlert, Volume2, Building2, Sparkles, HelpCircle 
 } from "lucide-react";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 export default function HowToUse() {
   const { lang } = useLanguage();
@@ -174,6 +175,9 @@ export default function HowToUse() {
           </div>
         </motion.div>
       </motion.div>
+
+      {/* Universal SEO Cross-Links */}
+      <UniversalCrossLinks pageType="support" />
     </div>
   );
 }

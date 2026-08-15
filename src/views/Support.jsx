@@ -11,6 +11,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 const PRESET_AMOUNTS = [10, 25, 50, 100, 200, 500];
 
@@ -527,6 +528,8 @@ export default function Support() {
           </div>
         </div>
         
+        {/* Universal SEO Cross-Links */}
+        <UniversalCrossLinks pageType="support" />
       </div>
     </div>
   );

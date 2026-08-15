@@ -16,6 +16,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { getTnTodayCanonical } from "@/lib/tnTodayUrl";
 import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
 import { resolveArticleInternalLinks } from "@/lib/seo/internalLinker";
+import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -637,6 +638,9 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                 </Link>
               </div>
             )}
+
+            {/* Sidebar Related Links & Civic Tools */}
+            <SidebarRelatedLinks type="tn-today" currentSlug={article.slug} />
 
             {/* Share sidebar */}
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">

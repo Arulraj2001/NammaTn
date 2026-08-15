@@ -10,6 +10,7 @@ import { formatDistanceToNow, differenceInDays, startOfMonth } from "date-fns";
 import { getDaysOpen } from "@/lib/civicReceipt";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
 import { TRUST_BADGES, LEADERBOARD_CATEGORIES } from "@/lib/civicLeaderboard";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 export default function CivicLeaderboard({ initialPosts = [] }) {
   const { lang } = useLanguage();
@@ -204,6 +205,9 @@ export default function CivicLeaderboard({ initialPosts = [] }) {
             {T("All data is anonymized and aggregated from public civic reports. VizhiTN never sells personal data. Leaderboards exist to celebrate community action, not individual identity.", "அனைத்து தரவும் பொது குடிமை அறிக்கைகளிலிருந்து அநாமதேயமாக்கப்பட்டுள்ளது.")}
           </p>
         </div>
+
+        {/* Universal SEO Cross-Links */}
+        <UniversalCrossLinks pageType="bribes" />
       </div>
     </div>
   );

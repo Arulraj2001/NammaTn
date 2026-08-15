@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { TN_TODAY_CATEGORIES as CATEGORIES } from '@/lib/tnTodayCategories';
 import { useLanguage } from "@/context/LanguageContext";
+import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 
 // ─── Featured article hero card ───────────────────────────────────────────────
 function FeaturedCard({ article }) {
@@ -264,6 +265,8 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
           <EmptyState categoryLabel={activeCategory?.label} />
         )}
 
+        {/* Universal SEO Cross-Links */}
+        <UniversalCrossLinks pageType="tn-today" />
       </div>
     </div>
   );

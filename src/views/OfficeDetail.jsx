@@ -14,6 +14,7 @@ import { checkRateLimit } from "@/lib/security";
 import VerifiedBadge from "@/components/phase8/VerifiedBadge";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
+import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 
 const WAIT_LABELS = { less_30min: "< 30 min", "30_60min": "30–60 min", "1_2hrs": "1–2 hrs", "2_3hrs": "2–3 hrs", more_3hrs: "> 3 hrs", not_served: "Not Served" };
 const STATUS_LABELS = { open_normal: { l: "Open (Normal)", c: "text-green-600" }, open_slow: { l: "Open (Slow)", c: "text-yellow-600" }, partial: { l: "Partial Service", c: "text-orange-600" }, closed: { l: "Closed", c: "text-red-600" }, system_down: { l: "System Down", c: "text-red-600" } };
@@ -76,137 +77,126 @@ export default function OfficeDetail({ initialSlug, initialDistrict = "" }) {
   );
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Link to="/offices" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white mb-4 transition-colors">
         <ArrowLeft className="w-4 h-4" /> {T("All Offices", "அனைத்து அலுவலகங்கள்")}
       </Link>
 
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 mb-5">
-        <div className="flex items-center gap-4 mb-3">
-          <span className="text-4xl">{office.icon}</span>
-          <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">{T(office.name_en, office.name_ta)}</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{reports.length} {T("community reports", "சமுதாய அறிக்கைகள்")}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <main className="lg:col-span-8">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 mb-5">
+            <div className="flex items-center gap-4 mb-3">
+              <span className="text-4xl">{office.icon}</span>
+              <div>
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white">{T(office.name_en, office.name_ta)}</h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{reports.length} {T("community reports", "சமுதாய அறிக்கைகள்")}</p>
+              </div>
+            </div>
+            {avgWait && (
+              <div className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                <Clock className="w-4 h-4 text-orange-500" />
+                {T("Avg. waiting time:", "சராசரி காத்திருப்பு நேரம்:")} <span className="text-orange-600 font-bold">{avgWait}</span>
+              </div>
+            )}
           </div>
-        </div>
-        {avgWait && (
-          <div className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-            <Clock className="w-4 h-4 text-orange-500" />
-            {T("Avg. waiting time:", "சராசரி காத்திருப்பு நேரம்:")} <span className="text-orange-600 font-bold">{avgWait}</span>
+
+          <div className="flex flex-col sm:flex-row gap-3 mb-5">
+            <select value={selectedDistrict} onChange={(e) => setSelectedDistrict(e.target.value)}
+              className="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:outline-none">
+              <option value="">{T("All Districts", "அனைத்து மாவட்டங்கள்")}</option>
+              {DISTRICTS.map(d => <option key={d.slug} value={d.slug}>{T(d.name_en, d.name_ta)}</option>)}
+            </select>
+            <button onClick={handleToggleForm}
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors">
+              {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {showForm ? T("Cancel", "ரத்து") : T("Report Visit", "வருகையை புகாரளி")}
+            </button>
           </div>
-        )}
-      </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <select value={selectedDistrict} onChange={(e) => setSelectedDistrict(e.target.value)}
-          className="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:outline-none">
-          <option value="">{T("All Districts", "அனைத்து மாவட்டங்கள்")}</option>
-          {DISTRICTS.map(d => <option key={d.slug} value={d.slug}>{T(d.name_en, d.name_ta)}</option>)}
-        </select>
-        <button onClick={handleToggleForm}
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors">
-          {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          {showForm ? T("Cancel", "ரத்து") : T("Report Visit", "வருகையை புகாரளி")}
-        </button>
-      </div>
-
-      {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 mb-5 space-y-4">
-          <h3 className="font-semibold text-slate-800 dark:text-white">{T("Report Your Visit", "உங்கள் வருகையை புகாரளிக்கவும்")}</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{T("Please share factual, neutral observations only.", "தயவுசெய்து உண்மையான, நடுநிலையான கருத்துகளை மட்டும் பகிரவும்.")}</p>
-          <select value={form.district_slug} onChange={(e) => {
-            const d = DISTRICTS.find(d => d.slug === e.target.value);
-            setForm(f => ({ ...f, district_slug: e.target.value, district_name: d?.name_en || "" }));
-          }} className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
-            <option value="">{T("Select District *", "மாவட்டம் *")}</option>
-            {DISTRICTS.map(d => <option key={d.slug} value={d.slug}>{T(d.name_en, d.name_ta)}</option>)}
-          </select>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-slate-600 dark:text-slate-400 mb-1 block">{T("Waiting Time", "காத்திருப்பு நேரம்")}</label>
-              <select value={form.waiting_time} onChange={(e) => setForm(f => ({ ...f, waiting_time: e.target.value }))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
-                {Object.entries(WAIT_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-slate-600 dark:text-slate-400 mb-1 block">{T("Service Speed", "சேவை வேகம்")}</label>
-              <select value={form.service_speed} onChange={(e) => setForm(f => ({ ...f, service_speed: e.target.value }))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
-                <option value="very_fast">{T("Very Fast", "மிகவும் வேகமான")}</option>
-                <option value="normal">{T("Normal", "சாதாரண")}</option>
-                <option value="slow">{T("Slow", "மெதுவான")}</option>
-                <option value="very_slow">{T("Very Slow", "மிகவும் மெதுவான")}</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-slate-600 dark:text-slate-400 mb-1 block">{T("Office Status", "அலுவலக நிலை")}</label>
-              <select value={form.office_status} onChange={(e) => setForm(f => ({ ...f, office_status: e.target.value }))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
-                {Object.entries(STATUS_LABELS).map(([v, { l }]) => <option key={v} value={v}>{l}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-slate-600 dark:text-slate-400 mb-1 block">{T("Staff Behavior", "ஊழியர் நடத்தை")}</label>
-              <select value={form.staff_behavior} onChange={(e) => setForm(f => ({ ...f, staff_behavior: e.target.value }))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
-                <option value="excellent">{T("Excellent", "சிறப்பான")}</option>
-                <option value="good">{T("Good", "நல்ல")}</option>
-                <option value="average">{T("Average", "சராசரி")}</option>
-                <option value="poor">{T("Poor", "மோசமான")}</option>
-              </select>
-            </div>
-          </div>
-          <input value={form.purpose_of_visit} onChange={(e) => setForm(f => ({ ...f, purpose_of_visit: e.target.value }))}
-            placeholder={T("Purpose (e.g. driving licence, EC registration)...", "நோக்கம் (எ.கா. ஓட்டுநர் உரிமம்)...")}
-            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none" />
-          <textarea value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value.substring(0, 500) }))}
-            placeholder={T("Neutral observations (optional, max 500 chars)...", "நடுநிலை கருத்துகள் (விருப்பம், அதிகபட்சம் 500 எழுத்துகள்)...")}
-            rows={3} className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm resize-none focus:outline-none" />
-          <p className="text-xs text-slate-400">{500 - form.notes.length} {T("chars remaining", "எழுத்துகள் மீதமுள்ளன")}</p>
-          {formError && <p className="text-red-500 text-xs">{formError}</p>}
-          <button type="submit" disabled={mutation.isPending}
-            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-colors disabled:opacity-60">
-            {mutation.isPending ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" />Submitting...</span> : T("Submit Report", "அறிக்கையை சமர்ப்பி")}
-          </button>
-        </form>
-      )}
-
-      {isLoading ? (
-        <div className="space-y-3">{Array(3).fill(0).map((_, i) => <div key={i} className="h-24 bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse" />)}</div>
-      ) : reports.length === 0 ? (
-        <div className="text-center py-12 text-slate-400">
-          <Building2 className="w-10 h-10 mx-auto mb-3 opacity-40" />
-          <p className="text-sm">{T("No reports yet. Be the first to report!", "இன்னும் அறிக்கைகள் இல்லை. முதலில் புகாரளிக்கவும்!")}</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {reports.map((r) => {
-            const statusCfg = STATUS_LABELS[r.office_status] || STATUS_LABELS.open_normal;
-            return (
-              <div key={r.id} className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 p-4 transition-all">
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`text-xs font-semibold ${statusCfg.c}`}>{statusCfg.l}</span>
-                    <span className="text-xs text-orange-600 font-medium flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> {WAIT_LABELS[r.waiting_time]}
-                    </span>
-                    {r.is_verified && <VerifiedBadge />}
-                  </div>
-                  <span className="text-xs text-slate-400 flex-shrink-0">{r.created_date ? formatDistanceToNow(new Date(r.created_date), { addSuffix: true }) : ""}</span>
+          {showForm && (
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 mb-6 space-y-3">
+              <h3 className="font-semibold text-slate-800 dark:text-white text-sm">{T("Report Office Visit", "அலுவலக வருகையை புகாரளி")}</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-slate-500 block mb-1">{T("District *", "மாவட்டம் *")}</label>
+                  <select value={form.district_slug} onChange={(e) => {
+                    const d = DISTRICTS.find(d => d.slug === e.target.value);
+                    setForm(f => ({ ...f, district_slug: e.target.value, district_name: d?.name_en || "" }));
+                  }} className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
+                    <option value="">Select District</option>
+                    {DISTRICTS.map(d => <option key={d.slug} value={d.slug}>{T(d.name_en, d.name_ta)}</option>)}
+                  </select>
                 </div>
-                {r.purpose_of_visit && <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Purpose: {r.purpose_of_visit}</p>}
-                {r.notes && <p className="text-sm text-slate-700 dark:text-slate-300">{r.notes}</p>}
-                <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
-                  <span>{r.district_name}</span>
-                  <span>Service: {r.service_speed}</span>
-                  <span>Staff: {r.staff_behavior}</span>
+                <div>
+                  <label className="text-xs text-slate-500 block mb-1">{T("Waiting Time", "காத்திருப்பு நேரம்")}</label>
+                  <select value={form.waiting_time} onChange={(e) => setForm(f => ({ ...f, waiting_time: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
+                    {Object.entries(WAIT_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500 block mb-1">{T("Office Status", "அலுவலக நிலை")}</label>
+                  <select value={form.office_status} onChange={(e) => setForm(f => ({ ...f, office_status: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none">
+                    {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v.l}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500 block mb-1">{T("Purpose of Visit", "வருகையின் நோக்கம்")}</label>
+                  <input value={form.purpose_of_visit} onChange={(e) => setForm(f => ({ ...f, purpose_of_visit: e.target.value }))}
+                    placeholder="e.g. Patta transfer, Birth cert..." className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none" />
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+              <textarea value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))}
+                placeholder={T("Describe your experience (staff response, counters active, infrastructure...)", "உங்கள் அனுபவத்தை விவரிக்கவும்...")}
+                rows={3} className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm resize-none focus:outline-none" />
+              {formError && <p className="text-red-500 text-xs">{formError}</p>}
+              <button type="submit" disabled={mutation.isPending}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-colors disabled:opacity-60">
+                {mutation.isPending ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" />Submitting...</span> : T("Submit Report", "அறிக்கையை சமர்ப்பி")}
+              </button>
+            </form>
+          )}
+
+          {isLoading ? (
+            <div className="space-y-3">{Array(3).fill(0).map((_, i) => <div key={i} className="h-20 bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse" />)}</div>
+          ) : reports.length === 0 ? (
+            <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
+              <Clock className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+              <p className="text-sm font-medium text-slate-500">{T("No visit reports yet.", "இன்னும் வருகை அறிக்கைகள் இல்லை.")}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {reports.map((r) => {
+                const statusInfo = STATUS_LABELS[r.office_status] || STATUS_LABELS.open_normal;
+                return (
+                  <div key={r.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 ${statusInfo.c}`}>{statusInfo.l}</span>
+                        {r.waiting_time && <span className="text-xs font-bold text-orange-600 bg-orange-50 dark:bg-orange-950 px-2 py-0.5 rounded-md">{WAIT_LABELS[r.waiting_time]}</span>}
+                      </div>
+                      <span className="text-xs text-slate-400">{r.created_at ? formatDistanceToNow(new Date(r.created_at), { addSuffix: true }) : ""}</span>
+                    </div>
+                    {r.purpose_of_visit && <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Purpose: {r.purpose_of_visit}</p>}
+                    {r.notes && <p className="text-sm text-slate-700 dark:text-slate-300">{r.notes}</p>}
+                    <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                      <span>{r.district_name}</span>
+                      <span>Service: {r.service_speed}</span>
+                      <span>Staff: {r.staff_behavior}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </main>
+
+        {/* Right Sidebar Related Links */}
+        <aside className="lg:col-span-4">
+          <SidebarRelatedLinks type="office" currentSlug={slug} />
+        </aside>
+      </div>
     </div>
   );
 }

@@ -37,6 +37,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import CommentSection from "@/components/comments/CommentSection";
 import SponsorThisIssue from "@/components/sponsors/SponsorThisIssue";
+import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 
 const TYPE_CONFIG = {
   complaint: { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-50 dark:bg-red-900/20", label_en: "Complaint", label_ta: "புகார்" },
@@ -366,6 +367,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
 
         {/* Sidebar — Civic Case File dashboard on desktop */}
         <aside className="w-full lg:w-80 flex-shrink-0 space-y-4">
+          <SidebarRelatedLinks type="post" />
           {isCivic ? (
             <>
               <CaseFileSidebar
