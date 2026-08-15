@@ -4,7 +4,6 @@ import React from "react";
 import { Shield, FileText, Building, CheckCircle2, ExternalLink, ArrowLeft } from "lucide-react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
-import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import FormattedArticleContent from "@/components/awareness/FormattedArticleContent";
 
 export default function AwarenessRightDetail({ right }) {
@@ -27,14 +26,6 @@ export default function AwarenessRightDetail({ right }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <Breadcrumbs
-          items={[
-            { name: T("Awareness", "விழிப்புணர்வு"), href: "/awareness" },
-            { name: T("Citizen Rights", "குடிமக்கள் உரிமைகள்"), href: "/awareness/rights" },
-            { name: T(right.name_en, right.name_ta), href: `/awareness/right/${right.slug}` },
-          ]}
-        />
-
         <Link
           href="/awareness/rights"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 mb-6 hover:underline"

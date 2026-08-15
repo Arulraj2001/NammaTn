@@ -5,7 +5,6 @@ import { BookOpen, Search, Clock, Calendar, ChevronRight, ExternalLink, ArrowLef
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import Breadcrumbs from "@/components/seo/Breadcrumbs";
 
 const KNOWLEDGE_ARTICLES = [
   {
@@ -195,13 +194,7 @@ export default function AwarenessArticlesPage() {
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <Breadcrumbs
-            items={[
-              { name: T("Awareness", "விழிப்புணர்வு"), href: "/awareness" },
-              { name: T("Knowledge Base Articles", "அறிவுத் தளம் கட்டுரைகள்"), href: "/awareness/articles" },
-            ]}
-          />
-          <div className="flex items-center gap-3 mt-4">
+          <div className="flex items-center gap-3">
             <div className="p-3 bg-emerald-500/20 rounded-xl border border-emerald-400/30">
               <BookOpen className="w-8 h-8 text-emerald-400" />
             </div>

@@ -4,7 +4,6 @@ import React from "react";
 import { BookOpen, Clock, Calendar, ArrowLeft, Share2, Tag, ExternalLink, CheckCircle2 } from "lucide-react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
-import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import FormattedArticleContent from "@/components/awareness/FormattedArticleContent";
 
 const FALLBACK_ARTICLES = [
@@ -214,14 +213,6 @@ export default function AwarenessArticleDetail({ article }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <Breadcrumbs
-          items={[
-            { name: T("Awareness", "விழிப்புணர்வு"), href: "/awareness" },
-            { name: T("Articles", "கட்டுரைகள்"), href: "/awareness/articles" },
-            { name: T(activeArticle.title_en, activeArticle.title_ta), href: `/awareness/article/${activeArticle.slug}` },
-          ]}
-        />
-
         <Link
           href="/awareness/articles"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-6 hover:underline"

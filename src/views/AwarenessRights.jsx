@@ -5,7 +5,6 @@ import { Shield, Search, FileText, ChevronRight, ExternalLink, ArrowLeft, Downlo
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import Breadcrumbs from "@/components/seo/Breadcrumbs";
 
 const CITIZEN_RIGHTS = [
   {
@@ -280,13 +279,7 @@ export default function AwarenessRightsPage() {
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <Breadcrumbs
-            items={[
-              { name: T("Awareness", "விழிப்புணர்வு"), href: "/awareness" },
-              { name: T("Citizen Rights", "குடிமக்கள் உரிமைகள்"), href: "/awareness/rights" },
-            ]}
-          />
-          <div className="flex items-center gap-3 mt-4">
+          <div className="flex items-center gap-3">
             <div className="p-3 bg-blue-500/20 rounded-xl border border-blue-400/30">
               <Shield className="w-8 h-8 text-blue-400" />
             </div>
