@@ -7,6 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useNotify } from "@/hooks/useNotify";
 import { useQuery } from "@tanstack/react-query";
 import { getSettingsMap } from "@/services/admin/settings";
+import { buildListingSeo } from "@/lib/listingSeo";
 
 export default function ListingSubmitModal({ onClose }) {
   const { lang } = useLanguage();
@@ -56,11 +57,18 @@ export default function ListingSubmitModal({ onClose }) {
   const handleSubmit = async () => {
     if (!form.business_name.trim() || !form.district_slug || !form.contact_phone.trim() || !form.admin_email.trim() || !form.admin_phone.trim()) return;
     setLoading(true);
+    const seo = buildListingSeo({ ...form, district_name: district?.name_en });
     const created = await base44.entities.LocalListing.create({
       ...form,
       district_name: district?.name_en || "",
       session_ref: session,
       status: "pending",
+      slug: seo.slug,
+      seo_title: seo.seo_title,
+      seo_description: seo.seo_description,
+      seo_keywords: seo.seo_keywords,
+      canonical_url: seo.canonical_url,
+      is_indexable: seo.is_indexable,
     });
     notify({
       type: "listing_verified",

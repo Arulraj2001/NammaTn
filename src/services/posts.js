@@ -1,6 +1,7 @@
 import { supabase } from "@/api/supabaseClient";
 import { isPubliclyVisible } from "@/lib/visibility";
 import { notifySearchEngines } from "@/lib/seo/instantIndexing";
+import { buildPostSeo } from "@/lib/postSeo";
 
 const normalizePostPageArgs = (limitOrOptions = 20, sort = "-created_date", cursor = null) => {
   if (typeof limitOrOptions === "object" && limitOrOptions !== null) {
@@ -51,10 +52,24 @@ const fetchVisiblePostPage = async ({ limit, cursor = null, filter = isPubliclyV
   return page.slice(0, limit);
 };
 
+const normalizePostSeo = (data = {}) => {
+  const seo = buildPostSeo(data);
+  return {
+    ...data,
+    slug: seo.slug,
+    seo_title: seo.seo_title,
+    seo_description: seo.seo_description,
+    seo_keywords: seo.seo_keywords,
+    canonical_url: seo.canonical_url,
+    is_indexable: seo.is_indexable,
+  };
+};
+
 export const createPost = async (data) => {
+  const prepared = normalizePostSeo(data);
   const { data: created, error } = await supabase
     .from("post")
-    .insert(data)
+    .insert(prepared)
     .select()
     .single();
   if (error) throw error;

@@ -5,6 +5,7 @@ import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 import { toMetaDescription } from '@/lib/metaDescription';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { CATEGORY_MAP } from '@/lib/seo-data';
+import { buildPostSeo } from '@/lib/postSeo';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -14,21 +15,22 @@ export async function generateMetadata({ params }) {
   const { post } = await getPublicPostDetail(params.id);
   if (!post) notFound();
 
-  const postTitle = getPageTitle(post.title_en || post.title, 'Civic Report');
-  const title = `${postTitle} – Civic Report`;
+  const seo = buildPostSeo(post);
+  const postTitle = getPageTitle(seo.seo_title || post.title_en || post.title, 'Civic Report');
+  const title = `${postTitle.replace(/\s*\|\s*VizhiTN\s*$/i, '')} – Civic Report`;
   const socialTitle = getSocialTitle(title);
-  const description = toMetaDescription(
+  const description = seo.seo_description || toMetaDescription(
     post.content_en || post.description,
     `Civic report from ${post.area_name || post.district_name || 'Tamil Nadu'}.`,
   );
-  const canonical = `${SITE_URL}/post/${post.id}`;
+  const canonical = seo.canonical_url || `${SITE_URL}/post/${post.id}`;
   const image = post.before_photos?.[0] || post.media_urls?.[0] || post.image_url || `${SITE_URL}/og-image.png`;
 
   return {
-    title,
+    title: postTitle,
     description,
     alternates: { canonical },
-    robots: { index: false, follow: true },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
     openGraph: {
       type: 'article', title: socialTitle, description, url: canonical, siteName: 'VizhiTN', locale: 'en_IN',
       images: [{ url: image, width: 1200, height: 630, alt: postTitle }],

@@ -264,6 +264,8 @@ export default function CreatePost() {
 
     const post = await createPost({
       ...clean,
+      title_en: clean.title_en?.trim(),
+      content_en: clean.content_en?.trim(),
       post_type: selectedType,
       district_name: district ? district.name_en : "",
       category_name: category ? category.name_en : "",
@@ -275,6 +277,7 @@ export default function CreatePost() {
       comment_count: 0,
       status: "active",
       is_publicly_visible: true,
+      is_indexable: true,
       moderation_status: settings.auto_approve_posts === "false" ? "pending" : "approved",
       created_by_id: user?.id,
       created_by: user?.full_name || user?.email,

@@ -1,4 +1,5 @@
 import { supabase } from "@/api/supabaseClient";
+import { buildJobSeo } from "@/lib/jobSeo";
 
 // Suspicious job keywords — flag for pending review
 const SUSPICIOUS_JOB_KEYWORDS = [
@@ -49,10 +50,24 @@ export const getJobsByDistrict = async (districtSlug, limit = 20) => {
     .slice(0, limit);
 };
 
+const normalizeJobSeo = (data = {}) => {
+  const seo = buildJobSeo(data);
+  return {
+    ...data,
+    slug: seo.slug,
+    seo_title: seo.seo_title,
+    seo_description: seo.seo_description,
+    seo_keywords: seo.seo_keywords,
+    canonical_url: seo.canonical_url,
+    is_indexable: seo.is_indexable,
+  };
+};
+
 export const createJob = async (data) => {
+  const prepared = normalizeJobSeo(data);
   const { data: created, error } = await supabase
     .from("job_alert")
-    .insert(data)
+    .insert(prepared)
     .select()
     .single();
   if (error) throw error;

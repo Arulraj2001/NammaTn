@@ -1,4 +1,5 @@
 import { supabase } from "@/api/supabaseClient";
+import { buildStaySeo } from "@/lib/staySeo";
 
 // Suspicious stay keywords — flag for pending review
 const SUSPICIOUS_STAY_KEYWORDS = [
@@ -78,10 +79,24 @@ export const getListingsByDistrictAndType = async (district_slug, listing_type, 
     .slice(0, limit);
 };
 
+const normalizeStaySeo = (data = {}) => {
+  const seo = buildStaySeo(data);
+  return {
+    ...data,
+    slug: seo.slug,
+    seo_title: seo.seo_title,
+    seo_description: seo.seo_description,
+    seo_keywords: seo.seo_keywords,
+    canonical_url: seo.canonical_url,
+    is_indexable: seo.is_indexable,
+  };
+};
+
 export const createListing = async (data) => {
+  const prepared = normalizeStaySeo(data);
   const { data: created, error } = await supabase
     .from("stay_listing")
-    .insert(data)
+    .insert(prepared)
     .select()
     .single();
   if (error) throw error;
