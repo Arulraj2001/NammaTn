@@ -5,6 +5,7 @@ import { Shield, FileText, Building, CheckCircle2, ExternalLink, ArrowLeft } fro
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import FormattedArticleContent from "@/components/awareness/FormattedArticleContent";
 
 export default function AwarenessRightDetail({ right }) {
   const { lang } = useLanguage();
@@ -66,9 +67,9 @@ export default function AwarenessRightDetail({ right }) {
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-2">
                 {T("Detailed Statutory Overview", "சட்டப்பூர்வ விரிவான விளக்கம்")}
               </h3>
-              <p className="text-sm text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl leading-relaxed">
-                {T(right.content_en, right.content_ta)}
-              </p>
+              <div className="mt-2">
+                <FormattedArticleContent content={T(right.content_en, right.content_ta)} />
+              </div>
             </div>
 
             {right.key_points_en && (

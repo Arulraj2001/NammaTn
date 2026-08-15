@@ -5,6 +5,7 @@ import { BookOpen, Clock, Calendar, ArrowLeft, Share2, Tag, ExternalLink, CheckC
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import FormattedArticleContent from "@/components/awareness/FormattedArticleContent";
 
 const FALLBACK_ARTICLES = [
   {
@@ -248,8 +249,8 @@ export default function AwarenessArticleDetail({ article }) {
             {T(activeArticle.summary_en, activeArticle.summary_ta)}
           </p>
 
-          <div className="mt-8 prose prose-slate dark:prose-invert max-w-none space-y-4 text-slate-700 dark:text-slate-200 leading-relaxed text-sm sm:text-base whitespace-pre-line">
-            {contentText}
+          <div className="mt-8">
+            <FormattedArticleContent content={contentText} />
           </div>
         </article>
       </div>
