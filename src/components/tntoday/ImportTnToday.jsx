@@ -279,10 +279,49 @@ function PreviewCard({ article, index, onRemove, onUpdate }) {
           <div className="flex items-center gap-2 pt-1 flex-wrap">
             <button
               type="button"
-              onClick={handleRegeneratePoster}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-md bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors"
+              onClick={async () => {
+                setLoadingAi(true);
+                try {
+                  const posterUrl = await generateTnTodayPosterAsync({
+                    title: article.title,
+                    category: article.category,
+                    subtitle: article.subtitle || article.summary || "",
+                    promptText: article.prompt_text || article.title,
+                    layoutStyle: "banner",
+                  });
+                  onUpdate({ ...article, featured_image: posterUrl, social_image: posterUrl, is_poster: true });
+                } catch {
+                  // ignore
+                } finally {
+                  setLoadingAi(false);
+                }
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-md bg-amber-500 hover:bg-amber-600 text-slate-950 transition-colors"
             >
-              🎨 Regenerate Poster
+              🎨 Full Banner
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                setLoadingAi(true);
+                try {
+                  const posterUrl = await generateTnTodayPosterAsync({
+                    title: article.title,
+                    category: article.category,
+                    subtitle: article.subtitle || article.summary || "",
+                    promptText: article.prompt_text || article.title,
+                    layoutStyle: "square_box",
+                  });
+                  onUpdate({ ...article, featured_image: posterUrl, social_image: posterUrl, is_poster: true });
+                } catch {
+                  // ignore
+                } finally {
+                  setLoadingAi(false);
+                }
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-md bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+            >
+              🖼️ Square Box
             </button>
             <button
               type="button"

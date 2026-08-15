@@ -23,20 +23,140 @@ export function isImagePrompt(val) {
   return true;
 }
 
-const CATEGORY_GRADIENTS = {
-  infrastructure: ["#0F172A", "#1E3A8A", "#2563EB", "#3B82F6"],
-  education:      ["#022C22", "#047857", "#059669", "#10B981"],
-  healthcare:     ["#4C0519", "#881337", "#BE123C", "#F43F5E"],
-  environment:    ["#064E3B", "#14532D", "#15803D", "#22C55E"],
-  economy:        ["#451A03", "#78350F", "#B45309", "#F59E0B"],
-  governance:     ["#2E1065", "#3B0764", "#6B21A8", "#A855F7"],
-  transport:      ["#431407", "#7C2D12", "#C2410C", "#EA580C"],
-  agriculture:    ["#14532D", "#166534", "#15803D", "#84CC16"],
-  technology:     ["#083344", "#164E63", "#0E7490", "#06B6D4"],
-  social:         ["#500724", "#831843", "#BE185D", "#EC4899"],
-  india:          ["#1E1B4B", "#312E81", "#4338CA", "#6366F1"],
-  world:          ["#134E4A", "#115E59", "#0F766E", "#14B8A6"],
-  general:        ["#0F172A", "#1E293B", "#334155", "#64748B"],
+/**
+ * Dynamic Category Color Palettes for TNToday Poster Generator
+ */
+const CATEGORY_THEMES = {
+  infrastructure: {
+    bgGrad: ["#0B132B", "#1C2541", "#1E3A8A", "#2563EB"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#3B82F6",
+    badgeBg: "rgba(59, 130, 246, 0.2)",
+    badgeBorder: "rgba(147, 197, 253, 0.4)",
+    subheadColor: "#F59E0B", // Gold
+    stampColor: "#F59E0B",
+    verifiedColor: "#10B981",
+  },
+  education: {
+    bgGrad: ["#022C22", "#064E3B", "#047857", "#10B981"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#10B981",
+    badgeBg: "rgba(16, 185, 129, 0.2)",
+    badgeBorder: "rgba(110, 231, 183, 0.4)",
+    subheadColor: "#6EE7B7", // Mint Green
+    stampColor: "#6EE7B7",
+    verifiedColor: "#10B981",
+  },
+  healthcare: {
+    bgGrad: ["#4C0519", "#881337", "#BE123C", "#F43F5E"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#F43F5E",
+    badgeBg: "rgba(244, 63, 94, 0.2)",
+    badgeBorder: "rgba(253, 164, 175, 0.4)",
+    subheadColor: "#FECDD3", // Soft Rose
+    stampColor: "#F59E0B",
+    verifiedColor: "#10B981",
+  },
+  environment: {
+    bgGrad: ["#064E3B", "#14532D", "#15803D", "#22C55E"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#22C55E",
+    badgeBg: "rgba(34, 197, 94, 0.2)",
+    badgeBorder: "rgba(134, 239, 172, 0.4)",
+    subheadColor: "#A3E635", // Lime
+    stampColor: "#A3E635",
+    verifiedColor: "#10B981",
+  },
+  economy: {
+    bgGrad: ["#451A03", "#78350F", "#B45309", "#F59E0B"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#B45309",
+    badgeBg: "rgba(245, 158, 11, 0.2)",
+    badgeBorder: "rgba(252, 211, 77, 0.4)",
+    subheadColor: "#FDE047", // Yellow
+    stampColor: "#F59E0B",
+    verifiedColor: "#10B981",
+  },
+  governance: {
+    bgGrad: ["#2E1065", "#3B0764", "#6B21A8", "#A855F7"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#E11D48",
+    badgeBg: "rgba(168, 85, 247, 0.2)",
+    badgeBorder: "rgba(216, 180, 254, 0.4)",
+    subheadColor: "#FDE047", // Bright Yellow
+    stampColor: "#FDE047",
+    verifiedColor: "#10B981",
+  },
+  transport: {
+    bgGrad: ["#431407", "#7C2D12", "#C2410C", "#EA580C"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#EA580C",
+    badgeBg: "rgba(234, 88, 12, 0.2)",
+    badgeBorder: "rgba(253, 186, 116, 0.4)",
+    subheadColor: "#FDE047", // Gold Yellow
+    stampColor: "#F59E0B",
+    verifiedColor: "#10B981",
+  },
+  agriculture: {
+    bgGrad: ["#14532D", "#166534", "#15803D", "#84CC16"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#84CC16",
+    badgeBg: "rgba(132, 204, 22, 0.2)",
+    badgeBorder: "rgba(190, 242, 100, 0.4)",
+    subheadColor: "#FDE047", // Harvest Gold
+    stampColor: "#BEF264",
+    verifiedColor: "#10B981",
+  },
+  technology: {
+    bgGrad: ["#083344", "#164E63", "#0E7490", "#06B6D4"],
+    ribbonGold: "#38BDF8",
+    ribbonAccent: "#06B6D4",
+    badgeBg: "rgba(6, 182, 212, 0.2)",
+    badgeBorder: "rgba(103, 232, 249, 0.4)",
+    subheadColor: "#38BDF8", // Neon Cyan
+    stampColor: "#38BDF8",
+    verifiedColor: "#10B981",
+  },
+  social: {
+    bgGrad: ["#500724", "#831843", "#BE185D", "#EC4899"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#EC4899",
+    badgeBg: "rgba(236, 72, 153, 0.2)",
+    badgeBorder: "rgba(249, 168, 212, 0.4)",
+    subheadColor: "#FBCFE8", // Light Pink
+    stampColor: "#F59E0B",
+    verifiedColor: "#10B981",
+  },
+  india: {
+    bgGrad: ["#1E1B4B", "#312E81", "#4338CA", "#6366F1"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#6366F1",
+    badgeBg: "rgba(99, 102, 241, 0.2)",
+    badgeBorder: "rgba(165, 180, 252, 0.4)",
+    subheadColor: "#F59E0B",
+    stampColor: "#F59E0B",
+    verifiedColor: "#10B981",
+  },
+  world: {
+    bgGrad: ["#134E4A", "#115E59", "#0F766E", "#14B8A6"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#14B8A6",
+    badgeBg: "rgba(20, 184, 166, 0.2)",
+    badgeBorder: "rgba(153, 246, 228, 0.4)",
+    subheadColor: "#5EEAD4", // Teal Mint
+    stampColor: "#5EEAD4",
+    verifiedColor: "#10B981",
+  },
+  general: {
+    bgGrad: ["#0F172A", "#1E293B", "#334155", "#64748B"],
+    ribbonGold: "#F59E0B",
+    ribbonAccent: "#3B82F6",
+    badgeBg: "rgba(255, 255, 255, 0.12)",
+    badgeBorder: "rgba(255, 255, 255, 0.35)",
+    subheadColor: "#F59E0B",
+    stampColor: "#F59E0B",
+    verifiedColor: "#10B981",
+  },
 };
 
 /**
@@ -65,15 +185,17 @@ function wrapText(ctx, text, maxWidth) {
 }
 
 /**
- * Generates a high-definition 1200x630 TNToday Full-Banner Branded News Poster PNG Data URL
+ * Generates a high-definition 1200x630 TNToday Full-Banner Branded News Poster JPEG Data URL
+ * Dynamically themed according to category
  * @param {Object} opts
  * @param {string} opts.title Article title
  * @param {string} [opts.category] Article category
  * @param {string} [opts.subtitle] Optional subtitle/summary snippet
  * @param {HTMLImageElement} [opts.bgImage] Optional loaded background image
- * @returns {string} PNG Data URL
+ * @param {"square_box" | "full_bg" | "auto"} [opts.layoutStyle] Poster layout style
+ * @returns {string} JPEG Data URL (~90 KB)
  */
-export function generateTnTodayPoster({ title = "TNToday News Update", category = "general", subtitle = "", bgImage = null }) {
+export function generateTnTodayPoster({ title = "TNToday News Update", category = "general", subtitle = "", bgImage = null, layoutStyle = "banner" }) {
   if (typeof window === "undefined") return "";
 
   const width = 1200;
@@ -87,14 +209,32 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
 
   const catKey = (category || "general").toLowerCase();
   const catObj = TN_TODAY_CATEGORY_MAP[catKey] || TN_TODAY_CATEGORY_MAP.general;
-  const colors = CATEGORY_GRADIENTS[catKey] || CATEGORY_GRADIENTS.general;
+  const theme = CATEGORY_THEMES[catKey] || CATEGORY_THEMES.general;
 
-  // 1. Draw Deep Gradient or Image Background
-  if (bgImage && bgImage.complete && bgImage.naturalWidth > 0) {
-    // Draw background photo
-    ctx.drawImage(bgImage, 0, 0, width, height);
+  const hasPhoto = bgImage && bgImage.complete && bgImage.naturalWidth > 0;
+  const isPhotoBg = (layoutStyle === "banner" || layoutStyle === "full_bg") && hasPhoto;
 
-    // Apply 75% Dark Linear & Radial Vignette for 100% text contrast
+  // 1. Draw Background
+  if (isPhotoBg) {
+    // Cover-fit full background photo
+    const imgRatio = bgImage.naturalWidth / bgImage.naturalHeight;
+    const canvasRatio = width / height;
+    let drawW, drawH, drawX, drawY;
+
+    if (imgRatio > canvasRatio) {
+      drawH = height;
+      drawW = height * imgRatio;
+      drawX = -(drawW - width) / 2;
+      drawY = 0;
+    } else {
+      drawW = width;
+      drawH = width / imgRatio;
+      drawX = 0;
+      drawY = -(drawH - height) / 2;
+    }
+    ctx.drawImage(bgImage, drawX, drawY, drawW, drawH);
+
+    // Apply 75% Dark Linear Vignette
     const darkOverlay = ctx.createLinearGradient(0, 0, width, 0);
     darkOverlay.addColorStop(0, "rgba(15, 23, 42, 0.95)");
     darkOverlay.addColorStop(0.6, "rgba(15, 23, 42, 0.85)");
@@ -102,27 +242,27 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
     ctx.fillStyle = darkOverlay;
     ctx.fillRect(0, 0, width, height);
   } else {
-    // Rich 4-Stop Deep Gradient Background
+    // Rich 4-Stop Deep Category Gradient Background
     const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-    bgGrad.addColorStop(0, colors[0]);
-    bgGrad.addColorStop(0.4, colors[1]);
-    bgGrad.addColorStop(0.8, colors[2]);
-    bgGrad.addColorStop(1, colors[3]);
+    bgGrad.addColorStop(0, theme.bgGrad[0]);
+    bgGrad.addColorStop(0.4, theme.bgGrad[1]);
+    bgGrad.addColorStop(0.8, theme.bgGrad[2]);
+    bgGrad.addColorStop(1, theme.bgGrad[3]);
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, width, height);
   }
 
-  // 2. Draw Decorative Ambient Glow Circles (Top-Right & Bottom-Right)
+  // 2. Draw Decorative Ambient Glow Circles
   ctx.save();
   ctx.globalAlpha = 0.35;
   const glow1 = ctx.createRadialGradient(width - 150, 100, 10, width - 150, 100, 400);
-  glow1.addColorStop(0, colors[3]);
+  glow1.addColorStop(0, theme.bgGrad[3]);
   glow1.addColorStop(1, "transparent");
   ctx.fillStyle = glow1;
   ctx.beginPath(); ctx.arc(width - 150, 100, 400, 0, Math.PI * 2); ctx.fill();
 
   const glow2 = ctx.createRadialGradient(200, height - 100, 10, 200, height - 100, 300);
-  glow2.addColorStop(0, "#F59E0B");
+  glow2.addColorStop(0, theme.ribbonGold);
   glow2.addColorStop(1, "transparent");
   ctx.fillStyle = glow2;
   ctx.beginPath(); ctx.arc(200, height - 100, 300, 0, Math.PI * 2); ctx.fill();
@@ -141,27 +281,24 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
   }
   ctx.restore();
 
-  // 4. Draw Double Ribbon Border Bar on Left
-  // Outer Gold Ribbon
-  ctx.fillStyle = "#F59E0B";
+  // 4. Draw Dynamic Double Ribbon Border Bar on Left
+  ctx.fillStyle = theme.ribbonGold;
   ctx.fillRect(0, 0, 10, height);
-  // Inner Category Color Ribbon
-  ctx.fillStyle = colors[3];
+  ctx.fillStyle = theme.ribbonAccent;
   ctx.fillRect(10, 0, 8, height);
 
-  // 5. Draw Header Bar: Category Badge (Left) & Brand Stamp (Right)
+  // 5. Draw Header Bar: Category Pill Badge (Left) & Brand Stamp (Right)
   const badgeX = 70;
   const badgeY = 60;
 
-  // Category Pill Badge
   const badgeText = `${catObj.emoji}  ${catObj.label.toUpperCase()}`;
   ctx.font = "bold 19px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
   const badgeWidth = ctx.measureText(badgeText).width + 36;
   const badgeHeight = 44;
 
   ctx.save();
-  ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+  ctx.fillStyle = theme.badgeBg;
+  ctx.strokeStyle = theme.badgeBorder;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   if (ctx.roundRect) {
@@ -181,25 +318,139 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
   const stampText = "NEWS BULLETIN • TAMIL NADU";
   ctx.font = "bold 15px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
   ctx.textAlign = "right";
-  ctx.fillStyle = "rgba(245, 158, 11, 0.9)"; // Gold
+  ctx.fillStyle = theme.stampColor;
   ctx.fillText("● " + stampText, width - 70, badgeY + 28);
   ctx.restore();
 
-  // 6. Draw Headline Title (Auto-wrapped with High-Contrast Typography)
+  // 6. IF SQUARE BOX MODE: Draw Right-Bottom Square Topic Photo Inset Box
+  const isSquareMode = layoutStyle === "square_box";
+  const boxX = 810;
+  const boxY = 220;
+  const boxW = 320;
+  const boxH = 300;
+  const boxRadius = 20;
+
+  if (isSquareMode) {
+    ctx.save();
+    // Drop shadow
+    ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 6;
+
+    // Box Background Fill
+    ctx.fillStyle = "#1E293B";
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(boxX, boxY, boxW, boxH, boxRadius);
+    } else {
+      ctx.rect(boxX, boxY, boxW, boxH);
+    }
+    ctx.fill();
+    ctx.shadowColor = "transparent";
+
+    // Inset Image Clipping Mask
+    ctx.save();
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(boxX, boxY, boxW, boxH, boxRadius);
+    } else {
+      ctx.rect(boxX, boxY, boxW, boxH);
+    }
+    ctx.clip();
+
+    if (hasPhoto) {
+      // Cover-fit image inside box
+      const imgRatio = bgImage.naturalWidth / bgImage.naturalHeight;
+      const boxRatio = boxW / boxH;
+      let drawW, drawH, drawX, drawY;
+
+      if (imgRatio > boxRatio) {
+        drawH = boxH;
+        drawW = boxH * imgRatio;
+        drawX = boxX - (drawW - boxW) / 2;
+        drawY = boxY;
+      } else {
+        drawW = boxW;
+        drawH = boxW / imgRatio;
+        drawX = boxX;
+        drawY = boxY - (drawH - boxH) / 2;
+      }
+      ctx.drawImage(bgImage, drawX, drawY, drawW, drawH);
+
+      // Dark bottom vignette on photo
+      const photoGrad = ctx.createLinearGradient(0, boxY + boxH - 80, 0, boxY + boxH);
+      photoGrad.addColorStop(0, "transparent");
+      photoGrad.addColorStop(1, "rgba(15, 23, 42, 0.6)");
+      ctx.fillStyle = photoGrad;
+      ctx.fillRect(boxX, boxY, boxW, boxH);
+    } else {
+      // Large premium graphic icon filling the square box elegantly
+      const boxGrad = ctx.createLinearGradient(boxX, boxY, boxX + boxW, boxY + boxH);
+      boxGrad.addColorStop(0, theme.bgGrad[1]);
+      boxGrad.addColorStop(0.5, theme.bgGrad[2]);
+      boxGrad.addColorStop(1, theme.bgGrad[3]);
+      ctx.fillStyle = boxGrad;
+      ctx.fillRect(boxX, boxY, boxW, boxH);
+
+      // Radial Ambient Glow behind Icon
+      ctx.save();
+      const glowGrad = ctx.createRadialGradient(boxX + boxW / 2, boxY + boxH / 2, 10, boxX + boxW / 2, boxY + boxH / 2, 120);
+      glowGrad.addColorStop(0, theme.ribbonGold);
+      glowGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = glowGrad;
+      ctx.globalAlpha = 0.25;
+      ctx.beginPath();
+      ctx.arc(boxX + boxW / 2, boxY + boxH / 2, 120, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Large 150px Icon centered
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 8;
+      ctx.font = "150px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(catObj.emoji, boxX + boxW / 2, boxY + boxH / 2 + 10);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // Outer Gold Border Stroke around Square Box
+    const boxGoldGrad = ctx.createLinearGradient(boxX, boxY, boxX + boxW, boxY + boxH);
+    boxGoldGrad.addColorStop(0, "#F59E0B");
+    boxGoldGrad.addColorStop(0.5, "#D4AF37");
+    boxGoldGrad.addColorStop(1, "#9A7B1C");
+    ctx.strokeStyle = boxGoldGrad;
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(boxX, boxY, boxW, boxH, boxRadius);
+    } else {
+      ctx.rect(boxX, boxY, boxW, boxH);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 7. Draw Headline Title (Auto-wrapped with Left Margin Protection)
   ctx.save();
   ctx.fillStyle = "#FFFFFF";
   ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
   ctx.shadowBlur = 16;
   ctx.shadowOffsetY = 6;
 
-  let fontSize = 52;
+  const maxTextWidth = isSquareMode ? 700 : width - 160;
+
+  let fontSize = isSquareMode ? 46 : 52;
   ctx.font = `800 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
-  let titleLines = wrapText(ctx, title, width - 160);
+  let titleLines = wrapText(ctx, title, maxTextWidth);
 
   if (titleLines.length > 3) {
-    fontSize = 42;
+    fontSize = isSquareMode ? 38 : 42;
     ctx.font = `800 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
-    titleLines = wrapText(ctx, title, width - 160);
+    titleLines = wrapText(ctx, title, maxTextWidth);
   }
   if (titleLines.length > 4) {
     titleLines = titleLines.slice(0, 4);
@@ -207,32 +458,32 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
   }
 
   const startY = 185;
-  const lineHeight = fontSize * 1.24;
+  const lineHeight = fontSize * 1.22;
   titleLines.forEach((line, idx) => {
     ctx.fillText(line, 70, startY + idx * lineHeight);
   });
   ctx.restore();
 
-  // 7. Draw Subtitle / Key Quote Context
+  // 8. Draw Subtitle / Key Quote Context (Dynamic Subhead Color)
   if (subtitle && subtitle.trim()) {
     ctx.save();
-    ctx.fillStyle = "rgba(226, 232, 240, 0.92)";
-    ctx.font = "500 23px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    ctx.fillStyle = theme.subheadColor;
+    ctx.font = "700 22px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const subY = startY + titleLines.length * lineHeight + 18;
-    const subLines = wrapText(ctx, subtitle.trim(), width - 160);
+    const subLines = wrapText(ctx, subtitle.trim(), maxTextWidth);
     if (subLines.length > 0 && subY < height - 110) {
       ctx.fillText(subLines[0] + (subLines.length > 1 ? "..." : ""), 70, subY);
     }
     ctx.restore();
   }
 
-  // 8. Signature TNToday Footer Brand Bar
+  // 9. Signature TNToday Footer Brand Bar
   ctx.save();
   const footerY = height - 55;
 
-  // Divider Line with Gold Highlight
+  // Divider Line with Theme Highlight
   const divGrad = ctx.createLinearGradient(70, 0, width - 70, 0);
-  divGrad.addColorStop(0, "#F59E0B");
+  divGrad.addColorStop(0, theme.ribbonGold);
   divGrad.addColorStop(0.3, "rgba(255, 255, 255, 0.3)");
   divGrad.addColorStop(1, "rgba(255, 255, 255, 0.05)");
   ctx.strokeStyle = divGrad;
@@ -243,7 +494,7 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
   ctx.stroke();
 
   // Brand Name & Network Tag
-  ctx.fillStyle = "#F59E0B"; // Gold
+  ctx.fillStyle = theme.ribbonGold;
   ctx.font = "900 25px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
   ctx.fillText("TN TODAY", 70, footerY);
 
@@ -252,7 +503,7 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
   ctx.fillText("• VizhiTN Digital Media", 205, footerY);
 
   // Right Side Verified Stamp
-  ctx.fillStyle = "#10B981"; // Emerald
+  ctx.fillStyle = theme.verifiedColor;
   ctx.font = "700 18px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
   ctx.textAlign = "right";
   ctx.fillText("✓ OFFICIAL VERIFIED REPORT", width - 70, footerY);
@@ -263,58 +514,77 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
 }
 
 /**
- * Async version of generateTnTodayPoster that automatically fetches a thematic background photo and blends it under TNToday poster graphics
+ * Async version of generateTnTodayPoster that automatically fetches a thematic background photo and blends it into the poster
  */
-export async function generateTnTodayPosterAsync({ title = "", category = "general", subtitle = "", promptText = "", imageUrl = "" }) {
+export async function generateTnTodayPosterAsync({ title = "", category = "general", subtitle = "", promptText = "", imageUrl = "", layoutStyle = "banner" }) {
   if (typeof window === "undefined") return "";
 
   let targetUrl = imageUrl;
 
-  // Auto-fetch AI photo from prompt or title if no explicit imageUrl provided
-  if (!targetUrl && (promptText || title)) {
+  // Auto-fetch AI photo from prompt or title if no explicit imageUrl provided or if prompt text
+  if (!targetUrl || isImagePrompt(targetUrl)) {
     try {
-      targetUrl = await fetchAiPhotoFromPrompt(promptText || title);
+      const promptToUse = (isImagePrompt(targetUrl) ? targetUrl : promptText) || title;
+      targetUrl = await fetchAiPhotoFromPrompt(promptToUse);
     } catch {
       // ignore error
     }
   }
 
-  if (targetUrl && (targetUrl.startsWith("http://") || targetUrl.startsWith("https://") || targetUrl.startsWith("data:image/"))) {
+  if (targetUrl) {
     try {
       const img = new Image();
-      img.crossOrigin = "anonymous";
+      if (!targetUrl.startsWith("data:") && !targetUrl.startsWith("blob:")) {
+        img.crossOrigin = "anonymous";
+      }
       await new Promise((resolve, reject) => {
-        const timer = setTimeout(() => reject(new Error("Timeout loading background image")), 3500);
+        const timer = setTimeout(() => reject(new Error("Timeout loading background image")), 4500);
         img.onload = () => { clearTimeout(timer); resolve(); };
         img.onerror = () => { clearTimeout(timer); reject(); };
         img.src = targetUrl;
       });
-      return generateTnTodayPoster({ title, category, subtitle, bgImage: img });
+      return generateTnTodayPoster({ title, category, subtitle, bgImage: img, layoutStyle });
     } catch {
-      // Safe fallback to pure canvas gradient poster without error
+      // Safe fallback to pure canvas poster without error
     }
   }
 
-  return generateTnTodayPoster({ title, category, subtitle });
+  return generateTnTodayPoster({ title, category, subtitle, layoutStyle });
 }
 
 /**
  * Fetches an AI photographic image URL from a prompt text using Pollinations AI (free)
+ * Converts to Base64 Data URL to prevent CORS canvas tainting
  * @param {string} promptText 
- * @returns {Promise<string>} Image URL or data URL
+ * @returns {Promise<string>} Image Data URL
  */
 export async function fetchAiPhotoFromPrompt(promptText) {
   if (!promptText) return "";
-  const cleanPrompt = promptText.trim().slice(0, 300);
-  const encoded = encodeURIComponent(`Tamil Nadu news photography: ${cleanPrompt}, realistic, 8k editorial photo`);
+  const cleanPrompt = promptText.trim().slice(0, 250);
+  const encoded = encodeURIComponent(`Tamil Nadu news photography: ${cleanPrompt}, realistic photo`);
   const seed = Math.floor(Math.random() * 100000);
-  const url = `https://image.pollinations.ai/prompt/${encoded}?width=1200&height=630&seed=${seed}&nologo=true`;
-  
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => resolve(url);
-    img.onerror = () => resolve(url);
-    img.src = url;
-  });
+  const primaryUrl = `https://image.pollinations.ai/prompt/${encoded}?width=600&height=600&seed=${seed}&nologo=true`;
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4500);
+    const res = await fetch(primaryUrl, { signal: controller.signal }).catch(() => null);
+    clearTimeout(timer);
+
+    if (res && res.ok) {
+      const blob = await res.blob();
+      if (blob.size > 1000) {
+        return await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = () => resolve(primaryUrl);
+          reader.readAsDataURL(blob);
+        });
+      }
+    }
+  } catch {
+    // fallback
+  }
+
+  return primaryUrl;
 }

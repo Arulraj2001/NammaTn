@@ -595,14 +595,33 @@ export default function AdminTnToday() {
                       category: form.category || "general",
                       subtitle: form.subtitle || form.summary || "",
                       promptText: form.featured_image || form.title,
+                      layoutStyle: "banner",
                     });
                     setField("featured_image", poster);
                     setField("social_image", poster);
                   }}
                   className="px-3 py-2 text-xs font-extrabold bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors"
-                  title="Generate TNToday Branded News Poster"
+                  title="Generate Clean Full-Banner TNToday News Poster (Without Square Box)"
                 >
-                  🎨 Generate Poster
+                  🎨 Full-Banner Poster
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const poster = await generateTnTodayPosterAsync({
+                      title: form.title || "TNToday Article",
+                      category: form.category || "general",
+                      subtitle: form.subtitle || form.summary || "",
+                      promptText: form.featured_image || form.title,
+                      layoutStyle: "square_box",
+                    });
+                    setField("featured_image", poster);
+                    setField("social_image", poster);
+                  }}
+                  className="px-3 py-2 text-xs font-extrabold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors"
+                  title="Generate TNToday News Poster with Bottom-Right Square Topic Photo Inset"
+                >
+                  🖼️ Square Box Poster
                 </button>
                 <button
                   type="button"
