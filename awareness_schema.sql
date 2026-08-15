@@ -254,6 +254,9 @@ BEGIN
   ] LOOP
     -- Drop existing policies if they exist
     EXECUTE format('DROP POLICY IF EXISTS "Allow public read %s" ON %I', tbl, tbl);
+    EXECUTE format('DROP POLICY IF EXISTS "Allow admin insert %s" ON %I', tbl, tbl);
+    EXECUTE format('DROP POLICY IF EXISTS "Allow admin update %s" ON %I', tbl, tbl);
+    EXECUTE format('DROP POLICY IF EXISTS "Allow admin delete %s" ON %I', tbl, tbl);
     EXECUTE format('DROP POLICY IF EXISTS "Allow authenticated insert %s" ON %I', tbl, tbl);
     EXECUTE format('DROP POLICY IF EXISTS "Allow authenticated update %s" ON %I', tbl, tbl);
     EXECUTE format('DROP POLICY IF EXISTS "Allow authenticated delete %s" ON %I', tbl, tbl);
