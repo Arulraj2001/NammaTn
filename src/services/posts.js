@@ -67,6 +67,14 @@ const normalizePostSeo = (data = {}) => {
 
 export const createPost = async (data) => {
   const prepared = normalizePostSeo(data);
+
+  if (prepared.department_routing !== undefined) {
+    if (!prepared.assigned_department) {
+      prepared.assigned_department = prepared.department_routing;
+    }
+    delete prepared.department_routing;
+  }
+
   const { data: created, error } = await supabase
     .from("post")
     .insert(prepared)
