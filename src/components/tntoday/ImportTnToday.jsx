@@ -398,35 +398,12 @@ export default function ImportTnToday({ onDone }) {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const processText = useCallback(async (text) => {
+  const processText = useCallback((text) => {
     setError("");
     setResults(null);
     try {
       const parsed = parseInput(text);
       setArticles(parsed);
-
-      // Composite background AI photo under poster graphics asynchronously
-      const enhanced = await Promise.all(
-        parsed.map(async (art) => {
-          if (art.is_poster) {
-            try {
-              const composite = await generateTnTodayPosterAsync({
-                title: art.title,
-                category: art.category,
-                subtitle: art.subtitle || art.summary || "",
-                promptText: art.prompt_text || art.title,
-              });
-              if (composite) {
-                return { ...art, featured_image: composite, social_image: composite };
-              }
-            } catch {
-              // Gracefully keep initial canvas poster
-            }
-          }
-          return art;
-        })
-      );
-      setArticles(enhanced);
     } catch (e) {
       setError(e.message);
       setArticles(null);

@@ -384,7 +384,7 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
       ctx.fillStyle = photoGrad;
       ctx.fillRect(boxX, boxY, boxW, boxH);
     } else {
-      // Large premium graphic icon filling the square box elegantly
+      // Ultra-Modern 3D Glassmorphic Graphic Container inside Square Box
       const boxGrad = ctx.createLinearGradient(boxX, boxY, boxX + boxW, boxY + boxH);
       boxGrad.addColorStop(0, theme.bgGrad[1]);
       boxGrad.addColorStop(0.5, theme.bgGrad[2]);
@@ -392,23 +392,47 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
       ctx.fillStyle = boxGrad;
       ctx.fillRect(boxX, boxY, boxW, boxH);
 
-      // Radial Ambient Glow behind Icon
+      // Volumetric 3D Radiant Glow Orb
       ctx.save();
-      const glowGrad = ctx.createRadialGradient(boxX + boxW / 2, boxY + boxH / 2, 10, boxX + boxW / 2, boxY + boxH / 2, 120);
+      const glowGrad = ctx.createRadialGradient(boxX + boxW / 2, boxY + boxH / 2, 10, boxX + boxW / 2, boxY + boxH / 2, 130);
       glowGrad.addColorStop(0, theme.ribbonGold);
+      glowGrad.addColorStop(0.5, theme.ribbonAccent);
       glowGrad.addColorStop(1, "transparent");
       ctx.fillStyle = glowGrad;
-      ctx.globalAlpha = 0.25;
+      ctx.globalAlpha = 0.35;
       ctx.beginPath();
-      ctx.arc(boxX + boxW / 2, boxY + boxH / 2, 120, 0, Math.PI * 2);
+      ctx.arc(boxX + boxW / 2, boxY + boxH / 2, 130, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      // Large 150px Icon centered
+      // Frosted Glass Layer Tile
       ctx.save();
-      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      ctx.shadowBlur = 24;
-      ctx.shadowOffsetY = 8;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(boxX + 20, boxY + 20, boxW - 40, boxH - 40, 16);
+      } else {
+        ctx.rect(boxX + 20, boxY + 20, boxW - 40, boxH - 40);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      // 45° Metallic Light Reflection Sweep Streak
+      const sheenGrad = ctx.createLinearGradient(boxX, boxY, boxX + boxW, boxY + boxH);
+      sheenGrad.addColorStop(0, "rgba(255, 255, 255, 0.2)");
+      sheenGrad.addColorStop(0.4, "rgba(255, 255, 255, 0.02)");
+      sheenGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = sheenGrad;
+      ctx.fill();
+      ctx.restore();
+
+      // Large 150px 3D Graphic Emblem centered with deep 3D drop shadow
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
+      ctx.shadowBlur = 28;
+      ctx.shadowOffsetY = 12;
       ctx.font = "150px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
