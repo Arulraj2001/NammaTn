@@ -30,7 +30,14 @@ const SAMPLE_POSTS = [
     department_routing: "Greater Chennai Corporation (GCC)",
     upvotes: 24,
     verification_count: 8,
-    civic_status: "community_verified"
+    civic_status: "community_verified",
+    urgency_level: "high",
+    location_text: "Northbound Service Road, Near Perungudi MRTS Station",
+    slug: "pothole-hazard-omr-service-road-perungudi-chennai",
+    seo_title: "Perungudi OMR Service Road Pothole Hazard | Chennai Civic Issue",
+    seo_description: "Report on deep potholes causing accidents on OMR Service road in Perungudi, Chennai. Track civic action and municipal repair status.",
+    seo_keywords: "chennai road repair, perungudi potholes, omr service road, gcc complaint",
+    is_indexable: true
   },
   {
     title_en: "Water Pipeline Leakage at RS Puram DB Road Intersection",
@@ -46,7 +53,14 @@ const SAMPLE_POSTS = [
     department_routing: "Coimbatore City Municipal Corporation & TWAD",
     upvotes: 18,
     verification_count: 5,
-    civic_status: "complaint_filed"
+    civic_status: "complaint_filed",
+    urgency_level: "medium",
+    location_text: "DB Road Intersection, RS Puram, Coimbatore",
+    slug: "water-pipeline-leakage-rs-puram-coimbatore",
+    seo_title: "RS Puram DB Road Water Leakage Complaint | Coimbatore Water Supply",
+    seo_description: "Drinking water pipe leak reported on DB Road, RS Puram Coimbatore. Read citizen updates and municipal routing.",
+    seo_keywords: "coimbatore water leak, rs puram civic report, twad pipeline issue",
+    is_indexable: true
   },
   {
     title_en: "New Underground Cable Work Started in KK Nagar East",
@@ -60,7 +74,14 @@ const SAMPLE_POSTS = [
     author_name: "Madurai Civic Watch",
     upvotes: 31,
     verification_count: 12,
-    civic_status: "under_followup"
+    civic_status: "under_followup",
+    urgency_level: "low",
+    location_text: "West Street, KK Nagar East, Madurai",
+    slug: "underground-cable-work-kk-nagar-madurai",
+    seo_title: "Madurai KK Nagar Underground Power Cable Upgrade | TANGEDCO Update",
+    seo_description: "TANGEDCO underground cable work updates in KK Nagar Madurai for monsoon grid reliability.",
+    seo_keywords: "madurai electricity update, tangedco kk nagar, power cable works",
+    is_indexable: true
   },
   {
     title_en: "Swift Drainage Clearance Post Heavy Rains in Thillai Nagar",
@@ -74,7 +95,14 @@ const SAMPLE_POSTS = [
     author_name: "Meenakshi S.",
     upvotes: 45,
     verification_count: 15,
-    civic_status: "citizen_verified_fixed"
+    civic_status: "citizen_verified_fixed",
+    urgency_level: "low",
+    location_text: "10th Cross, Thillai Nagar, Tiruchirappalli",
+    slug: "drainage-clearance-thillai-nagar-tiruchirappalli",
+    seo_title: "Trichy Thillai Nagar Drain Clearance | Citizen Appreciation",
+    seo_description: "Citizen appreciation post for quick storm drain blockage clearance in Thillai Nagar Trichy.",
+    seo_keywords: "trichy corporation drainage, thillai nagar report, civic appreciation",
+    is_indexable: true
   },
   {
     title_en: "Street Light Replacement Drive Completed across Meyyanur Main Road",
@@ -88,7 +116,62 @@ const SAMPLE_POSTS = [
     author_name: "Salem Active Citizens",
     upvotes: 29,
     verification_count: 9,
-    civic_status: "resolved"
+    civic_status: "resolved",
+    urgency_level: "medium",
+    location_text: "Meyyanur Main Road, Salem",
+    slug: "street-light-replacement-meyyanur-salem",
+    seo_title: "Salem Meyyanur LED Street Light Upgrades Completed",
+    seo_description: "Salem Corporation completes replacement of 14 street lamps with 60W LEDs along Meyyanur Main Road.",
+    seo_keywords: "salem street lights, meyyanur led installation, salem civic update",
+    is_indexable: true
+];
+
+const POST_FORMAT_SCHEMA = [
+  {
+    "title_en": "string (Required - Title in English)",
+    "title_ta": "string (Optional - Title in Tamil)",
+    "content_en": "string (Required - Content in English)",
+    "content_ta": "string (Optional - Content in Tamil)",
+    "post_type": "complaint | local_update | appreciation | alert | discussion | bribe",
+    "district_slug": "chennai | coimbatore | madurai | salem | tiruchirappalli | etc.",
+    "category_slug": "road-infrastructure | water-sanitation | electricity | public-safety | environment",
+    "area_name": "string (e.g. Perungudi)",
+    "area_slug": "string (e.g. perungudi)",
+    "author_name": "string (Reporter / Author Name)",
+    "is_anonymous": false,
+    "location_text": "string (Specific street address / landmark)",
+    "urgency_level": "low | medium | high | critical",
+    "civic_status": "reported | community_verified | complaint_filed | under_followup | resolved",
+    "official_complaint_id": "string (Govt Portal Ref ID)",
+    "department_routing": "string (Assigned Department Name)",
+    "civic_receipt_id": "string (Public receipt code e.g. TN-718669)",
+    "upvotes": 0,
+    "downvotes": 0,
+    "comment_count": 0,
+    "verification_count": 0,
+    "duplicate_count": 0,
+    "media_urls": ["https://example.com/image.jpg"],
+    "slug": "string (URL slug for SEO)",
+    "seo_title": "string (Custom meta title)",
+    "seo_description": "string (Custom meta description)",
+    "seo_keywords": "string (Comma-separated keywords)",
+    "canonical_url": "string (Canonical URL)",
+    "is_indexable": true,
+    "bribe_requested": false,
+    "bribe_status": "reported | under_review | verified",
+    "bribe_amount": 0,
+    "bribe_department": "string",
+    "bribe_officer_designation": "string",
+    "bribe_specific_location": "string",
+    "bribe_audio_url": "https://example.com/audio.mp3",
+    "before_photos": ["https://example.com/before.jpg"],
+    "claimed_fixed_photos": ["https://example.com/claimed.jpg"],
+    "final_resolution_photos": ["https://example.com/resolved.jpg"],
+    "status": "active | removed | archived",
+    "moderation_status": "approved | pending | rejected",
+    "is_publicly_visible": true,
+    "is_sample": false,
+    "admin_note": "string (Internal admin notes)"
   }
 ];
 
@@ -150,6 +233,26 @@ function normalisePost(raw, idx) {
     official_complaint_id: raw.official_complaint_id || "",
     department_routing: raw.department_routing || raw.department || "",
     civic_status: raw.civic_status || "community_verified",
+    location_text: raw.location_text || raw.location || "",
+    urgency_level: raw.urgency_level || raw.urgency || "medium",
+    slug: raw.slug || "",
+    seo_title: raw.seo_title || "",
+    seo_description: raw.seo_description || "",
+    seo_keywords: raw.seo_keywords || "",
+    canonical_url: raw.canonical_url || "",
+    is_indexable: raw.is_indexable !== undefined ? Boolean(raw.is_indexable) : true,
+    bribe_requested: Boolean(raw.bribe_requested),
+    bribe_status: raw.bribe_status || "",
+    bribe_amount: Number(raw.bribe_amount || 0),
+    bribe_department: raw.bribe_department || "",
+    bribe_officer_designation: raw.bribe_officer_designation || "",
+    bribe_specific_location: raw.bribe_specific_location || "",
+    bribe_audio_url: raw.bribe_audio_url || "",
+    before_photos: Array.isArray(raw.before_photos) ? raw.before_photos : [],
+    claimed_fixed_photos: Array.isArray(raw.claimed_fixed_photos) ? raw.claimed_fixed_photos : [],
+    final_resolution_photos: Array.isArray(raw.final_resolution_photos) ? raw.final_resolution_photos : [],
+    admin_note: raw.admin_note || "",
+    is_sample: Boolean(raw.is_sample),
     created_date: raw.created_date || new Date().toISOString(),
   };
 }
@@ -304,18 +407,18 @@ export default function ImportPosts({ onDone }) {
   }, []);
 
   const downloadSampleTemplate = () => {
-    const blob = new Blob([JSON.stringify(SAMPLE_POSTS, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(POST_FORMAT_SCHEMA, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "vizhitn_posts_import_template.json";
+    a.download = "vizhitn_posts_import_format.json";
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const copyTemplateJson = () => {
-    navigator.clipboard.writeText(JSON.stringify(SAMPLE_POSTS, null, 2));
-    toast({ description: "JSON format template copied to clipboard!" });
+    navigator.clipboard.writeText(JSON.stringify(POST_FORMAT_SCHEMA, null, 2));
+    toast({ description: "JSON format schema copied to clipboard!" });
   };
 
   const handleImport = async () => {
