@@ -515,11 +515,39 @@ function ResourcesTab() {
               </FieldRow>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FieldRow label="Action Button Text">
-                <Input value={formData.action_button_text || ""} onChange={(e) => set("action_button_text", e.target.value)} placeholder="Learn More" />
+              <FieldRow label="Action Button 1 Text (English / தமிழ்)">
+                <div className="grid grid-cols-2 gap-2">
+                  <Input value={formData.action_btn1_text_en || ""} onChange={(e) => set("action_btn1_text_en", e.target.value)} placeholder="Apply Now" />
+                  <Input value={formData.action_btn1_text_ta || ""} onChange={(e) => set("action_btn1_text_ta", e.target.value)} placeholder="விண்ணப்பிக்க" />
+                </div>
               </FieldRow>
-              <FieldRow label="Action Button URL">
-                <Input value={formData.action_button_url || ""} onChange={(e) => set("action_button_url", e.target.value)} placeholder="https://..." />
+              <FieldRow label="Action Button 1 URL & Variant">
+                <div className="grid grid-cols-2 gap-2">
+                  <Input value={formData.action_btn1_url || ""} onChange={(e) => set("action_btn1_url", e.target.value)} placeholder="https://..." />
+                  <select value={formData.action_btn1_variant || "primary"} onChange={(e) => set("action_btn1_variant", e.target.value)} className="h-9 px-2 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs">
+                    <option value="primary">Primary</option>
+                    <option value="secondary">Secondary</option>
+                    <option value="outline">Outline</option>
+                  </select>
+                </div>
+              </FieldRow>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FieldRow label="Action Button 2 Text (English / தமிழ்)">
+                <div className="grid grid-cols-2 gap-2">
+                  <Input value={formData.action_btn2_text_en || ""} onChange={(e) => set("action_btn2_text_en", e.target.value)} placeholder="View Details" />
+                  <Input value={formData.action_btn2_text_ta || ""} onChange={(e) => set("action_btn2_text_ta", e.target.value)} placeholder="விவரங்கள்" />
+                </div>
+              </FieldRow>
+              <FieldRow label="Action Button 2 URL & Variant">
+                <div className="grid grid-cols-2 gap-2">
+                  <Input value={formData.action_btn2_url || ""} onChange={(e) => set("action_btn2_url", e.target.value)} placeholder="https://..." />
+                  <select value={formData.action_btn2_variant || "secondary"} onChange={(e) => set("action_btn2_variant", e.target.value)} className="h-9 px-2 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs">
+                    <option value="secondary">Secondary</option>
+                    <option value="primary">Primary</option>
+                    <option value="outline">Outline</option>
+                  </select>
+                </div>
               </FieldRow>
             </div>
             <SwitchField label="Active" checked={formData.is_active} onChange={(v) => set("is_active", v)} />
@@ -685,7 +713,15 @@ function SchemesTab() {
             <BilingualInput label="Category" valueEn={formData.category_en} valueTa={formData.category_ta} onChangeEn={(v) => set("category_en", v)} onChangeTa={(v) => set("category_ta", v)} />
             <BilingualInput label="Department" valueEn={formData.department_en} valueTa={formData.department_ta} onChangeEn={(v) => set("department_en", v)} onChangeTa={(v) => set("department_ta", v)} />
             <BilingualInput label="Description" type="textarea" valueEn={formData.description_en} valueTa={formData.description_ta} onChangeEn={(v) => set("description_en", v)} onChangeTa={(v) => set("description_ta", v)} />
-            <BilingualInput label="Eligibility" type="textarea" valueEn={formData.eligibility_en} valueTa={formData.eligibility_ta} onChangeEn={(v) => set("eligibility_en", v)} onChangeTa={(v) => set("eligibility_ta", v)} />
+            <BilingualInput label="Benefits" type="textarea" valueEn={formData.benefits_en} valueTa={formData.benefits_ta} onChangeEn={(v) => set("benefits_en", v)} onChangeTa={(v) => set("benefits_ta", v)} />
+            <div className="grid grid-cols-2 gap-3">
+              <FieldRow label="Required Documents (English) — one per line">
+                <Textarea rows={3} value={arrayToLines(formData.documents_en)} onChange={(e) => set("documents_en", linesToArray(e.target.value))} placeholder={"Aadhaar Card\nRation Card\nBank Passbook"} />
+              </FieldRow>
+              <FieldRow label="Required Documents (தமிழ்) — one per line">
+                <Textarea rows={3} value={arrayToLines(formData.documents_ta)} onChange={(e) => set("documents_ta", linesToArray(e.target.value))} placeholder={"ஆதார் அட்டை\nகுடும்ப அட்டை"} />
+              </FieldRow>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <FieldRow label="Apply URL">
                 <Input value={formData.apply_url || ""} onChange={(e) => set("apply_url", e.target.value)} placeholder="https://..." />
@@ -694,6 +730,9 @@ function SchemesTab() {
                 <Input value={formData.website_url || ""} onChange={(e) => set("website_url", e.target.value)} placeholder="https://..." />
               </FieldRow>
             </div>
+            <FieldRow label="Featured Image URL">
+              <Input value={formData.featured_image || ""} onChange={(e) => set("featured_image", e.target.value)} placeholder="https://example.com/scheme-banner.jpg" />
+            </FieldRow>
             <div className="grid grid-cols-3 gap-3">
               <FieldRow label="Icon (emoji)">
                 <Input value={formData.icon || ""} onChange={(e) => set("icon", e.target.value)} placeholder="📋" />
@@ -853,6 +892,8 @@ function PortalsTab() {
           </DialogHeader>
           <div className="space-y-4">
             <BilingualInput label="Name" valueEn={formData.name_en} valueTa={formData.name_ta} onChangeEn={(v) => set("name_en", v)} onChangeTa={(v) => set("name_ta", v)} />
+            <BilingualInput label="Category" valueEn={formData.category_en} valueTa={formData.category_ta} onChangeEn={(v) => set("category_en", v)} onChangeTa={(v) => set("category_ta", v)} />
+            <BilingualInput label="Department" valueEn={formData.department_en} valueTa={formData.department_ta} onChangeEn={(v) => set("department_en", v)} onChangeTa={(v) => set("department_ta", v)} />
             <BilingualInput label="Description" type="textarea" valueEn={formData.description_en} valueTa={formData.description_ta} onChangeEn={(v) => set("description_en", v)} onChangeTa={(v) => set("description_ta", v)} />
             <FieldRow label="URL">
               <Input value={formData.url || ""} onChange={(e) => set("url", e.target.value)} placeholder="https://..." />
@@ -1012,6 +1053,14 @@ function RightsTab() {
             <BilingualInput label="Description" type="textarea" valueEn={formData.description_en} valueTa={formData.description_ta} onChangeEn={(v) => set("description_en", v)} onChangeTa={(v) => set("description_ta", v)} />
             <BilingualInput label="Content" type="textarea" rows={6} valueEn={formData.content_en} valueTa={formData.content_ta} onChangeEn={(v) => set("content_en", v)} onChangeTa={(v) => set("content_ta", v)} />
             <BilingualInput label="Department" valueEn={formData.department_en} valueTa={formData.department_ta} onChangeEn={(v) => set("department_en", v)} onChangeTa={(v) => set("department_ta", v)} />
+            <div className="grid grid-cols-2 gap-3">
+              <FieldRow label="Related Links/Resources (English) — one per line">
+                <Textarea rows={3} value={arrayToLines(formData.resources_en)} onChange={(e) => set("resources_en", linesToArray(e.target.value))} placeholder="https://rtionline.tn.gov.in" />
+              </FieldRow>
+              <FieldRow label="Related Links/Resources (தமிழ்) — one per line">
+                <Textarea rows={3} value={arrayToLines(formData.resources_ta)} onChange={(e) => set("resources_ta", linesToArray(e.target.value))} placeholder="தொடர்புடைய இணைப்புகள்" />
+              </FieldRow>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <FieldRow label="PDF URL">
                 <Input value={formData.pdf_url || ""} onChange={(e) => set("pdf_url", e.target.value)} placeholder="https://...file.pdf" />
@@ -1186,8 +1235,32 @@ function GuidesTab() {
             <BilingualInput label="Title" valueEn={formData.title_en} valueTa={formData.title_ta} onChangeEn={(v) => set("title_en", v)} onChangeTa={(v) => set("title_ta", v)} />
             <BilingualInput label="Problem Type" valueEn={formData.problem_type_en} valueTa={formData.problem_type_ta} onChangeEn={(v) => set("problem_type_en", v)} onChangeTa={(v) => set("problem_type_ta", v)} />
             <BilingualInput label="Department" valueEn={formData.department_en} valueTa={formData.department_ta} onChangeEn={(v) => set("department_en", v)} onChangeTa={(v) => set("department_ta", v)} />
-            <FieldRow label="Portal URL">
-              <Input value={formData.portal_url || ""} onChange={(e) => set("portal_url", e.target.value)} placeholder="https://..." />
+            <div className="grid grid-cols-2 gap-3">
+              <FieldRow label="Step-by-Step Guide (English) — one step per line">
+                <Textarea rows={4} value={arrayToLines(formData.steps_en)} onChange={(e) => set("steps_en", linesToArray(e.target.value))} placeholder={"Step 1: File complaint\nStep 2: Get acknowledgement"} />
+              </FieldRow>
+              <FieldRow label="Step-by-Step Guide (தமிழ்) — one step per line">
+                <Textarea rows={4} value={arrayToLines(formData.steps_ta)} onChange={(e) => set("steps_ta", linesToArray(e.target.value))} placeholder={"படி 1: புகார் பதிவு\nபடி 2: ஒப்புதல் பெறுதல்"} />
+              </FieldRow>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FieldRow label="Helpline Numbers — one per line">
+                <Textarea rows={3} value={arrayToLines(formData.helpline_numbers)} onChange={(e) => set("helpline_numbers", linesToArray(e.target.value))} placeholder={"1800-425-4567\n1912"} />
+              </FieldRow>
+              <FieldRow label="Portal URL">
+                <Input value={formData.portal_url || ""} onChange={(e) => set("portal_url", e.target.value)} placeholder="https://..." />
+              </FieldRow>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FieldRow label="Required Documents (English) — one per line">
+                <Textarea rows={3} value={arrayToLines(formData.documents_en)} onChange={(e) => set("documents_en", linesToArray(e.target.value))} placeholder="ID Proof, Address Proof" />
+              </FieldRow>
+              <FieldRow label="Required Documents (தமிழ்) — one per line">
+                <Textarea rows={3} value={arrayToLines(formData.documents_ta)} onChange={(e) => set("documents_ta", linesToArray(e.target.value))} placeholder="அடையாள சான்று" />
+              </FieldRow>
+            </div>
+            <FieldRow label="Featured Image URL">
+              <Input value={formData.featured_image || ""} onChange={(e) => set("featured_image", e.target.value)} placeholder="https://example.com/guide-banner.jpg" />
             </FieldRow>
             <div className="grid grid-cols-2 gap-3">
               <FieldRow label="Icon (emoji)">
@@ -1679,6 +1752,17 @@ function ArticlesTab() {
             </div>
             <FieldRow label="SEO Description">
               <Textarea value={formData.seo_description || ""} onChange={(e) => set("seo_description", e.target.value)} rows={2} placeholder="Meta description for search engines" />
+            </FieldRow>
+            <div className="grid grid-cols-2 gap-3">
+              <FieldRow label="SEO Keywords">
+                <Input value={formData.seo_keywords || ""} onChange={(e) => set("seo_keywords", e.target.value)} placeholder="tamil nadu, civic awareness, guide" />
+              </FieldRow>
+              <FieldRow label="Sort Order">
+                <Input type="number" value={formData.sort_order || 0} onChange={(e) => set("sort_order", parseInt(e.target.value) || 0)} />
+              </FieldRow>
+            </div>
+            <FieldRow label="Featured Image URL">
+              <Input value={formData.featured_image || ""} onChange={(e) => set("featured_image", e.target.value)} placeholder="https://example.com/article-banner.jpg" />
             </FieldRow>
             <SwitchField label="Active" checked={formData.is_active} onChange={(v) => set("is_active", v)} />
             <Button onClick={handleSave} className="w-full">
