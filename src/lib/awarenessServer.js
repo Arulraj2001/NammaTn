@@ -203,6 +203,10 @@ export const getAllEmergencyContacts = () => [
   },
 ];
 
+export const getEmergencyContactBySlug = (slug) => {
+  return getAllEmergencyContacts().find(e => e.slug === slug);
+};
+
 // All citizen rights with slugs
 export const getAllRights = () => [
   {
