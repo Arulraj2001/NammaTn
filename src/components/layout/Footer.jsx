@@ -25,11 +25,13 @@ const FOOTER_COLUMNS = [
     en_title: "Community",
     ta_title: "சமுதாயம்",
     links: [
-      { path: "/community",  en: "Community",  ta: "சமுதாயம்" },
+      { path: "/community",      en: "Community",      ta: "சமுதாயம்" },
       { path: "/community/wins", en: "Community Wins", ta: "சமூக வெற்றிகள்" },
-      { path: "/ask",        en: "Ask Local",  ta: "கேளுங்கள்" },
-      { path: "/scams",      en: "Scams",      ta: "மோசடி" },
-      { path: "/awareness",  en: "Awareness",  ta: "விழிப்புணர்வு" },
+      { path: "/ask",            en: "Ask Local",      ta: "கேளுங்கள்" },
+      { path: "/scams",          en: "Scams",          ta: "மோசடி" },
+      { path: "/awareness",          en: "Awareness",          ta: "விழிப்புணர்வு" },
+      { path: "/awareness/articles", en: "Knowledge Articles", ta: "கட்டுரைகள்" },
+      { path: "/awareness/rights",   en: "Citizen Rights",     ta: "குடிமக்கள் உரிமைகள்" },
     ],
   },
   {
@@ -62,7 +64,7 @@ const FOOTER_COLUMNS = [
       { path: "/support",        en: "Support",        ta: "ஆதரவு" },
       { path: "/contact",        en: "Contact",        ta: "தொடர்பு" },
       { path: "/privacy-policy", en: "Privacy Policy", ta: "தனியுரிமை கொள்கை" },
-      { path: "/terms",          en: "Terms of Service",ta: "ழெவிடுகள்" },
+      { path: "/terms",          en: "Terms of Service",ta: "சேவை விதிமுறைகள்" },
     ],
   },
 ];

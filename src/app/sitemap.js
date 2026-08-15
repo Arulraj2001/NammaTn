@@ -13,6 +13,7 @@ import { OFFICES } from '@/lib/offices';
 import { getActiveAreas } from '@/lib/publicHubServer';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
+import { getAllArticles, getAllRights, GOVT_SCHEMES, SAFETY_GUIDES } from '@/lib/awarenessServer';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -148,13 +149,60 @@ export default async function sitemap() {
     });
   });
 
+  // ── Awareness details (articles, rights, schemes, guides) ────────────
+  try {
+    const articles = getAllArticles();
+    (articles || []).forEach(a => {
+      if (a.slug) {
+        entries.push({
+          url: `${SITE_URL}/awareness/article/${a.slug}`,
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        });
+      }
+    });
+
+    const rights = getAllRights();
+    (rights || []).forEach(r => {
+      if (r.slug) {
+        entries.push({
+          url: `${SITE_URL}/awareness/right/${r.slug}`,
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        });
+      }
+    });
+
+    (GOVT_SCHEMES || []).forEach(s => {
+      if (s.slug) {
+        entries.push({
+          url: `${SITE_URL}/awareness/scheme/${s.slug}`,
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        });
+      }
+    });
+
+    (SAFETY_GUIDES || []).forEach(g => {
+      if (g.slug) {
+        entries.push({
+          url: `${SITE_URL}/awareness/guide/${g.slug}`,
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        });
+      }
+    });
+  } catch (e) {
+    console.warn('[sitemap] Awareness detail pages fetch failed:', e.message);
+  }
+
   [
-    '/districts', '/areas', '/awareness', '/awareness/emergency',
-    '/awareness/faqs', '/awareness/guides', '/awareness/portals',
+    '/districts', '/areas', '/awareness', '/awareness/articles', '/awareness/rights',
+    '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',
     '/awareness/schemes', '/community', '/community/wins', '/scams',
     '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
     '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
-    '/support', '/rwa', '/csr',
+    '/support', '/rwa', '/csr', '/dashboard',
     '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
   ].forEach(path => {
     entries.push({
