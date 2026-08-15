@@ -285,6 +285,9 @@ export default function AdminTnToday() {
     if (!form.title.trim()) { toast({ description: "Title is required.", variant: "destructive" }); return; }
     if (!form.slug.trim()) { toast({ description: "Slug is required.", variant: "destructive" }); return; }
 
+    try {
+      setSaving(true);
+
       const rawCat = (form.category || "general").toLowerCase().trim();
       const validCat = ["infrastructure", "education", "healthcare", "environment", "economy", "governance", "transport", "agriculture", "technology", "social", "general"].includes(rawCat)
         ? rawCat
