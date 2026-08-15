@@ -337,15 +337,68 @@ export const searchAwarenessContent = (query) => {
     p.name_ta.toLowerCase().includes(query.toLowerCase())
   );
   
-  const emergencyContacts = getAllEmergencyContacts().filter(e => 
-    e.name_en.toLowerCase().includes(query.toLowerCase()) || 
-    e.name_ta.toLowerCase().includes(query.toLowerCase())
-  );
-
   const rights = getAllRights().filter(r =>
     r.name_en.toLowerCase().includes(query.toLowerCase()) ||
     r.name_ta.toLowerCase().includes(query.toLowerCase())
   );
   
   return { guides, faqs, schemes, portals, emergencyContacts, rights };
+};
+
+// All awareness articles with slugs
+export const getAllArticles = () => [
+  {
+    id: "art-esevai-guide",
+    slug: "tamil-nadu-esevai-online-services-guide",
+    title_en: "Complete Guide to Tamil Nadu e-Sevai Online Services & Certificate Applications",
+    title_ta: "தமிழ்நாடு இ-சேவை சான்றிதழ்கள் ஆன்லைனில் பெறுவது எப்படி? முழு வழிகாட்டி",
+    category_en: "Government Services",
+    category_ta: "அரசு சேவைகள்",
+    summary_en: "Learn how to apply for Community, Income, Native Residence certificates online via TNEGA e-Sevai.",
+    summary_ta: "இடத்தரகர்கள் இன்றி சாதி, வருமானம், இருப்பிடம் சான்றிதழ்களை ஆன்லைனில் விண்ணப்பிக்கும் முறை.",
+  },
+  {
+    id: "art-rti-guide",
+    slug: "how-to-file-rti-application-tamil-nadu-guide",
+    title_en: "How to File an Effective RTI Application in Tamil Nadu",
+    title_ta: "தமிழ்நாட்டில் தகவல் அறியும் உரிமைச் சட்டத்தில் (RTI) விண்ணப்பிப்பது எப்படி?",
+    category_en: "Citizen Rights",
+    category_ta: "குடிமக்கள் உரிமைகள்",
+    summary_en: "Step-by-step instructions on drafting RTI queries and 30-day first appeal process.",
+    summary_ta: "அரசுத் துறைகளிடம் இருந்து RTI மூலம் தகவல்களைப் பெற கேட்க வேண்டிய கேள்விகள்.",
+  },
+  {
+    id: "art-cmchis-claims",
+    slug: "cmchis-health-insurance-coverage-hospital-guide",
+    title_en: "Understanding CMCHIS Health Insurance Coverage & Cashless Claims",
+    title_ta: "முதலமைச்சர் விரிவான காப்பீட்டுத் திட்டத்தில் ₹5 லட்சம் இலவச சிகிச்சை பெறுவது எப்படி?",
+    category_en: "Health & Insurance",
+    category_ta: "சுகாதாரம் & காப்பீடு",
+    summary_en: "Complete overview of medical procedures, cashless hospital admission workflow across 1,150+ hospitals.",
+    summary_ta: "முதலமைச்சர் காப்பீட்டு அட்டையைப் பயன்படுத்தி 1,150க்கும் மேற்பட்ட மருத்துவமனைகளில் இலவச சிகிச்சை.",
+  },
+  {
+    id: "art-land-records",
+    slug: "patta-chitta-fmb-ec-land-records-guide-tamil-nadu",
+    title_en: "Patta, Chitta, FMB Sketch & EC Demystified for Property Owners in TN",
+    title_ta: "பட்டா, சிட்டா, வரைபடம் (FMB) மற்றும் வில்லங்கச் சான்றிதழ் (EC) — நில ஆவணங்களின் முழு விளக்கம்",
+    category_en: "Property & Revenue",
+    category_ta: "சொத்து & வருவாய்",
+    summary_en: "Essential guide explaining land revenue terminology in Tamil Nadu, online verification steps.",
+    summary_ta: "தமிழ்நாட்டில் நிலம் வாங்கும் போது சரிபார்க்க வேண்டிய பட்டா, சிட்டா, வில்லங்கச் சான்றிதழ் விவரங்கள்.",
+  },
+  {
+    id: "art-traffic-police-rights",
+    slug: "traffic-police-vehicle-check-citizen-rights-guide",
+    title_en: "Legal Protections & Citizen Rights During Traffic Police Vehicle Checks in TN",
+    title_ta: "வாகன சோதனையின் போது காவல்துறையிடம் ஓட்டுநர்களுக்கு உள்ள சட்டப்பூர்வ உரிமைகள்",
+    category_en: "Traffic & Legal Rights",
+    category_ta: "போக்குவரத்து & சட்ட உரிமை",
+    summary_en: "Know the legal rules under Motor Vehicles Act regarding officer rank requirements, DigiLocker validity.",
+    summary_ta: "வாகன சோதனையின் போது காவலத்துறை பின்பற்ற வேண்டிய விதிகள் மற்றும் ஓட்டுநர்களின் உரிமைகள்.",
+  }
+];
+
+export const getArticleBySlug = (slug) => {
+  return getAllArticles().find(a => a.slug === slug);
 };
