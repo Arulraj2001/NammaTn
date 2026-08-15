@@ -141,6 +141,9 @@ export const getSchemeBySlug = (slug) => {
   return getAllSchemes().find(s => s.slug === slug);
 };
 
+export const GOVT_SCHEMES = getAllSchemes();
+export const SAFETY_GUIDES = getAllGuides();
+
 // All portals with slugs
 export const getAllPortals = () => [
   {

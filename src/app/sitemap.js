@@ -13,7 +13,7 @@ import { OFFICES } from '@/lib/offices';
 import { getActiveAreas } from '@/lib/publicHubServer';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
-import { getAllArticles, getAllRights, GOVT_SCHEMES, SAFETY_GUIDES } from '@/lib/awarenessServer';
+import { getAllArticles, getAllRights, getAllSchemes, getAllGuides, GOVT_SCHEMES, SAFETY_GUIDES } from '@/lib/awarenessServer';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -173,7 +173,8 @@ export default async function sitemap() {
       }
     });
 
-    (GOVT_SCHEMES || []).forEach(s => {
+    const schemes = typeof getAllSchemes === 'function' ? getAllSchemes() : GOVT_SCHEMES;
+    (schemes || []).forEach(s => {
       if (s.slug) {
         entries.push({
           url: `${SITE_URL}/awareness/scheme/${s.slug}`,
@@ -183,7 +184,8 @@ export default async function sitemap() {
       }
     });
 
-    (SAFETY_GUIDES || []).forEach(g => {
+    const guides = typeof getAllGuides === 'function' ? getAllGuides() : SAFETY_GUIDES;
+    (guides || []).forEach(g => {
       if (g.slug) {
         entries.push({
           url: `${SITE_URL}/awareness/guide/${g.slug}`,

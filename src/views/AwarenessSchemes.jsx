@@ -341,8 +341,10 @@ export default function AwarenessSchemesPage() {
           {T("Government Schemes — Tamil Nadu 2024-25", "அரசு திட்டங்கள் — தமிழ்நாடு 2024-25")}
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          {T(`${ALL_SCHEMES.length} active welfare schemes with eligibility and direct apply links.`,
-             `${ALL_SCHEMES.length} செயல்பாட்டில் உள்ள திட்டங்கள் — தகுதி மற்றும் விண்ணப்ப இணைப்புகளுடன்.`)}
+          {T(
+            ALL_SCHEMES.length + " active welfare schemes with eligibility and direct apply links.",
+            ALL_SCHEMES.length + " செயல்பாட்டில் உள்ள திட்டங்கள் — தகுதி மற்றும் விண்ணப்ப இணைப்புகளுடன்."
+          )}
         </p>
       </div>
 
@@ -381,7 +383,7 @@ export default function AwarenessSchemesPage() {
 
       {/* Results count */}
       <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">
-        {T(`Showing ${filtered.length} schemes`, `${filtered.length} திட்டங்கள் காட்டப்படுகின்றன`)}
+        {T("Showing " + filtered.length + " schemes", filtered.length + " திட்டங்கள் காட்டப்படுகின்றன")}
       </p>
 
       {/* Scheme cards */}
@@ -481,15 +483,14 @@ export default function AwarenessSchemesPage() {
       </div>
 
       <div className="mt-8 text-center text-xs text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-6">
-        {T(
-          "Find more schemes at myscheme.gov.in — national scheme discovery platform.",
-          "myscheme.gov.in ல் மேலும் திட்டங்களை தேடுங்கள் — தேசிய திட்ட கண்டறிதல் தளம்."
-        )}
-        {" "}<a href="https://www.myscheme.gov.in" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">myscheme.gov.in →</a>
-      </div>
+          {T(
+            "Find more schemes at myscheme.gov.in — national scheme discovery platform.",
+            "myscheme.gov.in ல் மேலும் திட்டங்களை தேடுங்கள் — தேசிய திட்ட கண்டறிதல் தளம்."
+          )}
+          {" "}<a href="https://www.myscheme.gov.in" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">myscheme.gov.in →</a>
+        </div>
 
-      {/* Cross-Linking Modules for SEO & User Discovery */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Cross-Linking Modules for SEO & User Discovery */}
         <AwarenessRelatedLinks currentSection="schemes" />
       </div>
     </div>
