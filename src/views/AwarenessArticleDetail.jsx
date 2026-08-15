@@ -5,6 +5,8 @@ import { BookOpen, Clock, Calendar, ArrowLeft, Share2, Tag, ExternalLink, CheckC
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import FormattedArticleContent from "@/components/awareness/FormattedArticleContent";
+import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
+import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
 
 const FALLBACK_ARTICLES = [
   {
@@ -211,8 +213,9 @@ export default function AwarenessArticleDetail({ article }) {
   const contentText = T(activeArticle.content_en, activeArticle.content_ta) || "";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
+      <AwarenessSubNav activePath="/awareness/articles" />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <Link
           href="/awareness/articles"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-6 hover:underline"
@@ -244,6 +247,9 @@ export default function AwarenessArticleDetail({ article }) {
             <FormattedArticleContent content={contentText} />
           </div>
         </article>
+
+        {/* Cross-Linking Modules for SEO & User Discovery */}
+        <AwarenessRelatedLinks currentSection="article-detail" />
       </div>
     </div>
   );

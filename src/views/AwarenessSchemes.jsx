@@ -9,6 +9,8 @@ import {
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
+import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
 
 // All TN government schemes — production content verified
 const ALL_SCHEMES = [
@@ -325,7 +327,9 @@ export default function AwarenessSchemesPage() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
+      <AwarenessSubNav activePath="/awareness/schemes" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Back */}
       <Link to="/awareness" className="inline-flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline mb-6">
         <ArrowLeft className="w-4 h-4" /> {T("Back to Awareness", "விழிப்புணர்வுக்கு திரும்பு")}
@@ -482,6 +486,11 @@ export default function AwarenessSchemesPage() {
           "myscheme.gov.in ல் மேலும் திட்டங்களை தேடுங்கள் — தேசிய திட்ட கண்டறிதல் தளம்."
         )}
         {" "}<a href="https://www.myscheme.gov.in" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">myscheme.gov.in →</a>
+      </div>
+
+      {/* Cross-Linking Modules for SEO & User Discovery */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AwarenessRelatedLinks currentSection="schemes" />
       </div>
     </div>
   );

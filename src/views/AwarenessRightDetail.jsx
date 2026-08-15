@@ -5,6 +5,8 @@ import { Shield, FileText, Building, CheckCircle2, ExternalLink, ArrowLeft } fro
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import FormattedArticleContent from "@/components/awareness/FormattedArticleContent";
+import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
+import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
 
 export default function AwarenessRightDetail({ right }) {
   const { lang } = useLanguage();
@@ -24,8 +26,9 @@ export default function AwarenessRightDetail({ right }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
+      <AwarenessSubNav activePath="/awareness/rights" />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <Link
           href="/awareness/rights"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 mb-6 hover:underline"
@@ -97,6 +100,9 @@ export default function AwarenessRightDetail({ right }) {
             </div>
           </div>
         </div>
+
+        {/* Cross-Linking Modules for SEO & User Discovery */}
+        <AwarenessRelatedLinks currentSection="right-detail" />
       </div>
     </div>
   );

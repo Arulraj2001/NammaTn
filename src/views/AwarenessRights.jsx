@@ -5,6 +5,8 @@ import { Shield, Search, FileText, ChevronRight, ExternalLink, ArrowLeft, Downlo
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
+import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
 
 const CITIZEN_RIGHTS = [
   {
@@ -276,6 +278,8 @@ export default function AwarenessRightsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
+      <AwarenessSubNav activePath="/awareness/rights" />
+
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -411,6 +415,9 @@ export default function AwarenessRightsPage() {
             );
           })}
         </div>
+
+        {/* Cross-Linking Modules for SEO & User Discovery */}
+        <AwarenessRelatedLinks currentSection="rights" />
       </div>
     </div>
   );

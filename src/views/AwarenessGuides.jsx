@@ -6,6 +6,8 @@ import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { injectFAQStructuredData } from "@/lib/seo";
+import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
+import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
 
 const ALL_GUIDES = [
   {
@@ -179,7 +181,9 @@ export default function AwarenessGuidesPage() {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
+      <AwarenessSubNav activePath="/awareness/guides" />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Link to="/awareness" className="inline-flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline mb-6">
         <ArrowLeft className="w-4 h-4" /> {T("Back to Awareness", "விழிப்புணர்வுக்கு திரும்பு")}
       </Link>
@@ -254,6 +258,10 @@ export default function AwarenessGuidesPage() {
           );
         })}
       </div>
+
+      {/* Cross-Linking Modules for SEO & User Discovery */}
+      <AwarenessRelatedLinks currentSection="guides" />
     </div>
-  );
+  </div>
+);
 }

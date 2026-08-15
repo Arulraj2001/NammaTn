@@ -5,6 +5,8 @@ import { BookOpen, Search, Clock, Calendar, ChevronRight, ExternalLink, ArrowLef
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
+import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
 
 const KNOWLEDGE_ARTICLES = [
   {
@@ -191,6 +193,8 @@ export default function AwarenessArticlesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
+      <AwarenessSubNav activePath="/awareness/articles" />
+
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -271,6 +275,9 @@ export default function AwarenessArticlesPage() {
             </div>
           ))}
         </div>
+
+        {/* Cross-Linking Modules for SEO & User Discovery */}
+        <AwarenessRelatedLinks currentSection="articles" />
       </div>
     </div>
   );

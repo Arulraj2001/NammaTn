@@ -13,6 +13,8 @@ import PortalsSection from "@/components/awareness/PortalsSection";
 import ArticlesSection from "@/components/awareness/ArticlesSection";
 import AwarenessFaqSection from "@/components/awareness/AwarenessFaqSection";
 import AwarenessCTA from "@/components/awareness/AwarenessCTA";
+import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
+import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
 
 export default function Awareness() {
   const { lang } = useLanguage();
@@ -26,6 +28,8 @@ export default function Awareness() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <AwarenessSubNav activePath="/awareness" />
+
       {/* Hero with integrated search bar */}
       <AwarenessHero onSearch={setSearchQuery} lang={lang} />
 
@@ -53,6 +57,9 @@ export default function Awareness() {
 
         {/* FAQ accordion */}
         <AwarenessFaqSection lang={lang} />
+
+        {/* Cross-Linking Modules for SEO & User Discovery */}
+        <AwarenessRelatedLinks currentSection="awareness-home" />
       </div>
 
       {/* Bottom CTA */}
