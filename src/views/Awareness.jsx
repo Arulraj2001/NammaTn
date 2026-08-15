@@ -10,6 +10,7 @@ import QuickResourceCards from "@/components/awareness/QuickResourceCards";
 import WhatToDoSection from "@/components/awareness/WhatToDoSection";
 import SchemesSection from "@/components/awareness/SchemesSection";
 import PortalsSection from "@/components/awareness/PortalsSection";
+import ArticlesSection from "@/components/awareness/ArticlesSection";
 import AwarenessFaqSection from "@/components/awareness/AwarenessFaqSection";
 import AwarenessCTA from "@/components/awareness/AwarenessCTA";
 
@@ -46,6 +47,9 @@ export default function Awareness() {
 
         {/* Official portals */}
         <PortalsSection lang={lang} />
+
+        {/* Knowledge Base Articles */}
+        <ArticlesSection lang={lang} />
 
         {/* FAQ accordion */}
         <AwarenessFaqSection lang={lang} />
