@@ -203,9 +203,116 @@ export const getAllEmergencyContacts = () => [
   },
 ];
 
-// Get emergency contact by slug
-export const getEmergencyContactBySlug = (slug) => {
-  return getAllEmergencyContacts().find(e => e.slug === slug);
+// All citizen rights with slugs
+export const getAllRights = () => [
+  {
+    id: "right-rti",
+    slug: "right-to-information-act-2005",
+    name_en: "Right to Information Act (RTI Act 2005)",
+    name_ta: "தகவல் அறியும் உரிமைச் சட்டம் 2005",
+    desc_en: "Empowers Indian citizens to request information, inspect government files, and obtain certified copies within 30 days.",
+    desc_ta: "அரசுத் துறைகளின் செயல்பாடுகள் மற்றும் கோப்புகளை பார்வையிட 30 நாட்களுக்குள் தகவல் பெறும் உரிமை.",
+    content_en: "Under the RTI Act 2005, every citizen has the statutory right to file an application with a Public Information Officer (PIO) of any state or central government department. The PIO must reply within 30 calendar days.",
+    content_ta: "தகவல் அறியும் உரிமைச் சட்டத்தின்படி ஒவ்வொரு குடிமகனும் எந்தவொரு அரசுத் துறையிலும் ₹10 கட்டணத்துடன் விண்ணப்பித்து 30 நாட்களுக்குள் தகவல் பெற உரிமை உண்டு.",
+    department_en: "Personnel and Administrative Reforms Dept",
+    department_ta: "பணியாளர் மற்றும் நிர்வாக சீர்திருத்தத் துறை",
+    portal_url: "https://rtionline.tn.gov.in",
+  },
+  {
+    id: "right-consumer",
+    slug: "consumer-protection-rights-2019",
+    name_en: "Consumer Protection Rights (Act 2019)",
+    name_ta: "நுகர்வோர் பாதுகாப்பு சட்ட உரிமைகள் 2019",
+    desc_en: "Guarantees protection against defective goods, deficient services, overcharging, misleading advertisements, and unfair trade practices.",
+    desc_ta: "குறைபாடுள்ள பொருட்கள், போலி விளம்பரங்கள் மற்றும் ஏமாற்று வியாபாரத்திற்கு எதிராக ஆன்லைனில் வழக்கு பதிவு செய்து இழப்பீடு பெறும் உரிமை.",
+    content_en: "The Consumer Protection Act 2019 gives citizens 6 fundamental consumer rights. Consumers can file complaints online through e-Daakhil without hiring a lawyer for claims up to ₹50 lakh.",
+    content_ta: "நுகர்வோர் பாதுகாப்பு சட்டம் 2019 படி பொருட்களின் தரம், விலை மற்றும் சேவைகளில் குறைபாடு இருந்தால் வக்கீல் இல்லாமல் இ-தாகீல் தளம் வழியாக ஆன்லைனில் நுகர்வோர் நீதிமன்றத்தில் வழக்கு பதிவு செய்யலாம்.",
+    department_en: "Civil Supplies and Consumer Protection Dept",
+    department_ta: "உணவு மற்றும் நுகர்வோர் பாதுகாப்புத் துறை",
+    portal_url: "https://edaakhil.nic.in",
+  },
+  {
+    id: "right-police-check",
+    slug: "police-vehicle-check-citizen-rights",
+    name_en: "Citizen Rights During Police Checks & Detention",
+    name_ta: "வாகன சோதனை மற்றும் காவல் விசாரணையில் குடிமக்கள் உரிமைகள்",
+    desc_en: "Know your statutory legal rights when stopped by traffic police, during vehicle document inspection, or during police questioning.",
+    desc_ta: "வாகன சோதனையின் போதும் காவல் நிலைய விசாரணையின் போதும் குடிமக்களுக்கு உள்ள சட்டப்பூர்வ உரிமைகள்.",
+    content_en: "Only Sub-Inspector (SI) rank & above can collect traffic fines. DigiLocker DL/RC copies are 100% legally valid under MV Act Rule 139. Key snatching is illegal.",
+    content_ta: "சப்-இன்ஸ்பெக்டர் (SI) மற்றும் அதற்கு மேற்பட்ட அதிகாரிகளே அபராதம் வசூலிக்க முடியும். டிஜிலாக்கர் (DigiLocker) சான்றிதழ்கள் செல்லுபடியாகும். வாகனச் சாவியை பிடுங்குவது சட்டவிரோதம்.",
+    department_en: "Home & Police Department",
+    department_ta: "உள்துறை மற்றும் காவல்துறை",
+    portal_url: "https://eservices.tnpolice.gov.in",
+  },
+  {
+    id: "right-service",
+    slug: "right-to-public-services-timebound",
+    name_en: "Right to Public Services (Time-Bound Delivery)",
+    name_ta: "காலவரையறைக்கு உட்பட்ட அரசுச் சேவை உரிமை",
+    desc_en: "Guarantees statutory time limits for receiving civic certificates, electricity connections, water taps, and revenue documents.",
+    desc_ta: "அரசுச் சான்றிதழ்கள், குடிநீர் மற்றும் மின்சார இணைப்புகளை குறிப்பிட்ட காலக்கெடுவுக்குள் பெறும் உரிமை.",
+    content_en: "Community/Income Certificate (15 days), Native Certificate (7 days), New Domestic Power Connection (7-15 days). District Collector Appeal for delay.",
+    content_ta: "சாதி/வருமான சான்றிதழ் (15 நாட்கள்), இருப்பிட சான்றிதழ் (7 நாட்கள்), புதிய மின் இணைப்பு (7-15 நாட்கள்). தாமதமானால் ஆட்சியரிடம் மேல்முறையீடு செய்யலாம்.",
+    department_en: "Revenue and Disaster Management Dept",
+    department_ta: "வருவாய் மற்றும் பேரிடர் மேலாண்மைத் துறை",
+    portal_url: "https://cmhelpline.tn.gov.in",
+  },
+  {
+    id: "right-senior-citizen",
+    slug: "senior-citizens-maintenance-act-2007",
+    name_en: "Maintenance & Rights of Senior Citizens (Act 2007)",
+    name_ta: "மூத்த குடிமக்கள் பராமரிப்பு & நல உரிமைகள் 2007",
+    desc_en: "Protects elderly citizens from eviction, abandonment, or financial neglect by adult children or legal heirs.",
+    desc_ta: "முதியோர்களை பிள்ளைகள் கைவிடுவதில் இருந்தும் சொத்துக்களில் இருந்து வெளியேற்றுவதில் இருந்தும் பாதுகாக்கும் சட்டம்.",
+    content_en: "Children are legally obligated to provide a monthly maintenance allowance up to ₹10,000/month. RDO Tribunal orders eviction of abusive heirs within 90 days.",
+    content_ta: "பெற்றோர்களைப் பராமரிக்காத பிள்ளைகளிடம் இருந்து மாதம் ₹10,000 வரை ஜீவனாம்சம் பெறவும், முதியோரின் சொத்தை ஆக்கிரமிக்கும் பிள்ளைகளை 90 நாளில் வெளியேற்றவும் RDO மன்றத்திற்கு அதிகாரம் உண்டு.",
+    department_en: "Social Welfare and Women Empowerment Dept",
+    department_ta: "சமூக நலன் மற்றும் மகளிர் உரிமைத் துறை",
+    portal_url: "https://tnsocialwelfare.tn.gov.in",
+  },
+  {
+    id: "right-pwd",
+    slug: "rights-of-persons-with-disabilities-act-2016",
+    name_en: "Rights of Persons with Disabilities (RPwD Act 2016)",
+    name_ta: "மாற்றுத்திறனாளிகள் உரிமைகள் சட்டம் 2016",
+    desc_en: "Ensures non-discrimination, 4% public employment reservation, accessible public infrastructure, and monthly pension allowances.",
+    desc_ta: "மாற்றுத்திறனாளிகளுக்கு 4% அரசு வேலைவாய்ப்பு இடஒதுக்கீடு, கட்டணமில்லா பேருந்து பயணம் மற்றும் சம உரிமைக்கான சட்டம்.",
+    content_en: "4% reservation in government jobs, 5% reservation in higher education, free state bus travel, UDID card single window portal.",
+    content_ta: "அரசுப் பணியிடங்களில் 4% இடஒதுக்கீடு, உயர்கல்வியில் 5% இடஒதுக்கீடு, கட்டணமில்லா அரசு பேருந்து பயணம் வழங்கப்படுகிறது.",
+    department_en: "Welfare of Differently Abled Persons Dept",
+    department_ta: "மாற்றுத்திறனாளிகள் நலத் துறை",
+    portal_url: "https://www.scda.tn.gov.in",
+  },
+  {
+    id: "right-domestic-violence",
+    slug: "protection-of-women-from-domestic-violence-act",
+    name_en: "Protection of Women from Domestic Violence Act 2005",
+    name_ta: "குடும்ப வன்முறை தடுப்புச் சட்ட உரிமைகள் 2005",
+    desc_en: "Protects women from physical, verbal, emotional, economic, and sexual abuse within shared domestic households.",
+    desc_ta: "பெண்களுக்கு எதிராக குடும்பத்தில் நடக்கும் வன்முறைகளுக்கு எதிரான சட்டப் பாதுகாப்பு.",
+    content_en: "Protection Orders, Residence Orders, Compensation Orders, and interim maintenance without court fees. 181 Women Crisis Helpline.",
+    content_ta: "குடும்ப வன்முறை தடுப்புச் சட்டம் 2005 படி பாதிக்கப்பட்ட பெண்கள் இலவசமாக நீதிமன்ற பாதுகாப்பு உத்தரவு, தங்குமிடம் மற்றும் பராமரிப்பு பெறலாம்.",
+    department_en: "Social Welfare and Women Empowerment Dept",
+    department_ta: "சமூக நலன் மற்றும் மகளிர் உரிமைத் துறை",
+    portal_url: "https://tnsocialwelfare.tn.gov.in",
+  },
+  {
+    id: "right-labor-minimum-wage",
+    slug: "right-to-fair-wages-tn-shops-act",
+    name_en: "Right to Fair Minimum Wages & Working Conditions",
+    name_ta: "குறைந்தபட்ச கூலி & தொழிலாளர் பாதுகாப்பு உரிமைகள்",
+    desc_en: "Guarantees statutory minimum wages, mandatory weekly rest, double overtime pay, and safe working conditions.",
+    desc_ta: "தனியார் துறை ஊழியர்களுக்கான குறைந்தபட்ச கூலி, வாராந்திர விடுமுறை மற்றும் கூடுதல் வேலை நேரத்திற்கான இரட்டிப்பு ஊதிய உரிமை.",
+    content_en: "Mandatory 8 hours/day limit, double overtime pay beyond 8 hours, 1 mandatory paid weekly rest day.",
+    content_ta: "நாள் ஒன்றுக்கு 8 மணி நேர வேலை, கூடுதல் நேரத்திற்கு இரட்டிப்பு ஊதியம், வாரத்தில் ஒரு நாள் கட்டாய விடுமுறை வழங்கப்பட வேண்டும்.",
+    department_en: "Labour Welfare and Skill Development Dept",
+    department_ta: "தொழிலாளர் நலன் மற்றும் திறன் மேம்பாட்டுத் துறை",
+    portal_url: "https://labour.tn.gov.in",
+  }
+];
+
+export const getRightBySlug = (slug) => {
+  return getAllRights().find(r => r.slug === slug);
 };
 
 // Search all awareness content
@@ -234,6 +341,11 @@ export const searchAwarenessContent = (query) => {
     e.name_en.toLowerCase().includes(query.toLowerCase()) || 
     e.name_ta.toLowerCase().includes(query.toLowerCase())
   );
+
+  const rights = getAllRights().filter(r =>
+    r.name_en.toLowerCase().includes(query.toLowerCase()) ||
+    r.name_ta.toLowerCase().includes(query.toLowerCase())
+  );
   
-  return { guides, faqs, schemes, portals, emergencyContacts };
+  return { guides, faqs, schemes, portals, emergencyContacts, rights };
 };
