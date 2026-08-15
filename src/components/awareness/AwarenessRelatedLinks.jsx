@@ -4,8 +4,8 @@ import React from "react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  Shield, BookOpen, Gift, FileText, AlertTriangle, Building2,
-  Zap, MessageCircle, HelpCircle, Map, ArrowRight, ExternalLink
+  Shield, BookOpen, AlertTriangle, Building2,
+  Zap, MessageCircle, ArrowRight
 } from "lucide-react";
 
 export default function AwarenessRelatedLinks({ currentSection }) {

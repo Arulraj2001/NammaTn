@@ -8,7 +8,7 @@ const ARTICLE_FIELDS = [
 ].join(',');
 
 export async function getTnTodayArchive(category = null) {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabase({ timeoutMs: 10000 });
   if (!supabase) {
     console.warn('[tn-today] Supabase environment variables are unavailable');
     return { articles: [], featured: null };
@@ -37,7 +37,7 @@ export async function getTnTodayArchive(category = null) {
 }
 
 export async function getTnTodayArticle(slug) {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabase({ timeoutMs: 10000 });
   if (!slug) return { article: null, relatedArticles: [] };
   if (!supabase) throw new Error('Supabase is not configured');
 

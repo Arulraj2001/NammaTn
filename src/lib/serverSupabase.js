@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-const DEFAULT_TIMEOUT_MS = 3000;
+const DEFAULT_TIMEOUT_MS = 8000;
 
 function createTimedFetch(timeoutMs) {
   return async function timedFetch(input, init = {}) {

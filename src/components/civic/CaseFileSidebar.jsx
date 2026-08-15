@@ -1,19 +1,11 @@
 import React from "react";
 import {
-  Clock,
-  CheckCircle2,
-  AlertTriangle,
-  ShieldAlert,
   Star,
-  MessageSquare,
-  ThumbsDown,
   User,
-  TrendingUp,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { getDaysOpen, getCivicStatus, CIVIC_STATUSES } from "@/lib/civicReceipt";
+import { getDaysOpen, getCivicStatus } from "@/lib/civicReceipt";
 import { getEscalationLevel } from "@/lib/departmentRouting";
-import CivicTimeline from "@/components/civic/CivicTimeline";
 
 export default function CaseFileSidebar({ post, authorTrustScore, complaintTrackers }) {
   const { lang } = useLanguage();

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { getFeaturedTnToday } from "@/services/tnToday";
 import { format } from "date-fns";
 import { X, ArrowRight, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 
 const CATEGORY_COLORS = {
   infrastructure: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800/30",
@@ -29,11 +29,24 @@ export default function TnTodayCard({ className }) {
   });
 
   const [dismissed, setDismissed] = useState(false);
+  const [posterSrc, setPosterSrc] = useState("");
 
-  // Reset dismissed state if a new article ID is loaded (for live testing)
+  // Reset dismissed state and compute poster safely on client mount
   useEffect(() => {
     setDismissed(false);
-  }, [article?.id]);
+    if (article) {
+      const rawImg = (article.featured_image || "").trim();
+      if (!rawImg || isImagePrompt(rawImg)) {
+        setPosterSrc(generateTnTodayPoster({
+          title: article.title,
+          category: article.category,
+          subtitle: article.subtitle || article.summary || ""
+        }));
+      } else {
+        setPosterSrc(rawImg);
+      }
+    }
+  }, [article]);
 
   const handleClose = (e) => {
     e.preventDefault();
@@ -116,35 +129,23 @@ export default function TnTodayCard({ className }) {
       </button>
 
       {/* Featured Header Image */}
-      {article.featured_image ? (
-        <div className="relative h-24 sm:h-26 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden">
-          <Image
-            src={article.featured_image}
+      <div className="relative h-24 sm:h-26 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden">
+        {posterSrc ? (
+          <img
+            src={posterSrc}
             alt={article.title}
-            fill
-            sizes="240px"
-            className="object-cover"
-            quality={75}
-            loading="lazy"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-          {/* Category pill on the bottom-left of the image */}
-          <div className="absolute bottom-2 left-2">
-            <span className={cn("text-[9px] font-bold px-2.5 py-0.5 rounded-full shadow-sm capitalize border", catColor)}>
-              {article.category}
-            </span>
-          </div>
+        ) : (
+          <div className="w-full h-full bg-slate-800" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        <div className="absolute bottom-2 left-2">
+          <span className={cn("text-[9px] font-bold px-2.5 py-0.5 rounded-full shadow-sm capitalize border", catColor)}>
+            {article.category}
+          </span>
         </div>
-      ) : (
-        <div className="relative h-16 bg-gradient-to-br from-blue-600 to-indigo-800 flex-shrink-0">
-          {/* Category pill */}
-          <div className="absolute bottom-2 left-2">
-            <span className={cn("text-[9px] font-bold px-2.5 py-0.5 rounded-full shadow-sm capitalize border", catColor)}>
-              {article.category}
-            </span>
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Body content */}
       <div className="p-3 pt-2.5">

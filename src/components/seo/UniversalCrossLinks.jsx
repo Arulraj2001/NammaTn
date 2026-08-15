@@ -5,8 +5,8 @@ import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import {
   Shield, BookOpen, Gift, FileText, AlertTriangle, Building2,
-  Zap, MessageCircle, HelpCircle, Map, ArrowRight, ExternalLink,
-  Briefcase, Home, Trophy, Users, Leaf, Heart, LayoutDashboard
+  Zap, MessageCircle, Map, ArrowRight,
+  Briefcase, Home, Trophy, Users
 } from "lucide-react";
 
 export default function UniversalCrossLinks({ pageType }) {

@@ -5,7 +5,12 @@ const TABLE = "tn_today";
 
 // Canonicals are derived from the published VizhiTN slug. Never persist an
 // editorial override that could transfer ownership to another host or slug.
-const withCanonicalOwnership = (payload) => ({ ...payload, canonical_url: null });
+// Also strip client UI fields (is_poster, prompt_text) not present in Supabase table.
+const withCanonicalOwnership = (payload) => {
+  // eslint-disable-next-line no-unused-vars
+  const { is_poster, prompt_text, ...clean } = payload;
+  return { ...clean, canonical_url: null };
+};
 
 // Helper to notify search engines of published article URLs
 const triggerArticleIndexing = (article) => {
@@ -107,7 +112,7 @@ export const adminGetTnTodayById = async (id) => {
 // ─── Admin writes ─────────────────────────────────────────────────────────────
 
 const stripTamilFields = (payload) => {
-  // eslint-disable-next-line no-unused-vars
+   
   const { title_ta, subtitle_ta, summary_ta, content_ta, why_it_matters_ta, ...clean } = payload;
   return clean;
 };

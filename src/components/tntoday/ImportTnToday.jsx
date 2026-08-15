@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
+import { generateTnTodayPoster, generateTnTodayPosterAsync, isImagePrompt, fetchAiPhotoFromPrompt } from "@/lib/tntodayPosterGenerator";
 
 // ─── Field serializers (array of objects → plain text expected by article view) ──
 function serialiseKeyFacts(raw) {
@@ -98,6 +99,29 @@ function normaliseArticle(raw) {
     : (CATEGORY_MAP[rawCat] || "general");
 
   const content = raw.content || raw.body || raw.article_body || "";
+  const rawImg  = (raw.featured_image || raw.image || raw.cover_image || "").trim();
+
+  let featured_image = rawImg;
+  let prompt_text    = raw.prompt_text || "";
+  let is_poster      = false;
+
+  // Handle Claude prompt text or missing image
+  if (isImagePrompt(rawImg)) {
+    prompt_text = rawImg;
+    featured_image = generateTnTodayPoster({
+      title,
+      category,
+      subtitle: raw.subtitle || raw.summary || "",
+    });
+    is_poster = true;
+  } else if (!rawImg) {
+    featured_image = generateTnTodayPoster({
+      title,
+      category,
+      subtitle: raw.subtitle || raw.summary || "",
+    });
+    is_poster = true;
+  }
 
   return {
     title,
@@ -105,7 +129,9 @@ function normaliseArticle(raw) {
     slug,
     subtitle:            raw.subtitle || raw.subheading || raw.deck || "",
     subtitle_ta:         raw.subtitle_ta || "",
-    featured_image:      raw.featured_image || raw.image || raw.cover_image || "",
+    featured_image,
+    prompt_text,
+    is_poster,
     category,
     author_name:         raw.author_name || raw.author || "VizhiTN Editorial Team",
     publish_date:        raw.publish_date || raw.date || new Date().toISOString(),
@@ -124,7 +150,7 @@ function normaliseArticle(raw) {
     seo_title:           raw.seo_title || raw.meta_title || title,
     seo_description:     raw.seo_description || raw.meta_description || raw.subtitle || "",
     seo_keywords:        Array.isArray(raw.seo_keywords) ? raw.seo_keywords.join(", ") : (raw.seo_keywords || raw.keywords || ""),
-    social_image:        raw.social_image || raw.og_image || raw.featured_image || "",
+    social_image:        raw.social_image || raw.og_image || featured_image,
     is_featured:         raw.is_featured === true,
   };
 }
@@ -156,10 +182,42 @@ function parseInput(input) {
 }
 
 // ─── Preview card ────────────────────────────────────────────────────────────
-function PreviewCard({ article, index, onRemove }) {
+function PreviewCard({ article, index, onRemove, onUpdate }) {
   const [expanded, setExpanded] = useState(false);
+  const [loadingAi, setLoadingAi] = useState(false);
+
+  const handleRegeneratePoster = async () => {
+    setLoadingAi(true);
+    try {
+      const posterUrl = await generateTnTodayPosterAsync({
+        title: article.title,
+        category: article.category,
+        subtitle: article.subtitle || article.summary || "",
+        promptText: article.prompt_text || article.title,
+      });
+      onUpdate({ ...article, featured_image: posterUrl, social_image: posterUrl, is_poster: true });
+    } catch {
+      // fallback
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+
+  const handleGenerateAiPhoto = async () => {
+    setLoadingAi(true);
+    try {
+      const promptToUse = article.prompt_text || article.title;
+      const aiPhotoUrl = await fetchAiPhotoFromPrompt(promptToUse);
+      onUpdate({ ...article, featured_image: aiPhotoUrl, social_image: aiPhotoUrl, is_poster: false });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+    <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60">
         <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 text-white text-xs font-extrabold">
           {index + 1}
@@ -187,18 +245,66 @@ function PreviewCard({ article, index, onRemove }) {
           </button>
         </div>
       </div>
+
+      {/* Featured Image & Live Poster Preview Banner */}
+      <div className="p-3 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-900/5 dark:bg-slate-950/40">
+        {article.featured_image ? (
+          <div className="relative w-full sm:w-44 h-24 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 flex-shrink-0 bg-slate-900">
+            <img src={article.featured_image} alt="Featured Preview" className="w-full h-full object-cover" />
+            {article.is_poster && (
+              <span className="absolute top-1 left-1 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow">
+                🎨 Poster
+              </span>
+            )}
+          </div>
+        ) : null}
+
+        <div className="flex-1 space-y-1.5 text-xs">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-extrabold text-slate-700 dark:text-slate-300">Featured Image:</span>
+            {article.is_poster ? (
+              <span className="text-amber-600 dark:text-amber-400 font-medium">Auto Branded News Poster</span>
+            ) : (
+              <span className="text-blue-600 dark:text-blue-400 font-medium truncate max-w-xs">Photo URL Attached</span>
+            )}
+          </div>
+
+          {article.prompt_text && (
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 italic">
+              &quot;{article.prompt_text}&quot;
+            </p>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 pt-1 flex-wrap">
+            <button
+              type="button"
+              onClick={handleRegeneratePoster}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-md bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors"
+            >
+              🎨 Regenerate Poster
+            </button>
+            <button
+              type="button"
+              onClick={handleGenerateAiPhoto}
+              disabled={loadingAi}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-50"
+            >
+              {loadingAi ? (
+                <><Loader2 className="w-3 h-3 animate-spin" /> Generating AI Photo...</>
+              ) : (
+                <>⚡ AI Photo from Prompt</>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
       {expanded && (
-        <div className="p-3 space-y-1.5 text-xs border-t border-slate-200 dark:border-slate-700">
+        <div className="p-3 space-y-1.5 text-xs border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
           {article.subtitle && <p><span className="font-bold text-slate-500">Subtitle:</span> {article.subtitle}</p>}
           {article.summary && <p><span className="font-bold text-slate-500">Summary:</span> {article.summary}</p>}
           {article.author_name && <p><span className="font-bold text-slate-500">Author:</span> {article.author_name}</p>}
-          {article.featured_image && (
-            <p><span className="font-bold text-slate-500">Image:</span>
-              <a href={article.featured_image} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1 truncate block">
-                {article.featured_image.slice(0, 60)}...
-              </a>
-            </p>
-          )}
           {article.content && (
             <p><span className="font-bold text-slate-500">Content:</span> {article.content.replace(/<[^>]*>/g,"").slice(0,120)}...</p>
           )}
@@ -253,12 +359,35 @@ export default function ImportTnToday({ onDone }) {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const processText = useCallback((text) => {
+  const processText = useCallback(async (text) => {
     setError("");
     setResults(null);
     try {
       const parsed = parseInput(text);
       setArticles(parsed);
+
+      // Composite background AI photo under poster graphics asynchronously
+      const enhanced = await Promise.all(
+        parsed.map(async (art) => {
+          if (art.is_poster) {
+            try {
+              const composite = await generateTnTodayPosterAsync({
+                title: art.title,
+                category: art.category,
+                subtitle: art.subtitle || art.summary || "",
+                promptText: art.prompt_text || art.title,
+              });
+              if (composite) {
+                return { ...art, featured_image: composite, social_image: composite };
+              }
+            } catch {
+              // Gracefully keep initial canvas poster
+            }
+          }
+          return art;
+        })
+      );
+      setArticles(enhanced);
     } catch (e) {
       setError(e.message);
       setArticles(null);
@@ -418,7 +547,19 @@ export default function ImportTnToday({ onDone }) {
 
         <div className="space-y-2 max-h-72 overflow-y-auto pr-1 scrollbar-thin">
           {articles.map((a, i) => (
-            <PreviewCard key={i} article={a} index={i} onRemove={removeArticle} />
+            <PreviewCard
+              key={i}
+              article={a}
+              index={i}
+              onRemove={removeArticle}
+              onUpdate={(updated) => {
+                setArticles(prev => {
+                  const next = [...prev];
+                  next[i] = updated;
+                  return next;
+                });
+              }}
+            />
           ))}
         </div>
 

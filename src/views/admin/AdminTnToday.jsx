@@ -20,6 +20,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
+import { generateTnTodayPoster, generateTnTodayPosterAsync, fetchAiPhotoFromPrompt } from "@/lib/tntodayPosterGenerator";
 
 const CATEGORIES = [
   { value: "infrastructure", label: "🏗️ Infrastructure", color: "bg-blue-100 text-blue-700" },
@@ -583,10 +584,44 @@ export default function AdminTnToday() {
             </div>
 
             <Field label="Featured Image URL">
-              <Input value={form.featured_image} onChange={e => setField("featured_image", e.target.value)}
-                placeholder="https://..." />
+              <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                <Input value={form.featured_image} onChange={e => setField("featured_image", e.target.value)}
+                  placeholder="https://... or prompt text" className="flex-1" />
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const poster = await generateTnTodayPosterAsync({
+                      title: form.title || "TNToday Article",
+                      category: form.category || "general",
+                      subtitle: form.subtitle || form.summary || "",
+                      promptText: form.featured_image || form.title,
+                    });
+                    setField("featured_image", poster);
+                    setField("social_image", poster);
+                  }}
+                  className="px-3 py-2 text-xs font-extrabold bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors"
+                  title="Generate TNToday Branded News Poster"
+                >
+                  🎨 Generate Poster
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!form.title) return;
+                    const aiPhoto = await fetchAiPhotoFromPrompt(form.featured_image || form.title);
+                    setField("featured_image", aiPhoto);
+                    setField("social_image", aiPhoto);
+                  }}
+                  className="px-3 py-2 text-xs font-extrabold bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors"
+                  title="Fetch AI Photo from Prompt/Title"
+                >
+                  ⚡ AI Photo
+                </button>
+              </div>
               {form.featured_image && (
-                <img src={form.featured_image} alt="preview" className="mt-2 h-32 w-full object-cover rounded-xl" />
+                <div className="mt-2 relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                  <img src={form.featured_image} alt="preview" className="h-36 w-full object-cover" />
+                </div>
               )}
             </Field>
 

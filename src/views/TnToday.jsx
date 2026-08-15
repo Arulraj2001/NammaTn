@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { TN_TODAY_CATEGORIES as CATEGORIES } from '@/lib/tnTodayCategories';
 import { useLanguage } from "@/context/LanguageContext";
 import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
+import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 
 // ─── Featured article hero card ───────────────────────────────────────────────
 function FeaturedCard({ article }) {
@@ -19,18 +20,27 @@ function FeaturedCard({ article }) {
   const displayTitle = (lang === "ta" && article.title_ta) ? article.title_ta : article.title;
   const displaySubtitle = (lang === "ta" && article.subtitle_ta) ? article.subtitle_ta : article.subtitle;
 
+  const [imgSrc, setImgSrc] = useState(article.featured_image || "");
+
+  React.useEffect(() => {
+    const rawImg = (article.featured_image || "").trim();
+    if (!rawImg || isImagePrompt(rawImg)) {
+      setImgSrc(generateTnTodayPoster({ title: displayTitle, category: article.category, subtitle: displaySubtitle }));
+    } else {
+      setImgSrc(rawImg);
+    }
+  }, [article, displayTitle, displaySubtitle]);
+
   return (
     <Link to={`/tn-today/${article.slug}`}
       className="block relative overflow-hidden rounded-2xl group shadow-lg hover:shadow-xl transition-shadow border-2 border-slate-300 dark:border-slate-700">
-      {article.featured_image ? (
-        <>
-          <img src={article.featured_image} alt={displayTitle}
-            className="w-full h-[300px] sm:h-[400px] object-cover group-hover:scale-[1.01] transition-transform duration-500" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        </>
+      {imgSrc ? (
+        <img src={imgSrc} alt={displayTitle}
+          className="w-full h-[300px] sm:h-[400px] object-cover group-hover:scale-[1.01] transition-transform duration-500" />
       ) : (
-        <div className="w-full h-[300px] sm:h-[400px] bg-gradient-to-br from-blue-700 to-blue-900" />
+        <div className="w-full h-[300px] sm:h-[400px] bg-slate-800" />
       )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
       <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -70,16 +80,25 @@ function ArticleCard({ article }) {
   const displayTitle = (lang === "ta" && article.title_ta) ? article.title_ta : article.title;
   const displaySubtitle = (lang === "ta" && article.subtitle_ta) ? article.subtitle_ta : article.subtitle;
 
+  const [imgSrc, setImgSrc] = useState(article.featured_image || "");
+
+  React.useEffect(() => {
+    const rawImg = (article.featured_image || "").trim();
+    if (!rawImg || isImagePrompt(rawImg)) {
+      setImgSrc(generateTnTodayPoster({ title: displayTitle, category: article.category, subtitle: displaySubtitle }));
+    } else {
+      setImgSrc(rawImg);
+    }
+  }, [article, displayTitle, displaySubtitle]);
+
   return (
     <Link to={`/tn-today/${article.slug}`}
       className="flex gap-4 bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all duration-200 group">
-      {article.featured_image ? (
-        <img src={article.featured_image} alt={displayTitle}
+      {imgSrc ? (
+        <img src={imgSrc} alt={displayTitle}
           className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0 group-hover:scale-105 transition-transform duration-300" />
       ) : (
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-900/60 flex items-center justify-center flex-shrink-0">
-          <BookOpen className="w-7 h-7 text-blue-500" />
-        </div>
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-800 flex-shrink-0" />
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">

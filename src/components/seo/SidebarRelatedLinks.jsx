@@ -4,8 +4,8 @@ import React from "react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  Shield, BookOpen, Gift, FileText, AlertTriangle, Building2,
-  Zap, MessageCircle, ArrowRight, ExternalLink, Share2, Bookmark, CheckCircle2, Phone
+  Shield, BookOpen, AlertTriangle, Building2,
+  Zap, ArrowRight, Phone
 } from "lucide-react";
 
 export default function SidebarRelatedLinks({ type = "article", category, currentSlug, extraLinks = [] }) {

@@ -17,6 +17,7 @@ import { getTnTodayCanonical } from "@/lib/tnTodayUrl";
 import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
 import { resolveArticleInternalLinks } from "@/lib/seo/internalLinker";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
+import { generateTnTodayPoster } from "@/lib/tntodayPosterGenerator";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -192,6 +193,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [autoTa, setAutoTa] = React.useState(null);
+  const [heroImg, setHeroImg] = React.useState("");
 
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ["tn-today-article", slug],
@@ -296,6 +298,21 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
   const seoLinks = resolveArticleInternalLinks(article);
 
+  React.useEffect(() => {
+    if (article) {
+      const rawImg = (article.featured_image || "").trim();
+      if (isImageUrl(rawImg)) {
+        setHeroImg(rawImg);
+      } else {
+        setHeroImg(generateTnTodayPoster({
+          title: displayTitle || article.title,
+          category: article.category,
+          subtitle: displaySubtitle || article.subtitle || ""
+        }));
+      }
+    }
+  }, [article, displayTitle, displaySubtitle]);
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* ── Top editorial bar ── */}
@@ -373,13 +390,12 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
               </button>
             </div>
 
-            {/* Featured image — only render when value is an actual URL */}
-            {isImageUrl(article.featured_image) && (
-              <div className="mb-6 rounded-2xl overflow-hidden shadow-lg">
-                <img src={article.featured_image} alt={displayTitle}
-                  className="w-full h-[260px] sm:h-[380px] object-cover" />
+            {/* Featured image — render photo URL or fallback to auto-generated TNToday Branded Poster */}
+            {heroImg ? (
+              <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
+                <img src={heroImg} alt={displayTitle} className="w-full h-[260px] sm:h-[380px] object-cover" />
               </div>
-            )}
+            ) : null}
 
             {/* Why it matters callout */}
             {displayWhyItMatters && (
