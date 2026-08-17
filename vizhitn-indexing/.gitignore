@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment files (NEVER commit these)
+.env
+.env.local
+.env.production
+
+# Google service account credentials (NEVER commit these)
+google-credentials.json
+
+# Logs
+*.log
+npm-debug.log*
