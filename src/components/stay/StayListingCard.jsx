@@ -16,7 +16,17 @@ const TYPE_LABELS = {
   hostel: { label: "Hostel", color: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300" },
 };
 
-const GENDER_ICONS = { boys: "👦", girls: "👧", co_living: "👥", any: "🏠" };
+const GENDER_LABELS = { boys: "👦 Boys", girls: "👧 Girls", co_living: "👥 Co-living", any: "🏠 Any" };
+
+function getFreshness(createdDate) {
+  if (!createdDate) return null;
+  const h = (Date.now() - new Date(createdDate).getTime()) / 3_600_000;
+  if (h < 3)  return { label: "Just posted", dot: "bg-green-500", text: "text-green-700 dark:text-green-400" };
+  if (h < 24) return { label: "Today",       dot: "bg-green-400", text: "text-green-600 dark:text-green-400" };
+  if (h < 72) return { label: "Recent",      dot: "bg-amber-400", text: "text-amber-600 dark:text-amber-400" };
+  return null;
+}
+
 const AMENITY_ICONS = {
   wifi: "📶", ac: "❄️", food: "🍽️", parking: "🅿️",
   laundry: "🧺", gym: "💪", water: "💧", security: "🔒", power_backup: "🔋",
@@ -99,12 +109,20 @@ export default function StayListingCard({ listing, onReport }) {
       )}
 
       <div className="p-4">
-        {/* Type + Gender */}
+        {/* Type + Gender + Freshness */}
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${typeInfo.color}`}>
             {typeInfo.label}
           </span>
-          <span className="text-xs text-slate-500">{GENDER_ICONS[listing.gender_preference]} {listing.gender_preference?.replace("_", " ")}</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            {GENDER_LABELS[listing.gender_preference] || "🏠 Any"}
+          </span>
+          {(() => { const f = getFreshness(listing.created_date); return f ? (
+            <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${f.text}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${f.dot}`} />
+              {f.label}
+            </span>
+          ) : null; })()}
           {listing.is_verified && !listing.image_urls?.length && (
             <span className="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full flex items-center gap-1">
               <CheckCircle className="w-3 h-3" /> Verified

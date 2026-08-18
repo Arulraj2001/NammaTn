@@ -291,6 +291,24 @@ export default function LocalListings({ initialListings = [] }) {
           </button>
         </div>
 
+        {/* Cross-page links */}
+        <div className="mt-8 grid grid-cols-2 gap-3">
+          <Link to="/jobs" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl hover:border-green-400 hover:shadow-md transition-all group">
+            <span className="text-2xl">💼</span>
+            <div>
+              <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">{T("Local Jobs", "உள்ளூர் வேலைகள்")}</p>
+              <p className="text-xs text-slate-500">{T("Find part-time & local hiring", "பகுதி நேர வேலை தேடுங்கள்")}</p>
+            </div>
+          </Link>
+          <Link to="/stay" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl hover:border-indigo-400 hover:shadow-md transition-all group">
+            <span className="text-2xl">🏠</span>
+            <div>
+              <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{T("Find a Room", "அறை தேடுங்கள்")}</p>
+              <p className="text-xs text-slate-500">{T("PG, shared rooms & stays", "PG, பகிர்ந்த அறைகள்")}</p>
+            </div>
+          </Link>
+        </div>
+
         {/* Universal SEO Cross-Links */}
         <UniversalCrossLinks pageType="listings" />
       </div>

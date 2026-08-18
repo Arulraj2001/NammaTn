@@ -22,6 +22,7 @@ import {
   getAllRecognitions, createRecognition, revokeRecognition,
   getAllAreasAdmin, createArea, updateArea, deleteArea,
 } from "@/services/admin/phase8";
+import ImportJobs from "@/components/admin/ImportJobs";
 
 const SECTIONS = [
   { key: "jobs", label: "Jobs", icon: Briefcase },
@@ -53,6 +54,7 @@ function JobsPanel() {
   const qc = useQueryClient();
   const { toast } = useToast();
   const [showCreate, setShowCreate] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [form, setForm] = useState({ title: "", description: "", job_type: "local_hiring", district_slug: "", district_name: "", area_name: "", salary_info: "", duration: "", contact_info: "", contact_visible: false });
@@ -91,10 +93,21 @@ function JobsPanel() {
             <button key={s} onClick={() => setStatusFilter(s)} className={`px-2.5 py-1 rounded-lg text-xs font-medium capitalize border ${statusFilter === s ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"}`}>{s}</button>
           ))}
         </div>
-        <button onClick={() => setShowCreate(true)} className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-xl text-sm font-medium">
-          <Plus className="w-4 h-4" /> Add Job
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => setShowImport(!showImport)} className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium">
+            📥 Bulk Import
+          </button>
+          <button onClick={() => setShowCreate(true)} className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-xl text-sm font-medium">
+            <Plus className="w-4 h-4" /> Add Job
+          </button>
+        </div>
       </div>
+
+      {showImport && (
+        <div className="mb-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+          <ImportJobs onDone={invalidate} />
+        </div>
+      )}
 
       {showCreate && (
         <form onSubmit={handleCreate} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 mb-4 space-y-3">

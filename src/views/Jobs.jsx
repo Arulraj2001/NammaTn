@@ -121,7 +121,7 @@ export default function Jobs({ initialJobs = [] }) {
 
   return (
     <div>
-      {/* ── Hero banner — matches Community style ── */}
+      {/* ── Hero banner ── */}
       <div className="bg-gradient-to-br from-green-700 to-emerald-800 text-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
           <div className="flex items-start gap-5">
@@ -135,29 +135,42 @@ export default function Jobs({ initialJobs = [] }) {
               <h1 className="text-3xl font-extrabold tracking-tight mb-1.5">
                 {T("Local Jobs", "உள்ளூர் வேலை")}
               </h1>
-              <p className="text-emerald-100 text-xs sm:text-sm leading-relaxed max-w-xl mb-3">
+              <p className="text-emerald-100 text-xs sm:text-sm leading-relaxed max-w-xl mb-4">
                 {T(
-                  "Discover local job updates and employment opportunities shared for Tamil Nadu communities. Report suspicious job posts.",
-                  "தமிழ்நாடு சமுதாயங்களுக்காக பகிரப்பட்ட உள்ளூர் வேலை வாய்ப்புகளை கண்டுபிடிக்கவும். சந்தேகமான வேலை பதிவுகளை புகாரளிக்கவும்."
+                  "Discover local jobs shared by Tamil Nadu communities. Report suspicious posts.",
+                  "தமிழ்நாடு சமுதாயங்களால் பகிரப்பட்ட உள்ளூர் வேலைகளை கண்டுபிடிக்கவும்."
                 )}
               </p>
-              <Link to="/scams" className="inline-flex items-center text-xs font-bold border border-white/40 hover:bg-white/10 text-white px-3.5 py-1.5 rounded-xl transition-colors">
-                {T("Report Scam Job", "மோசடி வேலை புகாரளி")}
-              </Link>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={handleToggleForm}
+                  className="inline-flex items-center gap-1.5 bg-white text-green-800 font-bold text-xs px-4 py-2 rounded-xl hover:bg-green-50 transition-colors shadow">
+                  {showForm ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                  {showForm ? T("Cancel", "ரத்து") : T("+ Post a Job", "+ வேலை பதிவிடு")}
+                </button>
+                <Link to="/scams" className="inline-flex items-center text-xs font-bold border border-white/40 hover:bg-white/10 text-white px-3.5 py-2 rounded-xl transition-colors">
+                  {T("Report Scam Job", "மோசடி வேலை புகாரளி")}
+                </Link>
+              </div>
             </div>
           </div>
+          {/* Quick stats */}
+          {!isLoading && jobs.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {JOB_TYPES.map(t => {
+                const count = jobs.filter(j => j.job_type === t.value).length;
+                if (!count) return null;
+                return (
+                  <span key={t.value} className="text-[11px] bg-white/15 border border-white/20 text-white px-2.5 py-1 rounded-full font-semibold">
+                    {t.label} · {count}
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
       
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div />
-        <button onClick={handleToggleForm}
-          className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-semibold transition-colors">
-          {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          {showForm ? T("Cancel", "ரத்து") : T("Post Job", "வேலை பதிவிடு")}
-        </button>
-      </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 mb-6 space-y-3">
@@ -229,9 +242,10 @@ export default function Jobs({ initialJobs = [] }) {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">📍 District:</span>
         <select value={filterDistrict} onChange={(e) => setFilterDistrict(e.target.value)}
-          className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-300 focus:outline-none">
+          className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-green-500">
           <option value="">{T("All Districts", "அனைத்து மாவட்டங்கள்")}</option>
           {DISTRICTS.map(d => <option key={d.slug} value={d.slug}>{T(d.name_en, d.name_ta)}</option>)}
         </select>
@@ -260,6 +274,24 @@ export default function Jobs({ initialJobs = [] }) {
 
       {/* Universal SEO Cross-Links */}
       <UniversalCrossLinks pageType="jobs" />
+
+      {/* Cross-page links */}
+      <div className="mt-8 grid grid-cols-2 gap-3">
+        <Link to="/stay" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl hover:border-blue-400 hover:shadow-md transition-all group">
+          <span className="text-2xl">🏠</span>
+          <div>
+            <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">{T("Find a Room", "அறை தேடுங்கள்")}</p>
+            <p className="text-xs text-slate-500">{T("PG, shared rooms & stays", "PG, பகிர்ந்த அறைகள் மற்றும் தங்குமிடம்")}</p>
+          </div>
+        </Link>
+        <Link to="/listings" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl hover:border-purple-400 hover:shadow-md transition-all group">
+          <span className="text-2xl">🏪</span>
+          <div>
+            <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">{T("Local Services", "உள்ளூர் சேவைகள்")}</p>
+            <p className="text-xs text-slate-500">{T("Trusted businesses near you", "உங்கள் அருகே நம்பகமான வணிகங்கள்")}</p>
+          </div>
+        </Link>
+      </div>
     </div>
     </div>
   );

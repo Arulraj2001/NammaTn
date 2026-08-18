@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
+import { Link } from "@/lib/router-compat";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Home, Plus, X, Building, Users, Clock, Hotel, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import { createListing, getActiveListings, detectSuspiciousStay } from "@/services/stayListings";
@@ -276,6 +277,24 @@ export default function Stay({ initialListings = [] }) {
               </>
             )}
           </div>
+        </div>
+
+        {/* Cross-page links */}
+        <div className="mt-8 grid grid-cols-2 gap-3">
+          <Link to="/jobs" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl hover:border-green-400 hover:shadow-md transition-all group">
+            <span className="text-2xl">💼</span>
+            <div>
+              <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">{T("Find a Job", "வேலை தேடுங்கள்")}</p>
+              <p className="text-xs text-slate-500">{T("Local hiring near you", "அருகில் உள்ள வேலைகள்")}</p>
+            </div>
+          </Link>
+          <Link to="/listings" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl hover:border-purple-400 hover:shadow-md transition-all group">
+            <span className="text-2xl">🏪</span>
+            <div>
+              <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">{T("Local Services", "உள்ளூர் சேவைகள்")}</p>
+              <p className="text-xs text-slate-500">{T("Trusted businesses near you", "நம்பகமான வணிகங்கள்")}</p>
+            </div>
+          </Link>
         </div>
 
         {/* Universal SEO Cross-Links */}

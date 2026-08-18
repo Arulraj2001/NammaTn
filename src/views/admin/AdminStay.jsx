@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { DISTRICTS } from "@/lib/districts";
+import ImportStay from "@/components/admin/ImportStay";
 
 const TYPE_LABELS = {
   pg_available: "PG", shared_room: "Shared Room", roommate_needed: "Roommate",
@@ -426,6 +427,7 @@ export default function AdminStay() {
     { id: "overview", label: "📊 Overview" },
     { id: "listings", label: "📋 Listings", badge: pendingListings, badgeColor: "bg-yellow-500" },
     { id: "reports", label: "🚨 Reports", badge: pendingReports, badgeColor: "bg-red-500" },
+    { id: "import", label: "📥 Bulk Import" },
   ];
 
   return (
@@ -463,6 +465,7 @@ export default function AdminStay() {
       {activeTab === "overview" && <OverviewPanel listings={listings} reports={reports} />}
       {activeTab === "listings" && <ListingsPanel listings={listings} isLoading={loadingListings} onRefresh={refresh} />}
       {activeTab === "reports" && <ReportsPanel reports={reports} isLoading={loadingReports} onRefresh={refresh} />}
+      {activeTab === "import" && <ImportStay onDone={refresh} />}
     </div>
   );
 }
