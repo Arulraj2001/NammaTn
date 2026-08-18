@@ -20,5 +20,5 @@ export const metadata = {
 
 export default async function Page() {
   const jobs = await getActiveJobAlerts();
-  return <><Breadcrumbs items={[{ name: 'Jobs', href: '/jobs' }]} /><Jobs initialJobs={jobs} /></>;
+  return <Jobs initialJobs={jobs} />;
 }

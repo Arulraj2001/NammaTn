@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useMemo } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -150,6 +150,15 @@ export default function Jobs({ initialJobs = [] }) {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-12">
+      {/* ── Manual Breadcrumb ── */}
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 pt-3 pb-1">
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <Link to="/" className="hover:underline">Home</Link>
+          <span>&gt;</span>
+          <span className="font-semibold text-slate-800 dark:text-white">Jobs</span>
+        </div>
+      </div>
+
       {/* ── Main Green Hero Banner (Full width extended & compact height) ── */}
       <div className="w-full px-4 sm:px-6 pt-3 pb-2">
         <div className="max-w-[1400px] mx-auto bg-[#044732] dark:bg-[#033626] rounded-3xl p-4 sm:p-5 md:p-6 text-white shadow-xl relative overflow-hidden">
@@ -415,8 +424,29 @@ export default function Jobs({ initialJobs = [] }) {
           </div>
         )}
 
+        {/* ── Related Links Section ── */}
+        <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
+          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Explore Related Sections</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Link to="/stay" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-emerald-500 hover:shadow-md transition-all group">
+              <span className="text-2xl">🏠</span>
+              <div>
+                <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400">{T("Find a Room / PG Stay", "அறை / தங்குமிடம் தேடுங்கள்")}</p>
+                <p className="text-xs text-slate-500">{T("Explore PG stays, shared rooms & hostels", "PG, பகிர்ந்த அறைகள் மற்றும் விடுதிகள்")}</p>
+              </div>
+            </Link>
+            <Link to="/listings" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-[#044732] hover:shadow-md transition-all group">
+              <span className="text-2xl">🏪</span>
+              <div>
+                <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#044732] dark:group-hover:text-emerald-400">{T("Local Services & Directory", "உள்ளூர் சேவைகள்")}</p>
+                <p className="text-xs text-slate-500">{T("Discover verified local businesses near you", "உங்கள் பகுதியில் உள்ள வணிகங்கள்")}</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+
         {/* Universal SEO Cross-Links */}
-        <div className="mt-8">
+        <div className="mt-6">
           <UniversalCrossLinks pageType="jobs" />
         </div>
       </div>
