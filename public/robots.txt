@@ -1,6 +1,13 @@
 User-agent: *
 Allow: /
 
+# ── Non-HTML assets — must never be indexed ───────────────────────────────────
+Disallow: /favicon.ico
+Disallow: /favicon-16x16.png
+Disallow: /favicon-32x32.png
+Disallow: /manifest.json
+Disallow: /site.webmanifest
+
 # ── Private / auth routes ─────────────────────────────────────────────────────
 Disallow: /admin/
 Disallow: /api/

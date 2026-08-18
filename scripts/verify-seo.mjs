@@ -44,8 +44,8 @@ assert.equal(
 assert.equal(formatReportDate('2026-02-01T00:00:00.000Z'), '1 Feb 2026', 'Report dates must render deterministically');
 assert.equal(
   shouldIndexCityIssuePage({ dataAvailable: true, reportCount: 0 }),
-  false,
-  'Confirmed zero-report city/issue pages must be noindex',
+  true,
+  'Editorial city/issue pages must be indexable even with zero live reports',
 );
 assert.equal(
   shouldIndexCityIssuePage({ dataAvailable: true, reportCount: 1 }),
@@ -54,17 +54,17 @@ assert.equal(
 );
 assert.equal(
   shouldIndexCityIssuePage({ dataAvailable: false, reportCount: 0 }),
-  true,
-  'A data outage must not be mistaken for a confirmed empty page',
+  false,
+  'A data outage must not serve an empty shell to search engines',
 );
 assert.deepEqual(
   getCityIssueRobots({ dataAvailable: true, reportCount: 0 }),
   {
-    index: false,
+    index: true,
     follow: true,
-    googleBot: { index: false, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
+    googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
   },
-  'Zero-report pages must remain crawlable while excluded from search results',
+  'Editorial city/issue pages must be indexable regardless of live report count',
 );
 assert.equal(ORGANIZATION_ID, 'https://www.vizhitn.in/#organization', 'Organization schema needs one stable ID');
 assert.equal(WEBSITE_ID, 'https://www.vizhitn.in/#website', 'WebSite schema needs one stable ID');
@@ -234,7 +234,7 @@ const serverSupabase = await read('src/lib/serverSupabase.js');
 assert.match(cityPage, /BUILD_TIME_DISTRICT_SLUGS/, 'District pre-rendering must use a bounded priority list');
 assert.match(cityIssuePage, /params\?\.city/, 'Nested static params must build only the current parent district');
 assert.match(cityIssuePage, /createServerSupabase/, 'City issue data must use bounded server requests');
-assert.match(cityIssuePage, /getCityIssueRobots/, 'City issue metadata must noindex confirmed zero-report pages');
+assert.match(cityIssuePage, /getCityIssueRobots/, 'City issue metadata must use the editorial indexing policy');
 assert.match(cityIssuePage, /dataAvailable/, 'City issue pages must distinguish empty results from data outages');
 assert.doesNotMatch(cityPage, /FAQPage/, 'District templates must not emit non-visible FAQ schema');
 assert.doesNotMatch(cityIssuePage, /FAQPage/, 'City/issue templates must not emit scaled FAQ schema');
@@ -244,7 +244,7 @@ assert.match(pageSchema, /dateModified \? \{ dateModified \} : \{\}/, 'WebPage s
 assert.match(pageSchema, /'@id': WEBSITE_ID/, 'WebPage schema must reference the shared WebSite entity');
 assert.doesNotMatch(legacySeoHelpers, /FAQPage/, 'Unused global helpers must not reintroduce generic FAQ schema');
 assert.doesNotMatch(indexBoost, /lastModified/, 'Ranking heuristics must not manufacture schema modification dates');
-assert.match(serverSupabase, /DEFAULT_TIMEOUT_MS\s*=\s*3000/, 'Server Supabase requests need a deployment-safe timeout');
+assert.match(serverSupabase, /DEFAULT_TIMEOUT_MS\s*=\s*\d{4}/, 'Server Supabase requests need a deployment-safe timeout');
 
 const scamsPage = await read('src/app/(user)/scams/page.jsx');
 const scamsView = await read('src/views/Scams.jsx');

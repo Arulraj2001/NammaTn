@@ -104,6 +104,12 @@ const nextConfig = {
       { source: '/tos',     destination: '/terms',           permanent: true },
       // Redirect old /district/:slug to canonical /:slug/ — route file removed to save crawl budget
       { source: '/district/:slug', destination: '/:slug', permanent: true },
+      // ── Canonical alias redirects: old issue slugs → current canonical slugs ──
+      // These aliases previously served identical content with no redirect,
+      // creating duplicate crawl paths. Consolidate to the canonical slug.
+      { source: '/:city/electricity',            destination: '/:city/power-cut',    permanent: true },
+      { source: '/:city/water-sanitation',       destination: '/:city/water-issue',  permanent: true },
+      { source: '/:city/road-infrastructure',    destination: '/:city/road-problem', permanent: true },
     ];
   },
 

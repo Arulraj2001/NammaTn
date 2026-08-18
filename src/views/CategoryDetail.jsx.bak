@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Newspaper, BookOpen, ShieldCheck } from "lucide-react";
@@ -21,15 +21,6 @@ const SORT_OPTIONS = [
   { value: "-upvotes", en: "Most Voted", ta: "அதிக வாக்குகள்" },
 ];
 
-const POST_TYPE_FILTERS = [
-  { value: "all",          en: "All",          ta: "அனைத்தும்",        emoji: "🗂️" },
-  { value: "complaint",   en: "Complaints",   ta: "புகார்கள்",        emoji: "⚠️" },
-  { value: "alert",       en: "Alerts",       ta: "எச்சரிக்கைகள்",   emoji: "🛡️" },
-  { value: "appreciation",en: "Appreciation", ta: "பாராட்டு",         emoji: "⭐" },
-  { value: "local_update",en: "Local Updates",ta: "உள்ளூர் புதுப்பிப்பு", emoji: "📢" },
-  { value: "discussion",  en: "Discussions",  ta: "விவாதங்கள்",       emoji: "💬" },
-];
-
 export default function CategoryDetail({ initialSlug, initialData }) {
   const routeParams = useParams();
   const slug = initialSlug || routeParams.slug;
@@ -37,10 +28,6 @@ export default function CategoryDetail({ initialSlug, initialData }) {
   const T = (en, ta) => lang === "ta" ? ta : en;
   const category = getCategoryBySlug(slug);
   const [sort, setSort] = useState("-created_date");
-  const [typeFilter, setTypeFilter] = useState("all");
-
-  // Reset type filter whenever the category changes
-  useEffect(() => { setTypeFilter("all"); }, [slug]);
 
   const catName = category ? category.name_en : "Category";
 
@@ -92,13 +79,10 @@ export default function CategoryDetail({ initialSlug, initialData }) {
     staleTime: 120_000,
   });
 
-  const sorted = [...posts]
-    .filter(isPubliclyVisible)
-    .filter((p) => typeFilter === "all" || p.post_type === typeFilter)
-    .sort((a, b) => {
-      if (sort === "-upvotes") return (b.upvotes || 0) - (a.upvotes || 0);
-      return new Date(b.created_date) - new Date(a.created_date);
-    });
+  const sorted = [...posts].filter(isPubliclyVisible).sort((a, b) => {
+    if (sort === "-upvotes") return (b.upvotes || 0) - (a.upvotes || 0);
+    return new Date(b.created_date) - new Date(a.created_date);
+  });
 
   if (!category) {
     return (
@@ -131,37 +115,6 @@ export default function CategoryDetail({ initialSlug, initialData }) {
       <CategoryStatsPanel stats={stats} lang={lang} />
       <AdSlot placement="category" className="mb-4" />
 
-      {/* Post type filter chips */}
-      <div className="mb-4">
-        <div className="flex flex-wrap gap-2">
-          {POST_TYPE_FILTERS.map((f) => {
-            const count = f.value === "all"
-              ? posts.filter(isPubliclyVisible).length
-              : posts.filter(isPubliclyVisible).filter((p) => p.post_type === f.value).length;
-            if (f.value !== "all" && count === 0) return null;
-            return (
-              <button
-                key={f.value}
-                onClick={() => setTypeFilter(f.value)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-                  typeFilter === f.value
-                    ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm"
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
-                }`}
-              >
-                <span>{f.emoji}</span>
-                {T(f.en, f.ta)}
-                <span className={`text-[10px] font-bold ml-0.5 px-1.5 py-0.5 rounded-full ${
-                  typeFilter === f.value
-                    ? "bg-white/20 text-white dark:bg-black/20 dark:text-slate-900"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
-                }`}>{count}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Sort */}
       <div className="flex justify-between items-center mb-5">
         <p className="text-sm text-slate-500 dark:text-slate-400">{sorted.length} {T("results", "முடிவுகள்")}</p>
@@ -187,27 +140,10 @@ export default function CategoryDetail({ initialSlug, initialData }) {
       ) : sorted.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-5xl mb-4">{category.icon}</div>
-          {typeFilter !== "all" ? (
-            <>
-              <p className="text-slate-500 dark:text-slate-400 mb-4">
-                {T(`No ${POST_TYPE_FILTERS.find(f => f.value === typeFilter)?.en?.toLowerCase()} posts in this category yet.`,
-                   `இந்த வகையில் இன்னும் ${POST_TYPE_FILTERS.find(f => f.value === typeFilter)?.ta} பதிவுகள் இல்லை.`)}
-              </p>
-              <button
-                onClick={() => setTypeFilter("all")}
-                className="px-5 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors mr-2"
-              >
-                {T("Show all posts", "அனைத்து பதிவுகளும்")}
-              </button>
-            </>
-          ) : (
-            <>
-              <p className="text-slate-500 dark:text-slate-400 mb-4">{T("No posts in this category yet.", "இந்த வகையில் இன்னும் பதிவுகள் இல்லை.")}</p>
-              <Link to="/create" className="px-6 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">
-                {T("Share the first post", "முதல் பதிவை பகிரவும்")}
-              </Link>
-            </>
-          )}
+          <p className="text-slate-500 dark:text-slate-400 mb-4">{T("No posts in this category yet.", "இந்த வகையில் இன்னும் பதிவுகள் இல்லை.")}</p>
+          <Link to="/create" className="px-6 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">
+            {T("Share the first post", "முதல் பதிவை பகிரவும்")}
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

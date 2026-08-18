@@ -41,19 +41,15 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
   try {
     const supabase = createServerSupabase();
     if (!supabase) return { reports: [], dataAvailable: false };
-    const targetSlugs = [issueSlug];
-    if (issueSlug === 'electricity')         targetSlugs.push('power-cut');
-    if (issueSlug === 'power-cut')           targetSlugs.push('electricity');
-    if (issueSlug === 'water-sanitation')    targetSlugs.push('water-issue');
-    if (issueSlug === 'water-issue')         targetSlugs.push('water-sanitation');
-    if (issueSlug === 'road-infrastructure') targetSlugs.push('road-problem');
-    if (issueSlug === 'road-problem')        targetSlugs.push('road-infrastructure');
+    // Canonical alias handling moved to next.config.js 301 redirects;
+    // this page now serves ONLY the canonical slug.
+    const canonicalIssueSlug = issueSlug;
 
     const { data: reports, error } = await supabase
       .from('unified_explore_feed')
-      .select('id,title:title_en,description:content_en,area_slug,district_slug,category_slug,post_type,created_date,updated_date,status,upvotes,downvotes')
+      .select('id,title,description,area_slug,district_slug,category_slug,post_type,created_date,updated_date,status,upvotes,downvotes')
       .eq('district_slug', citySlug)
-      .in('category_slug', targetSlugs)
+      .eq('category_slug', canonicalIssueSlug)
       .eq('status', 'active')
       .order(orderField, { ascending: false })
       .limit(20);

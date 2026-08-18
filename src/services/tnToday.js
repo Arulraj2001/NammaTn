@@ -54,7 +54,7 @@ export const getPublishedTnToday = async (arg = null) => {
 
   let q = supabase
     .from(TABLE)
-    .select("id,title,title_ta,slug,subtitle,subtitle_ta,featured_image,category,author_name,publish_date,reading_time,summary,summary_ta,is_featured,view_count")
+    .select("id,title,title_ta,slug,subtitle,subtitle_ta,featured_image,category,author_name,publish_date,reading_time,summary,is_featured,view_count")
     .eq("status", "published")
     .order("publish_date", { ascending: false })
     .range(offset, offset + limit - 1);
@@ -87,9 +87,15 @@ export const incrementTnTodayView = async (id) => {
 
 /** List all articles for admin CMS (all statuses) */
 export const adminListTnToday = async ({ limit = 50, offset = 0, status = null } = {}) => {
+  // select only list-view columns — full content/seo fields are only needed
+  // in the edit form (adminGetTnTodayById still uses select("*")).
+  // Excludes: content, content_ta, summary_ta, why_it_matters, why_it_matters_ta,
+  //           key_facts, timeline, official_sources, related_civic_links,
+  //           seo_title, seo_description, seo_keywords, social_image
+  // This keeps the list payload well under Next.js's 2MB cache limit.
   let q = supabase
     .from(TABLE)
-    .select("*")
+    .select("id,title,title_ta,slug,subtitle,status,category,author_name,publish_date,reading_time,is_featured,view_count,featured_image,created_date,updated_date")
     .order("created_date", { ascending: false })
     .range(offset, offset + limit - 1);
   if (status) q = q.eq("status", status);

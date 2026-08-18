@@ -207,10 +207,10 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const { data: relatedArticles = [] } = useQuery({
     queryKey: ["tn-today-related", article?.category ?? "", article?.slug ?? ""],
     queryFn: async () => {
-      let items = await getPublishedTnToday({ limit: 6, category: article?.category });
+      let items = await getPublishedTnToday({ limit: 4, category: article?.category });
       items = (items || []).filter(a => a.slug !== article?.slug);
       if (items.length < 3) {
-        const fallback = await getPublishedTnToday({ limit: 6 });
+        const fallback = await getPublishedTnToday({ limit: 4 });
         const filteredFallback = (fallback || []).filter(a => a.slug !== article?.slug && !items.some(i => i.id === a.id));
         items = [...items, ...filteredFallback];
       }
@@ -218,7 +218,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
     },
     initialData: initialRelatedArticles.length ? initialRelatedArticles : undefined,
     enabled: !!article,
-    staleTime: 0,
+    staleTime: 60_000, // cache for 60s — related articles don't change by the second
   });
 
   const moreArticles = relatedArticles;

@@ -1,9 +1,15 @@
 export function shouldIndexCityIssuePage({ dataAvailable, reportCount }) {
-  // An outage is not evidence that a page has no reports. Preserve the current
-  // indexing state until the data source can make a reliable decision.
-  if (!dataAvailable) return true;
+  // EDITORIAL POLICY:
+  // These city/issue pages have substantial standalone editorial content
+  // (intro copy, FAQs, official complaint channels, nearby districts, and
+  // official contact resources). Index them regardless of live report count.
+  //
+  // We ONLY use `noindex` when the data source is down and we cannot
+  // confirm the page has any valid content at all — this avoids serving
+  // an empty shell to search engines.
+  if (!dataAvailable) return false; // data outage → don't index empty shell
 
-  return Number.isFinite(reportCount) && reportCount > 0;
+  return true; // always index editorial city/issue pages, even with 0 reports
 }
 
 export function getCityIssueRobots(dataState) {

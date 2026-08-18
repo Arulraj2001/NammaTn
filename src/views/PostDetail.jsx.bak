@@ -22,7 +22,7 @@ import PublicTrustBar from "@/components/engagement/PublicTrustBar";
 import RelatedPosts from "@/components/discovery/RelatedPosts";
 import AdSlot from "@/components/ads/AdSlot";
 import EngagementBadge, { computeBadge } from "@/components/engagement/EngagementBadge";
-import { isCivicPost, getCivicStatus, generateComplaintMessage, getUrgency, getDaysOpen } from "@/lib/civicReceipt";
+import { isCivicPost, getCivicStatus, generateComplaintMessage } from "@/lib/civicReceipt";
 import CivicReceiptHeader from "@/components/civic/CivicReceiptHeader";
 import CivicTimeline from "@/components/civic/CivicTimeline";
 import CivicReceiptActions from "@/components/civic/CivicReceiptActions";
@@ -148,25 +148,6 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
   const content = T(post.content_en, post.content_ta) || post.content_en;
   const badge = computeBadge(post);
   const isCivic = isCivicPost(post);
-
-  // Per-type detection for PostDetail render only. isCivicPost() in civicReceipt.js is NOT changed.
-  const isAlert = post.post_type === "alert";
-  const isComplaintNoReceipt = post.post_type === "complaint" && !post.civic_receipt_id;
-  const isAppreciation = post.post_type === "appreciation";
-  const isLocalUpdate = post.post_type === "local_update";
-  const isDiscussion = post.post_type === "discussion";
-  // Civic receipt UI only for complaints with a real receipt ID. Alerts get their own warning layout.
-  const showCivicPath = isCivic && !isAlert;
-
-  const daysOpen = getDaysOpen(post.created_date);
-  const postUrgency = (isAlert || isComplaintNoReceipt) ? getUrgency(post.urgency_level) : null;
-  const postedHoursAgo = post.created_date ? (Date.now() - new Date(post.created_date).getTime()) / 3600000 : 9999;
-  const localUpdateFreshness = isLocalUpdate
-    ? postedHoursAgo < 24 ? { label: T("Posted today", "Today"), dot: "bg-green-500", color: "text-green-700 dark:text-green-400" }
-    : postedHoursAgo < 72 ? { label: T("Recent", "Recent"), dot: "bg-yellow-500", color: "text-yellow-700 dark:text-yellow-400" }
-    : null
-    : null;
-
   const allPhotos = [...(post.before_photos || []), ...(post.media_urls || [])].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
   const civicStatus = post.civic_status || "reported";
 
@@ -191,7 +172,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
           </Link>
 
           {/* CIVIC RECEIPT VIEW */}
-          {showCivicPath ? (
+          {isCivic ? (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
               {/* Receipt header — Public Case File identity */}
               <CivicReceiptHeader post={post} />
@@ -300,101 +281,12 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
               </div>
             </motion.div>
           ) : (
+            /* NORMAL POST VIEW */
             <motion.article
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`bg-white dark:bg-slate-800 border-2 rounded-3xl overflow-hidden mb-6 ${
-                isAlert ? "border-orange-300 dark:border-orange-700"
-                : isComplaintNoReceipt ? "border-red-300 dark:border-red-700"
-                : isAppreciation ? "border-amber-200 dark:border-amber-700"
-                : isLocalUpdate ? "border-blue-200 dark:border-blue-700"
-                : isDiscussion ? "border-purple-200 dark:border-purple-700"
-                : "border-slate-300 dark:border-slate-700"
-              }`}
+              className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-3xl overflow-hidden mb-6"
             >
-              {/* Alert — orange/red warning header strip */}
-              {isAlert && (
-                <div className={`px-5 py-3 flex items-center justify-between flex-wrap gap-2 ${
-                  post.urgency_level === "critical" ? "bg-red-600" : "bg-orange-500"
-                }`}>
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-white flex-shrink-0" />
-                    <span className="text-sm font-extrabold text-white">{T("Community Alert", "சமுதாய எச்சரிக்கை")}</span>
-                  </div>
-                  {postUrgency && (
-                    <span className="text-xs font-bold text-white bg-white/20 px-3 py-1 rounded-full">
-                      {postUrgency.label.replace(" 🚨", "")}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Complaint (no receipt) — red header strip with urgency + days-open */}
-              {isComplaintNoReceipt && (
-                <div className="px-5 py-3 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800 flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                    <span className="text-sm font-extrabold text-red-800 dark:text-red-300">{T("Complaint Report", "புகார் அறிக்கை")}</span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {postUrgency && (
-                      <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${postUrgency.bg} ${postUrgency.color}`}>
-                        {postUrgency.label}
-                      </span>
-                    )}
-                    {daysOpen > 0 && (
-                      <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                        daysOpen > 30 ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
-                        : daysOpen > 7 ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
-                        : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
-                      }`}>
-                        {daysOpen}d {T("open", "திறந்தது")}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Appreciation — amber gradient header strip */}
-              {isAppreciation && (
-                <div className="px-5 py-3 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/10 border-b border-amber-200 dark:border-amber-800 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                  <span className="text-sm font-extrabold text-amber-800 dark:text-amber-300">{T("Community Appreciation", "சமுதாய பாராட்டு")}</span>
-                  <span className="ml-auto text-lg">⭐</span>
-                </div>
-              )}
-
-              {/* Local Update — blue gradient header strip with freshness dot */}
-              {isLocalUpdate && (
-                <div className="px-5 py-3 bg-gradient-to-r from-blue-50 to-sky-50 dark:from-blue-900/20 dark:to-sky-900/10 border-b border-blue-200 dark:border-blue-800 flex items-center justify-between gap-2 flex-wrap">
-                  <div className="flex items-center gap-2">
-                    <Megaphone className="w-5 h-5 text-blue-500 flex-shrink-0" />
-                    <span className="text-sm font-extrabold text-blue-800 dark:text-blue-300">{T("Local Update", "உள்ளூர் புதுப்பிப்பு")}</span>
-                  </div>
-                  {localUpdateFreshness && (
-                    <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-800 border border-current ${localUpdateFreshness.color}`}>
-                      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${localUpdateFreshness.dot}`} />
-                      {localUpdateFreshness.label}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Discussion — purple gradient header strip with live commenter count */}
-              {isDiscussion && (
-                <div className="px-5 py-3 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/10 border-b border-purple-200 dark:border-purple-800 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="w-5 h-5 text-purple-500 flex-shrink-0" />
-                    <span className="text-sm font-extrabold text-purple-800 dark:text-purple-300">{T("Community Discussion", "சமுதாய விவாதம்")}</span>
-                  </div>
-                  {(post.comment_count || 0) > 0 && (
-                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2.5 py-0.5 rounded-full">
-                      {post.comment_count} {T("discussing", "பேசுகிறார்கள்")}
-                    </span>
-                  )}
-                </div>
-              )}
-
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${type.bg} ${type.color}`}>
@@ -408,7 +300,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                 </div>
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight mb-4">{title}</h1>
                 <div className="flex flex-wrap gap-3 text-sm text-slate-500 dark:text-slate-400 mb-5">
-                  <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{post.area_name ? `${post.area_name}, ${post.district_name}` : post.district_name}</span>
+                  <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{post.district_name}</span>
                   {post.category_name && <span className="flex items-center gap-1"><Tag className="w-4 h-4" />{post.category_name}</span>}
                   <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{post.created_date ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true }) : ""}</span>
                   {!post.is_anonymous && post.author_name && (
@@ -421,18 +313,6 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                     </span>
                   )}
                 </div>
-
-                {/* Complaint-no-receipt: nudge to start official civic receipt tracking */}
-                {isComplaintNoReceipt && (
-                  <div className="mb-5 flex items-start gap-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
-                    <FileText className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">{T("Track this complaint officially", "இந்த புகாரை அதிகாரப்பூர்வமாக கண்காணிக்கவும்")}</p>
-                      <p className="text-xs text-blue-700 dark:text-blue-400 mt-0.5">{T("Start a Civic Receipt to get a case ID, community verification, and escalation support.", "வழக்கு ID மற்றும் ஆதரவிற்கு குடிமை ரசீது தொடங்கவும்.")}</p>
-                    </div>
-                  </div>
-                )}
-
                 {content && (
                   <div className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base whitespace-pre-wrap mb-5">{content}</div>
                 )}
@@ -445,49 +325,25 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                     ))}
                   </div>
                 )}
-
-                {/* Engagement row — type-aware labels */}
-                <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-700 flex-wrap">
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
                   <button
                     onClick={() => handleVote("like")}
                     disabled={votingLoading}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60 ${voted === "like" ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 ring-2 ring-blue-300" : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-blue-50 hover:text-blue-600"}`}
                   >
-                    {votingLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : isAppreciation ? <Star className="w-4 h-4" /> : <ThumbsUp className="w-4 h-4" />}
-                    <span>
-                      {isAlert ? T("Still Active", "இன்னும் செயலில்")
-                       : isLocalUpdate ? T("Still Valid", "இன்னும் செல்லுபடி")
-                       : isAppreciation ? T("Agree", "ஒப்புக்கொள்கிறேன்")
-                       : post.upvotes || 0}
-                    </span>
+                    {votingLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsUp className="w-4 h-4" />}{post.upvotes || 0}
                   </button>
                   <button
                     onClick={() => handleVote("dislike")}
                     disabled={votingLoading}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60 ${voted === "dislike" ? "bg-red-100 dark:bg-red-900/30 text-red-600 ring-2 ring-red-300" : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-red-50 hover:text-red-600"}`}
                   >
-                    {votingLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsDown className="w-4 h-4" />}
-                    <span>
-                      {isAlert ? T("Resolved", "தீர்க்கப்பட்டது")
-                       : isLocalUpdate ? T("No Longer Valid", "இனி செல்லாது")
-                       : isAppreciation ? T("Disagree", "ஒப்புக்கொள்ளவில்லை")
-                       : post.downvotes || 0}
-                    </span>
+                    {votingLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsDown className="w-4 h-4" />}{post.downvotes || 0}
                   </button>
-                  {isDiscussion ? (
-                    <button
-                      onClick={() => document.querySelector("[data-comment-section]")?.scrollIntoView({ behavior: "smooth" })}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                      {T("Join Discussion", "விவாதத்தில் சேரு")} ({post.comment_count || 0})
-                    </button>
-                  ) : (
-                    <span className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 ml-2">
-                      <MessageSquare className="w-4 h-4" />
-                      {post.comment_count || 0} {T("comments", "கருத்துகள்")}
-                    </span>
-                  )}
+                  <span className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 ml-2">
+                    <MessageSquare className="w-4 h-4" />
+                    {post.comment_count || 0} {T("comments", "கருத்துகள்")}
+                  </span>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-4 flex-wrap">
                   <ShareBar post={post} lang={lang} />
@@ -498,7 +354,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
           )}
 
           {/* Trust Bar (non-civic) */}
-          {!showCivicPath && (
+          {!isCivic && (
             <div className="mb-6">
               <PublicTrustBar upvotes={post.upvotes} downvotes={post.downvotes} commentCount={post.comment_count || 0} lang={lang} />
             </div>
@@ -506,15 +362,13 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
 
           <AdSlot placement="feed" className="mb-6" />
 
-          <div data-comment-section>
-            <CommentSection postId={id} postCommentCount={post.comment_count} />
-          </div>
+          <CommentSection postId={id} postCommentCount={post.comment_count} />
         </main>
 
         {/* Sidebar — Civic Case File dashboard on desktop */}
         <aside className="w-full lg:w-80 flex-shrink-0 space-y-4">
           <SidebarRelatedLinks type="post" />
-          {showCivicPath ? (
+          {isCivic ? (
             <>
               <CaseFileSidebar
                 post={post}
@@ -546,7 +400,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
       </div>
 
       {/* Mobile sticky bottom bar — civic receipts only */}
-      {showCivicPath && (
+      {isCivic && (
         <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 px-4 py-3 flex gap-2 shadow-2xl">
           <button
             onClick={() => document.querySelector("[data-civic-actions]")?.scrollIntoView({ behavior: "smooth" })}
@@ -561,37 +415,6 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
           >
             <FileText className="w-4 h-4" />
             {T("Complaint", "புகார்")}
-          </button>
-          <button
-            onClick={() => {
-              const url = window.location.href;
-              if (navigator.share) navigator.share({ title: post.title_en, url });
-              else navigator.clipboard.writeText(url);
-            }}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-semibold active:scale-95 transition-transform"
-          >
-            <Share2 className="w-4 h-4" />
-            {T("Share", "பகிர்")}
-          </button>
-        </div>
-      )}
-
-      {/* Mobile sticky bottom bar — alerts (Still Active / Resolved / Share) */}
-      {isAlert && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 px-4 py-3 flex gap-2 shadow-2xl">
-          <button
-            onClick={() => handleVote("like")}
-            disabled={votingLoading}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-semibold active:scale-95 transition-transform disabled:opacity-60"
-          >
-            {T("Still Active", "இன்னும் செயலில்")}
-          </button>
-          <button
-            onClick={() => handleVote("dislike")}
-            disabled={votingLoading}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-green-50 dark:bg-green-900/20 border border-green-300 text-green-700 dark:text-green-300 rounded-xl text-sm font-semibold active:scale-95 transition-transform disabled:opacity-60"
-          >
-            {T("Resolved", "தீர்க்கப்பட்டது")}
           </button>
           <button
             onClick={() => {
