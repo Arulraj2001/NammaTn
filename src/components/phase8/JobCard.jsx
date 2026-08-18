@@ -1,39 +1,79 @@
 ﻿import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { MapPin, Briefcase, Clock, Phone, BadgeCheck, Sparkles, Crown, Flag, AlertTriangle, Zap, Package, Hammer, Users } from "lucide-react";
+import { MapPin, Briefcase, Clock, Phone, Flag, AlertTriangle, Users, Package, Wrench, FileText, Box, User, ShieldCheck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { getSession } from "@/lib/spamGuard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/api/supabaseClient";
 
 const TYPE_CONFIG = {
-  part_time:       { label: "Part-time",      accent: "border-l-blue-500",    bg: "bg-blue-50 dark:bg-blue-900/20",    text: "text-blue-700 dark:text-blue-300",    icon: Clock,     iconColor: "text-blue-500" },
-  temporary:       { label: "Temporary",       accent: "border-l-violet-500",  bg: "bg-violet-50 dark:bg-violet-900/20", text: "text-violet-700 dark:text-violet-300", icon: Clock,    iconColor: "text-violet-500" },
-  local_hiring:    { label: "Local Hiring",    accent: "border-l-green-500",   bg: "bg-green-50 dark:bg-green-900/20",  text: "text-green-700 dark:text-green-300",  icon: Users,     iconColor: "text-green-500" },
-  delivery:        { label: "Delivery",        accent: "border-l-amber-500",   bg: "bg-amber-50 dark:bg-amber-900/20",  text: "text-amber-700 dark:text-amber-300",  icon: Package,   iconColor: "text-amber-500" },
-  helper:          { label: "Helper Required", accent: "border-l-orange-500",  bg: "bg-orange-50 dark:bg-orange-900/20", text: "text-orange-700 dark:text-orange-300", icon: Hammer,   iconColor: "text-orange-500" },
-  urgent_manpower: { label: "Urgent",          accent: "border-l-red-500",     bg: "bg-red-50 dark:bg-red-900/20",      text: "text-red-700 dark:text-red-300",      icon: Zap,       iconColor: "text-red-500" },
-  other:           { label: "Work Alert",      accent: "border-l-slate-400",   bg: "bg-slate-50 dark:bg-slate-800",     text: "text-slate-600 dark:text-slate-300",  icon: Briefcase, iconColor: "text-slate-500" },
+  local_hiring: {
+    label: "Local Hiring",
+    bg: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+    border: "border-emerald-500",
+    iconBoxBg: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30",
+    btnBg: "bg-[#044732] hover:bg-[#033626] text-white",
+    icon: User,
+  },
+  delivery: {
+    label: "Delivery",
+    bg: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",
+    border: "border-orange-500",
+    iconBoxBg: "bg-orange-50 text-orange-600 dark:bg-orange-900/30",
+    btnBg: "bg-orange-500 hover:bg-orange-600 text-white",
+    icon: Package,
+  },
+  helper: {
+    label: "Helper Required",
+    bg: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300",
+    border: "border-indigo-500",
+    iconBoxBg: "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30",
+    btnBg: "bg-indigo-600 hover:bg-indigo-700 text-white",
+    icon: Wrench,
+  },
+  temporary: {
+    label: "Temporary",
+    bg: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",
+    border: "border-sky-500",
+    iconBoxBg: "bg-sky-50 text-sky-600 dark:bg-sky-900/30",
+    btnBg: "bg-sky-600 hover:bg-sky-700 text-white",
+    icon: FileText,
+  },
+  urgent_manpower: {
+    label: "Urgent Manpower",
+    bg: "bg-pink-100 text-pink-800 dark:bg-pink-900/40 dark:text-pink-300",
+    border: "border-pink-500",
+    iconBoxBg: "bg-pink-50 text-pink-600 dark:bg-pink-900/30",
+    btnBg: "bg-pink-600 hover:bg-pink-700 text-white",
+    icon: Box,
+  },
+  part_time: {
+    label: "Part-time",
+    bg: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
+    border: "border-blue-500",
+    iconBoxBg: "bg-blue-50 text-blue-600 dark:bg-blue-900/30",
+    btnBg: "bg-blue-600 hover:bg-blue-700 text-white",
+    icon: Clock,
+  },
+  other: {
+    label: "Other",
+    bg: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300",
+    border: "border-slate-300 dark:border-slate-700",
+    iconBoxBg: "bg-slate-50 text-slate-600 dark:bg-slate-800",
+    btnBg: "bg-slate-700 hover:bg-slate-800 text-white",
+    icon: Briefcase,
+  },
 };
 
 const REPORT_REASONS = [
-  { value: "fake_job",      label: "Fake job post" },
-  { value: "advance_fee",   label: "Asked for advance payment" },
-  { value: "misleading",    label: "Misleading information" },
-  { value: "scam_fraud",    label: "Scam / Fraud" },
+  { value: "fake_job", label: "Fake job post" },
+  { value: "advance_fee", label: "Asked for advance payment" },
+  { value: "misleading", label: "Misleading information" },
+  { value: "scam_fraud", label: "Scam / Fraud" },
   { value: "wrong_contact", label: "Wrong contact info" },
-  { value: "spam",          label: "Spam / Duplicate" },
-  { value: "other",         label: "Other" },
+  { value: "spam", label: "Spam / Duplicate" },
+  { value: "other", label: "Other" },
 ];
-
-function getFreshnessLabel(createdDate) {
-  if (!createdDate) return null;
-  const hoursAgo = (Date.now() - new Date(createdDate).getTime()) / 3_600_000;
-  if (hoursAgo < 3)  return { label: "Just posted", dot: "bg-green-500", text: "text-green-700 dark:text-green-400" };
-  if (hoursAgo < 24) return { label: "Today",       dot: "bg-green-400", text: "text-green-600 dark:text-green-400" };
-  if (hoursAgo < 72) return { label: "Recent",      dot: "bg-amber-400", text: "text-amber-600 dark:text-amber-400" };
-  return null;
-}
 
 export default function JobCard({ item }) {
   const { data: creatorProfile = null } = useQuery({
@@ -57,8 +97,7 @@ export default function JobCard({ item }) {
   const [reported, setReported] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const age = item.created_date ? formatDistanceToNow(new Date(item.created_date), { addSuffix: true }) : "";
-  const freshness = getFreshnessLabel(item.created_date);
+  const age = item.created_date ? formatDistanceToNow(new Date(item.created_date), { addSuffix: true }) : "recently";
   const cfg = TYPE_CONFIG[item.job_type] || TYPE_CONFIG.other;
   const TypeIcon = cfg.icon;
 
@@ -82,110 +121,111 @@ export default function JobCard({ item }) {
   };
 
   return (
-    <div className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 border-l-4 ${cfg.accent} hover:shadow-lg transition-all duration-200 overflow-hidden`}>
-      <div className="p-4">
-        {/* Header: type badge + freshness + age */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full ${cfg.bg} ${cfg.text}`}>
-              <TypeIcon className={`w-3.5 h-3.5 ${cfg.iconColor}`} />
-              {cfg.label}
-            </span>
-            {freshness && (
-              <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${freshness.text}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${freshness.dot}`} />
-                {freshness.label}
+    <div className={`bg-white dark:bg-slate-800 rounded-3xl border-2 ${cfg.border} hover:shadow-xl transition-all duration-200 p-5 flex flex-col justify-between relative`}>
+      <div>
+        {/* Header: Icon box + Type badge + Age */}
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-3">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${cfg.iconBoxBg}`}>
+              <TypeIcon className="w-6 h-6" />
+            </div>
+            <div>
+              <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${cfg.bg}`}>
+                {cfg.label}
               </span>
-            )}
-            {item.is_verified && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-blue-600 text-white">
-                <BadgeCheck className="w-3 h-3" /> Verified
-              </span>
-            )}
-            {item.is_sponsored && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-purple-600 text-white">
-                <Crown className="w-3 h-3" /> Sponsored
-              </span>
-            )}
-            {item.is_featured && !item.is_sponsored && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500 text-white">
-                <Sparkles className="w-3 h-3" /> Featured
-              </span>
-            )}
-            {item.safety_status === "suspicious" && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400">
-                <AlertTriangle className="w-3 h-3" /> Under Review
-              </span>
-            )}
+            </div>
           </div>
-          <span className="text-[11px] text-slate-400 flex-shrink-0 mt-0.5">{age}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{age}</span>
         </div>
 
         {/* Title */}
-        <p className="font-bold text-slate-900 dark:text-white text-sm leading-snug mb-1">{item.title}</p>
+        <h3 className="font-bold text-slate-900 dark:text-white text-base leading-snug mb-2 line-clamp-2">
+          {item.title}
+        </h3>
+
+        {/* Company / Poster Name */}
         {item.company_or_poster_name && (
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1.5">{item.company_or_poster_name}</p>
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">
+            {item.company_or_poster_name}
+          </p>
         )}
 
         {/* Description */}
-        <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed mb-3">{item.description}</p>
+        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4 line-clamp-3">
+          {item.description}
+        </p>
+      </div>
 
-        {/* Meta pills */}
-        <div className="flex items-center gap-2 flex-wrap mb-3">
-          <span className="inline-flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+      <div>
+        {/* Location & Duration row */}
+        <div className="flex items-center gap-3 flex-wrap text-xs text-slate-500 dark:text-slate-400 font-medium mb-2">
+          <span className="flex items-center gap-1">
             <MapPin className="w-3.5 h-3.5 text-slate-400" />
             {item.area_name ? `${item.area_name}, ${item.district_name}` : item.district_name}
           </span>
-          {item.duration && (
-            <span className="inline-flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-              <Clock className="w-3.5 h-3.5" /> {item.duration}
-            </span>
-          )}
-          {item.salary_info && (
-            <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800">
-              ðŸ’° {item.salary_info}
-            </span>
-          )}
-          {item.created_by && (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500">
-              ðŸ‘¤ {item.created_by} Â· â˜… {creatorProfile?.trust_score || 10}
-            </span>
-          )}
+          <span className="flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5 text-slate-400" />
+            {item.duration || "Full-time"}
+          </span>
         </div>
 
-        {/* Contact CTA button */}
-        {item.contact_visible && item.contact_info && (
-          <a
-            href={`tel:${item.contact_info.replace(/\s/g, "")}`}
-            className="flex items-center justify-center gap-2 w-full py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors mb-3"
-          >
-            <Phone className="w-4 h-4" />
-            {item.contact_info}
-          </a>
+        {/* Salary row */}
+        {item.salary_info && (
+          <div className="flex items-center gap-1.5 text-xs font-extrabold text-emerald-600 dark:text-emerald-400 mb-4">
+            <span>💵</span>
+            <span>{item.salary_info}</span>
+          </div>
         )}
 
-        {/* Report */}
-        <div className="flex items-center justify-end pt-2 border-t border-slate-100 dark:border-slate-700/50">
-          {reported ? (
-            <span className="text-xs text-slate-400">Reported. Thank you.</span>
-          ) : showReport ? (
-            <div className="flex items-center gap-2 flex-wrap">
-              <select value={reportReason} onChange={(e) => setReportReason(e.target.value)}
-                className="text-xs px-2 py-1 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus:outline-none">
-                {REPORT_REASONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-              </select>
-              <button onClick={handleReport} disabled={submitting}
-                className="text-xs px-2 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-60">
-                {submitting ? "..." : "Submit"}
-              </button>
-              <button onClick={() => setShowReport(false)} className="text-xs text-slate-400 hover:text-slate-600">Cancel</button>
-            </div>
+        {/* Bottom CTA & Report */}
+        <div className="flex items-center justify-between gap-3 pt-2">
+          {item.contact_visible && item.contact_info ? (
+            <a
+              href={`tel:${item.contact_info.replace(/\s/g, "")}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-sm ${cfg.btnBg}`}
+            >
+              <Phone className="w-4 h-4" />
+              <span>Contact: {item.contact_info}</span>
+            </a>
           ) : (
-            <button onClick={() => setShowReport(true)}
-              className="flex items-center gap-1 text-xs text-slate-400 hover:text-red-500 transition-colors">
-              <Flag className="w-3 h-3" /> Report
-            </button>
+            <div className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold ${cfg.btnBg}`}>
+              <Phone className="w-4 h-4" />
+              <span>Apply / View Details</span>
+            </div>
           )}
+
+          {/* Report link */}
+          <div className="flex items-center">
+            {reported ? (
+              <span className="text-[11px] text-slate-400">Reported</span>
+            ) : showReport ? (
+              <div className="absolute right-3 bottom-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl p-2 z-20 flex flex-col gap-2 w-48">
+                <select
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  className="text-xs p-1.5 border border-slate-200 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white"
+                >
+                  {REPORT_REASONS.map((r) => (
+                    <option key={r.value} value={r.value}>{r.label}</option>
+                  ))}
+                </select>
+                <div className="flex gap-2 justify-end">
+                  <button onClick={() => setShowReport(false)} className="text-xs text-slate-400 px-2 py-1">Cancel</button>
+                  <button onClick={handleReport} disabled={submitting} className="text-xs bg-red-600 text-white px-2 py-1 rounded-lg">
+                    {submitting ? "..." : "Submit"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowReport(true)}
+                className="flex items-center gap-1 text-xs text-slate-400 hover:text-red-500 font-medium transition-colors"
+              >
+                <Flag className="w-3.5 h-3.5" />
+                <span>Report</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
