@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
+import { Link } from "@/lib/router-compat";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/api/supabaseClient";
 import { Search, BadgeCheck, Sparkles, Plus } from "lucide-react";
