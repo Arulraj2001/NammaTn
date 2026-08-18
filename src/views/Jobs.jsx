@@ -159,15 +159,15 @@ export default function Jobs({ initialJobs = [] }) {
         </div>
       </div>
 
-      {/* ── Main Green Hero Banner (Full width extended & compact height) ── */}
-      <div className="w-full px-4 sm:px-6 pt-3 pb-2">
-        <div className="max-w-[1400px] mx-auto bg-[#044732] dark:bg-[#033626] rounded-3xl p-4 sm:p-5 md:p-6 text-white shadow-xl relative overflow-hidden">
+      {/* ── Main Green Hero Banner (Screen end to end edge-to-edge) ── */}
+      <div className="w-full bg-[#044732] dark:bg-[#033626] text-white py-4 px-4 sm:px-8 shadow-lg relative overflow-hidden mb-6">
+        <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
             {/* Left Column: Title & Action */}
             <div className="lg:col-span-7 space-y-2">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/15">
-                  <Briefcase className="w-5 h-5 text-emerald-200" />
+                <div className="w-9 h-9 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/15">
+                  <Briefcase className="w-4 h-4 text-emerald-200" />
                 </div>
                 <span className="bg-white/10 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full border border-white/15">
                   {T("Community Job Alerts", "சமுதாய வேலை எச்சரிக்கைகள்")}
@@ -202,38 +202,38 @@ export default function Jobs({ initialJobs = [] }) {
               </div>
             </div>
 
-            {/* Right Column: 4 Stat Boxes (Compact height) */}
-            <div className="lg:col-span-5 grid grid-cols-2 gap-2.5">
-              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 text-center flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                  <span className="text-base">📋</span>
-                  <span className="text-lg sm:text-xl font-black text-white">{rawJobs.length || 5}</span>
+            {/* Right Column: 4 Stat Boxes (Reduced width & height) */}
+            <div className="lg:col-span-5 grid grid-cols-2 gap-2 max-w-sm ml-auto w-full">
+              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-xl p-2 text-center flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1 mb-0.5">
+                  <span className="text-xs">📋</span>
+                  <span className="text-base font-extrabold text-white">{rawJobs.length || 5}</span>
                 </div>
-                <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">Jobs Posted</p>
+                <p className="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">Jobs Posted</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 text-center flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                  <span className="text-base">👥</span>
-                  <span className="text-lg sm:text-xl font-black text-white">2.3K+</span>
+              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-xl p-2 text-center flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1 mb-0.5">
+                  <span className="text-xs">👥</span>
+                  <span className="text-base font-extrabold text-white">2.3K+</span>
                 </div>
-                <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">Active Seekers</p>
+                <p className="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">Active Seekers</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 text-center flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                  <span className="text-base">📑</span>
-                  <span className="text-lg sm:text-xl font-black text-white">18</span>
+              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-xl p-2 text-center flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1 mb-0.5">
+                  <span className="text-xs">📑</span>
+                  <span className="text-base font-extrabold text-white">18</span>
                 </div>
-                <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">Categories</p>
+                <p className="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">Categories</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 text-center flex flex-col justify-center">
-                <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                  <span className="text-base">📍</span>
-                  <span className="text-xs font-bold text-white leading-tight">All TN Districts</span>
+              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-xl p-2 text-center flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1 mb-0.5">
+                  <span className="text-xs">📍</span>
+                  <span className="text-[11px] font-bold text-white leading-tight">All TN Districts</span>
                 </div>
-                <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">Coverage</p>
+                <p className="text-[9px] font-bold text-emerald-100 uppercase tracking-wider">Coverage</p>
               </div>
             </div>
           </div>
