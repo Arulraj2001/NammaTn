@@ -145,7 +145,16 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
   const type = TYPE_CONFIG[post.post_type] || TYPE_CONFIG.discussion;
   const TypeIcon = type.icon;
   const title = T(post.title_en, post.title_ta) || post.title_en;
-  const content = T(post.content_en, post.content_ta) || post.content_en;
+  // Guard: only use Tamil content if it is substantial (≥ 30 % of the English length).
+  // Posts imported from the admin panel often have a short AI summary in content_ta
+  // while content_en is the full detailed text. Showing the summary in Tamil mode
+  // would hide information — so fall back to English in that case.
+  const _enLen = (post.content_en || "").length;
+  const _taLen = (post.content_ta || "").length;
+  const _hasSufficientTamil = _taLen > 0 && (_enLen === 0 || _taLen >= _enLen * 0.3);
+  const content = (lang === "ta" && _hasSufficientTamil)
+    ? post.content_ta
+    : post.content_en;
   const badge = computeBadge(post);
   const isCivic = isCivicPost(post);
 
