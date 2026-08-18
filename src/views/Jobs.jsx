@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Briefcase, Plus, X, Loader2, AlertTriangle, Search, ShieldCheck, UserPlus, AlertOctagon, Info, Share2, ArrowRight, ChevronDown } from "lucide-react";
+import { Briefcase, Plus, X, Loader2, AlertTriangle, Search, ShieldCheck, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
@@ -150,95 +150,90 @@ export default function Jobs({ initialJobs = [] }) {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">
-          <Link to="/" className="hover:underline">Home</Link>
-          <span>&gt;</span>
-          <span className="font-semibold text-slate-800 dark:text-white">Jobs</span>
-        </div>
-
-        {/* ── Main Hero Banner ── */}
-        <div className="bg-[#044732] dark:bg-[#033626] rounded-3xl p-6 sm:p-8 text-white mb-6 shadow-xl relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      {/* ── Main Green Hero Banner (Full width extended & compact height) ── */}
+      <div className="w-full px-4 sm:px-6 pt-3 pb-2">
+        <div className="max-w-[1400px] mx-auto bg-[#044732] dark:bg-[#033626] rounded-3xl p-4 sm:p-5 md:p-6 text-white shadow-xl relative overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
             {/* Left Column: Title & Action */}
-            <div className="lg:col-span-7 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/15">
-                  <Briefcase className="w-6 h-6 text-emerald-200" />
+            <div className="lg:col-span-7 space-y-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center flex-shrink-0 border border-white/15">
+                  <Briefcase className="w-5 h-5 text-emerald-200" />
                 </div>
-                <span className="bg-white/10 text-white text-xs font-semibold px-3 py-1 rounded-full border border-white/15">
+                <span className="bg-white/10 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full border border-white/15">
                   {T("Community Job Alerts", "சமுதாய வேலை எச்சரிக்கைகள்")}
                 </span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
                 {T("Local Jobs", "உள்ளூர் வேலை")}
               </h1>
 
-              <p className="text-emerald-100 text-xs sm:text-sm leading-relaxed max-w-lg">
+              <p className="text-emerald-100 text-xs leading-relaxed max-w-xl">
                 {T(
                   "Find genuine local jobs shared by Tamil Nadu communities. Report suspicious posts. Help others get hired.",
                   "தமிழ்நாடு சமுதாயங்களால் பகிரப்பட்ட உண்மையான உள்ளூர் வேலைகளை கண்டுபிடிக்கவும்."
                 )}
               </p>
 
-              <div className="flex flex-wrap gap-3 pt-2">
+              <div className="flex flex-wrap gap-2.5 pt-1">
                 <button
                   onClick={handleToggleForm}
-                  className="bg-white text-[#044732] font-extrabold text-xs px-5 py-2.5 rounded-xl hover:bg-emerald-50 transition-all shadow-md flex items-center gap-1.5"
+                  className="bg-white text-[#044732] font-extrabold text-xs px-4 py-2 rounded-xl hover:bg-emerald-50 transition-all shadow-md flex items-center gap-1.5"
                 >
                   {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                   {showForm ? T("Cancel", "ரத்து") : T("+ Post a Job", "+ வேலை பதிவிடு")}
                 </button>
                 <Link
                   to="/scams"
-                  className="border border-white/30 hover:bg-white/10 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all inline-flex items-center gap-1.5"
+                  className="border border-white/30 hover:bg-white/10 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-all inline-flex items-center gap-1.5"
                 >
                   {T("Report Scam Job", "மோசடி வேலை புகாரளி")}
                 </Link>
               </div>
             </div>
 
-            {/* Right Column: 4 Stat Boxes */}
-            <div className="lg:col-span-5 grid grid-cols-2 gap-3">
-              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <span className="text-lg">📋</span>
-                  <span className="text-xl sm:text-2xl font-black text-white">{rawJobs.length || 124}</span>
+            {/* Right Column: 4 Stat Boxes (Compact height) */}
+            <div className="lg:col-span-5 grid grid-cols-2 gap-2.5">
+              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 text-center flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                  <span className="text-base">📋</span>
+                  <span className="text-lg sm:text-xl font-black text-white">{rawJobs.length || 5}</span>
                 </div>
-                <p className="text-[11px] font-semibold text-emerald-100 uppercase tracking-wider">Jobs Posted</p>
+                <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">Jobs Posted</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <span className="text-lg">👥</span>
-                  <span className="text-xl sm:text-2xl font-black text-white">2.3K+</span>
+              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 text-center flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                  <span className="text-base">👥</span>
+                  <span className="text-lg sm:text-xl font-black text-white">2.3K+</span>
                 </div>
-                <p className="text-[11px] font-semibold text-emerald-100 uppercase tracking-wider">Active Seekers</p>
+                <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">Active Seekers</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <span className="text-lg">📑</span>
-                  <span className="text-xl sm:text-2xl font-black text-white">18</span>
+              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 text-center flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                  <span className="text-base">📑</span>
+                  <span className="text-lg sm:text-xl font-black text-white">18</span>
                 </div>
-                <p className="text-[11px] font-semibold text-emerald-100 uppercase tracking-wider">Categories</p>
+                <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">Categories</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <span className="text-lg">📍</span>
-                  <span className="text-xs sm:text-sm font-bold text-white leading-tight">All TN Districts</span>
+              <div className="bg-white/10 backdrop-blur border border-white/15 rounded-2xl p-3 text-center flex flex-col justify-center">
+                <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                  <span className="text-base">📍</span>
+                  <span className="text-xs font-bold text-white leading-tight">All TN Districts</span>
                 </div>
-                <p className="text-[11px] font-semibold text-emerald-100 uppercase tracking-wider">Coverage</p>
+                <p className="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider">Coverage</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-2">
         {/* ── Safety Disclaimer Bar ── */}
-        <div className="bg-[#fffdf7] dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-3.5 mb-6 flex items-center gap-3 shadow-xs">
+        <div className="bg-[#fffdf7] dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-3 mb-5 flex items-center gap-3 shadow-xs">
           <ShieldCheck className="w-5 h-5 text-amber-600 flex-shrink-0" />
           <p className="text-xs font-bold text-amber-800 dark:text-amber-300 leading-snug">
             {T(
@@ -315,7 +310,7 @@ export default function Jobs({ initialJobs = [] }) {
         )}
 
         {/* ── Search & Filter Box Card ── */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 mb-6 shadow-xs">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 mb-5 shadow-xs">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
             {/* District Select */}
             <div className="md:col-span-3">
@@ -362,7 +357,7 @@ export default function Jobs({ initialJobs = [] }) {
         </div>
 
         {/* ── Category Pill Tabs Row ── */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-5 no-scrollbar">
           <button
             onClick={() => setFilterType("")}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex-shrink-0 transition-all border ${
@@ -419,103 +414,6 @@ export default function Jobs({ initialJobs = [] }) {
             </button>
           </div>
         )}
-
-        {/* ── Bottom "For Community Members" 4-Card Section ── */}
-        <div className="mt-12 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 rounded-3xl p-6">
-          <h3 className="font-bold text-slate-800 dark:text-white text-sm mb-4">For Community Members</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            {/* Card 1: Post a Job */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-between">
-              <div>
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center mb-3">
-                  <UserPlus className="w-5 h-5" />
-                </div>
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-1">Post a Job</h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
-                  Share genuine job opportunities with your community.
-                </p>
-              </div>
-              <button
-                onClick={handleToggleForm}
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1 group"
-              >
-                <span>Post Now</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-
-            {/* Card 2: Report Scam */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-between">
-              <div>
-                <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center mb-3">
-                  <AlertOctagon className="w-5 h-5" />
-                </div>
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-1">Report Scam</h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
-                  Help others by reporting fake job offers and suspicious activity.
-                </p>
-              </div>
-              <Link
-                to="/scams"
-                className="text-xs font-bold text-amber-600 hover:text-amber-700 inline-flex items-center gap-1 group"
-              >
-                <span>Report Now</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-
-            {/* Card 3: Stay Alert */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-between">
-              <div>
-                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center mb-3">
-                  <Info className="w-5 h-5" />
-                </div>
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-1">Stay Alert</h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
-                  Be cautious of advance payments and too-good-to-be-true offers.
-                </p>
-              </div>
-              <Link
-                to="/scams"
-                className="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 group"
-              >
-                <span>Safety Tips</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-
-            {/* Card 4: Spread the Word */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-between">
-              <div>
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center mb-3">
-                  <Share2 className="w-5 h-5" />
-                </div>
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-1">Spread the Word</h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
-                  Share jobs and help someone in your community.
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({ title: "VizhiTN Local Jobs", url: window.location.href });
-                  } else {
-                    navigator.clipboard.writeText(window.location.href);
-                    alert("Jobs page link copied!");
-                  }
-                }}
-                className="text-xs font-bold text-purple-600 hover:text-purple-700 inline-flex items-center gap-1 group"
-              >
-                <span>Share Now</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
-
-          <p className="text-[11px] text-slate-400 text-center font-medium">
-            * VizhiTN is not responsible for any job transactions. Verify before you apply.
-          </p>
-        </div>
 
         {/* Universal SEO Cross-Links */}
         <div className="mt-8">
