@@ -40,26 +40,10 @@ function FeaturedCard({ article }) {
       ) : (
         <div className="w-full h-[300px] sm:h-[400px] bg-slate-800" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
       <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-blue-600 text-white uppercase tracking-wide shadow-sm">
-            📰 TN TODAY · {lang === "ta" ? "இன்றைய செய்தி" : "TODAY'S STORY"}
-          </span>
-          {cat?.value && (
-            <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-white/20 text-white border border-white/30 uppercase">
-              {cat.emoji} {cat.label}
-            </span>
-          )}
-        </div>
-        <h2 className="text-xl sm:text-2xl font-extrabold text-white leading-tight mb-2 group-hover:text-blue-200 transition-colors">
-          {displayTitle}
-        </h2>
-        {displaySubtitle && (
-          <p className="text-sm text-white/90 font-medium line-clamp-2 mb-3">{displaySubtitle}</p>
-        )}
-        <div className="flex items-center gap-3 text-white/80 text-xs font-bold">
+        <div className="flex items-center gap-3 text-white/90 text-xs font-bold">
           <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-blue-300" />
             {article.publish_date ? format(new Date(article.publish_date), "d MMM yyyy") : "Today"}
           </span>
