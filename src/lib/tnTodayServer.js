@@ -1,8 +1,12 @@
 import { createServerSupabase } from '@/lib/serverSupabase';
 import sanitizeHtml from 'sanitize-html';
 
+// featured_image is intentionally excluded from the server-side list select.
+// It stores base64 image data (~200KB/row), making 50 rows = ~10MB which
+// exceeds Next.js's 2MB incremental cache limit and breaks SSR.
+// The client-side getPublishedTnToday query still includes it for card thumbnails.
 const ARTICLE_FIELDS = [
-  'id', 'title', 'slug', 'subtitle', 'featured_image', 'category',
+  'id', 'title', 'title_ta', 'slug', 'subtitle', 'subtitle_ta', 'category',
   'author_name', 'publish_date', 'reading_time', 'summary',
   'is_featured', 'view_count',
 ].join(',');
@@ -20,7 +24,7 @@ export async function getTnTodayArchive(category = null) {
       .select(ARTICLE_FIELDS)
       .eq('status', 'published')
       .order('publish_date', { ascending: false })
-      .limit(50);
+      .limit(20);
 
     if (category) query = query.eq('category', category);
 
