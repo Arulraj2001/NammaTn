@@ -18,6 +18,7 @@ import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate
 import { resolveArticleInternalLinks } from "@/lib/seo/internalLinker";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 import { generateTnTodayPoster } from "@/lib/tntodayPosterGenerator";
+import CustomAdBanner from "@/components/ads/CustomAdBanner";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -560,6 +561,9 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
               />
             )}
 
+            {/* In-Article Direct Ad Placement */}
+            <CustomAdBanner slot="article_inline" />
+
             {/* Key Facts */}
             {keyFacts.length > 0 && <KeyHighlightsCard keyFacts={keyFacts} />}
 
@@ -644,23 +648,8 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
           {/* ═══ RIGHT: Sidebar ═══ */}
           <aside className="w-full lg:w-72 flex-shrink-0 space-y-4 lg:sticky lg:top-20">
 
-            {/* About TN Today */}
-            <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-xs">
-              <Link to="/about" className="flex items-center gap-2 mb-2 group">
-                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">TN</span>
-                </div>
-                <div>
-                  <p className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 transition-colors">About TN Today</p>
-                </div>
-              </Link>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                TN Today brings you one significant story every day that impacts Tamil Nadu. Curated with verified sources and written for the people.
-              </p>
-              <Link to="/about" className="mt-3 text-xs text-blue-600 font-bold hover:underline flex items-center gap-1">
-                About this initiative <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
+            {/* Dedicated Top Right Sidebar Ad Placement */}
+            <CustomAdBanner slot="sidebar" />
 
             {/* Related Awareness & Rights Guides */}
             {seoLinks.awareness.length > 0 && (

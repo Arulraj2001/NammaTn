@@ -1,0 +1,220 @@
+import { supabase } from "@/api/supabaseClient";
+
+const DEFAULT_ADSENSE_CONFIG = {
+  pub_id: "",
+  slot_banner: "",
+  slot_sidebar: "",
+  slot_infeed: "",
+  enabled: false,
+};
+
+// ─── AdSense Config Persistence ───────────────────────────────────────────────
+
+export async function getAdSenseConfig() {
+  try {
+    const savedLocal = localStorage.getItem("VizhiTN_adsense_config");
+    if (savedLocal) {
+      const parsed = JSON.parse(savedLocal);
+      if (parsed.pub_id) return parsed;
+    }
+  } catch (e) {
+    // fallback
+  }
+
+  try {
+    const { data } = await supabase
+      .from("settings")
+      .select("value")
+      .eq("key", "adsense_config")
+      .single();
+
+    if (data && data.value) {
+      try {
+        const dbConfig = typeof data.value === "string" ? JSON.parse(data.value) : data.value;
+        localStorage.setItem("VizhiTN_adsense_config", JSON.stringify(dbConfig));
+        return dbConfig;
+      } catch (err) {
+        // ignore
+      }
+    }
+  } catch (e) {
+    // fallback
+  }
+
+  return DEFAULT_ADSENSE_CONFIG;
+}
+
+export async function saveAdSenseConfig(config) {
+  try {
+    localStorage.setItem("VizhiTN_adsense_config", JSON.stringify(config));
+    window.__ADSENSE_PUB_ID__ = config.pub_id || "ca-pub-PLACEHOLDER";
+    window.__ADSENSE_SLOTS__ = {
+      banner: config.slot_banner,
+      sidebar: config.slot_sidebar,
+      infeed: config.slot_infeed,
+    };
+  } catch (e) {
+    // fallback
+  }
+
+  try {
+    await supabase.from("settings").upsert({
+      key: "adsense_config",
+      value: JSON.stringify(config),
+      updated_at: new Date().toISOString(),
+    });
+  } catch (e) {
+    // fallback
+  }
+
+  return true;
+}
+
+// ─── Custom Direct Banner Ads Service ─────────────────────────────────────────
+
+const CUSTOM_ADS_LOCAL_KEY = "VizhiTN_custom_ads";
+
+const DEFAULT_INITIAL_ADS = [
+  {
+    id: "ad_ostrune_sidebar",
+    title: "Ostrune — Sub-Second Web Engineering & SEO",
+    description: "Build 100/100 Core Web Vitals Next.js applications with guaranteed Google ranking for Tamil Nadu businesses.",
+    target_url: "https://ostrune.netlify.app/",
+    image_url: "",
+    category: "Featured Web & SEO Partner",
+    slot: "sidebar",
+    district: "all",
+    targeting: "all",
+    cta_text: "Get Free Audit",
+    status: "active",
+    created_at: new Date().toISOString(),
+    clicks: 0,
+    impressions: 0,
+  },
+  {
+    id: "ad_ostrune_article",
+    title: "Ostrune — High Performance Web Development",
+    description: "Custom web software, Next.js engineering, and sub-second loading speeds for fast growing brands.",
+    target_url: "https://ostrune.netlify.app/",
+    image_url: "",
+    category: "Featured Engineering Partner",
+    slot: "article_inline",
+    district: "all",
+    targeting: "all",
+    cta_text: "Book Free Call",
+    status: "active",
+    created_at: new Date().toISOString(),
+    clicks: 0,
+    impressions: 0,
+  },
+  {
+    id: "ad_vizhitn_sponsorship_sidebar",
+    title: "VizhiTN District Partner — Get 5x Inquiries",
+    description: "Sponsor your district on VizhiTN to feature your business at the top of local directory searches.",
+    target_url: "/sponsors",
+    image_url: "",
+    category: "Featured District Sponsor",
+    slot: "sidebar_bottom",
+    district: "all",
+    targeting: "all",
+    cta_text: "Sponsor Your District",
+    status: "active",
+    created_at: new Date().toISOString(),
+    clicks: 0,
+    impressions: 0,
+  }
+];
+
+export function getLocalCustomAds() {
+  try {
+    const saved = localStorage.getItem(CUSTOM_ADS_LOCAL_KEY);
+    if (saved) return JSON.parse(saved);
+    localStorage.setItem(CUSTOM_ADS_LOCAL_KEY, JSON.stringify(DEFAULT_INITIAL_ADS));
+    return DEFAULT_INITIAL_ADS;
+  } catch {
+    return DEFAULT_INITIAL_ADS;
+  }
+}
+
+export function saveLocalCustomAds(ads) {
+  try {
+    localStorage.setItem(CUSTOM_ADS_LOCAL_KEY, JSON.stringify(ads));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("vizhitn_ads_updated"));
+    }
+  } catch {
+    // ignore
+  }
+}
+
+export async function fetchActiveCustomAds(slot, district) {
+  let localAds = getLocalCustomAds();
+  if (!localAds || localAds.length === 0) {
+    localAds = DEFAULT_INITIAL_ADS;
+  }
+  const now = new Date().toISOString();
+
+  const isMatching = (ad) => {
+    if (ad.status !== "active") return false;
+    if (ad.slot && ad.slot !== "all" && ad.slot !== slot && !slot.includes(ad.slot)) return false;
+    if (ad.district && ad.district !== "all" && district && ad.district !== district) return false;
+    if (ad.expires_at && new Date(ad.expires_at) < new Date(now)) return false;
+    return true;
+  };
+
+  const filteredLocal = localAds.filter(isMatching);
+
+  if (filteredLocal.length > 0) {
+    return filteredLocal;
+  }
+
+  try {
+    const { data } = await supabase
+      .from("custom_ads")
+      .select("*")
+      .eq("status", "active");
+
+    if (data && data.length > 0) {
+      const dbFiltered = data.filter(isMatching);
+      if (dbFiltered.length > 0) {
+        return dbFiltered;
+      }
+    }
+  } catch (e) {
+    // fallback
+  }
+
+  return [];
+}
+
+export async function recordCustomAdImpression(adId) {
+  if (!adId) return;
+  const localAds = getLocalCustomAds();
+  const idx = localAds.findIndex((a) => a.id === adId);
+  if (idx !== -1) {
+    localAds[idx].impressions = (localAds[idx].impressions || 0) + 1;
+    saveLocalCustomAds(localAds);
+  }
+
+  try {
+    await supabase.rpc("increment_ad_impression", { ad_id: adId }).catch(() => {});
+  } catch (e) {
+    // silent fallback
+  }
+}
+
+export async function recordCustomAdClick(adId) {
+  if (!adId) return;
+  const localAds = getLocalCustomAds();
+  const idx = localAds.findIndex((a) => a.id === adId);
+  if (idx !== -1) {
+    localAds[idx].clicks = (localAds[idx].clicks || 0) + 1;
+    saveLocalCustomAds(localAds);
+  }
+
+  try {
+    await supabase.rpc("increment_ad_click", { ad_id: adId }).catch(() => {});
+  } catch (e) {
+    // silent fallback
+  }
+}

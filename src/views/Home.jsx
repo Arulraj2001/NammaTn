@@ -8,6 +8,7 @@ import HomeTopSection from "@/components/home/HomeTopSection";
 import MyAreaPulse from "@/components/home/MyAreaPulse";
 import QuickActions from "@/components/home/QuickActions";
 import LazySection from "@/components/common/LazySection";
+import CustomAdBanner from "@/components/ads/CustomAdBanner";
 import { getAreas } from "@/services/areas";
 
 // Below-the-fold sections: loaded only when they scroll near the viewport
@@ -30,6 +31,11 @@ export default function Home() {
       <HomeTopSection />
       <MyAreaPulse allAreas={areas} />
       <QuickActions />
+
+      {/* Top Homepage Hero Spotlight Ad Slot */}
+      <div className="max-w-7xl mx-auto px-4">
+        <CustomAdBanner slot="home_hero" />
+      </div>
 
       {/* Below-the-fold: defer until near viewport */}
       <LazySection rootMargin="400px" minHeight="300px">

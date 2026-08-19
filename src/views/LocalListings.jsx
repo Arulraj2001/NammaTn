@@ -13,6 +13,7 @@ import { DISTRICTS } from "@/lib/districts";
 import ListingCard from "@/components/listings/ListingCard";
 import ListingSubmitModal from "@/components/listings/ListingSubmitModal";
 import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
+import CustomAdBanner from "@/components/ads/CustomAdBanner";
 
 const PAGE_SIZE = 24;
 
@@ -251,6 +252,9 @@ export default function LocalListings({ initialListings = [] }) {
                 </div>
               </div>
             )}
+
+            {/* Custom Direct Ad / In-Feed Sponsorship Banner */}
+            <CustomAdBanner slot="infeed" district={districtFilter} />
 
             {/* Regular */}
             <div>

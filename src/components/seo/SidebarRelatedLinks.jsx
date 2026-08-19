@@ -7,6 +7,7 @@ import {
   Shield, BookOpen, AlertTriangle, Building2,
   Zap, ArrowRight, Phone
 } from "lucide-react";
+import CustomAdBanner from "@/components/ads/CustomAdBanner";
 
 export default function SidebarRelatedLinks({ type = "article", category, currentSlug, extraLinks = [] }) {
   const { lang } = useLanguage();
@@ -28,6 +29,9 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
 
   return (
     <aside className="space-y-6">
+      {/* ── Bottom Dedicated Sidebar Ad Slot (#2) ──────────── */}
+      <CustomAdBanner slot="sidebar_bottom" />
+
       {/* ── Quick Tools & Action Box ──────────────────────── */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 shadow-xs">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
@@ -119,6 +123,9 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
           ))}
         </div>
       </div>
+
+      {/* ── Direct Custom Ad Banner Slot ─────────────────── */}
+      <CustomAdBanner slot="sidebar" />
 
       {/* ── Emergency Contact Card ──────────────────────── */}
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-sm border-2 border-slate-700">

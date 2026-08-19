@@ -19,7 +19,7 @@ export default function ListingSubmitModal({ onClose }) {
     business_name: "", category: "plumber", plan: "free",
     description: "", district_slug: "", area_name: "",
     contact_phone: "", contact_whatsapp: "", contact_email: "",
-    admin_phone: "", admin_email: "",
+    admin_phone: "", admin_email: "", website_url: "", image_url: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -147,6 +147,36 @@ export default function ListingSubmitModal({ onClose }) {
                 <input value={form.area_name} onChange={(e) => set("area_name", e.target.value)}
                   placeholder={T("e.g. Anna Nagar, Perambur", "எ.கா. அண்ணா நகர்")}
                   className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">{T("Website / Social Link (Optional)", "இணையதளம் / சோஷியல் லிங்க்")}</label>
+                <input value={form.website_url} onChange={(e) => set("website_url", e.target.value)}
+                  placeholder="https://yourbusiness.com or https://ostrune.netlify.app/"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">{T("Banner / Business Photo Upload", "பேனர் / வணிக படம் பதிவேற்றம்")}</label>
+                <div className="flex gap-2">
+                  <input value={form.image_url} onChange={(e) => set("image_url", e.target.value)}
+                    placeholder="https://.../banner.png or choose file"
+                    className="flex-1 px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
+                  <label className="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-bold cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center whitespace-nowrap text-slate-700 dark:text-slate-200">
+                    📷 {T("Choose File", "கோப்பு தேர்வு")}
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (evt) => set("image_url", evt.target?.result || "");
+                        reader.readAsDataURL(file);
+                      }
+                    }} />
+                  </label>
+                </div>
+                {form.image_url && (
+                  <div className="mt-2 p-1.5 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <img src={form.image_url} alt="Preview" className="max-h-28 rounded-lg object-contain" />
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">{T("Description", "விளக்கம்")}</label>

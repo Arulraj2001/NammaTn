@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
@@ -8,6 +8,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { getCategoryMeta } from "@/lib/listingCategories";
+import { saveAdSenseConfig, getAdSenseConfig } from "@/services/adService";
 
 const TABS = ["listings", "sponsors", "rwa", "adsense"];
 
@@ -40,7 +41,7 @@ export default function AdminMonetization() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [adminNotes, setAdminNotes] = useState({});
 
-  // ── AdSense settings (persisted in localStorage) ───────────────────────────────
+  // ── AdSense settings (persisted in DB & localStorage) ─────────────────────────
   const [adsense, setAdsense] = useState(() => {
     try {
       const saved = localStorage.getItem('VizhiTN_adsense_config');
@@ -55,22 +56,109 @@ export default function AdminMonetization() {
   });
   const [adsenseSaved, setAdsenseSaved] = useState(false);
 
-  const saveAdsense = () => {
+  useEffect(() => {
+    getAdSenseConfig().then(cfg => {
+      if (cfg) setAdsense(cfg);
+    });
+  }, []);
+
+  const saveAdsense = async () => {
     try {
-      localStorage.setItem('VizhiTN_adsense_config', JSON.stringify(adsense));
-      // Update ads.txt with real pub ID
-      window.__ADSENSE_PUB_ID__ = adsense.pub_id || 'ca-pub-PLACEHOLDER';
-      window.__ADSENSE_SLOTS__ = {
-        banner:  adsense.slot_banner,
-        sidebar: adsense.slot_sidebar,
-        infeed:  adsense.slot_infeed,
-      };
+      await saveAdSenseConfig(adsense);
       setAdsenseSaved(true);
-      toast({ description: '✅ AdSense settings saved! Publisher ID is now active.' });
+      toast({ description: '✅ AdSense settings saved & synchronized with database.' });
       setTimeout(() => setAdsenseSaved(false), 3000);
     } catch (e) {
       toast({ description: '❌ Failed to save AdSense settings.' });
     }
+  };
+
+  // ── Custom Ads state ────────────────────────────────────────────────────────
+  const [customAds, setCustomAds] = useState(getLocalCustomAds);
+  const [editingAdId, setEditingAdId] = useState(null);
+  const [newAd, setNewAd] = useState({
+    title: "",
+    description: "",
+    category: "Featured Partner",
+    target_url: "",
+    image_url: "",
+    slot: "sidebar",
+    district: "all",
+    cta_text: "Learn More",
+    status: "active",
+    expires_at: "",
+  });
+
+  const handleSaveCustomAd = () => {
+    if (!newAd.title.trim() || !newAd.target_url.trim()) {
+      toast({ description: "⚠️ Title and Target URL are required." });
+      return;
+    }
+
+    if (editingAdId) {
+      // Edit existing
+      const updated = customAds.map(a => a.id === editingAdId ? { ...a, ...newAd } : a);
+      setCustomAds(updated);
+      saveLocalCustomAds(updated);
+      setEditingAdId(null);
+      toast({ description: "✅ Custom Ad Updated!" });
+    } else {
+      // Create new
+      const created = {
+        ...newAd,
+        id: "ad_" + Date.now(),
+        created_at: new Date().toISOString(),
+        clicks: 0,
+        impressions: 0,
+      };
+      const updated = [created, ...customAds];
+      setCustomAds(updated);
+      saveLocalCustomAds(updated);
+      toast({ description: "✅ Custom Ad Created & Live!" });
+    }
+
+    setNewAd({
+      title: "",
+      description: "",
+      category: "Featured Partner",
+      target_url: "",
+      image_url: "",
+      slot: "sidebar",
+      district: "all",
+      cta_text: "Learn More",
+      status: "active",
+      expires_at: "",
+    });
+  };
+
+  const handleEditCustomAd = (ad) => {
+    setEditingAdId(ad.id);
+    setNewAd({
+      title: ad.title || "",
+      description: ad.description || "",
+      category: ad.category || "Featured Partner",
+      target_url: ad.target_url || "",
+      image_url: ad.image_url || "",
+      slot: ad.slot || "sidebar",
+      district: ad.district || "all",
+      cta_text: ad.cta_text || "Learn More",
+      status: ad.status || "active",
+      expires_at: ad.expires_at || "",
+    });
+  };
+
+  const handleToggleCustomAdStatus = (id) => {
+    const updated = customAds.map(a => a.id === id ? { ...a, status: a.status === "active" ? "paused" : "active" } : a);
+    setCustomAds(updated);
+    saveLocalCustomAds(updated);
+    toast({ description: "Ad status updated." });
+  };
+
+  const handleDeleteCustomAd = (id) => {
+    const updated = customAds.filter(a => a.id !== id);
+    setCustomAds(updated);
+    saveLocalCustomAds(updated);
+    toast({ description: "Ad removed." });
   };
 
   // ── Data ────────────────────────────────────────────────────────────────────
@@ -199,19 +287,28 @@ export default function AdminMonetization() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-5 border-b border-slate-200 dark:border-slate-700 pb-3 flex-wrap">
-        {[
-          { key: "listings", label: "Local Listings",  icon: BadgeCheck, count: stats.listings.pending },
-          { key: "sponsors", label: "Sponsors / CSR",  icon: Leaf,       count: stats.sponsors.pending },
-          { key: "rwa",      label: "RWA Groups",       icon: Building2,  count: stats.rwa.pending },
-          { key: "adsense",  label: "AdSense Settings", icon: Star,       count: null },
-        ].map(({ key, label, icon: Icon, count }) => (
-          <button key={key} onClick={() => { setActiveTab(key); setSearch(""); setStatusFilter("all"); }}
-            className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeTab === key ? "bg-blue-600 text-white" : "border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"}`}>
-            <Icon className="w-4 h-4" /> {label}
-            {count > 0 && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{count}</span>}
-          </button>
-        ))}
+      <div className="flex gap-2 mb-5 border-b border-slate-200 dark:border-slate-700 pb-3 flex-wrap items-center justify-between">
+        <div className="flex gap-2 flex-wrap">
+          {[
+            { key: "listings", label: "Local Listings",  icon: BadgeCheck, count: stats.listings.pending },
+            { key: "sponsors", label: "Sponsors / CSR",  icon: Leaf,       count: stats.sponsors.pending },
+            { key: "rwa",      label: "RWA Groups",       icon: Building2,  count: stats.rwa.pending },
+            { key: "adsense",  label: "AdSense Settings", icon: Star,       count: null },
+          ].map(({ key, label, icon: Icon, count }) => (
+            <button key={key} onClick={() => { setActiveTab(key); setSearch(""); setStatusFilter("all"); }}
+              className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeTab === key ? "bg-blue-600 text-white" : "border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"}`}>
+              <Icon className="w-4 h-4" /> {label}
+              {count > 0 && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{count}</span>}
+            </button>
+          ))}
+        </div>
+
+        <Link
+          to="/admin/ads"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold rounded-xl shadow-2xs transition-colors"
+        >
+          📢 Go to Ad Management (/admin/ads) →
+        </Link>
       </div>
 
       {/* ── LISTINGS TAB ─────────────────────────────────────────────────────── */}

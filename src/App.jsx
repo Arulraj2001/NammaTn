@@ -236,6 +236,7 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/leaderboard" element={<CivicLeaderboard />} />
         <Route path="/rwa" element={settings.rwa_enabled !== "false" ? <RWADashboard /> : <PageNotFound />} />
         <Route path="/csr" element={settings.csr_enabled !== "false" ? <CSRDashboard /> : <PageNotFound />} />
+        <Route path="/sponsors" element={settings.csr_enabled !== "false" ? <CSRDashboard /> : <PageNotFound />} />
         <Route path="/me" element={<MyDashboard />} />
         {/* TN Today public routes */}
         <Route path="/tn-today" element={<TnToday />} />
