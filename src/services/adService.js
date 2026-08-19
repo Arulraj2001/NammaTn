@@ -224,7 +224,7 @@ export async function fetchActiveCustomAds(slot, district, pagePath = "") {
 
   const isMatching = (ad) => {
     if (!ad || ad.status !== "active") return false;
-    if (ad.slot && ad.slot !== "all" && ad.slot !== slot && !slot.includes(ad.slot)) return false;
+    if (ad.slot && ad.slot !== "all" && ad.slot !== slot) return false;
     if (ad.district && ad.district !== "all" && district && ad.district !== district) return false;
     if (ad.expires_at && new Date(ad.expires_at) < new Date(now)) return false;
 
