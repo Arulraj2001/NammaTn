@@ -29,15 +29,15 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
   return (
     <aside className="space-y-6">
       {/* ── Quick Tools & Action Box ──────────────────────── */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 shadow-xs">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
           <Zap className="w-4 h-4 text-amber-500" />
           <span>{T("Civic Tools & Action", "குடிமைச் செயலி கருவிகள்")}</span>
         </h3>
         <div className="space-y-2">
           <Link
             href="/bribes"
-            className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-100 transition-colors text-xs font-bold"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-400 hover:bg-red-100 transition-colors text-xs font-bold"
           >
             <span className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
@@ -47,7 +47,7 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
           </Link>
           <Link
             href="/scams"
-            className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 text-amber-800 dark:text-amber-400 hover:bg-amber-100 transition-colors text-xs font-bold"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-400 hover:bg-amber-100 transition-colors text-xs font-bold"
           >
             <span className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
@@ -57,7 +57,7 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
           </Link>
           <Link
             href="/offices"
-            className="flex items-center justify-between p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-blue-700 dark:text-blue-400 hover:bg-blue-100 transition-colors text-xs font-bold"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-200 dark:border-blue-900/60 text-blue-700 dark:text-blue-400 hover:bg-blue-100 transition-colors text-xs font-bold"
           >
             <span className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
@@ -69,13 +69,13 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
       </div>
 
       {/* ── Related Knowledge Articles ───────────────────── */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 shadow-xs">
         <div className="flex items-center justify-between gap-2 mb-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <BookOpen className="w-4 h-4 text-emerald-500" />
             <span>{T("Essential Guides", "அத்தியாவசிய வழிகாட்டிகள்")}</span>
           </h3>
-          <Link href="/awareness/articles" className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+          <Link href="/awareness/articles" className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
             {T("View All", "அனைத்தும்")}
           </Link>
         </div>
@@ -84,7 +84,7 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
             <Link
               key={idx}
               href={art.href}
-              className="block p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition group"
+              className="block p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 border-2 border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition group"
             >
               <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug">
                 {T(art.title_en, art.title_ta)}
@@ -95,13 +95,13 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
       </div>
 
       {/* ── Statutory Citizen Rights ─────────────────────── */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-300 dark:border-slate-700 p-5 shadow-xs">
         <div className="flex items-center justify-between gap-2 mb-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <Shield className="w-4 h-4 text-blue-500" />
             <span>{T("Statutory Rights", "சட்டப்பூர்வ உரிமைகள்")}</span>
           </h3>
-          <Link href="/awareness/rights" className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+          <Link href="/awareness/rights" className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline">
             {T("View All", "அனைத்தும்")}
           </Link>
         </div>
@@ -110,7 +110,7 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
             <Link
               key={idx}
               href={r.href}
-              className="block p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition group"
+              className="block p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 border-2 border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition group"
             >
               <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
                 {T(r.title_en, r.title_ta)}
@@ -121,7 +121,7 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
       </div>
 
       {/* ── Emergency Contact Card ──────────────────────── */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-sm">
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-sm border-2 border-slate-700">
         <div className="flex items-center gap-2 mb-2">
           <Phone className="w-4 h-4 text-rose-400" />
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
@@ -129,26 +129,26 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
           </h4>
         </div>
         <div className="grid grid-cols-2 gap-2 text-xs mt-3">
-          <div className="bg-white/10 p-2 rounded-lg text-center">
-            <span className="block text-[10px] text-slate-400">{T("Police", "காவல்துறை")}</span>
+          <div className="bg-white/10 p-2 rounded-lg text-center border border-white/10">
+            <span className="block text-[10px] text-slate-300 font-medium">{T("Police", "காவல்துறை")}</span>
             <span className="font-extrabold text-rose-400">100 / 112</span>
           </div>
-          <div className="bg-white/10 p-2 rounded-lg text-center">
-            <span className="block text-[10px] text-slate-400">{T("Ambulance", "ஆம்புலன்ஸ்")}</span>
+          <div className="bg-white/10 p-2 rounded-lg text-center border border-white/10">
+            <span className="block text-[10px] text-slate-300 font-medium">{T("Ambulance", "ஆம்புலன்ஸ்")}</span>
             <span className="font-extrabold text-rose-400">108</span>
           </div>
-          <div className="bg-white/10 p-2 rounded-lg text-center">
-            <span className="block text-[10px] text-slate-400">{T("Women Helpline", "பெண்கள் உதவி")}</span>
+          <div className="bg-white/10 p-2 rounded-lg text-center border border-white/10">
+            <span className="block text-[10px] text-slate-300 font-medium">{T("Women Helpline", "பெண்கள் உதவி")}</span>
             <span className="font-extrabold text-rose-400">181</span>
           </div>
-          <div className="bg-white/10 p-2 rounded-lg text-center">
-            <span className="block text-[10px] text-slate-400">{T("Cyber Crime", "சைபர் குற்றங்கள்")}</span>
+          <div className="bg-white/10 p-2 rounded-lg text-center border border-white/10">
+            <span className="block text-[10px] text-slate-300 font-medium">{T("Cyber Crime", "சைபர் குற்றங்கள்")}</span>
             <span className="font-extrabold text-rose-400">1930</span>
           </div>
         </div>
         <Link
           href="/help"
-          className="mt-3 block text-center py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition"
+          className="mt-3 block text-center py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-xs"
         >
           {T("View All Emergency Support →", "அனைத்து அவசர உதவி எண்கள் →")}
         </Link>

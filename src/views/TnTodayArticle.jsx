@@ -168,6 +168,136 @@ function SectionCard({ icon, title, accent = "blue", children }) {
   );
 }
 
+// ─── Key Highlights Card ───────────────────────────────────────────────────────
+function KeyHighlightsCard({ keyFacts }) {
+  return (
+    <div className="bg-emerald-50/40 dark:bg-emerald-950/20 border-2 border-emerald-500/80 dark:border-emerald-500/60 rounded-3xl p-5 sm:p-6 shadow-md mb-8 relative overflow-hidden">
+      <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b-2 border-emerald-200 dark:border-emerald-800/80">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md flex-shrink-0">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">Key Highlights</h2>
+            <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">Essential facts and key takeaways</p>
+          </div>
+        </div>
+        <span className="bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-extrabold shadow-2xs">
+          {keyFacts.length} points
+        </span>
+      </div>
+
+      <div className="space-y-3">
+        {keyFacts.map((fact, i) => (
+          <div key={i} className="flex items-start gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border-2 border-emerald-200 dark:border-emerald-800/80 shadow-xs hover:border-emerald-500 transition-all">
+            <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">
+              ✓
+            </div>
+            <div className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
+              {fact.value ? (
+                <>
+                  <strong className="text-emerald-950 dark:text-emerald-200 font-bold">{fact.label}:</strong> {fact.value}
+                </>
+              ) : (
+                fact.label
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Timeline Card ────────────────────────────────────────────────────────────
+function TimelineCard({ timelineEvents }) {
+  return (
+    <div className="bg-blue-50/40 dark:bg-blue-950/20 border-2 border-blue-500/80 dark:border-blue-500/60 rounded-3xl p-5 sm:p-6 shadow-md mb-8 relative overflow-hidden">
+      <div className="flex items-center justify-between gap-3 mb-6 pb-3 border-b-2 border-blue-200 dark:border-blue-800/80">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md flex-shrink-0">
+            <Clock className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">Timeline</h2>
+            <p className="text-[11px] font-semibold text-blue-700 dark:text-blue-300">Chronological developments</p>
+          </div>
+        </div>
+        <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-extrabold shadow-2xs">
+          {timelineEvents.length} events
+        </span>
+      </div>
+
+      <div className="relative pl-3 space-y-5">
+        {/* Track Line */}
+        <div className="absolute left-[19px] top-3 bottom-4 w-1 bg-blue-400 dark:bg-blue-600 rounded-full" />
+
+        {timelineEvents.map((ev, i) => (
+          <div key={i} className="flex items-start gap-4 group relative">
+            {/* Node Dot */}
+            <div className="relative z-10 w-8 h-8 rounded-xl bg-white dark:bg-slate-900 border-2 border-blue-600 text-blue-600 shadow-md flex items-center justify-center flex-shrink-0 font-extrabold text-xs group-hover:scale-110 transition-transform">
+              {i + 1}
+            </div>
+
+            {/* Content Box */}
+            <div className="flex-1 bg-white dark:bg-slate-900 p-4 rounded-2xl border-2 border-blue-200 dark:border-blue-800/80 shadow-xs hover:border-blue-500 transition-all">
+              {ev.label && (
+                <div className="mb-1.5">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 font-bold text-xs shadow-2xs border border-blue-300 dark:border-blue-700">
+                    <Calendar className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                    {ev.label}
+                  </span>
+                </div>
+              )}
+              <div className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
+                {ev.value ? (
+                  <span>{ev.value}</span>
+                ) : (
+                  <span>{ev.label}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Official Sources Card ────────────────────────────────────────────────────
+function OfficialSourcesCard({ officialSources }) {
+  return (
+    <div className="bg-slate-50/40 dark:bg-slate-900/30 border-2 border-slate-400/80 dark:border-slate-600/80 rounded-3xl p-5 sm:p-6 shadow-md mb-8 relative overflow-hidden">
+      <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-200 dark:border-slate-800">
+        <div className="w-10 h-10 rounded-2xl bg-slate-700 text-white flex items-center justify-center shadow-md flex-shrink-0">
+          <ExternalLink className="w-5 h-5" />
+        </div>
+        <div>
+          <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">Official Sources</h2>
+          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Verified links & documentation</p>
+        </div>
+      </div>
+
+      <div className="space-y-2.5">
+        {officialSources.map((src, i) => (
+          <a
+            key={i}
+            href={src.value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-all group shadow-2xs"
+          >
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+              {src.label}
+            </span>
+            <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Loading skeleton ─────────────────────────────────────────────────────────
 function ArticleSkeleton() {
   return (
@@ -399,7 +529,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
             {/* Why it matters callout */}
             {displayWhyItMatters && (
-              <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6">
+              <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-2xl p-4 mb-6">
                 <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide mb-1">
@@ -431,63 +561,17 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
             )}
 
             {/* Key Facts */}
-            {keyFacts.length > 0 && (
-              <SectionCard icon="✅" title="Key Highlights" accent="green">
-                <div className="space-y-1.5">
-                  {keyFacts.map((fact, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-slate-700 dark:text-slate-300">
-                        {fact.value ? <><strong className="text-slate-800 dark:text-white">{fact.label}:</strong> {fact.value}</> : fact.label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </SectionCard>
-            )}
+            {keyFacts.length > 0 && <KeyHighlightsCard keyFacts={keyFacts} />}
 
             {/* Timeline */}
-            {timelineEvents.length > 0 && (
-              <div className="mt-6">
-                <SectionCard icon="🕐" title="Timeline" accent="blue">
-                  <div className="space-y-2">
-                    {timelineEvents.map((ev, i) => (
-                      <div key={i} className="flex gap-3">
-                        <div className="flex flex-col items-center">
-                          <div className={cn("w-2 h-2 rounded-full flex-shrink-0 mt-1.5", i === 0 ? "bg-blue-600" : "bg-slate-400")} />
-                          {i < timelineEvents.length - 1 && <div className="w-px flex-1 bg-slate-200 dark:bg-slate-700 mt-1" />}
-                        </div>
-                        <div className="pb-3">
-                          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">{ev.label}</span>
-                          <span className="text-sm text-slate-700 dark:text-slate-300">{ev.value}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </SectionCard>
-              </div>
-            )}
+            {timelineEvents.length > 0 && <TimelineCard timelineEvents={timelineEvents} />}
 
             {/* Official Sources */}
-            {officialSources.length > 0 && (
-              <div className="mt-6">
-                <SectionCard icon="📎" title="Official Sources" accent="slate">
-                  <div className="space-y-2">
-                    {officialSources.map((src, i) => (
-                      <a key={i} href={src.value} target="_blank" rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline">
-                        <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-                        {src.label}
-                      </a>
-                    ))}
-                  </div>
-                </SectionCard>
-              </div>
-            )}
+            {officialSources.length > 0 && <OfficialSourcesCard officialSources={officialSources} />}
 
             {/* Related civic activity */}
             {relatedLinks.length > 0 && (
-              <div className="mt-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+              <div className="mt-6 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-blue-500" /> Join the Conversation
@@ -509,7 +593,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
             )}
 
             {/* Share row */}
-            <div className="mt-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+            <div className="mt-6 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4">
               <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3 flex items-center gap-2">
                 <Share2 className="w-4 h-4 text-slate-500" /> Share this story
               </h3>
@@ -561,26 +645,26 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
           <aside className="w-full lg:w-72 flex-shrink-0 space-y-4 lg:sticky lg:top-20">
 
             {/* About TN Today */}
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-xs">
+              <Link to="/about" className="flex items-center gap-2 mb-2 group">
                 <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
                   <span className="text-white font-bold text-xs">TN</span>
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900 dark:text-white text-sm">About TN Today</p>
+                  <p className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 transition-colors">About TN Today</p>
                 </div>
-              </div>
+              </Link>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 TN Today brings you one significant story every day that impacts Tamil Nadu. Curated with verified sources and written for the people.
               </p>
-              <Link to="/tn-today" className="mt-3 text-xs text-blue-600 font-medium hover:underline flex items-center gap-1">
+              <Link to="/about" className="mt-3 text-xs text-blue-600 font-bold hover:underline flex items-center gap-1">
                 About this initiative <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
 
             {/* Related Awareness & Rights Guides */}
             {seoLinks.awareness.length > 0 && (
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+              <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-xs">
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3 flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" /> Civic Rights & Official Guides
                 </h3>
@@ -589,7 +673,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                     <Link
                       key={idx}
                       to={guide.url}
-                      className="block p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-slate-100 dark:border-slate-700 transition-colors group"
+                      className="block p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-slate-200 dark:border-slate-700 transition-colors group"
                     >
                       <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.5 rounded font-mono block w-fit mb-1">
                         {guide.tag}
@@ -608,9 +692,9 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
             {/* Quick Facts sidebar */}
             {keyFacts.length > 0 && (
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+              <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-xs">
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3">⚡ Quick Facts</h3>
-                <div className="divide-y divide-slate-100 dark:divide-slate-700 space-y-0">
+                <div className="divide-y divide-slate-200 dark:divide-slate-700 space-y-0">
                   {keyFacts.slice(0, 6).map((fact, i) => (
                     <div key={i} className="flex items-center justify-between py-2 first:pt-0 last:pb-0">
                       <span className="text-xs text-slate-500 dark:text-slate-400">{fact.label}</span>
@@ -623,7 +707,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
             {/* More from TN Today */}
             {moreArticles.length > 0 && (
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+              <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-xs">
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3">📰 More from TN Today</h3>
                 <div className="space-y-3">
                   {moreArticles.map(a => (
@@ -659,13 +743,13 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
             <SidebarRelatedLinks type="tn-today" currentSlug={article.slug} />
 
             {/* Share sidebar */}
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-xs">
               <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3">🔗 Share this story</h3>
               <ShareRow url={pageUrl} title={article.title} />
             </div>
 
             {/* CTA: Make your area better */}
-            <div className="bg-gradient-to-br from-blue-600 to-violet-600 rounded-2xl p-4 text-white">
+            <div className="bg-gradient-to-br from-blue-600 to-violet-600 rounded-2xl p-4 text-white border-2 border-blue-400/60 shadow-sm">
               <div className="flex items-start gap-3">
                 <div>
                   <p className="font-bold text-sm">Make your area better</p>
