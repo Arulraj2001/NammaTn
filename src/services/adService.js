@@ -15,27 +15,7 @@ export async function getAdSenseConfig() {
     const savedLocal = localStorage.getItem("VizhiTN_adsense_config");
     if (savedLocal) {
       const parsed = JSON.parse(savedLocal);
-      if (parsed.pub_id) return parsed;
-    }
-  } catch (e) {
-    // fallback
-  }
-
-  try {
-    const { data } = await supabase
-      .from("settings")
-      .select("value")
-      .eq("key", "adsense_config")
-      .single();
-
-    if (data && data.value) {
-      try {
-        const dbConfig = typeof data.value === "string" ? JSON.parse(data.value) : data.value;
-        localStorage.setItem("VizhiTN_adsense_config", JSON.stringify(dbConfig));
-        return dbConfig;
-      } catch (err) {
-        // ignore
-      }
+      return parsed;
     }
   } catch (e) {
     // fallback
@@ -47,22 +27,14 @@ export async function getAdSenseConfig() {
 export async function saveAdSenseConfig(config) {
   try {
     localStorage.setItem("VizhiTN_adsense_config", JSON.stringify(config));
-    window.__ADSENSE_PUB_ID__ = config.pub_id || "ca-pub-PLACEHOLDER";
-    window.__ADSENSE_SLOTS__ = {
-      banner: config.slot_banner,
-      sidebar: config.slot_sidebar,
-      infeed: config.slot_infeed,
-    };
-  } catch (e) {
-    // fallback
-  }
-
-  try {
-    await supabase.from("settings").upsert({
-      key: "adsense_config",
-      value: JSON.stringify(config),
-      updated_at: new Date().toISOString(),
-    });
+    if (typeof window !== "undefined") {
+      window.__ADSENSE_PUB_ID__ = config.pub_id || "ca-pub-PLACEHOLDER";
+      window.__ADSENSE_SLOTS__ = {
+        banner: config.slot_banner,
+        sidebar: config.slot_sidebar,
+        infeed: config.slot_infeed,
+      };
+    }
   } catch (e) {
     // fallback
   }
@@ -223,28 +195,7 @@ export async function fetchActiveCustomAds(slot, district, pagePath = "") {
   };
 
   const filteredLocal = localAds.filter(isMatching);
-
-  if (filteredLocal.length > 0) {
-    return filteredLocal;
-  }
-
-  try {
-    const { data } = await supabase
-      .from("custom_ads")
-      .select("*")
-      .eq("status", "active");
-
-    if (data && data.length > 0) {
-      const dbFiltered = data.filter(isMatching);
-      if (dbFiltered.length > 0) {
-        return dbFiltered;
-      }
-    }
-  } catch (e) {
-    // fallback
-  }
-
-  return [];
+  return filteredLocal;
 }
 
 export async function recordCustomAdImpression(adId) {
@@ -255,12 +206,6 @@ export async function recordCustomAdImpression(adId) {
     localAds[idx].impressions = (localAds[idx].impressions || 0) + 1;
     saveLocalCustomAds(localAds, true); // true skips dispatching vizhitn_ads_updated event!
   }
-
-  try {
-    await supabase.rpc("increment_ad_impression", { ad_id: adId }).catch(() => {});
-  } catch (e) {
-    // silent fallback
-  }
 }
 
 export async function recordCustomAdClick(adId) {
@@ -270,11 +215,5 @@ export async function recordCustomAdClick(adId) {
   if (idx !== -1) {
     localAds[idx].clicks = (localAds[idx].clicks || 0) + 1;
     saveLocalCustomAds(localAds, true); // true skips dispatching vizhitn_ads_updated event!
-  }
-
-  try {
-    await supabase.rpc("increment_ad_click", { ad_id: adId }).catch(() => {});
-  } catch (e) {
-    // silent fallback
   }
 }
