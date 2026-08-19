@@ -150,6 +150,35 @@ export function saveLocalCustomAds(ads) {
   }
 }
 
+// ─── Ad Collision & Overlap Evaluator ──────────────────────────────────────────
+
+export function checkAdCollision(newAd, existingAds, editingId = null) {
+  if (!newAd) return [];
+  return (existingAds || []).filter((ad) => {
+    if (editingId && ad.id === editingId) return false;
+    if (ad.id === newAd.id) return false;
+    if (ad.status !== "active") return false;
+
+    // Slot overlap
+    const slotOverlap = ad.slot === "all" || newAd.slot === "all" || ad.slot === newAd.slot;
+    if (!slotOverlap) return false;
+
+    // District overlap
+    const districtOverlap = ad.district === "all" || newAd.district === "all" || ad.district === newAd.district;
+    if (!districtOverlap) return false;
+
+    // Page overlap
+    const pageOverlap = ad.target_page === "all" || newAd.target_page === "all" || ad.target_page === newAd.target_page;
+    if (!pageOverlap) return false;
+
+    // Device overlap
+    const deviceOverlap = (ad.targeting || "all") === "all" || (newAd.targeting || "all") === "all" || ad.targeting === newAd.targeting;
+    if (!deviceOverlap) return false;
+
+    return true;
+  });
+}
+
 export async function fetchActiveCustomAds(slot, district, pagePath = "") {
   let localAds = getLocalCustomAds();
   if (!localAds || localAds.length === 0) {

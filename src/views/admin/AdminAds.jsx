@@ -14,7 +14,8 @@ import {
   getLocalCustomAds,
   saveLocalCustomAds,
   getAdSenseConfig,
-  saveAdSenseConfig
+  saveAdSenseConfig,
+  checkAdCollision
 } from "@/services/adService";
 
 const PLACEMENT_OPTIONS = [
@@ -271,6 +272,7 @@ export default function AdminAds() {
                   customAds.map((ad) => {
                     const impressions = ad.impressions || 0;
                     const ctr = impressions > 0 ? (((ad.clicks || 0) / impressions) * 100).toFixed(1) : "0.0";
+                    const isColliding = ad.status === "active" && checkAdCollision(ad, customAds, ad.id).length > 0;
                     return (
                       <AdminTr key={ad.id}>
                         <AdminTd>
@@ -283,7 +285,14 @@ export default function AdminAds() {
                               </div>
                             )}
                             <div>
-                              <p className="font-bold text-slate-900 dark:text-white text-sm leading-tight">{ad.title}</p>
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-bold text-slate-900 dark:text-white text-sm leading-tight">{ad.title}</p>
+                                {isColliding && (
+                                  <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800" title="Overlaps with another active ad on same slot/district/page (will rotate randomly)">
+                                    ⚠️ Collision
+                                  </span>
+                                )}
+                              </div>
                               <p className="text-xs text-slate-400 font-mono truncate max-w-xs">{ad.target_url}</p>
                             </div>
                           </div>
@@ -459,6 +468,33 @@ export default function AdminAds() {
               </button>
             </div>
 
+            {/* Real-time Collision Alert Warning Card */}
+            {(() => {
+              const collisions = checkAdCollision(dialog.data, customAds, dialog.mode === "edit" ? dialog.data.id : null);
+              if (collisions.length === 0) return null;
+              return (
+                <div className="p-3.5 bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400/80 rounded-xl text-amber-900 dark:text-amber-300 text-xs space-y-1">
+                  <div className="flex items-center gap-2 font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wide">
+                    <Sparkles className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                    ⚠️ Slot Collision Warning ({collisions.length} Overlapping Active Campaign{collisions.length > 1 ? "s" : ""})
+                  </div>
+                  <p className="leading-relaxed text-amber-800/90 dark:text-amber-300">
+                    The following active campaign{collisions.length > 1 ? "s" : ""} already target this exact slot, district, and page:
+                  </p>
+                  <ul className="list-disc list-inside font-semibold space-y-0.5 pt-1">
+                    {collisions.map((c) => (
+                      <li key={c.id}>
+                        <span className="text-slate-900 dark:text-white font-bold">{c.title}</span> — Slot: {c.slot} • District: {c.district === "all" ? "All TN" : c.district} • Page: {c.target_page || "all"}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-[11px] text-amber-700 dark:text-amber-400 italic pt-1">
+                    💡 Note: Both campaigns will share this slot and rotate randomly for visitors.
+                  </p>
+                </div>
+              );
+            })()}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
@@ -502,6 +538,22 @@ export default function AdminAds() {
               </div>
 
               <div>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Target District</label>
+                <select
+                  value={dialog.data.district || "all"}
+                  onChange={(e) => setField("district", e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                >
+                  <option value="all">🌐 All TN Districts</option>
+                  {DISTRICTS.map((d) => (
+                    <option key={d.slug} value={d.slug}>
+                      📍 {d.name_en}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Target Page</label>
                 <select
                   value={dialog.data.target_page || "all"}
@@ -516,6 +568,19 @@ export default function AdminAds() {
                   <option value="jobs">💼 Jobs Portal (/jobs)</option>
                   <option value="community">👥 Community Hub (/community)</option>
                   <option value="custom">🎯 Specific Custom Path (URL)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Target Device</label>
+                <select
+                  value={dialog.data.targeting || "all"}
+                  onChange={(e) => setField("targeting", e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                >
+                  <option value="all">📱💻 All Devices (Mobile & Desktop)</option>
+                  <option value="mobile">📱 Mobile Devices Only</option>
+                  <option value="desktop">💻 Desktop / Laptop Only</option>
                 </select>
               </div>
 
