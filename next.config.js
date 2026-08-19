@@ -36,6 +36,9 @@ const nextConfig = {
 
   // ── Security + SEO HTTP headers ──────────────────────────────────────────
   async headers() {
+    if (process.env.NODE_ENV !== 'production') {
+      return [];
+    }
     return [
       {
         source: '/(.*)',
@@ -45,10 +48,6 @@ const nextConfig = {
           { key: 'X-Content-Type-Options',  value: 'nosniff' },
           { key: 'Referrer-Policy',         value: 'strict-origin-when-cross-origin' },
           { key: 'X-DNS-Prefetch-Control',  value: 'on' },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(self)',
-          },
           // HSTS — enforce HTTPS for 2 years, include subdomains
           {
             key: 'Strict-Transport-Security',
