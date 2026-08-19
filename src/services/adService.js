@@ -139,9 +139,22 @@ export function getLocalCustomAds() {
   }
 }
 
-export function saveLocalCustomAds(ads) {
+export function saveLocalCustomAds(ads, skipEvent = false) {
   try {
     localStorage.setItem(CUSTOM_ADS_LOCAL_KEY, JSON.stringify(ads));
+    if (typeof window !== "undefined" && !skipEvent) {
+      window.dispatchEvent(new Event("vizhitn_ads_updated"));
+    }
+  } catch {
+    // ignore
+  }
+}
+
+export function clearAdSystemStorageCache() {
+  try {
+    localStorage.removeItem(CUSTOM_ADS_LOCAL_KEY);
+    localStorage.removeItem("VizhiTN_adsense_config");
+    localStorage.setItem(CUSTOM_ADS_LOCAL_KEY, JSON.stringify(DEFAULT_INITIAL_ADS));
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("vizhitn_ads_updated"));
     }
@@ -181,13 +194,13 @@ export function checkAdCollision(newAd, existingAds, editingId = null) {
 
 export async function fetchActiveCustomAds(slot, district, pagePath = "") {
   let localAds = getLocalCustomAds();
-  if (!localAds || localAds.length === 0) {
+  if (!localAds || !Array.isArray(localAds) || localAds.length === 0) {
     localAds = DEFAULT_INITIAL_ADS;
   }
   const now = new Date().toISOString();
 
   const isMatching = (ad) => {
-    if (ad.status !== "active") return false;
+    if (!ad || ad.status !== "active") return false;
     if (ad.slot && ad.slot !== "all" && ad.slot !== slot && !slot.includes(ad.slot)) return false;
     if (ad.district && ad.district !== "all" && district && ad.district !== district) return false;
     if (ad.expires_at && new Date(ad.expires_at) < new Date(now)) return false;
@@ -240,7 +253,7 @@ export async function recordCustomAdImpression(adId) {
   const idx = localAds.findIndex((a) => a.id === adId);
   if (idx !== -1) {
     localAds[idx].impressions = (localAds[idx].impressions || 0) + 1;
-    saveLocalCustomAds(localAds);
+    saveLocalCustomAds(localAds, true); // true skips dispatching vizhitn_ads_updated event!
   }
 
   try {
@@ -256,7 +269,7 @@ export async function recordCustomAdClick(adId) {
   const idx = localAds.findIndex((a) => a.id === adId);
   if (idx !== -1) {
     localAds[idx].clicks = (localAds[idx].clicks || 0) + 1;
-    saveLocalCustomAds(localAds);
+    saveLocalCustomAds(localAds, true); // true skips dispatching vizhitn_ads_updated event!
   }
 
   try {

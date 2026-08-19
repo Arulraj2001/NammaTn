@@ -11,14 +11,14 @@ export default function CustomAdBanner({ slot = "sidebar", district, fallbackTyp
   const [dismissed, setDismissed] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const loadAd = async () => {
+  const loadAd = async (isInitial = true) => {
     setImageError(false);
     const pagePath = typeof window !== "undefined" ? window.location.pathname : "";
     const ads = await fetchActiveCustomAds(slot, district, pagePath);
     if (ads && ads.length > 0) {
       const chosen = ads[Math.floor(Math.random() * ads.length)];
       setActiveAd(chosen);
-      if (chosen?.id) {
+      if (chosen?.id && isInitial) {
         recordCustomAdImpression(chosen.id);
       }
     } else {
@@ -29,10 +29,10 @@ export default function CustomAdBanner({ slot = "sidebar", district, fallbackTyp
   };
 
   useEffect(() => {
-    loadAd();
+    loadAd(true);
 
     const handleAdUpdate = () => {
-      loadAd();
+      loadAd(false);
     };
 
     window.addEventListener("vizhitn_ads_updated", handleAdUpdate);
