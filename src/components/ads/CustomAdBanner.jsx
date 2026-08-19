@@ -117,11 +117,15 @@ export default function CustomAdBanner({ slot = "sidebar", district, fallbackTyp
           className="block group relative"
         >
           {hasValidImage ? (
-            <div className="relative overflow-hidden rounded-2xl bg-slate-950">
+            <div className="relative overflow-hidden">
               <img
                 src={activeAd.image_url}
                 alt={activeAd.title || "Advertisement"}
-                className="w-full h-auto max-h-[360px] object-contain mx-auto group-hover:scale-102 transition-transform duration-500 rounded-2xl"
+                className={`w-full ${
+                  slot === "sidebar" || slot === "sidebar_bottom"
+                    ? "h-44 sm:h-48 object-cover object-center"
+                    : "h-auto max-h-[320px] object-cover object-center"
+                } group-hover:scale-102 transition-transform duration-500`}
                 onError={() => setImageError(true)}
               />
               {activeAd.cta_text && (
