@@ -13,7 +13,8 @@ export default function CustomAdBanner({ slot = "sidebar", district, fallbackTyp
 
   const loadAd = async () => {
     setImageError(false);
-    const ads = await fetchActiveCustomAds(slot, district);
+    const pagePath = typeof window !== "undefined" ? window.location.pathname : "";
+    const ads = await fetchActiveCustomAds(slot, district, pagePath);
     if (ads && ads.length > 0) {
       const chosen = ads[Math.floor(Math.random() * ads.length)];
       setActiveAd(chosen);

@@ -83,6 +83,7 @@ const DEFAULT_INITIAL_ADS = [
     image_url: "",
     category: "Featured Web & SEO Partner",
     slot: "sidebar",
+    target_page: "all",
     district: "all",
     targeting: "all",
     cta_text: "Get Free Audit",
@@ -99,6 +100,7 @@ const DEFAULT_INITIAL_ADS = [
     image_url: "",
     category: "Featured Engineering Partner",
     slot: "article_inline",
+    target_page: "tn_today",
     district: "all",
     targeting: "all",
     cta_text: "Book Free Call",
@@ -115,6 +117,7 @@ const DEFAULT_INITIAL_ADS = [
     image_url: "",
     category: "Featured District Sponsor",
     slot: "sidebar_bottom",
+    target_page: "all",
     district: "all",
     targeting: "all",
     cta_text: "Sponsor Your District",
@@ -147,7 +150,7 @@ export function saveLocalCustomAds(ads) {
   }
 }
 
-export async function fetchActiveCustomAds(slot, district) {
+export async function fetchActiveCustomAds(slot, district, pagePath = "") {
   let localAds = getLocalCustomAds();
   if (!localAds || localAds.length === 0) {
     localAds = DEFAULT_INITIAL_ADS;
@@ -159,6 +162,21 @@ export async function fetchActiveCustomAds(slot, district) {
     if (ad.slot && ad.slot !== "all" && ad.slot !== slot && !slot.includes(ad.slot)) return false;
     if (ad.district && ad.district !== "all" && district && ad.district !== district) return false;
     if (ad.expires_at && new Date(ad.expires_at) < new Date(now)) return false;
+
+    // Page-specific targeting check
+    if (ad.target_page && ad.target_page !== "all") {
+      if (ad.target_page === "custom" && ad.custom_path) {
+        if (pagePath && !pagePath.includes(ad.custom_path)) return false;
+      } else if (pagePath) {
+        if (ad.target_page === "home" && pagePath !== "/") return false;
+        if (ad.target_page === "tn_today" && !pagePath.includes("/tn-today")) return false;
+        if (ad.target_page === "listings" && !pagePath.includes("/listings")) return false;
+        if (ad.target_page === "stay" && !pagePath.includes("/stay")) return false;
+        if (ad.target_page === "jobs" && !pagePath.includes("/jobs")) return false;
+        if (ad.target_page === "community" && !pagePath.includes("/community")) return false;
+      }
+    }
+
     return true;
   };
 

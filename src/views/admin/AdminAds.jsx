@@ -34,6 +34,8 @@ const DEFAULT_FORM = {
   target_url: "",
   image_url: "",
   slot: "sidebar",
+  target_page: "all",
+  custom_path: "",
   district: "all",
   targeting: "all",
   cta_text: "Learn More",
@@ -500,20 +502,37 @@ export default function AdminAds() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Target District</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Target Page</label>
                 <select
-                  value={dialog.data.district || "all"}
-                  onChange={(e) => setField("district", e.target.value)}
+                  value={dialog.data.target_page || "all"}
+                  onChange={(e) => setField("target_page", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 >
-                  <option value="all">All TN Districts</option>
-                  {DISTRICTS.map((d) => (
-                    <option key={d.slug} value={d.slug}>
-                      {d.name_en}
-                    </option>
-                  ))}
+                  <option value="all">🌐 All Pages (Entire Website)</option>
+                  <option value="home">🏠 Homepage Only (/)</option>
+                  <option value="tn_today">📰 TN Today News Articles (/tn-today)</option>
+                  <option value="listings">🏢 Business Directory (/listings)</option>
+                  <option value="stay">🏨 Stay & Rooms (/stay)</option>
+                  <option value="jobs">💼 Jobs Portal (/jobs)</option>
+                  <option value="community">👥 Community Hub (/community)</option>
+                  <option value="custom">🎯 Specific Custom Path (URL)</option>
                 </select>
               </div>
+
+              {dialog.data.target_page === "custom" && (
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                    Specific Custom Path / URL Substring <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={dialog.data.custom_path || ""}
+                    onChange={(e) => setField("custom_path", e.target.value)}
+                    placeholder="e.g. /about or /awareness/article/..."
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">CTA Button Text</label>
