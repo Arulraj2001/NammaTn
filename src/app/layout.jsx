@@ -22,7 +22,7 @@ export const viewport = {
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'VizhiTN – Tamil Nadu Civic Complaint & Community Platform',
+    default: 'VizhiTN - Tamil Nadu Civic Complaint & Community Platform',
     template: '%s | VizhiTN',
   },
   description:
@@ -48,7 +48,7 @@ export const metadata = {
     alternateLocale: 'ta_IN',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: 'VizhiTN – Tamil Nadu Civic Complaint & Community Platform',
+    title: 'VizhiTN - Tamil Nadu Civic Complaint & Community Platform',
     description:
       'Report local civic issues, track resolution updates, and connect with your Tamil Nadu community.',
     images: [
@@ -56,13 +56,13 @@ export const metadata = {
         url: `${SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: 'VizhiTN – Tamil Nadu Civic Platform',
+        alt: 'VizhiTN - Tamil Nadu Civic Platform',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'VizhiTN – Tamil Nadu Civic Platform',
+    title: 'VizhiTN - Tamil Nadu Civic Platform',
     description:
       'Report local civic issues, track resolutions, and connect with your community.',
     images: [`${SITE_URL}/og-image.png`],
