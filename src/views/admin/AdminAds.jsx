@@ -29,6 +29,64 @@ const PLACEMENT_OPTIONS = [
   { value: "sticky_footer", label: "📱 Mobile Bottom Sticky Bar", icon: "📲" },
 ];
 
+const PRESET_BANNERS = [
+  {
+    id: "preset_web_dev",
+    name: "Web Engineering",
+    title: "Ostrune — Sub-Second Web Engineering & SEO",
+    description: "Build 100/100 Core Web Vitals Next.js applications with guaranteed Google ranking for Tamil Nadu businesses.",
+    image_url: "/banners/ostrune_web_dev.png",
+    target_url: "https://ostrune.netlify.app/",
+    cta_text: "Get Free Audit",
+    category: "Featured Web & SEO Partner",
+    slot: "sidebar",
+  },
+  {
+    id: "preset_seo",
+    name: "Google SEO Growth",
+    title: "Ostrune — Guaranteed Google Top 3 Ranking",
+    description: "Drive organic Tamil Nadu traffic and dominate local Google search with high domain authority SEO strategies.",
+    image_url: "/banners/ostrune_seo.png",
+    target_url: "https://ostrune.netlify.app/",
+    cta_text: "Boost Ranking",
+    category: "Featured SEO Agency",
+    slot: "infeed",
+  },
+  {
+    id: "preset_mobile_app",
+    name: "Mobile App Dev",
+    title: "Ostrune — Native iOS & Android App Development",
+    description: "Transform your business into a high-converting mobile app with real-time push notifications and fast UI.",
+    image_url: "/banners/ostrune_mobile_app.png",
+    target_url: "https://ostrune.netlify.app/",
+    cta_text: "Build App Now",
+    category: "Featured Mobile App Partner",
+    slot: "infeed",
+  },
+  {
+    id: "preset_ecommerce",
+    name: "E-Commerce Store",
+    title: "Ostrune — High Conversion E-Commerce Stores",
+    description: "Launch your online shop with instant Razorpay/UPI checkout, inventory control, and sub-second loading speed.",
+    image_url: "/banners/ostrune_ecommerce.png",
+    target_url: "https://ostrune.netlify.app/",
+    cta_text: "Launch Store",
+    category: "Featured E-Commerce Partner",
+    slot: "banner",
+  },
+  {
+    id: "preset_uiux",
+    name: "UI/UX Redesign",
+    title: "Ostrune — Premium Website & UI/UX Redesign",
+    description: "Modernize your outdated website into a breathtaking digital experience with high conversion UX design.",
+    image_url: "/banners/ostrune_uiux.png",
+    target_url: "https://ostrune.netlify.app/",
+    cta_text: "Redesign Site",
+    category: "Featured UI/UX Agency",
+    slot: "home_hero",
+  },
+];
+
 const DEFAULT_FORM = {
   title: "",
   description: "",
@@ -494,6 +552,46 @@ export default function AdminAds() {
                 </div>
               );
             })()}
+
+            {/* 1-Click Preset Agency Banner Gallery Picker */}
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/80 space-y-2">
+              <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between">
+                <span>🎨 1-Click Preset Agency Banners Gallery</span>
+                <span className="text-[10px] text-slate-500 font-normal">Click thumbnail to auto-fill</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {PRESET_BANNERS.map((preset) => (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => {
+                      setDialog((d) => ({
+                        ...d,
+                        data: {
+                          ...d.data,
+                          title: preset.title,
+                          description: preset.description,
+                          image_url: preset.image_url,
+                          target_url: preset.target_url,
+                          cta_text: preset.cta_text,
+                          category: preset.category,
+                          slot: preset.slot || d.data.slot,
+                        },
+                      }));
+                      toast({ description: `✨ Loaded preset: ${preset.name}` });
+                    }}
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-amber-400 bg-white dark:bg-slate-900 transition-all text-left group"
+                  >
+                    <img
+                      src={preset.image_url}
+                      alt={preset.name}
+                      className="w-full h-10 object-cover rounded-md mb-1 group-hover:scale-102 transition-transform"
+                    />
+                    <p className="text-[10px] font-bold text-slate-800 dark:text-slate-200 truncate">{preset.name}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
