@@ -53,20 +53,19 @@ export const DISTRICTS = [
   { slug: 'tenkasi',        name: 'Tenkasi',        nearby: ['tirunelveli', 'virudhunagar', 'theni'],          neighborhoods: ['Sankarankovil', 'Kadayanallur', 'Alangulam', 'Courtallam', 'Sivagiri', 'Tenkasi Town', 'Veerakeralampudur'] },
   { slug: 'kallakurichi',   name: 'Kallakurichi',   nearby: ['villupuram', 'cuddalore', 'salem'],              neighborhoods: ['Sankarapuram', 'Rishivandiyam', 'Tirukoilur', 'Ulundurpet', 'Chinnasalem', 'Kallakurichi Town', 'Vriddhachalam'] },
   { slug: 'nilgiris',       name: 'The Nilgiris',   nearby: ['coimbatore', 'erode'],                           neighborhoods: ['Ooty', 'Coonoor', 'Gudalur', 'Kotagiri', 'Udhagamandalam', 'Kundah', 'Kothagiri'] },
+  { slug: 'kanyakumari',    name: 'Kanyakumari',    nearby: ['tirunelveli', 'thoothukudi', 'tenkasi'],          neighborhoods: ['Nagercoil', 'Kanyakumari Town', 'Thuckalay', 'Marthandam', 'Padmanabhapuram', 'Colachel', 'Killiyoor'] },
 ];
 
 export const DISTRICT_MAP = Object.fromEntries(DISTRICTS.map(d => [d.slug, d]));
 
 // ── Category / Issue data ─────────────────────────────────────────────────────
-// These slugs must match exactly what is stored in the `category_slug` DB column.
+// These slugs match category slugs stored in the DB and referenced across VizhiTN.
 export const CATEGORIES = [
   {
     slug: 'power-cut',
     name: 'Power Cut',
     plural: 'Power Cuts',
-    // Used in meta description — what Google's snippet will show
     descriptionFragment: 'electricity outages and TANGEDCO power disruptions',
-    // Used in "How to complain" section  
     authority: 'TANGEDCO (Tamil Nadu Generation and Distribution Corporation)',
     helpline: '1912',
   },
@@ -110,6 +109,108 @@ export const CATEGORIES = [
     authority: null,
     helpline: null,
   },
+  {
+    slug: 'education',
+    name: 'Education',
+    plural: 'Education Reports',
+    descriptionFragment: 'education, schools, colleges, and academic updates',
+    authority: 'Tamil Nadu School Education Department',
+    helpline: '14417',
+  },
+  {
+    slug: 'government-schemes',
+    name: 'Government Schemes',
+    plural: 'Government Schemes',
+    descriptionFragment: 'government welfare schemes, eligibility, and application updates',
+    authority: 'Government of Tamil Nadu',
+    helpline: '1100',
+  },
+  {
+    slug: 'general',
+    name: 'General',
+    plural: 'General Reports',
+    descriptionFragment: 'general civic issues, public feedback, and local community updates',
+    authority: 'District Administration / Municipal Corporation',
+    helpline: '1100',
+  },
+  {
+    slug: 'healthcare',
+    name: 'Healthcare',
+    plural: 'Healthcare Reports',
+    descriptionFragment: 'public health facilities, hospitals, and medical service updates',
+    authority: 'Health & Family Welfare Department, Govt of Tamil Nadu',
+    helpline: '104',
+  },
+  {
+    slug: 'environment',
+    name: 'Environment',
+    plural: 'Environment Reports',
+    descriptionFragment: 'environmental concerns, pollution, green cover, and waste management',
+    authority: 'Tamil Nadu Pollution Control Board (TNPCB)',
+    helpline: '044-22200909',
+  },
+  {
+    slug: 'public-safety',
+    name: 'Public Safety',
+    plural: 'Public Safety Reports',
+    descriptionFragment: 'public safety, law enforcement alerts, and community security concerns',
+    authority: 'Tamil Nadu Police Department',
+    helpline: '100',
+  },
+  {
+    slug: 'local-development',
+    name: 'Local Development',
+    plural: 'Local Development Reports',
+    descriptionFragment: 'civic infrastructure, town planning, and local development projects',
+    authority: 'Directorate of Town and Country Planning (DTCP)',
+    helpline: '044-28414844',
+  },
+  {
+    slug: 'transport',
+    name: 'Transport',
+    plural: 'Transport Reports',
+    descriptionFragment: 'public transit, bus connectivity, traffic control, and transport grievances',
+    authority: 'State Transport Corporation (TNSTC) / MTC',
+    helpline: '1800 425 6151',
+  },
+  {
+    slug: 'agriculture',
+    name: 'Agriculture',
+    plural: 'Agriculture Reports',
+    descriptionFragment: 'farming concerns, crop updates, irrigation, and agricultural support',
+    authority: 'Agriculture and Farmers Welfare Department, Tamil Nadu',
+    helpline: '1800 180 1551',
+  },
+  {
+    slug: 'road-infrastructure',
+    name: 'Road & Infrastructure',
+    plural: 'Road & Infrastructure Reports',
+    descriptionFragment: 'road work, bridge repairs, and municipal infrastructure projects',
+    authority: 'Tamil Nadu Highways Department / Municipal Corporation',
+    helpline: '1800 425 0110',
+  },
+  {
+    slug: 'water-sanitation',
+    name: 'Water & Sanitation',
+    plural: 'Water & Sanitation Reports',
+    descriptionFragment: 'water distribution, sewage, and public sanitation services',
+    authority: 'TWAD Board / Municipal Corporation Water Department',
+    helpline: '1800 425 3555',
+  },
+  {
+    slug: 'electricity',
+    name: 'Electricity',
+    plural: 'Electricity Reports',
+    descriptionFragment: 'electricity grid supply, transformers, and TANGEDCO power services',
+    authority: 'TANGEDCO',
+    helpline: '1912',
+  },
 ];
 
-export const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map(c => [c.slug, c]));
+export const CATEGORY_MAP = Object.fromEntries(
+  CATEGORIES.map(c => [c.slug, c])
+);
+
+// Map common aliases to canonical category objects
+CATEGORY_MAP['scams'] = CATEGORY_MAP['scam'];
+CATEGORY_MAP['job'] = CATEGORY_MAP['jobs'];

@@ -54,7 +54,20 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
       .order(orderField, { ascending: false })
       .limit(20);
 
-    if (error) throw error;
+    if (error) {
+      // Fallback query to post table if view is unavailable
+      const { data: fallbackReports, error: fallbackError } = await supabase
+        .from('post')
+        .select('id,title,content_en,area_slug,district_slug,category_slug,post_type,created_date,updated_date,status,upvotes,downvotes')
+        .eq('district_slug', citySlug)
+        .eq('category_slug', canonicalIssueSlug)
+        .eq('status', 'active')
+        .order(orderField, { ascending: false })
+        .limit(20);
+
+      if (fallbackError) throw fallbackError;
+      return { reports: (fallbackReports || []).map(r => ({ ...r, description: r.description || r.content_en })), dataAvailable: true };
+    }
 
     return { reports: reports || [], dataAvailable: true };
   } catch (e) {
@@ -93,7 +106,10 @@ export async function generateMetadata({ params }) {
 // ── STATIC PARAMS ─────────────────────────────────────────────────────────────
 // Keep deployments fast while retaining on-demand ISR for every valid pair.
 export async function generateStaticParams({ params } = {}) {
-  const issues = ['power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay'];
+  const issues = [
+    'power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay',
+    'education', 'government-schemes', 'general', 'healthcare', 'environment'
+  ];
   if (!params?.city || !BUILD_TIME_DISTRICT_SLUGS.includes(params.city)) return [];
   return issues.map(issue => ({ issue }));
 }
