@@ -52,9 +52,14 @@ export const getPublishedTnToday = async (arg = null) => {
     category = arg.category || null;
   }
 
+  // featured_image excluded from list queries — it stores base64 image data
+  // (~150KB-1.2MB/row). 50 rows would push ~10MB to every browser. Card UI
+  // falls back to the generated poster (TnToday.jsx, TnTodayCard.jsx) or a
+  // placeholder icon (TnTodayArticle sidebar). Full image is only fetched on
+  // the article detail page via getTnTodayBySlug.
   let q = supabase
     .from(TABLE)
-    .select("id,title,title_ta,slug,subtitle,subtitle_ta,featured_image,category,author_name,publish_date,reading_time,summary,is_featured,view_count")
+    .select("id,title,title_ta,slug,subtitle,subtitle_ta,category,author_name,publish_date,reading_time,summary,is_featured,view_count")
     .eq("status", "published")
     .order("publish_date", { ascending: false })
     .range(offset, offset + limit - 1);
@@ -66,9 +71,13 @@ export const getPublishedTnToday = async (arg = null) => {
 
 /** Get full article by slug (public) */
 export const getTnTodayBySlug = async (slug) => {
+  // Excludes featured_image and social_image — both can hold ~1.2MB base64
+  // PNG data URIs, pushing a single row over 2MB. The detail view generates a
+  // poster when featured_image is absent, and SEO meta falls back to the site
+  // OG image.
   const { data, error } = await supabase
     .from(TABLE)
-    .select("*")
+    .select("id,title,title_ta,slug,subtitle,subtitle_ta,category,author_name,publish_date,status,reading_time,content,content_ta,summary,summary_ta,why_it_matters,why_it_matters_ta,key_facts,key_facts_ta,timeline,timeline_ta,official_sources,related_civic_links,seo_title,seo_description,seo_keywords,canonical_url,is_featured,view_count,created_date,updated_date,district_slug,district_name")
     .eq("slug", slug)
     .eq("status", "published")
     .maybeSingle();

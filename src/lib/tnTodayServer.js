@@ -11,6 +11,23 @@ const ARTICLE_FIELDS = [
   'is_featured', 'view_count',
 ].join(',');
 
+// Detail query excludes the base64 image blob columns (featured_image and
+// social_image both can hold a ~1.2MB PNG data URI). A single select('*') row
+// then exceeds Next.js's 2MB incremental cache limit and breaks SSR. The
+// detail view renders a generated poster when featured_image is absent, and
+// page metadata falls back to the site OG image.
+const ARTICLE_DETAIL_FIELDS = [
+  'id', 'title', 'title_ta', 'slug', 'subtitle', 'subtitle_ta', 'category',
+  'author_name', 'publish_date', 'status', 'reading_time',
+  'content', 'content_ta', 'summary', 'summary_ta',
+  'why_it_matters', 'why_it_matters_ta',
+  'key_facts', 'key_facts_ta', 'timeline', 'timeline_ta',
+  'official_sources', 'related_civic_links',
+  'seo_title', 'seo_description', 'seo_keywords', 'canonical_url',
+  'is_featured', 'view_count', 'created_date', 'updated_date',
+  'district_slug', 'district_name',
+].join(',');
+
 export async function getTnTodayArchive(category = null) {
   const supabase = createServerSupabase({ timeoutMs: 10000 });
   if (!supabase) {
@@ -48,7 +65,7 @@ export async function getTnTodayArticle(slug) {
   try {
     const { data: article, error } = await supabase
       .from('tn_today')
-      .select('*')
+      .select(ARTICLE_DETAIL_FIELDS)
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle();

@@ -51,7 +51,7 @@ export default async function Page({ params }) {
     '@id': `${canonical}#article`,
     headline: article.seo_title || article.title,
     description: article.seo_description || article.subtitle || '',
-    image: article.social_image || article.featured_image ? [article.social_image || article.featured_image] : [],
+    image: [article.social_image || article.featured_image || `${SITE_URL}/og-image.png`],
     datePublished: article.publish_date || article.created_date,
     dateModified: article.updated_date || article.publish_date || article.created_date,
     author: getArticleAuthor(article.author_name),

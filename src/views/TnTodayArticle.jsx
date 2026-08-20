@@ -387,7 +387,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   useEffect(() => {
     if (!article) return;
     const canonicalUrl = getTnTodayCanonical(article.slug);
-    const image = article.social_image || article.featured_image || "";
+    const image = article.social_image || article.featured_image || "https://www.vizhitn.in/og-image.png";
 
     setPageMeta({
       title: displayTitle || article.seo_title || article.title,
