@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, Users, MessageCircle,
@@ -201,7 +202,7 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <img src={settings.site_logo_url || "/apple-touch-icon.png"} alt="VizhiTN" className="w-8 h-8 rounded-lg object-contain" />
+              <Image src={settings.site_logo_url || "/apple-touch-icon.png"} alt="VizhiTN" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-contain" />
               <div className="hidden sm:block">
                 <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">VizhiTN</span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-none block whitespace-nowrap">

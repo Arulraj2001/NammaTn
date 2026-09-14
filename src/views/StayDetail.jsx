@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React from "react";
 import { Home, MapPin, DollarSign, Users, MapPinIcon, Share2, Flag } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -25,7 +26,7 @@ export default function StayDetail({ initialListing }) {
         {/* Images */}
         {listing.image_urls && listing.image_urls.length > 0 && (
           <div className="mb-6 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-96 bg-slate-200 dark:bg-slate-800">
-            <img src={listing.image_urls[0]} alt={listing.title} className="w-full h-full object-cover" />
+            <Image src={listing.image_urls[0]} alt={listing.title} width={1200} height={800} className="w-full h-full object-cover" />
           </div>
         )}
 

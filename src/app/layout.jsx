@@ -1,5 +1,6 @@
 import React from 'react';
 import Providers from './providers';
+import PublicScripts from '@/components/ads/PublicScripts';
 import '@/index.css';
 import { getClarityInitScript } from '@/lib/clarityScript';
 import { ORGANIZATION_ID, WEBSITE_ID } from '@/lib/schemaIdentity';
@@ -136,38 +137,11 @@ export default function RootLayout({ children }) {
             __html: getClarityInitScript(CLARITY_PROJECT_ID),
           }}
         />
-        {/* Google tag (gtag.js) — GA4 measurement */}
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-CJ0JDFHPV3"
-        />
-        <script
-          id="gtag-init"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-CJ0JDFHPV3');
-            `,
-          }}
-        />
-        {/* Ad network: popunder / push-ad script (provided by the monetization network) */}
-        <script
-          async
-          src="https://pl31335206.profitableratecpmnetwork.com/2c/ab/c7/2cabc7da32aa062bc06eae481ad5feae.js"
-        />
-        {/* Ad network: push/popunder service worker (served from /sw.js) */}
-        <script
-          id="adsw-register"
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(function () {});
-              }
-            `,
-          }}
-        />
+        {/*
+          GA4 + ad-network (popunder/push) scripts are loaded client-side via
+          <PublicScripts /> (rendered before </body>) so they only run on public
+          pages — never on /admin or private/account routes.
+        */}
         {/* Organization structured data */}
         <script
           type="application/ld+json"
@@ -221,6 +195,7 @@ export default function RootLayout({ children }) {
         <Providers>
           {children}
         </Providers>
+        <PublicScripts />
       </body>
     </html>
   );

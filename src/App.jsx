@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -108,7 +109,7 @@ function MaintenancePage({ logo, supportEmail }) {
             <div className="absolute inset-0 bg-blue-500/20 rounded-2xl blur-xl animate-pulse pointer-events-none" />
             <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg transition-transform hover:scale-105 duration-300">
               {logo ? (
-                <img src={logo} alt="VizhiTN" className="w-10 h-10 object-contain rounded-lg" />
+                <Image src={logo} alt="VizhiTN" width={40} height={40} unoptimized className="w-10 h-10 object-contain rounded-lg" />
               ) : (
                 <span className="text-white font-black text-2xl tracking-tighter">TN</span>
               )}

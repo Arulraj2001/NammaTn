@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "@/lib/router-compat";
@@ -449,7 +450,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
                     {post.media_urls.map((url, idx) => (
                       <div key={idx} className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-video">
-                        <img src={url} alt={`media-${idx}`} className="w-full h-full object-cover" loading="lazy" />
+                        <Image src={url} alt={`media-${idx}`} width={1280} height={720} className="w-full h-full object-cover" />
                       </div>
                     ))}
                   </div>

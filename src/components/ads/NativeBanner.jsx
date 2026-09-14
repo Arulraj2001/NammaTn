@@ -1,7 +1,17 @@
 // src/components/ads/NativeBanner.jsx
 // Profitablerate-cpm native banner (4:1). Injected via the provided ad-network
 // invoke script + container. Rendered in the page body where placed.
+// Excluded on admin/dashboard so the ad network can't intercept internal clicks.
+'use client';
+import { usePathname } from 'next/navigation';
+
 export default function NativeBanner() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard')) {
+    return null;
+  }
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-4">
       {/* eslint-disable-next-line @next/next/no-sync-scripts */}

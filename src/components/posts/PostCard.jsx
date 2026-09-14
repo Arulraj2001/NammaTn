@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { memo } from "react";
 import { Link } from "@/lib/router-compat";
 import { MapPin, Tag, ThumbsUp, MessageSquare, Clock, AlertTriangle, Star, Megaphone, Shield, MessageCircle, Users, FileText, CheckCircle, Zap } from "lucide-react";
@@ -131,7 +132,7 @@ const PostCard = memo(function PostCard({ post }) {
         {/* Media thumbnail — clickable link to post detail */}
         {firstPhoto && (
           <Link to={`/post/${post.id}`} className="block mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
-            <img src={firstPhoto} alt={title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" loading="lazy" />
+            <Image src={firstPhoto} alt={title} width={640} height={480} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" />
           </Link>
         )}
 

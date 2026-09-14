@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React, { useEffect } from "react";
 import DOMPurify from "dompurify";
 import { useParams, Link, useNavigate } from "@/lib/router-compat";
@@ -524,7 +525,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
             {/* Featured image — render photo URL or fallback to auto-generated TNToday Branded Poster */}
             {heroImg ? (
               <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
-                <img src={heroImg} alt={displayTitle} className="w-full h-[260px] sm:h-[380px] object-cover" />
+                <Image src={heroImg} alt={displayTitle} width={1200} height={630} unoptimized className="w-full h-[260px] sm:h-[380px] object-cover" />
               </div>
             ) : null}
 

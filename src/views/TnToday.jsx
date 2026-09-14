@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React, { useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
@@ -35,7 +36,7 @@ function FeaturedCard({ article }) {
     <Link to={`/tn-today/${article.slug}`}
       className="block relative overflow-hidden rounded-2xl group shadow-lg hover:shadow-xl transition-shadow border-2 border-slate-300 dark:border-slate-700">
       {imgSrc ? (
-        <img src={imgSrc} alt={displayTitle}
+        <Image src={imgSrc} alt={displayTitle} width={1200} height={630} unoptimized
           className="w-full h-[300px] sm:h-[400px] object-cover group-hover:scale-[1.01] transition-transform duration-500" />
       ) : (
         <div className="w-full h-[300px] sm:h-[400px] bg-slate-800" />

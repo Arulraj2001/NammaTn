@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React from "react";
 import { BadgeCheck, MapPin, Phone, Mail, Share2, Flag, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -20,7 +21,7 @@ export default function ListingDetail({ initialListing }) {
         {/* Photos */}
         {listing.photo_urls && listing.photo_urls.length > 0 && (
           <div className="mb-6 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-96 bg-slate-200 dark:bg-slate-800">
-            <img src={listing.photo_urls[0]} alt={listing.business_name} className="w-full h-full object-cover" />
+            <Image src={listing.photo_urls[0]} alt={listing.business_name} width={1200} height={800} className="w-full h-full object-cover" />
           </div>
         )}
 
