@@ -9,6 +9,7 @@ import MyAreaPulse from "@/components/home/MyAreaPulse";
 import QuickActions from "@/components/home/QuickActions";
 import LazySection from "@/components/common/LazySection";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
+import NativeBanner from "@/components/ads/NativeBanner";
 import { getAreas } from "@/services/areas";
 
 // Below-the-fold sections: loaded only when they scroll near the viewport
@@ -36,6 +37,9 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4">
         <CustomAdBanner slot="home_hero" />
       </div>
+
+      {/* Native banner (4:1) — ad network */}
+      <NativeBanner />
 
       {/* Below-the-fold: defer until near viewport */}
       <LazySection rootMargin="400px" minHeight="300px">
