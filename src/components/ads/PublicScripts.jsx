@@ -54,6 +54,14 @@ export default function PublicScripts() {
         src="https://pl31335206.profitableratecpmnetwork.com/2c/ab/c7/2cabc7da32aa062bc06eae481ad5feae.js"
         strategy="afterInteractive"
       />
+
+      {/* quge5 Popunder */}
+      <script
+        src="https://quge5.com/88/tag.min.js"
+        data-zone="280416"
+        async
+        data-cfasync="false"
+      />
     </>
   );
 }

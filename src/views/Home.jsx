@@ -10,6 +10,7 @@ import QuickActions from "@/components/home/QuickActions";
 import LazySection from "@/components/common/LazySection";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
 import NativeBanner from "@/components/ads/NativeBanner";
+import DirectLink from "@/components/ads/DirectLink";
 import { getAreas } from "@/services/areas";
 
 // Below-the-fold sections: loaded only when they scroll near the viewport
@@ -40,6 +41,9 @@ export default function Home() {
 
       {/* Native banner (4:1) — ad network */}
       <NativeBanner />
+
+      {/* Direct-link sponsored ad — ad network */}
+      <DirectLink />
 
       {/* Below-the-fold: defer until near viewport */}
       <LazySection rootMargin="400px" minHeight="300px">
