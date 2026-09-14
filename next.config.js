@@ -93,12 +93,12 @@ const nextConfig = {
   // ── Redirects for SEO (old URLs → new) ────────────────────────────────────
   async redirects() {
     return [
-      // ── Canonical trailing-slash policy: strip ALL trailing slashes with a
-      //     permanent 301 so the no-slash form (trailingSlash: false, matching
-      //     sitemap + all internal links) is the single canonical URL.
-      //     Next.js already emits a built-in 308 for this; this explicit 301 at
-      //     the edge makes the consolidation clearer to Google Search Console.
-      { source: '/:path*/', destination: '/:path*', permanent: true },
+      // NOTE: Trailing-slash canonicalization is handled by `trailingSlash: false`
+      // above (Next.js built-in, emits a permanent 308 `/path/` → `/path`).
+      // We deliberately do NOT add a `/:path*/` catch-all here: in Vercel that
+      // glob also matches the root `/`, producing an infinite self-redirect loop
+      // (ERR_TOO_MANY_REDIRECTS) on the homepage. sitemap + internal links all
+      // already emit the canonical no-slash form.
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'vizhitn.in' }],

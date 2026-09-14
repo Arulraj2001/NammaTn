@@ -55,18 +55,31 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
       .limit(20);
 
     if (error) {
-      // Fallback query to post table if view is unavailable
+      // Fallback query to post table if the view is unavailable.
+      // NOTE: `post` has `title_en`/`content_en` (NO `title` column) — selecting
+      // `title` threw "column post.title does not exist", making every city/issue
+      // page render with empty report data. Map to the render's expected shape
+      // ({ title, description }) and only expose publicly-approved rows.
       const { data: fallbackReports, error: fallbackError } = await supabase
         .from('post')
-        .select('id,title,content_en,area_slug,district_slug,category_slug,post_type,created_date,updated_date,status,upvotes,downvotes')
+        .select('id,title_en,content_en,area_slug,district_slug,category_slug,post_type,created_date,updated_date,status,upvotes,downvotes')
         .eq('district_slug', citySlug)
         .eq('category_slug', canonicalIssueSlug)
         .eq('status', 'active')
+        .eq('is_publicly_visible', true)
+        .eq('moderation_status', 'approved')
         .order(orderField, { ascending: false })
         .limit(20);
 
       if (fallbackError) throw fallbackError;
-      return { reports: (fallbackReports || []).map(r => ({ ...r, description: r.description || r.content_en })), dataAvailable: true };
+      return {
+        reports: (fallbackReports || []).map(r => ({
+          ...r,
+          title: r.title_en,
+          description: r.content_en,
+        })),
+        dataAvailable: true,
+      };
     }
 
     return { reports: reports || [], dataAvailable: true };
