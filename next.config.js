@@ -40,6 +40,35 @@ const nextConfig = {
       return [];
     }
     return [
+      // ── Cache headers for high-traffic article/hub pages: cache 1h, serve
+      //     stale up to 24h while revalidating in the background (ISR-friendly). ──
+      {
+        source: '/:city/:issue',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/tn-today/:slug',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/post/:id',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [

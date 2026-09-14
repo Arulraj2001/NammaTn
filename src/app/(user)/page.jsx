@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import Home from '@/views/Home';
 import { HomeCityLinks, AllCategoryLinks } from '@/components/seo/InternalLinks';
+export const revalidate = 1800; // homepage — refresh every 30 min
 
 // Title deliberately excludes "| VizhiTN" — the root layout template adds it.
 // Result: "Know what's happening in your area right now | VizhiTN"
