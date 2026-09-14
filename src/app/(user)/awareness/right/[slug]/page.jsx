@@ -1,6 +1,7 @@
 import { getRightBySlug } from '@/lib/awarenessServer';
 import AwarenessRightDetail from '@/views/AwarenessRightDetail';
 import { notFound } from 'next/navigation';
+import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
@@ -33,6 +34,18 @@ export default function Page({ params }) {
   const right = getRightBySlug(params.slug);
   if (!right) notFound();
 
+  const newsArticleSchema = generateNewsArticleSchema({
+    headline: right.name_en,
+    description: right.desc_en || right.name_en,
+    url: `${SITE_URL}/awareness/right/${right.slug}`,
+    imageUrl: null,
+    datePublished: right.publish_date || right.created_date,
+    dateModified: right.updated_date || right.publish_date || right.created_date,
+    authorName: 'VizhiTN Reporter',
+    section: 'Civic Awareness',
+    language: 'en-IN',
+  });
+
   return (
     <>
       <Breadcrumbs
@@ -42,6 +55,7 @@ export default function Page({ params }) {
           { name: right.name_en, href: `/awareness/right/${right.slug}` },
         ]}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
       <AwarenessRightDetail right={right} />
     </>
   );

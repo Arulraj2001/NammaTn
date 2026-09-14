@@ -25,6 +25,7 @@ import { notFound } from 'next/navigation';
 import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
 import { getCityIssueMetaDescription } from '@/lib/metaDescription';
 import { getCityIssueRobots } from '@/lib/programmaticIndexing';
+import { generateBreadcrumbSchema } from '@/lib/seo/newsSchema';
 import { formatReportDate, getLatestReportDate } from '@/lib/reportFreshness';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
@@ -229,9 +230,15 @@ export default async function Page({ params }) {
 
   const canonicalUrl = `${SITE_URL}/${city}/${issue}`;
 
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: SITE_URL },
+    { name: cityData.name, url: `${SITE_URL}/${city}` },
+    { name: issueData.name, url: canonicalUrl },
+  ]);
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <PageSchema
         url={canonicalUrl}
         name={`${cityData.name} ${issueData.name} Reports`}

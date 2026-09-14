@@ -5,6 +5,7 @@ import { getTnTodayCanonical } from '@/lib/tnTodayUrl';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 import { toMetaDescription } from '@/lib/metaDescription';
 import { getArticleAuthor, getPublisherSchema } from '@/lib/schemaIdentity';
+import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -45,21 +46,19 @@ export default async function Page({ params }) {
   if (!article) notFound();
   const canonical = getTnTodayCanonical(article?.slug || params.slug);
 
-  const articleSchema = article ? {
-    '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
-    '@id': `${canonical}#article`,
-    headline: article.seo_title || article.title,
-    description: article.seo_description || article.subtitle || '',
-    image: [article.social_image || article.featured_image || `${SITE_URL}/og-image.png`],
-    datePublished: article.publish_date || article.created_date,
-    dateModified: article.updated_date || article.publish_date || article.created_date,
-    author: getArticleAuthor(article.author_name),
-    publisher: getPublisherSchema(),
-    mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
-    keywords: article.seo_keywords || '',
-    articleSection: article.category || 'general',
-  } : null;
+  const articleSchema = article
+    ? generateNewsArticleSchema({
+        headline: article.title,
+        description: article.seo_description || (article.subtitle || '').slice(0, 160),
+        url: canonical,
+        imageUrl: article.social_image || article.featured_image || null,
+        datePublished: article.publish_date || article.created_date,
+        dateModified: article.updated_date || article.publish_date || article.created_date,
+        authorName: article.author_name || 'VizhiTN Team',
+        section: article.category || 'Tamil Nadu News',
+        language: 'en-IN',
+      })
+    : null;
 
   const breadcrumbSchema = article ? {
     '@context': 'https://schema.org',

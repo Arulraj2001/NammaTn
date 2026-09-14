@@ -3,6 +3,30 @@ import Home from '@/views/Home';
 import { HomeCityLinks, AllCategoryLinks } from '@/components/seo/InternalLinks';
 export const revalidate = 1800; // homepage — refresh every 30 min
 
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsMediaOrganization',
+  name: 'VizhiTN',
+  url: 'https://www.vizhitn.in',
+  logo: 'https://www.vizhitn.in/apple-touch-icon.png',
+  sameAs: [
+    'https://facebook.com/vizhitn',
+    'https://twitter.com/vizhitn',
+    'https://instagram.com/vizhi_tn',
+    'https://t.me/vizhitn',
+  ],
+  description: 'Tamil Nadu civic proof platform — citizens report power cuts, road problems, water issues, and civic complaints across all 38 TN districts.',
+  foundingDate: '2026',
+  areaServed: {
+    '@type': 'State',
+    name: 'Tamil Nadu',
+    containedInPlace: {
+      '@type': 'Country',
+      name: 'India',
+    },
+  },
+};
+
 // Title deliberately excludes "| VizhiTN" — the root layout template adds it.
 // Result: "Know what's happening in your area right now | VizhiTN"
 export const metadata = {
@@ -50,6 +74,7 @@ function HomeSkeleton() {
 export default function Page() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
       <Suspense fallback={<HomeSkeleton />}>
         <Home />
       </Suspense>

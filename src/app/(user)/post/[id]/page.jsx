@@ -6,6 +6,7 @@ import { toMetaDescription } from '@/lib/metaDescription';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { CATEGORY_MAP } from '@/lib/seo-data';
 import { buildPostSeo } from '@/lib/postSeo';
+import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -47,6 +48,18 @@ export default async function Page({ params }) {
   const title = post?.title_en || post?.title || 'Civic Report';
   const category = CATEGORY_MAP[post.category_slug];
 
+  const newsArticleSchema = generateNewsArticleSchema({
+    headline: post.title_en,
+    description: post.seo_description || (post.content_en || '').slice(0, 160),
+    url: post.canonical_url || `${SITE_URL}/post/${post.id}`,
+    imageUrl: post.media_urls?.[0] || post.before_photos?.[0] || null,
+    datePublished: post.created_date,
+    dateModified: post.updated_date || post.created_date,
+    authorName: post.is_anonymous ? 'VizhiTN Reporter' : (post.author_name || 'VizhiTN Reporter'),
+    section: post.category_slug || 'Civic News',
+    language: 'en-IN',
+  });
+
   const postSchema = post ? {
     '@context': 'https://schema.org',
     '@type': 'DiscussionForumPosting',
@@ -83,6 +96,7 @@ export default async function Page({ params }) {
   return (
     <>
       {postSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(postSchema) }} />}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
       <Breadcrumbs items={breadcrumbItems} />
       <PostDetail
         initialId={params.id}

@@ -1,6 +1,7 @@
 import { getFaqBySlug } from '@/lib/awarenessServer';
 import AwarenessFaqDetail from '@/views/AwarenessFaqDetail';
 import { notFound } from 'next/navigation';
+import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
@@ -33,6 +34,18 @@ export default function Page({ params }) {
   const faq = getFaqBySlug(params.slug);
   if (!faq) notFound();
 
+  const newsArticleSchema = generateNewsArticleSchema({
+    headline: faq.question_en,
+    description: (faq.answer_en || '').slice(0, 160) || faq.question_en,
+    url: `${SITE_URL}/awareness/faq/${faq.slug}`,
+    imageUrl: null,
+    datePublished: faq.publish_date || faq.created_date,
+    dateModified: faq.updated_date || faq.publish_date || faq.created_date,
+    authorName: 'VizhiTN Reporter',
+    section: 'Civic Awareness',
+    language: 'en-IN',
+  });
+
   return (
     <>
       <Breadcrumbs items={[
@@ -40,6 +53,7 @@ export default function Page({ params }) {
         { name: 'FAQs', href: '/awareness/faqs' },
         { name: faq.question_en, href: `/awareness/faq/${faq.slug}` },
       ]} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
       <AwarenessFaqDetail faq={faq} />
     </>
   );

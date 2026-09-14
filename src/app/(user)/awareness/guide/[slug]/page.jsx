@@ -1,6 +1,7 @@
 import { getGuideBySlug } from '@/lib/awarenessServer';
 import AwarenessGuideDetail from '@/views/AwarenessGuideDetail';
 import { notFound } from 'next/navigation';
+import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
@@ -33,6 +34,18 @@ export default function Page({ params }) {
   const guide = getGuideBySlug(params.slug);
   if (!guide) notFound();
 
+  const newsArticleSchema = generateNewsArticleSchema({
+    headline: guide.title_en,
+    description: guide.summary_en || guide.title_en,
+    url: `${SITE_URL}/awareness/guide/${guide.slug}`,
+    imageUrl: null,
+    datePublished: guide.publish_date || guide.created_date,
+    dateModified: guide.updated_date || guide.publish_date || guide.created_date,
+    authorName: 'VizhiTN Reporter',
+    section: 'Civic Awareness',
+    language: 'en-IN',
+  });
+
   return (
     <>
       <Breadcrumbs items={[
@@ -40,6 +53,7 @@ export default function Page({ params }) {
         { name: 'Guides', href: '/awareness/guides' },
         { name: guide.title_en, href: `/awareness/guide/${guide.slug}` },
       ]} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
       <AwarenessGuideDetail guide={guide} />
     </>
   );
