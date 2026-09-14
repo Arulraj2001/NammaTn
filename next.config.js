@@ -93,6 +93,12 @@ const nextConfig = {
   // ── Redirects for SEO (old URLs → new) ────────────────────────────────────
   async redirects() {
     return [
+      // ── Canonical trailing-slash policy: strip ALL trailing slashes with a
+      //     permanent 301 so the no-slash form (trailingSlash: false, matching
+      //     sitemap + all internal links) is the single canonical URL.
+      //     Next.js already emits a built-in 308 for this; this explicit 301 at
+      //     the edge makes the consolidation clearer to Google Search Console.
+      { source: '/:path*/', destination: '/:path*', permanent: true },
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'vizhitn.in' }],

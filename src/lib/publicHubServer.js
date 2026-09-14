@@ -327,7 +327,16 @@ export async function getQuestionDetailData(id) {
     ]);
     if (questionResult.error) throw questionResult.error;
     if (answersResult.error) throw answersResult.error;
-    return { question: questionResult.data || null, answers: answersResult.data || [] };
+
+    const question = questionResult.data || null;
+    // Deleted rows are hard-deleted (already null). `closed` is the archived
+    // state — hide those from the public detail route so `/question/[id]` 404s
+    // instead of serving removed content (GSC "soft 404" fix).
+    if (!question || question.status === 'closed') {
+      return empty;
+    }
+
+    return { question, answers: answersResult.data || [] };
   } catch (error) {
     console.warn(`[question:${id}] Server detail fetch failed:`, error.message);
     throw error;

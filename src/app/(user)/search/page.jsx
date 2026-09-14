@@ -1,10 +1,9 @@
 import React from 'react';
 import SearchClient from './SearchClient';
 
-// Search is an interactive UI with no crawlable content — noindex it
 export const metadata = {
   title: 'Search',
-  robots: { index: false, follow: true },
+  robots: { index: false, follow: false },
 };
 
 export default function Page() {

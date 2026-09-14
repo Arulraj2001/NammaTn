@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Create a Civic Report',
-  robots: { index: false, follow: false, nocache: true },
+  robots: { index: true, follow: true, nocache: false },
 };
 
 export default function CreateReportLayout({ children }) {
