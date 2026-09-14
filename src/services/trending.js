@@ -5,7 +5,10 @@ import { isPubliclyVisible } from "@/lib/visibility";
 const engagementScore = (post) => {
   const ageHours = (Date.now() - new Date(post.created_date).getTime()) / 3600000;
   const recency = Math.max(0, 1 - ageHours / 168); // decay over 7 days
-  return (post.upvotes || 0) * 2 + (post.comment_count || 0) * 3 + recency * 20;
+  // Fresh posts get a prominence boost so newly imported/created posts can
+  // surface on Trending even before they accumulate upvotes or comments.
+  const newPostBonus = ageHours < 24 ? 30 : 0;
+  return (post.upvotes || 0) * 2 + (post.comment_count || 0) * 3 + recency * 20 + newPostBonus;
 };
 
 // Map date tab to cutoff timestamp

@@ -95,7 +95,7 @@ export const incrementTnTodayView = async (id) => {
 // ─── Admin reads ──────────────────────────────────────────────────────────────
 
 /** List all articles for admin CMS (all statuses) */
-export const adminListTnToday = async ({ limit = 50, offset = 0, status = null } = {}) => {
+export const adminListTnToday = async ({ limit = 500, offset = 0, status = null } = {}) => {
   // select only list-view columns — full content/seo fields are only needed
   // in the edit form (adminGetTnTodayById still uses select("*")).
   // Excludes: content, content_ta, summary_ta, why_it_matters, why_it_matters_ta,
@@ -111,6 +111,19 @@ export const adminListTnToday = async ({ limit = 50, offset = 0, status = null }
   const { data, error } = await q;
   if (error) throw error;
   return data || [];
+};
+
+/** Count articles grouped by status for accurate admin totals (not capped by list pagination) */
+export const countTnTodayByStatus = async () => {
+  const { data, error } = await supabase.from(TABLE).select("status");
+  if (error) throw error;
+  const counts = { all: 0, draft: 0, published: 0, scheduled: 0, archived: 0 };
+  (data || []).forEach((r) => {
+    if (!r || !r.status) return;
+    counts.all += 1;
+    if (counts[r.status] !== undefined) counts[r.status] += 1;
+  });
+  return counts;
 };
 
 /** Get single article by ID for admin editing */

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { getPublishedTnToday, getFeaturedTnToday } from "@/services/tnToday";
 import { format } from "date-fns";
 import { Clock, Calendar, ArrowRight, BookOpen, Search, X, Tag } from "lucide-react";
@@ -132,7 +132,6 @@ function EmptyState({ categoryLabel }) {
 export default function TnToday({ initialArticles = [], initialFeatured = null }) {
   const { category: currentCategory } = useParams();
   const [search, setSearch] = useState("");
-  const [visibleCount, setVisibleCount] = useState(10);
 
   const activeCategory = CATEGORIES.find(c => c.value === currentCategory);
 
@@ -150,26 +149,40 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
     gcTime: 30_000,
   });
 
-  const { data: articles = [], isLoading } = useQuery({
+  const PAGE_SIZE = 20;
+
+  const {
+    data: articlesData = { pages: [] },
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["tn-today-articles", currentCategory ?? ""],
-    queryFn: () => getPublishedTnToday(currentCategory || null),
-    initialData: !currentCategory ? (initialArticles.length ? initialArticles : undefined) : undefined,
+    queryFn: ({ pageParam = 0 }) => getPublishedTnToday({
+      category: currentCategory || null,
+      limit: PAGE_SIZE,
+      offset: pageParam,
+    }),
+    initialPageParam: 0,
+    initialData: !currentCategory && initialArticles.length
+      ? { pages: [initialArticles], pageParams: [0] }
+      : undefined,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage && lastPage.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined,
     staleTime: 0,
     gcTime: 30_000,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
 
+  const articles = articlesData.pages.flat();
+
   const filtered = articles.filter(a => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return a.title?.toLowerCase().includes(q) || a.subtitle?.toLowerCase().includes(q);
   });
-
-  // Reset visible count when category or search changes
-  React.useEffect(() => { setVisibleCount(10); }, [currentCategory, search]);
-
-  const displayedArticles = filtered.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
@@ -247,19 +260,20 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
         ) : filtered.length > 0 ? (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {displayedArticles.map(article => (
+              {filtered.map(article => (
                 <ArticleCard key={article.id} article={article} />
               ))}
             </div>
 
-            {/* Load More Pagination */}
-            {filtered.length > visibleCount && (
+            {/* Load More Pagination — fetches the next page from the database */}
+            {hasNextPage && (
               <div className="flex justify-center pt-4">
                 <button
-                  onClick={() => setVisibleCount(prev => prev + 10)}
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
                   className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 text-slate-800 dark:text-slate-200 font-extrabold px-6 py-3 rounded-2xl shadow-sm hover:shadow-md transition-all text-xs flex items-center gap-2"
                 >
-                  <span>Load More Stories ({filtered.length - visibleCount} remaining)</span>
+                  <span>{isFetchingNextPage ? "Loading more stories…" : "Load More Stories"}</span>
                   <ArrowRight className="w-4 h-4 text-blue-500" />
                 </button>
               </div>

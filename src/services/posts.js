@@ -15,41 +15,69 @@ const normalizePostPageArgs = (limitOrOptions = 20, sort = "-created_date", curs
   return { limit: limitOrOptions, sort, cursor };
 };
 
-const fetchVisiblePostPage = async ({ limit, cursor = null, filter = isPubliclyVisible, configure }) => {
-  const page = [];
-  let nextCursor = cursor;
-  let exhausted = false;
-  let scans = 0;
-  const scanLimit = Math.max(limit * 2, limit);
-
-  while (page.length < limit && !exhausted && scans < 5) {
-    let query = supabase
-      .from("unified_explore_feed")
-      .select("*")
-      .order("created_date", { ascending: false })
-      .limit(scanLimit);
-
-    if (nextCursor) {
-      query = query.lt("created_date", nextCursor);
-    }
-
-    if (configure) {
-      query = configure(query);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    const rows = data || [];
-    if (rows.length === 0) break;
-
-    page.push(...rows.filter(filter));
-    nextCursor = rows[rows.length - 1]?.created_date || nextCursor;
-    exhausted = rows.length < scanLimit;
-    scans += 1;
+/**
+ * Query the unified_explore_feed view and, if it is unavailable or errors,
+ * transparently fall back to the underlying `post` table. The admin CMS already
+ * does this; the public feed previously had no fallback, so posts that existed
+ * in `post` were invisible on /explore, category, and district pages whenever
+ * the view was missing, stale, or blocked by RLS/grants.
+ */
+const queryFeedWithFallback = async (build) => {
+  try {
+    const { data, error } = await build("unified_explore_feed");
+    if (!error) return data || [];
+  } catch (_) {
+    // fall through to the post table
   }
+  const { data, error } = await build("post");
+  if (error) throw error;
+  return data || [];
+};
 
-  return page.slice(0, limit);
+const fetchVisiblePostPage = async ({ limit, cursor = null, filter = isPubliclyVisible, configure }) => {
+  const attempt = async (table) => {
+    const page = [];
+    let nextCursor = cursor;
+    let exhausted = false;
+    let scans = 0;
+    const scanLimit = Math.max(limit * 2, limit);
+
+    while (page.length < limit && !exhausted && scans < 5) {
+      let query = supabase
+        .from(table)
+        .select("*")
+        .order("created_date", { ascending: false })
+        .limit(scanLimit);
+
+      if (nextCursor) {
+        query = query.lt("created_date", nextCursor);
+      }
+
+      if (configure) {
+        query = configure(query);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const rows = data || [];
+      if (rows.length === 0) break;
+
+      page.push(...rows.filter(filter));
+      nextCursor = rows[rows.length - 1]?.created_date || nextCursor;
+      exhausted = rows.length < scanLimit;
+      scans += 1;
+    }
+
+    return page.slice(0, limit);
+  };
+
+  try {
+    return await attempt("unified_explore_feed");
+  } catch (error) {
+    // View unavailable → read from the base `post` table so imported posts show.
+    return await attempt("post");
+  }
 };
 
 const normalizePostSeo = (data = {}) => {
@@ -100,31 +128,19 @@ export const getAllPosts = async (limitOrOptions = 20, sort = "-created_date", c
   const { limit, sort: resolvedSort, cursor: pageCursor } = normalizePostPageArgs(limitOrOptions, sort, cursor);
   const orderCol = pageCursor ? "created_date" : resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = pageCursor ? false : !resolvedSort.startsWith("-");
-  let query = supabase
-    .from("unified_explore_feed")
-    .select("*")
-    .order(orderCol, { ascending })
-    .limit(limit);
-
-  if (pageCursor) {
-    query = query.lt("created_date", pageCursor);
-  }
-
-  const { data, error } = await query;
-  if (error) throw error;
-  return data || [];
+  return queryFeedWithFallback((t) => {
+    let q = supabase.from(t).select("*").order(orderCol, { ascending }).limit(limit);
+    if (pageCursor) q = q.lt("created_date", pageCursor);
+    return q;
+  });
 };
 
 export const getPosts = async (limit = 20, sort = "-created_date") => {
   const orderCol = sort.startsWith("-") ? sort.substring(1) : sort;
   const ascending = !sort.startsWith("-");
-  const { data, error } = await supabase
-    .from("unified_explore_feed")
-    .select("*")
-    .order(orderCol, { ascending })
-    .limit(limit);
-  if (error) throw error;
-  return data;
+  return queryFeedWithFallback((t) =>
+    supabase.from(t).select("*").order(orderCol, { ascending }).limit(limit)
+  );
 };
 
 export const getPostById = async (id) => {
@@ -220,13 +236,9 @@ export const getActivePosts = async (limitOrOptions = 20, sort = "-created_date"
 
   const orderCol = resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = !resolvedSort.startsWith("-");
-  const { data, error } = await supabase
-    .from("unified_explore_feed")
-    .select("*")
-    .eq("status", "active")
-    .order(orderCol, { ascending })
-    .limit(limit * 2);
-  if (error) throw error;
+  const data = await queryFeedWithFallback((t) =>
+    supabase.from(t).select("*").eq("status", "active").order(orderCol, { ascending }).limit(limit * 2)
+  );
   return data.filter(isPubliclyVisible).slice(0, limit);
 };
 
@@ -244,37 +256,33 @@ export const getActiveCivicPosts = async (limitOrOptions = 20, sort = "-created_
 
   const orderCol = resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = !resolvedSort.startsWith("-");
-  const { data, error } = await supabase
-    .from("unified_explore_feed")
-    .select("*")
-    .eq("status", "active")
-    .order(orderCol, { ascending })
-    .limit(limit * 2);
-  if (error) throw error;
+  const data = await queryFeedWithFallback((t) =>
+    supabase.from(t).select("*").eq("status", "active").order(orderCol, { ascending }).limit(limit * 2)
+  );
   return data.filter((p) => p.civic_receipt_id && isPubliclyVisible(p)).slice(0, limit);
 };
 
 export const getDistrictPosts = async (districtSlug, limit = 30) => {
-  const { data, error } = await supabase
-    .from("unified_explore_feed")
-    .select("*")
-    .eq("district_slug", districtSlug)
-    .eq("status", "active")
-    .order("created_date", { ascending: false })
-    .limit(limit * 2);
-  if (error) throw error;
+  const data = await queryFeedWithFallback((t) =>
+    supabase.from(t)
+      .select("*")
+      .eq("district_slug", districtSlug)
+      .eq("status", "active")
+      .order("created_date", { ascending: false })
+      .limit(limit * 2)
+  );
   return data.filter(isPubliclyVisible).slice(0, limit);
 };
 
 export const getDistrictCivicPosts = async (districtSlug, limit = 50) => {
-  const { data, error } = await supabase
-    .from("unified_explore_feed")
-    .select("*")
-    .eq("district_slug", districtSlug)
-    .eq("status", "active")
-    .order("created_date", { ascending: false })
-    .limit(limit * 2);
-  if (error) throw error;
+  const data = await queryFeedWithFallback((t) =>
+    supabase.from(t)
+      .select("*")
+      .eq("district_slug", districtSlug)
+      .eq("status", "active")
+      .order("created_date", { ascending: false })
+      .limit(limit * 2)
+  );
   return data.filter((p) => p.civic_receipt_id && isPubliclyVisible(p)).slice(0, limit);
 };
 
@@ -301,14 +309,14 @@ export const getCategoryPosts = async (categorySlug, limit = 20) => {
   if (categorySlug === "road-infrastructure") targetSlugs.push("road-problem");
   if (categorySlug === "road-problem") targetSlugs.push("road-infrastructure");
 
-  const { data, error } = await supabase
-    .from("unified_explore_feed")
-    .select("*")
-    .in("category_slug", targetSlugs)
-    .eq("status", "active")
-    .order("created_date", { ascending: false })
-    .limit(limit * 2);
-  if (error) throw error;
+  const data = await queryFeedWithFallback((t) =>
+    supabase.from(t)
+      .select("*")
+      .in("category_slug", targetSlugs)
+      .eq("status", "active")
+      .order("created_date", { ascending: false })
+      .limit(limit * 2)
+  );
   return data.filter(isPubliclyVisible).slice(0, limit);
 };
 

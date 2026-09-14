@@ -3,7 +3,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminListTnToday, adminGetTnTodayById, createTnToday,
-  updateTnToday, deleteTnToday, generateSlug, estimateReadingTime
+  updateTnToday, deleteTnToday, generateSlug, estimateReadingTime,
+  countTnTodayByStatus
 } from "@/services/tnToday";
 import RichEditor from "@/components/tntoday/RichEditor";
 import ImportTnToday from "@/components/tntoday/ImportTnToday";
@@ -165,6 +166,12 @@ export default function AdminTnToday() {
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ["admin-tn-today", filterStatus],
     queryFn: () => adminListTnToday({ status: filterStatus || null }),
+    staleTime: 30_000,
+  });
+
+  const { data: statusCounts = { all: 0, draft: 0, published: 0, scheduled: 0, archived: 0 } } = useQuery({
+    queryKey: ["admin-tn-today-counts"],
+    queryFn: countTnTodayByStatus,
     staleTime: 30_000,
   });
 
@@ -371,7 +378,7 @@ export default function AdminTnToday() {
         {/* Stats bar */}
         <div className="grid grid-cols-4 gap-3 mb-5">
           {["all", "draft", "published", "archived"].map(s => {
-            const count = s === "all" ? articles.length : articles.filter(a => a.status === s).length;
+            const count = statusCounts[s] ?? 0;
             return (
               <button key={s} onClick={() => setFilterStatus(s === "all" ? "" : s)}
                 className={cn("rounded-xl border p-3 text-left transition-all",
