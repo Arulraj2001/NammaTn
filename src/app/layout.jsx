@@ -116,6 +116,25 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-KH62BKVW');`,
           }}
         />
+        {/* Subscribe with Google (Google News) */}
+        <script
+          async
+          type="application/javascript"
+          src="https://news.google.com/swg/js/v1/swg-basic.js"
+        />
+        <script
+          id="swg-init"
+          dangerouslySetInnerHTML={{
+            __html: `(self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
+  basicSubscriptions.init({
+    type: "NewsArticle",
+    isPartOfType: ["Product"],
+    isPartOfProductId: "CAowlefHDA:openaccess",
+    clientOptions: { theme: "light", lang: "en" },
+  });
+});`,
+          }}
+        />
         {/* Synchronous theme init — runs before React hydration to prevent CLS */}
         <script
           id="theme-init"
