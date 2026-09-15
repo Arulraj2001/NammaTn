@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Share2, Link2, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getPostCanonicalUrl } from "@/lib/postUrl";
 
 function buildShareText(post, lang) {
   const title = lang === "ta" ? (post.title_ta || post.title_en) : post.title_en;
@@ -11,7 +12,7 @@ export default function ShareBar({ post, lang = "en", compact = false }) {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const url = `https://www.vizhitn.in/post/${post.id}`;
+  const url = getPostCanonicalUrl(post);
   const text = buildShareText(post, lang);
 
   const shareLinks = [

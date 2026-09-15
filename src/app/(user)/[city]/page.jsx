@@ -205,7 +205,7 @@ export default async function Page({ params }) {
                 key={report.id}
                 className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm"
               >
-                <Link href={`/post/${report.id}`} className="group">
+                <Link href={`/post/${report.slug || report.id}`} className="group">
                   <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {report.title_en}
                   </h3>

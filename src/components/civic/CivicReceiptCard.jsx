@@ -4,6 +4,7 @@ import { MapPin, Clock, Users } from "lucide-react";
 import CivicStatusBadge from "./CivicStatusBadge";
 import { getUrgency, getDaysOpen } from "@/lib/civicReceipt";
 import { useLanguage } from "@/context/LanguageContext";
+import { getPostUrl } from "@/lib/postUrl";
 
 export default function CivicReceiptCard({ post }) {
   const { lang } = useLanguage();
@@ -12,7 +13,7 @@ export default function CivicReceiptCard({ post }) {
   const days = getDaysOpen(post.created_date);
 
   return (
-    <Link to={`/post/${post.id}`} className="block group">
+    <Link to={getPostUrl(post)} className="block group">
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all">
         {/* Before photo */}
         {(post.before_photos?.[0] || post.media_urls?.[0]) && (

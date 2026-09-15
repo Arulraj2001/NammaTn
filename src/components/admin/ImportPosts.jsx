@@ -2,7 +2,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createPost } from "@/services/posts";
-import { translateTextToTamil } from "@/services/translate";
+import { ensureBilingualPost, isTamilText } from "@/services/translate";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { DISTRICTS } from "@/lib/districts";
@@ -177,11 +177,20 @@ const POST_FORMAT_SCHEMA = [
 ];
 
 function normalisePost(raw, idx) {
-  const title_en = (raw.title_en || raw.title || raw.heading || "").trim();
-  if (!title_en) throw new Error(`Item #${idx + 1}: Missing required title`);
+  const rawTitle = (raw.title_en || raw.title_ta || raw.title || raw.heading || "").trim();
+  if (!rawTitle) throw new Error(`Item #${idx + 1}: Missing required title`);
 
-  const content_en = (raw.content_en || raw.content || raw.description || raw.details || raw.body || "").trim();
-  if (!content_en) throw new Error(`Item #${idx + 1}: Missing required content`);
+  const rawContent = (raw.content_en || raw.content_ta || raw.content || raw.description || raw.details || raw.body || "").trim();
+  if (!rawContent) throw new Error(`Item #${idx + 1}: Missing required content`);
+
+  const isTitleTamil = isTamilText(rawTitle);
+  const isContentTamil = isTamilText(rawContent);
+
+  const title_en = (raw.title_en || (!isTitleTamil ? rawTitle : "") || "").trim();
+  const title_ta = (raw.title_ta || (isTitleTamil ? rawTitle : "") || "").trim();
+
+  const content_en = (raw.content_en || (!isContentTamil ? rawContent : "") || "").trim();
+  const content_ta = (raw.content_ta || (isContentTamil ? rawContent : "") || "").trim();
 
   const rawType = (raw.post_type || raw.type || "complaint").toLowerCase().trim();
   const post_type = VALID_TYPES.includes(rawType) ? rawType : "complaint";
@@ -208,10 +217,10 @@ function normalisePost(raw, idx) {
   );
 
   return {
-    title_en,
-    title_ta: raw.title_ta || "",
-    content_en,
-    content_ta: raw.content_ta || "",
+    title_en: title_en || (isTitleTamil ? "" : rawTitle),
+    title_ta: title_ta || (isTitleTamil ? rawTitle : ""),
+    content_en: content_en || (isContentTamil ? "" : rawContent),
+    content_ta: content_ta || (isContentTamil ? rawContent : ""),
     post_type,
     district_slug,
     district_name,
@@ -296,6 +305,7 @@ function parseCsvInput(text) {
 
 function PreviewCard({ post, index, onRemove }) {
   const [expanded, setExpanded] = useState(false);
+  const displayTitle = post.title_en || post.title_ta || "Untitled Post";
   return (
     <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-800">
       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60">
@@ -303,7 +313,7 @@ function PreviewCard({ post, index, onRemove }) {
           {index + 1}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{post.title_en}</p>
+          <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{displayTitle}</p>
           <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5 flex-wrap">
             <span className="capitalize bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded font-medium">
               {post.post_type.replace("_", " ")}
@@ -331,8 +341,10 @@ function PreviewCard({ post, index, onRemove }) {
       </div>
       {expanded && (
         <div className="p-3 space-y-2 text-xs border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-          <p><strong className="text-slate-600 dark:text-slate-400">Description:</strong> {post.content_en}</p>
+          {post.title_en && <p><strong className="text-slate-600 dark:text-slate-400">English Title:</strong> {post.title_en}</p>}
           {post.title_ta && <p><strong className="text-slate-600 dark:text-slate-400">Tamil Title:</strong> {post.title_ta}</p>}
+          {post.content_en && <p><strong className="text-slate-600 dark:text-slate-400">English Content:</strong> {post.content_en}</p>}
+          {post.content_ta && <p><strong className="text-slate-600 dark:text-slate-400">Tamil Content:</strong> {post.content_ta}</p>}
           {post.category_name && <p><strong className="text-slate-600 dark:text-slate-400">Category:</strong> {post.category_name}</p>}
           {post.department_routing && <p><strong className="text-slate-600 dark:text-slate-400">Department:</strong> {post.department_routing}</p>}
           {post.official_complaint_id && <p><strong className="text-slate-600 dark:text-slate-400">Portal Ref ID:</strong> {post.official_complaint_id}</p>}
@@ -432,19 +444,14 @@ export default function ImportPosts({ onDone }) {
     for (let i = 0; i < posts.length; i++) {
       const post = posts[i];
       try {
-        const payload = { ...post, status: importStatus };
+        let payload = { ...post, status: importStatus };
         if (autoTranslate) {
-          if (!payload.title_ta && payload.title_en) {
-            payload.title_ta = await translateTextToTamil(payload.title_en);
-          }
-          if (!payload.content_ta && payload.content_en) {
-            payload.content_ta = await translateTextToTamil(payload.content_en);
-          }
+          payload = await ensureBilingualPost(payload);
         }
         await createPost(payload);
-        success.push(post.title_en);
+        success.push(payload.title_en || payload.title_ta || `Post #${i + 1}`);
       } catch (e) {
-        failed.push({ title: post.title_en, error: e.message });
+        failed.push({ title: post.title_en || post.title_ta || `Post #${i + 1}`, error: e.message });
       }
       setProgress(i + 1);
     }
@@ -666,7 +673,7 @@ export default function ImportPosts({ onDone }) {
                   onChange={(e) => setAutoTranslate(e.target.checked)}
                   className="rounded border-slate-300 accent-blue-600"
                 />
-                Auto-translate missing Tamil titles/content
+                Automatic Dual-Language Translation (English ⇄ Tamil)
               </label>
 
               <select

@@ -143,26 +143,39 @@ export const getPosts = async (limit = 20, sort = "-created_date") => {
   );
 };
 
-export const getPostById = async (id) => {
-  if (!id) return null;
+export const getPostById = async (idOrSlug) => {
+  if (!idOrSlug) return null;
+  const raw = String(idOrSlug).trim();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(raw);
 
   // 1. Try post table
-  const { data: post, error: e1 } = await supabase
-    .from("post")
-    .select("*")
-    .eq("id", id)
-    .limit(1);
+  let postQuery = supabase.from("post").select("*");
+  if (isUuid) {
+    postQuery = postQuery.eq("id", raw);
+  } else {
+    postQuery = postQuery.eq("slug", raw);
+  }
+  const { data: post, error: e1 } = await postQuery.limit(1);
 
   if (!e1 && post && post.length > 0) {
     return post[0];
   }
 
+  // 1b. Fallback: try civic_receipt_id on post table if not found yet
+  if (!isUuid) {
+    const { data: byReceipt } = await supabase
+      .from("post")
+      .select("*")
+      .eq("civic_receipt_id", raw)
+      .limit(1);
+    if (byReceipt && byReceipt.length > 0) {
+      return byReceipt[0];
+    }
+  }
+
   // 2. Try situation_update table
-  const { data: sit, error: e2 } = await supabase
-    .from("situation_update")
-    .select("*")
-    .eq("id", id)
-    .limit(1);
+  const sitQuery = supabase.from("situation_update").select("*");
+  const { data: sit, error: e2 } = await (isUuid || /^\d+$/.test(raw) ? sitQuery.eq("id", raw) : sitQuery.eq("title", raw)).limit(1);
 
   if (!e2 && sit && sit.length > 0) {
     const s = sit[0];
@@ -179,11 +192,8 @@ export const getPostById = async (id) => {
   }
 
   // 3. Try scam_alert table
-  const { data: scam, error: e3 } = await supabase
-    .from("scam_alert")
-    .select("*")
-    .eq("id", id)
-    .limit(1);
+  const scamQuery = supabase.from("scam_alert").select("*");
+  const { data: scam, error: e3 } = await (isUuid || /^\d+$/.test(raw) ? scamQuery.eq("id", raw) : scamQuery.eq("title", raw)).limit(1);
 
   if (!e3 && scam && scam.length > 0) {
     const sc = scam[0];
@@ -200,11 +210,8 @@ export const getPostById = async (id) => {
   }
 
   // 4. Try emergency_post table
-  const { data: emerg, error: e4 } = await supabase
-    .from("emergency_post")
-    .select("*")
-    .eq("id", id)
-    .limit(1);
+  const emergQuery = supabase.from("emergency_post").select("*");
+  const { data: emerg, error: e4 } = await (isUuid || /^\d+$/.test(raw) ? emergQuery.eq("id", raw) : emergQuery.eq("title", raw)).limit(1);
 
   if (!e4 && emerg && emerg.length > 0) {
     const em = emerg[0];

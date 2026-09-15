@@ -8,6 +8,7 @@ import EngagementBadge, { computeBadge } from "@/components/engagement/Engagemen
 import ShareBar from "@/components/sharing/ShareBar";
 import { isCivicPost, getDaysOpen, getUrgency } from "@/lib/civicReceipt";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
+import { getPostUrl } from "@/lib/postUrl";
 
 const TYPE_CONFIG = {
   complaint: { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-50 dark:bg-red-900/20", label_en: "Complaint", label_ta: "புகார்" },
@@ -28,6 +29,7 @@ const PostCard = memo(function PostCard({ post }) {
 
   const type = TYPE_CONFIG[post.post_type] || TYPE_CONFIG.discussion;
   const TypeIcon = type.icon;
+  const postUrl = getPostUrl(post);
   const title = T(post.title_en, post.title_ta) || post.title_en;
   const content = T(post.content_en, post.content_ta) || post.content_en;
   const badge = computeBadge(post);
@@ -117,7 +119,7 @@ const PostCard = memo(function PostCard({ post }) {
 
         {/* Title — clickable link to post detail */}
         <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-          <Link to={`/post/${post.id}`} className="hover:underline">
+          <Link to={postUrl} className="hover:underline">
             {title}
           </Link>
         </h3>
@@ -131,7 +133,7 @@ const PostCard = memo(function PostCard({ post }) {
 
         {/* Media thumbnail — clickable link to post detail */}
         {firstPhoto && (
-          <Link to={`/post/${post.id}`} className="block mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
+          <Link to={postUrl} className="block mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
             <Image src={firstPhoto} alt={title} width={640} height={480} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" />
           </Link>
         )}
@@ -192,7 +194,7 @@ const PostCard = memo(function PostCard({ post }) {
         {/* Footer */}
         <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between gap-2">
           <Link
-            to={`/post/${post.id}`}
+            to={postUrl}
             className={`text-xs font-medium hover:underline ${isCivic ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
           >
             {isCivic ? T("View Civic Receipt →", "குடிமை ரசீது பார்க்க →") : T("Read more →", "மேலும் படிக்க →")}

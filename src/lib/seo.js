@@ -126,7 +126,7 @@ export function injectPostStructuredData(post) {
     datePublished: post.created_date,
     dateModified: post.updated_date || post.created_date,
     image: post.media_urls?.[0] || DEFAULT.image,
-    url: `${SITE_URL}/post/${post.id}`,
+    url: `${SITE_URL}/post/${post.slug || post.id}`,
     author: {
       '@type': post.is_anonymous ? 'Organization' : 'Person',
       name: post.is_anonymous ? 'Anonymous Citizen' : (post.author_name || 'VizhiTN Community'),
@@ -137,7 +137,7 @@ export function injectPostStructuredData(post) {
       url: SITE_URL,
       logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
     },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/post/${post.id}` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/post/${post.slug || post.id}` },
     inLanguage: 'en-IN',
     isAccessibleForFree: true,
     keywords: [post.category, post.district_name, post.area_name, 'Tamil Nadu civic'].filter(Boolean).join(', '),

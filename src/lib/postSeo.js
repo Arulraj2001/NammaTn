@@ -51,7 +51,7 @@ export function buildPostSeo(post = {}) {
     'public complaint',
   ]);
 
-  const canonicalUrl = (post.canonical_url || '').trim() || `${SITE_URL}/post/${post.id || slug}`;
+  const canonicalUrl = (post.canonical_url || '').trim() || `${SITE_URL}/post/${slug || post.id}`;
 
   return {
     slug,

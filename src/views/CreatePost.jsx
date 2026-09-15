@@ -12,6 +12,8 @@ import { DISTRICTS } from "@/lib/districts";
 import { CATEGORIES } from "@/lib/categories";
 import { base44 } from "@/api/base44Client";
 import { createPost } from "@/services/posts";
+import { ensureBilingualPost } from "@/services/translate";
+import { getPostUrl } from "@/lib/postUrl";
 import { getSettingsMap } from "@/services/admin/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -262,7 +264,7 @@ export default function CreatePost() {
       bribe_audio_url: mediaUrls.find(url => url.endsWith(".mp3") || url.endsWith(".wav") || url.endsWith(".ogg") || url.includes("audio")) || null,
     } : {};
 
-    const post = await createPost({
+    const rawPostPayload = {
       ...clean,
       title_en: clean.title_en?.trim(),
       content_en: clean.content_en?.trim(),
@@ -283,7 +285,10 @@ export default function CreatePost() {
       created_by: user?.full_name || user?.email,
       ...civicFields,
       ...bribeFields,
-    });
+    };
+
+    const bilingualPayload = await ensureBilingualPost(rawPostPayload);
+    const post = await createPost(bilingualPayload);
 
     setSubmittedPost(post);
     setSubmitted(true);
@@ -301,8 +306,8 @@ export default function CreatePost() {
 
     if (selectedType === "bribe") {
       setTimeout(() => navigate("/bribes"), 2000);
-    } else if (isCivicType && post?.id) {
-      setTimeout(() => navigate(`/post/${post.id}`), 1800);
+    } else if (isCivicType && post) {
+      setTimeout(() => navigate(getPostUrl(post)), 1800);
     } else {
       setTimeout(() => navigate("/explore"), 2000);
     }

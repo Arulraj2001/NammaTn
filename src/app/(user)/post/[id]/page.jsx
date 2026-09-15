@@ -1,5 +1,5 @@
 import PostDetail from '@/views/PostDetail';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { getPublicPostDetail } from '@/lib/postServer';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 import { toMetaDescription } from '@/lib/metaDescription';
@@ -7,6 +7,7 @@ import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { CATEGORY_MAP } from '@/lib/seo-data';
 import { buildPostSeo } from '@/lib/postSeo';
 import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
+import { getPostUrl, getPostCanonicalUrl } from '@/lib/postUrl';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }) {
     post.content_en || post.description,
     `Civic report from ${post.area_name || post.district_name || 'Tamil Nadu'}.`,
   );
-  const canonical = seo.canonical_url || `${SITE_URL}/post/${post.id}`;
+  const canonical = getPostCanonicalUrl(post);
   const image = post.before_photos?.[0] || post.media_urls?.[0] || post.image_url || `${SITE_URL}/og-image.png`;
 
   return {
@@ -44,14 +45,21 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const { post, complaintTrackers } = await getPublicPostDetail(params.id);
   if (!post) notFound();
-  const canonical = `${SITE_URL}/post/${params.id}`;
+
+  // If accessed by UUID or receipt ID, permanently redirect (308) to the clean keyword slug
+  if (post.slug && params.id !== post.slug) {
+    permanentRedirect(`/post/${post.slug}`);
+  }
+
+  const canonical = getPostCanonicalUrl(post);
+  const postUrlPath = getPostUrl(post);
   const title = post?.title_en || post?.title || 'Civic Report';
   const category = CATEGORY_MAP[post.category_slug];
 
   const newsArticleSchema = generateNewsArticleSchema({
     headline: post.title_en,
     description: post.seo_description || (post.content_en || '').slice(0, 160),
-    url: post.canonical_url || `${SITE_URL}/post/${post.id}`,
+    url: canonical,
     imageUrl: post.media_urls?.[0] || post.before_photos?.[0] || null,
     datePublished: post.created_date,
     dateModified: post.updated_date || post.created_date,
@@ -90,7 +98,7 @@ export default async function Page({ params }) {
       name: category.name,
       href: `/${post.district_slug}/${category.slug}`,
     }] : []),
-    { name: title, href: `/post/${params.id}` },
+    { name: title, href: postUrlPath },
   ];
 
   return (
