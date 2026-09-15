@@ -157,9 +157,9 @@ export default function Footer() {
               {[
                 { icon: <FacebookIcon />,  label: "Facebook", key: "social_facebook", defaultUrl: "https://facebook.com/vizhitn" },
                 { icon: <TwitterIcon />,   label: "Twitter", key: "social_twitter", defaultUrl: "https://twitter.com/vizhitn" },
-                { icon: <InstagramIcon />, label: "Instagram", key: "social_instagram", defaultUrl: "https://instagram.com/vizhitn" },
+                { icon: <InstagramIcon />, label: "Instagram", key: "social_instagram", defaultUrl: "https://www.instagram.com/vizhi_tn/" },
                 { icon: <TelegramIcon />,  label: "Telegram", key: "social_telegram", defaultUrl: "https://t.me/vizhitn" },
-                { icon: <WhatsAppIcon />,  label: "WhatsApp", key: "social_whatsapp", defaultUrl: "" },
+                { icon: <WhatsAppIcon />,  label: "WhatsApp", key: "social_whatsapp", defaultUrl: "https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228" },
               ].map(({ icon, label, key, defaultUrl }) => {
                 const url = settings[key] || defaultUrl;
                 if (!url || url.trim() === "") return null;
