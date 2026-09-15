@@ -68,7 +68,7 @@ export const getPublishedTnToday = async (arg = null) => {
 export const getTnTodayBySlug = async (slug) => {
   const { data, error } = await supabase
     .from(TABLE)
-    .select("id,title,title_ta,slug,subtitle,subtitle_ta,featured_image,social_image,category,author_name,publish_date,status,reading_time,content,content_ta,summary,summary_ta,why_it_matters,why_it_matters_ta,key_facts,key_facts_ta,timeline,timeline_ta,official_sources,related_civic_links,seo_title,seo_description,seo_keywords,canonical_url,is_featured,view_count,created_date,updated_date,district_slug,district_name")
+    .select("*")
     .eq("slug", slug)
     .eq("status", "published")
     .maybeSingle();
@@ -131,8 +131,11 @@ export const adminGetTnTodayById = async (id) => {
 // ─── Admin writes ─────────────────────────────────────────────────────────────
 
 const stripTamilFields = (payload) => {
-   
-  const { title_ta, subtitle_ta, summary_ta, content_ta, why_it_matters_ta, ...clean } = payload;
+  const {
+    title_ta, subtitle_ta, summary_ta, content_ta, why_it_matters_ta,
+    key_facts_ta, timeline_ta, seo_title_ta, seo_description_ta, seo_keywords_ta,
+    ...clean
+  } = payload;
   return clean;
 };
 

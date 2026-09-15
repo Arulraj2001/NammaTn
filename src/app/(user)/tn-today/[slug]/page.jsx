@@ -26,18 +26,51 @@ export async function generateMetadata({ params }) {
   const publishedTime = article.publish_date || article.created_date;
   const modifiedTime = article.updated_date || publishedTime;
 
+  const keywordsList = [
+    article.seo_keywords,
+    article.seo_keywords_ta,
+    article.category,
+    'Tamil Nadu News',
+    'TN Today',
+    'தமிழ்நாடு செய்திகள்',
+  ].filter(Boolean).join(', ');
+
+  const tamilTitle = article.seo_title_ta || article.title_ta || '';
+  const tamilDesc = article.seo_description_ta || article.subtitle_ta || article.summary_ta || '';
+
   return {
     title,
     description,
-    alternates: { canonical },
+    keywords: keywordsList,
+    alternates: {
+      canonical,
+      languages: {
+        'en-IN': canonical,
+        'ta-IN': `${canonical}?lang=ta`,
+        'x-default': canonical,
+      },
+    },
     openGraph: {
-      type: 'article', title: socialTitle, description, url: canonical, siteName: 'VizhiTN', locale: 'en_IN',
-      images: [{ url: image, width: 1200, height: 630, alt: title }],
-      publishedTime, modifiedTime,
+      type: 'article',
+      title: socialTitle,
+      description,
+      url: canonical,
+      siteName: 'VizhiTN',
+      locale: 'en_IN',
+      alternateLocale: ['ta_IN'],
+      images: [{ url: image, width: 1200, height: 675, alt: title }],
+      publishedTime,
+      modifiedTime,
       authors: [article.author_name || 'VizhiTN Editorial Team'],
       section: article.category || 'general',
     },
     twitter: { card: 'summary_large_image', title: socialTitle, description, images: [image] },
+    other: {
+      'article:published_time': publishedTime,
+      'article:modified_time': modifiedTime,
+      ...(tamilTitle ? { 'article:headline:ta': tamilTitle } : {}),
+      ...(tamilDesc ? { 'article:description:ta': tamilDesc } : {}),
+    },
   };
 }
 
@@ -48,8 +81,10 @@ export default async function Page({ params }) {
 
   const articleSchema = article
     ? generateNewsArticleSchema({
-        headline: article.title,
+        headline: article.seo_title || article.title,
+        headlineTa: article.seo_title_ta || article.title_ta || null,
         description: article.seo_description || (article.subtitle || '').slice(0, 160),
+        descriptionTa: article.seo_description_ta || (article.subtitle_ta || '').slice(0, 160),
         url: canonical,
         imageUrl: article.social_image || article.featured_image || null,
         datePublished: article.publish_date || article.created_date,

@@ -60,7 +60,7 @@ export async function getTnTodayArticle(slug) {
   try {
     const { data: article, error } = await supabase
       .from('tn_today')
-      .select(ARTICLE_DETAIL_FIELDS)
+      .select('*')
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle();

@@ -52,7 +52,7 @@ const EMPTY_FORM = {
   author_name: "VizhiTN Editorial Team", publish_date: "", status: "draft",
   reading_time: 5, content: "", content_ta: "", summary: "", summary_ta: "", why_it_matters: "", why_it_matters_ta: "",
   key_facts: "", timeline: "", official_sources: "", related_civic_links: "",
-  seo_title: "", seo_description: "", seo_keywords: "",
+  seo_title: "", seo_title_ta: "", seo_description: "", seo_description_ta: "", seo_keywords: "", seo_keywords_ta: "",
   social_image: "", is_featured: false,
 };
 
@@ -204,6 +204,8 @@ export default function AdminTnToday() {
 
   const [langSubTab, setLangSubTab] = useState("en");
   const [translating, setTranslating] = useState(false);
+  const [seoLangTab, setSeoLangTab] = useState("en");
+  const [translatingSeo, setTranslatingSeo] = useState(false);
 
   const handleAutoTranslate = async () => {
     if (!form.title && !form.content) {
@@ -236,6 +238,15 @@ export default function AdminTnToday() {
       const isSameAsEnglish = title_ta === form.title;
       console.log("[TRANSLATE] title_ta === form.title (UNCHANGED)?", isSameAsEnglish);
 
+      // Also translate SEO fields if empty
+      const seo_title_source = form.seo_title || form.title;
+      const seo_desc_source = form.seo_description || form.subtitle || form.summary;
+      const seo_kw_source = form.seo_keywords;
+
+      const seo_title_ta = form.seo_title_ta || (seo_title_source ? await translateTextToTamil(seo_title_source) : "");
+      const seo_description_ta = form.seo_description_ta || (seo_desc_source ? await translateTextToTamil(seo_desc_source) : "");
+      const seo_keywords_ta = form.seo_keywords_ta || (seo_kw_source ? await translateTextToTamil(seo_kw_source) : "");
+
       setForm(prev => ({
         ...prev,
         title_ta,
@@ -243,17 +254,51 @@ export default function AdminTnToday() {
         summary_ta,
         why_it_matters_ta,
         content_ta,
+        seo_title_ta: prev.seo_title_ta || seo_title_ta,
+        seo_description_ta: prev.seo_description_ta || seo_description_ta,
+        seo_keywords_ta: prev.seo_keywords_ta || seo_keywords_ta,
       }));
       setLangSubTab("ta");
       toast({ description: isSameAsEnglish
         ? "⚠️ Translation API may not be reachable. Check browser console (F12) for details."
-        : "⚡ Auto-translated to Tamil! Review or edit in the Tamil tab below."
+        : "⚡ Auto-translated to Tamil (including Tamil SEO)! Review or edit below."
       });
     } catch (err) {
       console.error("[TRANSLATE] ERROR:", err);
       toast({ description: `Translation failed: ${err.message}`, variant: "destructive" });
     } finally {
       setTranslating(false);
+    }
+  };
+
+  const handleAutoTranslateSeo = async () => {
+    const seo_title_source = form.seo_title || form.title;
+    const seo_desc_source = form.seo_description || form.subtitle || form.summary;
+    const seo_kw_source = form.seo_keywords;
+
+    if (!seo_title_source && !seo_desc_source) {
+      toast({ description: "Please enter English Title or SEO fields first.", variant: "destructive" });
+      return;
+    }
+
+    setTranslatingSeo(true);
+    try {
+      const seo_title_ta = seo_title_source ? await translateTextToTamil(seo_title_source) : "";
+      const seo_description_ta = seo_desc_source ? await translateTextToTamil(seo_desc_source) : "";
+      const seo_keywords_ta = seo_kw_source ? await translateTextToTamil(seo_kw_source) : "";
+
+      setForm(prev => ({
+        ...prev,
+        seo_title_ta,
+        seo_description_ta,
+        seo_keywords_ta,
+      }));
+      setSeoLangTab("ta");
+      toast({ description: "⚡ Tamil SEO fields auto-generated! You can edit or refine them below." });
+    } catch (err) {
+      toast({ description: `SEO translation failed: ${err.message}`, variant: "destructive" });
+    } finally {
+      setTranslatingSeo(false);
     }
   };
 
@@ -909,28 +954,95 @@ export default function AdminTnToday() {
       {/* ── TAB: SEO & PUBLISH ── */}
       {activeEditorTab === "seo" && (
         <div className="space-y-5">
+          {/* SEO Language Switcher & Quick Auto-Generate Button */}
+          <div className="flex items-center justify-between bg-slate-100 dark:bg-slate-800/80 p-2 rounded-2xl border border-slate-200 dark:border-slate-700 flex-wrap gap-2">
+            <div className="flex items-center gap-1 bg-white dark:bg-slate-900 p-1 rounded-xl shadow-xs border border-slate-200 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setSeoLangTab("en")}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
+                  seoLangTab === "en"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                )}
+              >
+                <span>🇬🇧</span> English SEO
+              </button>
+              <button
+                type="button"
+                onClick={() => setSeoLangTab("ta")}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
+                  seoLangTab === "ta"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                )}
+              >
+                <span>🇮🇳</span> தமிழ் SEO (Tamil)
+                {form.seo_title_ta && <span className="w-2 h-2 rounded-full bg-green-400 inline-block" title="Tamil SEO available" />}
+              </button>
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleAutoTranslateSeo}
+              disabled={translatingSeo}
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-sm flex items-center gap-1.5"
+            >
+              {translatingSeo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>⚡</span>}
+              {translatingSeo ? "Generating Tamil SEO…" : "Auto-Generate Tamil SEO (தானியங்கி தமிழ் எஸ்சிஓ)"}
+            </Button>
+          </div>
+
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 space-y-4">
             <h3 className="font-semibold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-              <Globe className="w-4 h-4 text-green-600" /> SEO Settings
+              <Globe className="w-4 h-4 text-green-600" />
+              {seoLangTab === "en" ? "English SEO Settings" : "தமிழ் எஸ்சிஓ அமைப்புகள் (Tamil SEO Settings)"}
             </h3>
 
-            <Field label="SEO Title" hint="Defaults to the article title if left blank">
-              <Input value={form.seo_title} onChange={e => setField("seo_title", e.target.value)}
-                placeholder={form.title || "SEO title..."} />
-              <p className="text-xs text-slate-400 mt-0.5">{(form.seo_title || form.title || "").length}/60 chars</p>
-            </Field>
+            {seoLangTab === "en" ? (
+              <>
+                <Field label="SEO Title (English)" hint="Defaults to the article title if left blank">
+                  <Input value={form.seo_title} onChange={e => setField("seo_title", e.target.value)}
+                    placeholder={form.title || "SEO title..."} />
+                  <p className="text-xs text-slate-400 mt-0.5">{(form.seo_title || form.title || "").length}/60 chars</p>
+                </Field>
 
-            <Field label="SEO Description">
-              <textarea value={form.seo_description} onChange={e => setField("seo_description", e.target.value)}
-                rows={2} placeholder="Compelling description for Google search results (150–160 chars)"
-                className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
-              <p className="text-xs text-slate-400 mt-0.5">{(form.seo_description).length}/160 chars</p>
-            </Field>
+                <Field label="SEO Description (English)">
+                  <textarea value={form.seo_description} onChange={e => setField("seo_description", e.target.value)}
+                    rows={2} placeholder="Compelling description for Google search results (150–160 chars)"
+                    className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+                  <p className="text-xs text-slate-400 mt-0.5">{(form.seo_description).length}/160 chars</p>
+                </Field>
 
-            <Field label="SEO Keywords" hint="Comma-separated keywords">
-              <Input value={form.seo_keywords} onChange={e => setField("seo_keywords", e.target.value)}
-                placeholder="Chennai Metro, Tamil Nadu, public transport, infrastructure" />
-            </Field>
+                <Field label="SEO Keywords (English)" hint="Comma-separated keywords">
+                  <Input value={form.seo_keywords} onChange={e => setField("seo_keywords", e.target.value)}
+                    placeholder="Chennai Metro, Tamil Nadu, public transport, infrastructure" />
+                </Field>
+              </>
+            ) : (
+              <>
+                <Field label="SEO Title (தமிழ் தலைப்பு)" hint="Google-ல் தமிழ் தேடல் முடிவுகளுக்கான தலைப்பு (காலி என்றால் தமிழ் தலைப்பு பயன்படுத்தப்படும்)">
+                  <Input value={form.seo_title_ta} onChange={e => setField("seo_title_ta", e.target.value)}
+                    placeholder={form.title_ta || form.seo_title || form.title || "தமிழ் எஸ்சிஓ தலைப்பு..."} />
+                  <p className="text-xs text-slate-400 mt-0.5">{(form.seo_title_ta || form.title_ta || "").length}/60 chars</p>
+                </Field>
+
+                <Field label="SEO Description (தமிழ் விளக்கம்)" hint="Google தேடலில் கீழ் தோன்றும் தமிழ் சுருக்கம் (150–160 எழுத்துக்கள்)">
+                  <textarea value={form.seo_description_ta} onChange={e => setField("seo_description_ta", e.target.value)}
+                    rows={2} placeholder="கூகிள் தேடல் முடிவுக்கான கவர்ச்சிகரமான தமிழ் விளக்கம் (150–160 எழுத்துக்கள்)..."
+                    className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+                  <p className="text-xs text-slate-400 mt-0.5">{(form.seo_description_ta || form.subtitle_ta || form.summary_ta || "").length}/160 chars</p>
+                </Field>
+
+                <Field label="SEO Keywords (தமிழ் முக்கிய வார்த்தைகள்)" hint="கால்புள்ளி கொண்டு பிரிக்கப்பட்ட தமிழ் தேடல் சொற்கள்">
+                  <Input value={form.seo_keywords_ta} onChange={e => setField("seo_keywords_ta", e.target.value)}
+                    placeholder="சென்னை மெட்ரோ, தமிழ்நாடு அரசு, பொது போக்குவரத்து, புதிய அறிவிப்பு" />
+                </Field>
+              </>
+            )}
 
             <Field label="Social Share Image URL" hint="Fallback to featured image if blank">
               <Input value={form.social_image} onChange={e => setField("social_image", e.target.value)}
@@ -938,21 +1050,40 @@ export default function AdminTnToday() {
             </Field>
           </div>
 
-          {/* SEO preview */}
-          {(form.title || form.seo_title) && (
+          {/* Dual Google Search Preview */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* English Google Preview */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
-              <p className="text-xs font-semibold text-slate-500 mb-3">GOOGLE SEARCH PREVIEW</p>
-              <div className="border border-slate-200 rounded-xl p-4 bg-white">
+              <p className="text-xs font-bold text-slate-500 mb-3 flex items-center gap-1.5">
+                <span>🇬🇧</span> GOOGLE SEARCH PREVIEW (ENGLISH)
+              </p>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-white dark:bg-slate-900">
                 <p className="text-[13px] text-slate-500 truncate">vizhitn.in › tn-today › {form.slug}</p>
-                <p className="text-blue-700 text-lg font-medium leading-tight mt-0.5 truncate">
-                  {form.seo_title || form.title} | VizhiTN
+                <p className="text-blue-700 dark:text-blue-400 text-base font-medium leading-tight mt-0.5 truncate">
+                  {form.seo_title || form.title || "Headline will appear here"} | VizhiTN
                 </p>
-                <p className="text-slate-600 text-sm mt-0.5 line-clamp-2">
-                  {form.seo_description || form.subtitle || "Article description will appear here..."}
+                <p className="text-slate-600 dark:text-slate-300 text-xs mt-1 line-clamp-2">
+                  {form.seo_description || form.subtitle || form.summary || "Article description will appear here on Google search..."}
                 </p>
               </div>
             </div>
-          )}
+
+            {/* Tamil Google Preview */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
+              <p className="text-xs font-bold text-slate-500 mb-3 flex items-center gap-1.5">
+                <span>🇮🇳</span> GOOGLE SEARCH PREVIEW (தமிழ்)
+              </p>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-white dark:bg-slate-900">
+                <p className="text-[13px] text-slate-500 truncate">vizhitn.in › tn-today › {form.slug}</p>
+                <p className="text-blue-700 dark:text-blue-400 text-base font-medium leading-tight mt-0.5 truncate">
+                  {form.seo_title_ta || form.title_ta || form.seo_title || form.title || "தமிழ் தலைப்பு இங்கே தோன்றும்"} | VizhiTN
+                </p>
+                <p className="text-slate-600 dark:text-slate-300 text-xs mt-1 line-clamp-2">
+                  {form.seo_description_ta || form.subtitle_ta || form.summary_ta || form.seo_description || form.subtitle || "கட்டுரையின் தமிழ் விளக்கம் கூகிள் தேடலில் இங்கே தோன்றும்..."}
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Article status control */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 space-y-4">

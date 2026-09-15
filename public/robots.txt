@@ -10,3 +10,4 @@ Disallow: /dashboard
 Disallow: /bookmarks
 Disallow: /me
 Sitemap: https://www.vizhitn.in/sitemap.xml
+Sitemap: https://www.vizhitn.in/sitemap-news.xml

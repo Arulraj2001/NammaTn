@@ -150,8 +150,11 @@ function normaliseArticle(raw) {
     official_sources:    serialiseLinks(raw.official_sources || raw.sources),
     related_civic_links: serialiseLinks(raw.related_civic_links || raw.related_links),
     seo_title:           raw.seo_title || raw.meta_title || title,
+    seo_title_ta:        raw.seo_title_ta || "",
     seo_description:     raw.seo_description || raw.meta_description || raw.subtitle || "",
+    seo_description_ta:  raw.seo_description_ta || "",
     seo_keywords:        Array.isArray(raw.seo_keywords) ? raw.seo_keywords.join(", ") : (raw.seo_keywords || raw.keywords || ""),
+    seo_keywords_ta:     Array.isArray(raw.seo_keywords_ta) ? raw.seo_keywords_ta.join(", ") : (raw.seo_keywords_ta || ""),
     social_image:        raw.social_image || raw.og_image || featured_image,
     is_featured:         raw.is_featured === true,
   };
@@ -541,6 +544,15 @@ export default function ImportTnToday({ onDone }) {
         }
         if (!payload.content_ta && payload.content) {
           payload.content_ta = await translateHtmlToTamil(payload.content);
+        }
+        if (!payload.seo_title_ta && (payload.seo_title || payload.title)) {
+          payload.seo_title_ta = await translateTextToTamil(payload.seo_title || payload.title);
+        }
+        if (!payload.seo_description_ta && (payload.seo_description || payload.subtitle || payload.summary)) {
+          payload.seo_description_ta = await translateTextToTamil(payload.seo_description || payload.subtitle || payload.summary);
+        }
+        if (!payload.seo_keywords_ta && payload.seo_keywords) {
+          payload.seo_keywords_ta = await translateTextToTamil(payload.seo_keywords);
         }
 
         await createTnToday(payload);

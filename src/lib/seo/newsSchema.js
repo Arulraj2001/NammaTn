@@ -4,7 +4,9 @@
 
 export function generateNewsArticleSchema({
   headline,
+  headlineTa,
   description,
+  descriptionTa,
   url,
   imageUrl,
   datePublished,
@@ -13,7 +15,7 @@ export function generateNewsArticleSchema({
   section,
   language = 'en-IN',
 }) {
-  return {
+  const schema = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: headline?.slice(0, 110) || '',
@@ -24,7 +26,7 @@ export function generateNewsArticleSchema({
           '@type': 'ImageObject',
           url: imageUrl,
           width: 1200,
-          height: 630,
+          height: 675,
         }
       : {
           '@type': 'ImageObject',
@@ -54,13 +56,19 @@ export function generateNewsArticleSchema({
       '@id': url || 'https://www.vizhitn.in',
     },
     articleSection: section || 'Civic News',
-    inLanguage: language,
+    inLanguage: headlineTa ? ['en-IN', 'ta-IN'] : language,
     isAccessibleForFree: true,
     copyrightHolder: {
       '@type': 'Organization',
       name: 'VizhiTN',
     },
   };
+
+  if (headlineTa) {
+    schema.alternativeHeadline = headlineTa.slice(0, 110);
+  }
+
+  return schema;
 }
 
 export function generateTamilNewsArticleSchema(params) {
