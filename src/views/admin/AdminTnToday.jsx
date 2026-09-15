@@ -56,6 +56,24 @@ const EMPTY_FORM = {
   social_image: "", is_featured: false,
 };
 
+function sanitizeArticleForForm(article) {
+  if (!article) return { ...EMPTY_FORM };
+  const res = { ...EMPTY_FORM };
+  for (const key of Object.keys(EMPTY_FORM)) {
+    if (article[key] !== undefined && article[key] !== null) {
+      res[key] = article[key];
+    }
+  }
+  if (article.publish_date) {
+    try {
+      res.publish_date = new Date(article.publish_date).toISOString().slice(0, 16);
+    } catch {
+      res.publish_date = String(article.publish_date).slice(0, 16);
+    }
+  }
+  return res;
+}
+
 // ─── Section accordion ────────────────────────────────────────────────────────
 function Accordion({ title, icon: Icon, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -114,7 +132,7 @@ function ArticleRow({ article, onEdit, onDelete, onToggleFeatured }) {
             <Clock className="w-3 h-3" />{article.reading_time || 5}m
           </span>
           {article.publish_date && (
-            <span className="text-xs text-slate-400 flex items-center gap-0.5">
+            <span suppressHydrationWarning className="text-xs text-slate-400 flex items-center gap-0.5">
               <Calendar className="w-3 h-3" />
               {format(new Date(article.publish_date), "dd MMM yyyy")}
             </span>
@@ -159,6 +177,7 @@ export default function AdminTnToday() {
   const [searchQ, setSearchQ] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loadingArticle, setLoadingArticle] = useState(false);
   const [activeEditorTab, setActiveEditorTab] = useState("content"); // "content" | "seo" | "structure"
   const [importOpen, setImportOpen] = useState(false);
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -284,15 +303,28 @@ export default function AdminTnToday() {
     setActiveEditorTab("content");
   };
 
-  const handleEdit = (article) => {
+  const handleEdit = async (article) => {
     setEditingId(article.id);
-    setForm({
-      ...EMPTY_FORM,
-      ...article,
-      publish_date: article.publish_date ? article.publish_date.slice(0, 16) : "",
-    });
+    setForm(sanitizeArticleForForm(article));
+    setLangSubTab("en");
     setView("editor");
     setActiveEditorTab("content");
+
+    try {
+      setLoadingArticle(true);
+      const fullArticle = await adminGetTnTodayById(article.id);
+      if (fullArticle) {
+        setForm(sanitizeArticleForForm(fullArticle));
+      }
+    } catch (err) {
+      console.error("Failed to load full article content:", err);
+      toast({
+        description: "Failed to load full article details from database. Please check connection.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingArticle(false);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -324,10 +356,12 @@ export default function AdminTnToday() {
         ? rawCat
         : (rawCat === "india" ? "governance" : "general");
 
+      const finalStatus = statusOverride || form.status;
+
       const payload = {
         ...form,
         category: validCat,
-        status: statusOverride || form.status,
+        status: finalStatus,
         publish_date: form.publish_date ? new Date(form.publish_date).toISOString() : null,
         seo_title: form.seo_title || form.title,
         seo_description: form.seo_description || form.subtitle || "",
@@ -335,10 +369,12 @@ export default function AdminTnToday() {
 
       if (editingId) {
         await updateTnToday(editingId, payload);
+        setForm(prev => ({ ...prev, status: finalStatus }));
         toast({ description: "Article updated!" });
       } else {
         const created = await createTnToday(payload);
         setEditingId(created.id);
+        setForm(prev => ({ ...prev, status: finalStatus }));
         toast({ description: "Article created!" });
       }
 
@@ -472,22 +508,30 @@ export default function AdminTnToday() {
         </span>
         {/* Action buttons */}
         <div className="flex items-center gap-2 flex-wrap">
-          <Button size="sm" variant="outline" onClick={handleDraft} disabled={saving}>
+          <Button size="sm" variant="outline" onClick={handleDraft} disabled={saving || loadingArticle}>
             <Save className="w-3.5 h-3.5 mr-1" /> Save Draft
           </Button>
-          <Button size="sm" variant="outline" onClick={handleSchedule} disabled={saving}>
+          <Button size="sm" variant="outline" onClick={handleSchedule} disabled={saving || loadingArticle}>
             <Calendar className="w-3.5 h-3.5 mr-1" /> Schedule
           </Button>
-          <Button size="sm" onClick={handlePublish} disabled={saving} className="bg-green-600 hover:bg-green-700 text-white">
+          <Button size="sm" onClick={handlePublish} disabled={saving || loadingArticle} className="bg-green-600 hover:bg-green-700 text-white">
             <Send className="w-3.5 h-3.5 mr-1" /> {saving ? "Saving…" : "Publish"}
           </Button>
           {form.status === "published" && (
-            <Button size="sm" variant="outline" onClick={handleArchive} disabled={saving} className="text-rose-600 border-rose-200 hover:bg-rose-50">
+            <Button size="sm" variant="outline" onClick={handleArchive} disabled={saving || loadingArticle} className="text-rose-600 border-rose-200 hover:bg-rose-50">
               <Archive className="w-3.5 h-3.5 mr-1" /> Archive
             </Button>
           )}
         </div>
       </div>
+
+      {/* Loading Full Content Banner */}
+      {loadingArticle && (
+        <div className="mb-5 flex items-center gap-2.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-4 py-3 rounded-2xl text-xs font-semibold shadow-xs animate-pulse">
+          <Loader2 className="w-4 h-4 animate-spin text-blue-600 flex-shrink-0" />
+          <span>Loading full article content, sections, and SEO fields from database…</span>
+        </div>
+      )}
 
       {/* Editor tabs */}
       <div className="flex gap-1 mb-5 border-b border-slate-200 dark:border-slate-700 pb-0">

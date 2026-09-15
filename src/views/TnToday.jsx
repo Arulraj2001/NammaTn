@@ -45,7 +45,7 @@ function FeaturedCard({ article }) {
 
       <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
         <div className="flex items-center gap-3 text-white/90 text-xs font-bold">
-          <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-blue-300" />
+          <span suppressHydrationWarning className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-blue-300" />
             {article.publish_date ? format(new Date(article.publish_date), "d MMM yyyy") : "Today"}
           </span>
           <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-amber-300" />{article.reading_time || 5} min read</span>
@@ -101,7 +101,7 @@ function ArticleCard({ article }) {
         )}
         <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-bold">
           {article.publish_date && (
-            <span className="flex items-center gap-1">
+            <span suppressHydrationWarning className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5 text-blue-500" />{format(new Date(article.publish_date), "d MMM yyyy")}
             </span>
           )}

@@ -5,10 +5,10 @@ const TABLE = "tn_today";
 
 // Canonicals are derived from the published VizhiTN slug. Never persist an
 // editorial override that could transfer ownership to another host or slug.
-// Also strip client UI fields (is_poster, prompt_text) not present in Supabase table.
+// Also strip client UI fields (is_poster, prompt_text) and primary/timestamp keys.
 const withCanonicalOwnership = (payload) => {
   // eslint-disable-next-line no-unused-vars
-  const { is_poster, prompt_text, ...clean } = payload;
+  const { is_poster, prompt_text, id, created_date, updated_date, ...clean } = payload;
   return { ...clean, canonical_url: null };
 };
 

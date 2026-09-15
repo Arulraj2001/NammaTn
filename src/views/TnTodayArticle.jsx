@@ -502,7 +502,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
             {/* Meta row */}
             <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 flex-wrap mb-5 pb-5 border-b border-slate-200 dark:border-slate-700">
-              <span className="flex items-center gap-1.5">
+              <span suppressHydrationWarning className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5" />
                 {format(pubDate, "d MMMM yyyy")}
               </span>
@@ -715,7 +715,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                           {a.title}
                         </p>
                         {a.publish_date && (
-                          <p className="text-xs text-slate-400 mt-0.5">
+                          <p suppressHydrationWarning className="text-xs text-slate-400 mt-0.5">
                             {format(new Date(a.publish_date), "d MMM yyyy")}
                           </p>
                         )}

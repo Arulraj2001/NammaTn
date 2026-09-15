@@ -169,7 +169,7 @@ export default function TnTodayCard({ className }) {
 
         {/* Footer Row */}
         <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-2">
-          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+          <span suppressHydrationWarning className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
             {article.publish_date ? format(new Date(article.publish_date), "d MMM") : "Today"}
           </span>
           <span className="inline-flex items-center gap-0.5 text-xs font-bold text-blue-600 dark:text-blue-400 group-hover:underline">
