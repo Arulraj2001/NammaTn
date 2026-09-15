@@ -1,7 +1,9 @@
 -- Ensure the unified_explore_feed view includes the post slug column
 -- so PostCard and Explore feeds can render SEO slugs directly.
 
-CREATE OR REPLACE VIEW unified_explore_feed AS
+DROP VIEW IF EXISTS unified_explore_feed;
+
+CREATE VIEW unified_explore_feed AS
 -- 1. Standard posts
 SELECT
   id,
