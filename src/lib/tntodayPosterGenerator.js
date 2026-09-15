@@ -10,13 +10,28 @@ export function isImagePrompt(val) {
   const trimmed = val.trim();
   if (trimmed.length === 0) return false;
 
-  // Real image URLs start with http://, https://, or data:image/
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:image/")) {
+  // Real image URLs start with http://, https://, data:image/, or blob:
+  if (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("data:image/") ||
+    trimmed.startsWith("blob:")
+  ) {
     return false;
   }
 
-  // Relative filepaths
-  if (trimmed.startsWith("/") && (trimmed.endsWith(".jpg") || trimmed.endsWith(".png") || trimmed.endsWith(".webp") || trimmed.endsWith(".svg"))) {
+  // Relative filepaths or storage paths
+  if (
+    trimmed.startsWith("/") &&
+    (trimmed.endsWith(".jpg") ||
+      trimmed.endsWith(".jpeg") ||
+      trimmed.endsWith(".png") ||
+      trimmed.endsWith(".webp") ||
+      trimmed.endsWith(".svg") ||
+      trimmed.endsWith(".gif") ||
+      trimmed.includes("/storage/") ||
+      trimmed.includes("/media/"))
+  ) {
     return false;
   }
 

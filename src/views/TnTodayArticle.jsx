@@ -18,7 +18,7 @@ import { getTnTodayCanonical } from "@/lib/tnTodayUrl";
 import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
 import { resolveArticleInternalLinks } from "@/lib/seo/internalLinker";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
-import { generateTnTodayPoster } from "@/lib/tntodayPosterGenerator";
+import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
 
 const CATEGORY_CONFIG = {
@@ -325,7 +325,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [autoTa, setAutoTa] = React.useState(null);
-  const [heroImg, setHeroImg] = React.useState("");
+  const [heroImg, setHeroImg] = React.useState(initialArticle?.featured_image || "");
 
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ["tn-today-article", slug],
@@ -433,7 +433,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   React.useEffect(() => {
     if (article) {
       const rawImg = (article.featured_image || "").trim();
-      if (isImageUrl(rawImg)) {
+      if (rawImg && (isImageUrl(rawImg) || !isImagePrompt(rawImg))) {
         setHeroImg(rawImg);
       } else {
         setHeroImg(generateTnTodayPoster({
@@ -524,8 +524,8 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
             {/* Featured image — render photo URL or fallback to auto-generated TNToday Branded Poster */}
             {heroImg ? (
-              <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
-                <Image src={heroImg} alt={displayTitle} width={1200} height={630} unoptimized className="w-full h-[260px] sm:h-[380px] object-cover" />
+              <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 bg-slate-950">
+                <Image src={heroImg} alt={displayTitle} width={1200} height={675} unoptimized className="w-full aspect-[16/9] max-h-[440px] sm:max-h-[500px] object-cover" />
               </div>
             ) : null}
 

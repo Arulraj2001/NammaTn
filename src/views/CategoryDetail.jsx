@@ -241,6 +241,11 @@ export default function CategoryDetail({ initialSlug, initialData }) {
                 className="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
+                  {article.featured_image && (
+                    <div className="mb-2.5 h-24 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+                      <img src={article.featured_image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    </div>
+                  )}
                   <span className="text-[10px] font-extrabold uppercase bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded font-mono block w-fit mb-2">
                     {article.category || "General"}
                   </span>

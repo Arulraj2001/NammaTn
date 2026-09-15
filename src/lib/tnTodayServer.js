@@ -6,18 +6,13 @@ import sanitizeHtml from 'sanitize-html';
 // exceeds Next.js's 2MB incremental cache limit and breaks SSR.
 // The client-side getPublishedTnToday query still includes it for card thumbnails.
 const ARTICLE_FIELDS = [
-  'id', 'title', 'title_ta', 'slug', 'subtitle', 'subtitle_ta', 'category',
+  'id', 'title', 'title_ta', 'slug', 'subtitle', 'subtitle_ta', 'featured_image', 'category',
   'author_name', 'publish_date', 'reading_time', 'summary',
   'is_featured', 'view_count',
 ].join(',');
 
-// Detail query excludes the base64 image blob columns (featured_image and
-// social_image both can hold a ~1.2MB PNG data URI). A single select('*') row
-// then exceeds Next.js's 2MB incremental cache limit and breaks SSR. The
-// detail view renders a generated poster when featured_image is absent, and
-// page metadata falls back to the site OG image.
 const ARTICLE_DETAIL_FIELDS = [
-  'id', 'title', 'title_ta', 'slug', 'subtitle', 'subtitle_ta', 'category',
+  'id', 'title', 'title_ta', 'slug', 'subtitle', 'subtitle_ta', 'featured_image', 'social_image', 'category',
   'author_name', 'publish_date', 'status', 'reading_time',
   'content', 'content_ta', 'summary', 'summary_ta',
   'why_it_matters', 'why_it_matters_ta',

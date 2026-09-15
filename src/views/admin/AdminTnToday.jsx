@@ -713,6 +713,18 @@ export default function AdminTnToday() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => {
+                        const imgTag = `<p><img src="${form.featured_image}" alt="${form.title || 'TN Today Article'}" class="w-full rounded-2xl my-4" /></p>`;
+                        setField("content", (form.content || "") + imgTag);
+                        toast({ description: "Image inserted into article content body!" });
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-lg border border-emerald-500 transition-transform hover:scale-105"
+                      title="Insert this image directly inside the article content body"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Insert in Body
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => fileInputRef.current?.click()}
                       className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-lg border border-slate-600 transition-transform hover:scale-105"
                     >
