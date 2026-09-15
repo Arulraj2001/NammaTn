@@ -8,6 +8,7 @@ import {
 } from "@/services/tnToday";
 import RichEditor from "@/components/tntoday/RichEditor";
 import ImportTnToday from "@/components/tntoday/ImportTnToday";
+import TnTodayImageCropModal from "@/components/tntoday/TnTodayImageCropModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
@@ -15,7 +16,7 @@ import {
   Plus, Edit, Trash2, Eye, Save, Send, Archive, Star, StarOff,
   Clock, Calendar, Tag, FileText, Globe, Search, X, ArrowLeft,
   CheckCircle2, AlertCircle, BookOpen, ChevronDown, Image, Link2,
-  List, RefreshCw, FileJson, Loader2
+  List, RefreshCw, FileJson, Loader2, Upload, Crop
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -160,6 +161,9 @@ export default function AdminTnToday() {
   const [saving, setSaving] = useState(false);
   const [activeEditorTab, setActiveEditorTab] = useState("content"); // "content" | "seo" | "structure"
   const [importOpen, setImportOpen] = useState(false);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const fileInputRef = React.useRef(null);
   const qc = useQueryClient();
   const { toast } = useToast();
 
@@ -235,6 +239,25 @@ export default function AdminTnToday() {
   };
 
   const setField = useCallback((key, val) => setForm(f => ({ ...f, [key]: val })), []);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImageFile(file);
+      setCropModalOpen(true);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleUploadComplete = ({ url, size, originalSize }) => {
+    setField("featured_image", url);
+    setField("social_image", url);
+    const savedPct = originalSize ? Math.round((1 - size / originalSize) * 100) : null;
+    toast({
+      title: "Image Uploaded Successfully",
+      description: `Optimized to 1200×675 WebP (${(size / 1024).toFixed(1)} KB)${savedPct ? ` · Saved ${savedPct}%` : ""}. Fitted to card!`,
+    });
+  };
 
   // Auto-generate slug from title
   useEffect(() => {
@@ -590,10 +613,38 @@ export default function AdminTnToday() {
               </Field>
             </div>
 
-            <Field label="Featured Image URL">
+            <Field label="Featured Image (16:9 Article Card)">
+              {/* Hidden file picker input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+
               <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
-                <Input value={form.featured_image} onChange={e => setField("featured_image", e.target.value)}
-                  placeholder="https://... or prompt text" className="flex-1" />
+                <Input
+                  value={form.featured_image}
+                  onChange={e => {
+                    setField("featured_image", e.target.value);
+                    if (!form.social_image) setField("social_image", e.target.value);
+                  }}
+                  placeholder="https://... or click Upload to crop"
+                  className="flex-1"
+                />
+
+                {/* Main Upload & Crop Button */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-3.5 py-2 text-xs font-extrabold bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors cursor-pointer"
+                  title="Upload image, interactive crop, zoom (0.4x-3.0x), and auto-compress to 16:9 card size"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Upload & Crop</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={async () => {
@@ -610,7 +661,7 @@ export default function AdminTnToday() {
                   className="px-3 py-2 text-xs font-extrabold bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors"
                   title="Generate Clean Full-Banner TNToday News Poster (Without Square Box)"
                 >
-                  🎨 Full-Banner Poster
+                  🎨 Full-Banner
                 </button>
                 <button
                   type="button"
@@ -628,7 +679,7 @@ export default function AdminTnToday() {
                   className="px-3 py-2 text-xs font-extrabold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors"
                   title="Generate TNToday News Poster with Bottom-Right Square Topic Photo Inset"
                 >
-                  🖼️ Square Box Poster
+                  🖼️ Square Box
                 </button>
                 <button
                   type="button"
@@ -638,15 +689,65 @@ export default function AdminTnToday() {
                     setField("featured_image", aiPhoto);
                     setField("social_image", aiPhoto);
                   }}
-                  className="px-3 py-2 text-xs font-extrabold bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors"
+                  className="px-3 py-2 text-xs font-extrabold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap shadow-sm transition-colors"
                   title="Fetch AI Photo from Prompt/Title"
                 >
                   ⚡ AI Photo
                 </button>
               </div>
-              {form.featured_image && (
-                <div className="mt-2 relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
-                  <img src={form.featured_image} alt="preview" className="h-36 w-full object-cover" />
+
+              {/* Image Preview or Dropzone */}
+              {form.featured_image ? (
+                <div className="mt-2.5 relative rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group bg-slate-950 shadow-md">
+                  <img src={form.featured_image} alt="Article Card Preview" className="h-44 sm:h-52 w-full object-cover" />
+                  <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5 backdrop-blur-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedImageFile(form.featured_image);
+                        setCropModalOpen(true);
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-lg transition-transform hover:scale-105"
+                    >
+                      <Crop className="w-3.5 h-3.5" /> Re-crop / Adjust (16:9)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-lg border border-slate-600 transition-transform hover:scale-105"
+                    >
+                      <Upload className="w-3.5 h-3.5" /> Replace Photo
+                    </button>
+                  </div>
+                  <div className="absolute top-2.5 left-2.5 pointer-events-none">
+                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-black/70 text-white backdrop-blur-xs border border-white/10 shadow-sm">
+                      16:9 Card Preview
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={e => { e.preventDefault(); }}
+                  onDrop={e => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file) {
+                      setSelectedImageFile(file);
+                      setCropModalOpen(true);
+                    }
+                  }}
+                  className="mt-2.5 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/50 dark:bg-slate-800/30 transition-all group"
+                >
+                  <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Upload className="w-5 h-5" />
+                  </div>
+                  <p className="text-xs font-extrabold text-slate-800 dark:text-slate-200 mb-0.5">
+                    Click to upload or drag & drop article card image
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    Supports JPG, PNG, WEBP • Auto-fits 16:9 card & compresses to &lt;85 KB
+                  </p>
                 </div>
               )}
             </Field>
@@ -826,6 +927,15 @@ export default function AdminTnToday() {
           </div>
         </div>
       )}
+
+      {/* TN Today Image Crop & Studio Modal */}
+      <TnTodayImageCropModal
+        isOpen={cropModalOpen}
+        imageFile={selectedImageFile}
+        onClose={() => setCropModalOpen(false)}
+        onUploadComplete={handleUploadComplete}
+        articleSlug={form.slug || generateSlug(form.title) || "tn-today"}
+      />
     </div>
   );
 }
