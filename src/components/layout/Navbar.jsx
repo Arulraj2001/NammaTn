@@ -159,7 +159,7 @@ export default function Navbar() {
           .marquee-content:hover {
             animation-play-state: paused;
           }
-          main {
+          #main-content {
             padding-top: 96px !important;
           }
         `}</style>

@@ -113,6 +113,39 @@ function parsePipeLines(text) {
   }).filter(r => r.label);
 }
 
+function parseKeyFacts(text) {
+  if (!text) return [];
+  const items = parsePipeLines(text);
+  return items.map(item => {
+    if (item.value) return item;
+    const full = (item.label || "").trim();
+    const colonMatch = full.match(/^([^:]{3,50}):\s+(.+)$/);
+    if (colonMatch) {
+      return { label: colonMatch[1].trim(), value: colonMatch[2].trim() };
+    }
+    return { label: full, value: "" };
+  }).filter(f => f.label);
+}
+
+function parseTimelineLines(text) {
+  if (!text) return [];
+  const items = parsePipeLines(text);
+  return items.map(item => {
+    if (item.value) {
+      return { date: item.label, event: item.value };
+    }
+    const full = (item.label || "").trim();
+    const colonMatch = full.match(/^([^:]{3,55}):\s+(.+)$/);
+    if (colonMatch) {
+      return { date: colonMatch[1].trim(), event: colonMatch[2].trim() };
+    }
+    const dashMatch = full.match(/^([^-]{3,55})\s+-\s+(.+)$/);
+    if (dashMatch) {
+      return { date: dashMatch[1].trim(), event: dashMatch[2].trim() };
+    }
+    return { date: "", event: full };
+  }).filter(t => t.event || t.date);
+}
 
 // ─── Share helpers ────────────────────────────────────────────────────────────
 function ShareRow({ url, title }) {
@@ -172,30 +205,32 @@ function SectionCard({ icon, title, accent = "blue", children }) {
 
 // ─── Key Highlights Card ───────────────────────────────────────────────────────
 function KeyHighlightsCard({ keyFacts }) {
+  if (!keyFacts || keyFacts.length === 0) return null;
+
   return (
-    <div className="bg-emerald-50/40 dark:bg-emerald-950/20 border-2 border-emerald-500/80 dark:border-emerald-500/60 rounded-3xl p-5 sm:p-6 shadow-md mb-8 relative overflow-hidden">
+    <div className="bg-emerald-50/40 dark:bg-emerald-950/20 border-2 border-emerald-500/80 dark:border-emerald-500/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md mb-8 relative overflow-hidden">
       <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b-2 border-emerald-200 dark:border-emerald-800/80">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md flex-shrink-0">
-            <CheckCircle2 className="w-5 h-5" />
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md flex-shrink-0">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">Key Highlights</h2>
-            <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">Essential facts and key takeaways</p>
+          <div className="min-w-0">
+            <h2 className="text-sm sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Key Highlights</h2>
+            <p className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 truncate">Essential facts and key takeaways</p>
           </div>
         </div>
-        <span className="bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-extrabold shadow-2xs">
+        <span className="bg-emerald-600 text-white text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full font-extrabold shadow-2xs flex-shrink-0">
           {keyFacts.length} points
         </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5 sm:space-y-3">
         {keyFacts.map((fact, i) => (
-          <div key={i} className="flex items-start gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border-2 border-emerald-200 dark:border-emerald-800/80 shadow-xs hover:border-emerald-500 transition-all">
-            <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">
-              ✓
+          <div key={i} className="flex items-start gap-2.5 sm:gap-3 bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-emerald-200 dark:border-emerald-800/80 shadow-xs hover:border-emerald-500 transition-all">
+            <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
-            <div className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
+            <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed break-words flex-1 min-w-0">
               {fact.value ? (
                 <>
                   <strong className="text-emerald-950 dark:text-emerald-200 font-bold">{fact.label}:</strong> {fact.value}
@@ -213,50 +248,50 @@ function KeyHighlightsCard({ keyFacts }) {
 
 // ─── Timeline Card ────────────────────────────────────────────────────────────
 function TimelineCard({ timelineEvents }) {
+  if (!timelineEvents || timelineEvents.length === 0) return null;
+
   return (
-    <div className="bg-blue-50/40 dark:bg-blue-950/20 border-2 border-blue-500/80 dark:border-blue-500/60 rounded-3xl p-5 sm:p-6 shadow-md mb-8 relative overflow-hidden">
-      <div className="flex items-center justify-between gap-3 mb-6 pb-3 border-b-2 border-blue-200 dark:border-blue-800/80">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md flex-shrink-0">
-            <Clock className="w-5 h-5" />
+    <div className="bg-blue-50/40 dark:bg-blue-950/20 border-2 border-blue-500/80 dark:border-blue-500/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md mb-8 relative overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3 mb-5 sm:mb-6 pb-3 border-b-2 border-blue-200 dark:border-blue-800/80">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md flex-shrink-0">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">Timeline</h2>
-            <p className="text-[11px] font-semibold text-blue-700 dark:text-blue-300">Chronological developments</p>
+          <div className="min-w-0">
+            <h2 className="text-sm sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Timeline</h2>
+            <p className="text-[10px] sm:text-[11px] font-semibold text-blue-700 dark:text-blue-300 truncate">Chronological developments</p>
           </div>
         </div>
-        <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-extrabold shadow-2xs">
+        <span className="bg-blue-600 text-white text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full font-extrabold shadow-2xs flex-shrink-0">
           {timelineEvents.length} events
         </span>
       </div>
 
-      <div className="relative pl-3 space-y-5">
-        {/* Track Line */}
-        <div className="absolute left-[19px] top-3 bottom-4 w-1 bg-blue-400 dark:bg-blue-600 rounded-full" />
+      {/* Timeline items with centered track line */}
+      <div className="relative pl-1 sm:pl-2 space-y-4 sm:space-y-5">
+        {/* Track Line - perfectly centered through 28px/32px step circles */}
+        <div className="absolute left-[17px] sm:left-[23px] top-3 bottom-4 w-0.5 bg-blue-300 dark:bg-blue-700 rounded-full" />
 
         {timelineEvents.map((ev, i) => (
-          <div key={i} className="flex items-start gap-4 group relative">
-            {/* Node Dot */}
-            <div className="relative z-10 w-8 h-8 rounded-xl bg-white dark:bg-slate-900 border-2 border-blue-600 text-blue-600 shadow-md flex items-center justify-center flex-shrink-0 font-extrabold text-xs group-hover:scale-110 transition-transform">
+          <div key={i} className="flex items-start gap-2.5 sm:gap-4 group relative">
+            {/* Step Circle */}
+            <div className="relative z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white dark:bg-slate-900 border-2 border-blue-600 text-blue-600 shadow-sm flex items-center justify-center flex-shrink-0 font-extrabold text-xs group-hover:scale-110 transition-transform">
               {i + 1}
             </div>
 
             {/* Content Box */}
-            <div className="flex-1 bg-white dark:bg-slate-900 p-4 rounded-2xl border-2 border-blue-200 dark:border-blue-800/80 shadow-xs hover:border-blue-500 transition-all">
-              {ev.label && (
-                <div className="mb-1.5">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 font-bold text-xs shadow-2xs border border-blue-300 dark:border-blue-700">
-                    <Calendar className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                    {ev.label}
+            <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-blue-200 dark:border-blue-800/80 shadow-xs hover:border-blue-500 transition-all">
+              {ev.date && (
+                <div className="mb-1.5 flex flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 font-bold text-[11px] sm:text-xs shadow-2xs border border-blue-300 dark:border-blue-700 max-w-full break-words">
+                    <Calendar className="w-3 h-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                    <span className="truncate sm:overflow-visible sm:whitespace-normal">{ev.date}</span>
                   </span>
                 </div>
               )}
-              <div className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
-                {ev.value ? (
-                  <span>{ev.value}</span>
-                ) : (
-                  <span>{ev.label}</span>
-                )}
+              <div className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed break-words">
+                {ev.event || ev.date}
               </div>
             </div>
           </div>
@@ -268,31 +303,33 @@ function TimelineCard({ timelineEvents }) {
 
 // ─── Official Sources Card ────────────────────────────────────────────────────
 function OfficialSourcesCard({ officialSources }) {
+  if (!officialSources || officialSources.length === 0) return null;
+
   return (
-    <div className="bg-slate-50/40 dark:bg-slate-900/30 border-2 border-slate-400/80 dark:border-slate-600/80 rounded-3xl p-5 sm:p-6 shadow-md mb-8 relative overflow-hidden">
-      <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-200 dark:border-slate-800">
-        <div className="w-10 h-10 rounded-2xl bg-slate-700 text-white flex items-center justify-center shadow-md flex-shrink-0">
-          <ExternalLink className="w-5 h-5" />
+    <div className="bg-slate-50/40 dark:bg-slate-900/30 border-2 border-slate-400/80 dark:border-slate-600/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md mb-8 relative overflow-hidden">
+      <div className="flex items-center gap-2.5 sm:gap-3 mb-4 pb-3 border-b-2 border-slate-200 dark:border-slate-800">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-slate-700 text-white flex items-center justify-center shadow-md flex-shrink-0">
+          <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
-        <div>
-          <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">Official Sources</h2>
-          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Verified links & documentation</p>
+        <div className="min-w-0">
+          <h2 className="text-sm sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Official Sources</h2>
+          <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Verified links & documentation</p>
         </div>
       </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-2 sm:space-y-2.5">
         {officialSources.map((src, i) => (
           <a
             key={i}
             href={src.value}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-all group shadow-2xs"
+            className="flex items-center justify-between p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-all group shadow-2xs gap-3"
           >
-            <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+            <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 break-words flex-1 min-w-0">
               {src.label}
             </span>
-            <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+            <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
           </a>
         ))}
       </div>
@@ -423,8 +460,8 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const pubDate = article.publish_date ? new Date(article.publish_date) : new Date(article.created_date);
   const pageUrl = getTnTodayCanonical(article.slug);
 
-  const keyFacts = parsePipeLines(article.key_facts);
-  const timelineEvents = parsePipeLines(article.timeline);
+  const keyFacts = parseKeyFacts(article.key_facts);
+  const timelineEvents = parseTimelineLines(article.timeline);
   const officialSources = parsePipeLines(article.official_sources);
   const relatedLinks = parsePipeLines(article.related_civic_links);
 
@@ -446,16 +483,16 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   }, [article, displayTitle, displaySubtitle]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
       {/* ── Top editorial bar ── */}
-      <div className="bg-blue-700 text-white">
-        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between text-xs gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-bold tracking-wide">📰 TN TODAY</span>
-            <span className="opacity-60">·</span>
-            <span className="opacity-80">{T("Today's most important story from Tamil Nadu", "தமிழ்நாட்டின் இன்றைய முக்கியமான செய்தி")}</span>
+      <div className="bg-blue-700 text-white overflow-hidden">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs gap-1 sm:gap-3">
+          <div className="flex items-center gap-2 min-w-0 max-w-full">
+            <span className="font-bold tracking-wide flex-shrink-0">📰 TN TODAY</span>
+            <span className="opacity-60 hidden sm:inline">·</span>
+            <span className="opacity-85 truncate sm:overflow-visible sm:whitespace-normal">{T("Today's most important story from Tamil Nadu", "தமிழ்நாட்டின் இன்றைய முக்கியமான செய்தி")}</span>
           </div>
-          <div className="flex items-center gap-1 opacity-80">
+          <div className="hidden sm:flex items-center gap-1 opacity-80 flex-shrink-0">
             <Clock className="w-3 h-3" />
             <span>{T("Published daily at 8:00 AM", "தினமும் காலை 8:00 மணிக்கு வெளியீடு")}</span>
           </div>
@@ -463,24 +500,24 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
       </div>
 
       {/* ── Breadcrumb ── */}
-      <nav className="max-w-6xl mx-auto px-4 py-3" aria-label="Breadcrumb">
-        <ol className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
-          <li><Link to="/" className="hover:text-blue-600 transition-colors">{T("Home", "முகப்பு")}</Link></li>
-          <ChevronRight className="w-3 h-3 flex-shrink-0" />
-          <li><Link to="/tn-today" className="hover:text-blue-600 transition-colors">TN Today</Link></li>
-          <ChevronRight className="w-3 h-3 flex-shrink-0" />
-          <li><Link to={`/tn-today/category/${article.category}`} className="hover:text-blue-600 transition-colors capitalize">{article.category}</Link></li>
-          <ChevronRight className="w-3 h-3 flex-shrink-0" />
-          <li className="text-slate-700 dark:text-slate-300 truncate max-w-[200px]">{displayTitle}</li>
+      <nav className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 overflow-hidden" aria-label="Breadcrumb">
+        <ol className="flex items-center gap-1 sm:gap-1.5 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
+          <li><Link to="/" className="hover:text-blue-600 transition-colors whitespace-nowrap">{T("Home", "முகப்பு")}</Link></li>
+          <ChevronRight className="w-3 h-3 flex-shrink-0 opacity-60" />
+          <li><Link to="/tn-today" className="hover:text-blue-600 transition-colors whitespace-nowrap">TN Today</Link></li>
+          <ChevronRight className="w-3 h-3 flex-shrink-0 opacity-60" />
+          <li><Link to={`/tn-today/category/${article.category}`} className="hover:text-blue-600 transition-colors capitalize whitespace-nowrap">{article.category}</Link></li>
+          <ChevronRight className="w-3 h-3 flex-shrink-0 opacity-60" />
+          <li className="text-slate-700 dark:text-slate-300 truncate max-w-[130px] sm:max-w-[260px]">{displayTitle}</li>
         </ol>
       </nav>
 
       {/* ── Main 2-col layout ── */}
-      <div className="max-w-6xl mx-auto px-4 pb-16">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 pb-28 sm:pb-20">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
           {/* ═══ LEFT: Article body ═══ */}
-          <main className="flex-1 min-w-0">
+          <article className="flex-1 min-w-0 w-full max-w-full">
             {/* Category badge */}
             <div className="mb-3">
               <span className={cn("inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full", cat.color)}>
@@ -489,35 +526,37 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
             </div>
 
             {/* Title */}
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight mb-3">
+            <h1 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white leading-snug sm:leading-tight mb-3 break-words">
               {displayTitle}
             </h1>
 
             {/* Subtitle */}
             {displaySubtitle && (
-              <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-4 font-normal">
+              <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-4 font-normal break-words">
                 {displaySubtitle}
               </p>
             )}
 
             {/* Meta row */}
-            <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 flex-wrap mb-5 pb-5 border-b border-slate-200 dark:border-slate-700">
-              <span suppressHydrationWarning className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5" />
-                {format(pubDate, "d MMMM yyyy")}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5" />
-                {article.author_name || "VizhiTN Editorial Team"}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                {article.reading_time || 5} min read
-              </span>
+            <div className="flex items-center justify-between sm:justify-start gap-x-3 sm:gap-x-4 gap-y-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 flex-wrap mb-5 pb-4 sm:pb-5 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                <span suppressHydrationWarning className="flex items-center gap-1.5 whitespace-nowrap">
+                  <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                  {format(pubDate, "d MMMM yyyy")}
+                </span>
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <User className="w-3.5 h-3.5 flex-shrink-0" />
+                  {article.author_name || "VizhiTN Editorial Team"}
+                </span>
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                  {article.reading_time || 5} min read
+                </span>
+              </div>
               <button onClick={() => {
                 navigator.share?.({ title: displayTitle, url: pageUrl }) ||
                 navigator.clipboard.writeText(pageUrl);
-              }} className="flex items-center gap-1.5 ml-auto text-blue-600 hover:text-blue-700 font-medium">
+              }} className="flex items-center gap-1.5 sm:ml-auto text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm flex-shrink-0 py-1 px-2.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors">
                 <Share2 className="w-3.5 h-3.5" /> {T("Share", "பகிர்")}
               </button>
             </div>
@@ -531,13 +570,13 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
             {/* Why it matters callout */}
             {displayWhyItMatters && (
-              <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-2xl p-4 mb-6">
+              <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-2xl p-3.5 sm:p-4 mb-6">
                 <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide mb-1">
                     {T("Why this matters to Tamil Nadu", "இது ஏன் தமிழ்நாட்டிற்கு முக்கியம்")}
                   </p>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{displayWhyItMatters}</p>
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed break-words">{displayWhyItMatters}</p>
                 </div>
               </div>
             )}
@@ -546,7 +585,8 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
             {article.content && (
               <div
                 className={cn(
-                  "prose prose-slate dark:prose-invert max-w-none mb-8",
+                  "prose prose-slate dark:prose-invert max-w-none mb-8 break-words overflow-hidden",
+                  "[&_table]:block [&_table]:overflow-x-auto [&_pre]:overflow-x-auto [&_img]:max-w-full [&_img]:h-auto",
                   "prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white",
                   "prose-h2:text-xl prose-h2:mt-8 prose-h2:flex prose-h2:items-center prose-h2:gap-2",
                   "prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed",
@@ -607,9 +647,9 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
             {/* SEO Authority Internal Links Block */}
             {seoLinks.district && (
-              <div className="mt-6 bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-2xl p-5 border border-slate-800 shadow-md">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div className="space-y-1">
+              <div className="mt-6 bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-md">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1 min-w-0">
                     <span className="text-[11px] uppercase tracking-wider font-extrabold text-blue-400 bg-blue-950/80 px-2.5 py-0.5 rounded-md border border-blue-800">
                       📍 {seoLinks.district.name_en} Civic Hub
                     </span>
@@ -622,7 +662,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                   </div>
                   <Link
                     to={seoLinks.districtUrl}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm whitespace-nowrap self-center"
+                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm whitespace-nowrap w-full sm:w-auto"
                   >
                     Explore {seoLinks.district.name_en} Hub <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
@@ -631,20 +671,20 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
             )}
 
             {/* Newsletter CTA */}
-            <div className="mt-6 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="flex-1">
-                <p className="font-bold text-white">Stay updated with TN Today</p>
-                <p className="text-sm text-blue-200 mt-0.5">Get the day's top story delivered to your inbox every morning.</p>
+            <div className="mt-6 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-white text-sm sm:text-base">Stay updated with TN Today</p>
+                <p className="text-xs sm:text-sm text-blue-200 mt-0.5">Get the day's top story delivered to your inbox every morning.</p>
               </div>
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <input type="email" placeholder="Enter your email"
-                  className="flex-1 sm:w-48 px-3 py-2 rounded-xl text-sm text-slate-900 bg-white focus:outline-none" />
-                <button className="bg-white/20 hover:bg-white/30 text-white border border-white/30 font-semibold text-sm px-4 py-2 rounded-xl transition-colors whitespace-nowrap">
+                  className="w-full sm:w-48 px-3 py-2 rounded-xl text-sm text-slate-900 bg-white focus:outline-none" />
+                <button className="bg-white/20 hover:bg-white/30 text-white border border-white/30 font-semibold text-sm px-4 py-2 rounded-xl transition-colors whitespace-nowrap text-center">
                   Subscribe
                 </button>
               </div>
             </div>
-          </main>
+          </article>
 
           {/* ═══ RIGHT: Sidebar ═══ */}
           <aside className="w-full lg:w-72 flex-shrink-0 space-y-4 lg:sticky lg:top-20">

@@ -13,7 +13,7 @@ export default function Layout() {
       <Suspense fallback={<div className="h-16 w-full bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800" />}>
         <Navbar />
       </Suspense>
-      <main className="flex-1 pt-16 pb-20 md:pb-0">
+      <main id="main-content" className="flex-1 pt-16 pb-20 md:pb-0">
         <Suspense fallback={
           <div className="min-h-[60vh] w-full flex items-center justify-center bg-slate-50 dark:bg-slate-950">
             <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
