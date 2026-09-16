@@ -1,0 +1,64 @@
+name: VizhiTN Autonomous Civic Bot
+
+on:
+  schedule:
+    # 01:30 UTC = 07:00 AM IST (Daily Morning Civic Batch)
+    - cron: '30 1 * * *'
+    # 07:30 UTC = 01:00 PM IST (Daily Midday Civic Progress Pulse)
+    - cron: '30 7 * * *'
+    # 12:00 UTC = 05:30 PM IST (Daily Evening Advisory & Advance Batch / Weekend Batch)
+    - cron: '0 12 * * *'
+
+  workflow_dispatch:
+    inputs:
+      pulse:
+        description: 'Editorial Pulse to execute'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - morning
+          - midday
+          - evening
+          - weekend
+          - dry-run
+
+concurrency:
+  group: autonomous-civic-bot
+  cancel-in-progress: false
+
+jobs:
+  civic-dispatch:
+    name: Generate & Publish Civic Batch
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Autonomous Civic Poster
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
+        run: |
+          INPUT_PULSE="${{ github.event.inputs.pulse }}"
+          if [ -n "$INPUT_PULSE" ] && [ "$INPUT_PULSE" != "auto" ]; then
+            echo "Executing manually requested pulse: $INPUT_PULSE"
+            node scripts/auto-civic-poster.mjs --pulse="$INPUT_PULSE"
+          else
+            echo "Executing auto-detected pulse based on IST schedule"
+            node scripts/auto-civic-poster.mjs
+          fi
