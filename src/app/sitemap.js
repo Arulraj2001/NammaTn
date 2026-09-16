@@ -125,8 +125,28 @@ export default async function sitemap() {
         priority: 0.5,
       });
     });
+
+    // ── Posts (Civic Reports & Community Updates) ────────────────────────
+    const { data: publicPosts } = await supabase
+      .from('post')
+      .select('slug, id, updated_date, created_date')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(1000);
+
+    (publicPosts || []).forEach(p => {
+      const path = p.slug?.trim() ? `/post/${p.slug.trim()}` : `/post/${p.id}`;
+      entries.push({
+        url: `${SITE_URL}${path}`,
+        ...(p.updated_date || p.created_date
+          ? { lastModified: p.updated_date || p.created_date }
+          : {}),
+        changeFrequency: 'daily',
+        priority: 0.8,
+      });
+    });
   } catch (e) {
-    console.warn('[sitemap] TN Today fetch failed:', e.message);
+    console.warn('[sitemap] TN Today & Posts fetch failed:', e.message);
   }
 
   // ── Utility pages ───────────────────────────────────────────────────

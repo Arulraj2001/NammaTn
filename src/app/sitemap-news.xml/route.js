@@ -19,14 +19,14 @@ function escapeXml(unsafe) {
 
 export async function GET() {
   const supabase = createServerSupabase();
-  let articles = [];
+  const newsItems = [];
 
   if (supabase) {
     const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
+    // 1. Fetch TN Today articles (last 48 hours, with fallback if empty)
     try {
-      // First attempt: fetch articles published in the last 48 hours (Google News standard)
-      const { data: recentNews, error } = await supabase
+      const { data: recentNews, error: e1 } = await supabase
         .from('tn_today')
         .select('slug, title, title_ta, seo_title, seo_title_ta, publish_date, created_date')
         .eq('status', 'published')
@@ -34,43 +34,91 @@ export async function GET() {
         .order('publish_date', { ascending: false })
         .limit(100);
 
-      if (!error && recentNews && recentNews.length > 0) {
-        articles = recentNews;
-      } else {
-        // Fallback: If no articles in last 48h, grab the most recent 25 published articles
-        // to avoid serving an empty sitemap that triggers Google Search Console errors.
+      let tnArticles = (!e1 && recentNews && recentNews.length > 0) ? recentNews : [];
+
+      if (tnArticles.length === 0) {
         const { data: fallbackNews } = await supabase
           .from('tn_today')
           .select('slug, title, title_ta, seo_title, seo_title_ta, publish_date, created_date')
           .eq('status', 'published')
           .order('publish_date', { ascending: false })
           .limit(25);
-
-        articles = fallbackNews || [];
+        tnArticles = fallbackNews || [];
       }
-    } catch (e) {
-      console.warn('[sitemap-news] Fetch error:', e.message);
+
+      tnArticles.forEach(a => {
+        if (!a.slug) return;
+        const pubDate = a.publish_date || a.created_date || new Date().toISOString();
+        const rawTitle = a.seo_title_ta || a.title_ta || a.seo_title || a.title || 'TN Today Article';
+        const newsLang = (a.seo_title_ta || a.title_ta) ? 'ta' : 'en';
+        newsItems.push({
+          url: `${SITE_URL}/tn-today/${a.slug}`,
+          title: rawTitle,
+          date: pubDate,
+          lang: newsLang,
+        });
+      });
+    } catch (err) {
+      console.warn('[sitemap-news] TN Today error:', err.message);
+    }
+
+    // 2. Fetch recent civic & imported posts (last 48 hours, with fallback if empty)
+    try {
+      const { data: recentPosts, error: e2 } = await supabase
+        .from('post')
+        .select('slug, id, title, title_en, title_ta, seo_title, created_date')
+        .eq('status', 'active')
+        .gte('created_date', fortyEightHoursAgo)
+        .order('created_date', { ascending: false })
+        .limit(100);
+
+      let postsList = (!e2 && recentPosts && recentPosts.length > 0) ? recentPosts : [];
+
+      if (postsList.length === 0) {
+        const { data: fallbackPosts } = await supabase
+          .from('post')
+          .select('slug, id, title, title_en, title_ta, seo_title, created_date')
+          .eq('status', 'active')
+          .order('created_date', { ascending: false })
+          .limit(25);
+        postsList = fallbackPosts || [];
+      }
+
+      postsList.forEach(p => {
+        const slug = p.slug?.trim() || p.id;
+        if (!slug) return;
+        const pubDate = p.created_date || new Date().toISOString();
+        const rawTitle = p.seo_title || p.title_ta || p.title_en || p.title || 'Civic Report';
+        const newsLang = p.title_ta ? 'ta' : 'en';
+        newsItems.push({
+          url: `${SITE_URL}/post/${slug}`,
+          title: rawTitle,
+          date: pubDate,
+          lang: newsLang,
+        });
+      });
+    } catch (err) {
+      console.warn('[sitemap-news] Posts error:', err.message);
     }
   }
 
-  const itemsXml = articles
-    .filter(a => a.slug)
-    .map(a => {
-      const pubDate = a.publish_date || a.created_date || new Date().toISOString();
-      // Use Tamil headline if available, otherwise English
-      const rawTitle = a.seo_title_ta || a.title_ta || a.seo_title || a.title || 'TN Today Article';
-      const newsLang = (a.seo_title_ta || a.title_ta) ? 'ta' : 'en';
-      const cleanTitle = escapeXml(rawTitle);
-      const cleanUrl = escapeXml(`${SITE_URL}/tn-today/${a.slug}`);
+  // Sort unified news items by date descending (freshest first)
+  newsItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const itemsXml = newsItems
+    .slice(0, 1000)
+    .map(item => {
+      const cleanTitle = escapeXml(item.title);
+      const cleanUrl = escapeXml(item.url);
 
       return `  <url>
     <loc>${cleanUrl}</loc>
     <news:news>
       <news:publication>
         <news:name>VizhiTN</news:name>
-        <news:language>${newsLang}</news:language>
+        <news:language>${item.lang}</news:language>
       </news:publication>
-      <news:publication_date>${new Date(pubDate).toISOString()}</news:publication_date>
+      <news:publication_date>${new Date(item.date).toISOString()}</news:publication_date>
       <news:title>${cleanTitle}</news:title>
     </news:news>
   </url>`;
