@@ -306,11 +306,23 @@ No conversational intro, no commentary outside the JSON array.
   const ai = new GoogleGenAI({ apiKey: geminiApiKey });
   let rawResponseText = '';
 
+  // Discover available models for this key
+  try {
+    const modelList = await ai.models.list();
+    const availableNames = (modelList.models || modelList || []).map(m => m.name || m).slice(0, 15);
+    console.log('[GEMINI] Available Models for this API Key:', availableNames);
+  } catch (listErr) {
+    console.warn(`[GEMINI] Model list check: ${listErr.message}`);
+  }
+
   const CANDIDATE_MODELS = [
     'gemini-3.6-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-2.0-flash-lite',
+    'gemini-2.0-flash-lite-preview-02-05',
     'gemini-2.0-flash',
-    'gemini-2.0-flash-exp',
-    'gemini-2.5-flash'
+    'gemini-2.5-flash',
+    'gemini-1.5-flash-latest'
   ];
 
   let lastError = null;
