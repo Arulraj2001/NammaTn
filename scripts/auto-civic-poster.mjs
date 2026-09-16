@@ -331,8 +331,9 @@ No conversational intro, no commentary outside the JSON array.
   let lastError = null;
 
   for (const modelName of CANDIDATE_MODELS) {
+    // Attempt 1: With Google Search Grounding
     try {
-      console.log(`[GEMINI] Attempting model: ${modelName}...`);
+      console.log(`[GEMINI] Attempting model: ${modelName} with Google Search Grounding...`);
       const response = await ai.models.generateContent({
         model: modelName,
         contents: masterPrompt,
@@ -343,12 +344,28 @@ No conversational intro, no commentary outside the JSON array.
 
       rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
       if (rawResponseText) {
-        console.log(`[GEMINI ✓] Successfully received response from ${modelName}`);
+        console.log(`[GEMINI ✓] Successfully received grounded response from ${modelName}`);
         break;
       }
-    } catch (err) {
-      console.warn(`[GEMINI WARN] Model ${modelName} failed: ${err.message}`);
-      lastError = err;
+    } catch (groundErr) {
+      console.warn(`[GEMINI WARN] Search Grounding failed on ${modelName} (${groundErr.message}). Retrying standard mode...`);
+      
+      // Attempt 2: Standard generation fallback (unbilled free tier compatible)
+      try {
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: masterPrompt
+        });
+
+        rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (rawResponseText) {
+          console.log(`[GEMINI ✓] Successfully received standard response from ${modelName}`);
+          break;
+        }
+      } catch (stdErr) {
+        console.warn(`[GEMINI WARN] Standard generation on ${modelName} failed: ${stdErr.message}`);
+        lastError = stdErr;
+      }
     }
   }
 
