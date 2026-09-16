@@ -193,8 +193,11 @@ async function main() {
   const pulse = determinePulse();
   const isDryRun = pulse === 'dry-run' || process.argv.includes('--dry-run');
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_VITE_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
+  const DEFAULT_SUPABASE_URL = 'https://hzgrzcablefquddisqkf.supabase.co';
+  const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6Z3J6Y2FibGVmcXVkZGlzcWtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDY4MTUsImV4cCI6MjA5NzEyMjgxNX0.Q2bjuJNvR-bk4RK0X87G5Zz-zJgXrfPwdiOClpSpYWQ';
+
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
   const geminiApiKey = process.env.GEMINI_API_KEY;
   const siteUrl = process.env.SITE_URL || 'https://www.vizhitn.in';
 
@@ -303,36 +306,39 @@ No conversational intro, no commentary outside the JSON array.
   const ai = new GoogleGenAI({ apiKey: geminiApiKey });
   let rawResponseText = '';
 
-  try {
-    // Attempt with gemini-2.5-flash
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: masterPrompt,
-      config: {
-        tools: [{ googleSearch: {} }]
-      }
-    });
+  const CANDIDATE_MODELS = [
+    'gemini-3.6-flash',
+    'gemini-2.0-flash',
+    'gemini-2.0-flash-exp',
+    'gemini-2.5-flash'
+  ];
 
-    rawResponseText = response.text || '';
-  } catch (apiErr) {
-    console.warn(`[WARN] gemini-2.5-flash call failed (${apiErr.message}). Retrying with gemini-1.5-flash...`);
+  let lastError = null;
+
+  for (const modelName of CANDIDATE_MODELS) {
     try {
+      console.log(`[GEMINI] Attempting model: ${modelName}...`);
       const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: modelName,
         contents: masterPrompt,
         config: {
           tools: [{ googleSearch: {} }]
         }
       });
-      rawResponseText = response.text || '';
-    } catch (fallbackErr) {
-      console.error(`[FATAL] Gemini API call failed completely: ${fallbackErr.message}`);
-      process.exit(1);
+
+      rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if (rawResponseText) {
+        console.log(`[GEMINI ✓] Successfully received response from ${modelName}`);
+        break;
+      }
+    } catch (err) {
+      console.warn(`[GEMINI WARN] Model ${modelName} failed: ${err.message}`);
+      lastError = err;
     }
   }
 
   if (!rawResponseText) {
-    console.error('[FATAL] Received empty response from Gemini.');
+    console.error(`[FATAL] All candidate Gemini models failed. Last error: ${lastError?.message}`);
     process.exit(1);
   }
 
