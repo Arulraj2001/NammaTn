@@ -98,7 +98,8 @@ export default function Explore({ initialPosts = [] }) {
     initialPageParam: null,
     initialData: { pages: [initialPosts], pageParams: [null] },
     getNextPageParam: getNextCursor,
-    staleTime: 60_000,
+    staleTime: 10_000,
+    refetchOnMount: true,
   });
 
   const posts = useMemo(() => data?.pages.flatMap((page) => page) || [], [data]);

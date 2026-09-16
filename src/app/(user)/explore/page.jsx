@@ -2,7 +2,7 @@ import Explore from '@/views/Explore';
 import { getExplorePosts } from '@/lib/publicHubServer';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
-export const revalidate = 3600;
+export const revalidate = 30;
 
 export const metadata = {
   title: 'Explore Tamil Nadu Civic Reports & Local Updates',

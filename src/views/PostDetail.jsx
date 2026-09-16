@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSessionId } from "@/lib/security";
 import { supabase } from "@/api/supabaseClient";
 import { motion } from "framer-motion";
-import { ArrowLeft, ThumbsUp, ThumbsDown, MessageSquare, MapPin, Tag, Clock, AlertTriangle, Star, Megaphone, Shield, MessageCircle, User, Loader2, FileText, Users, Share2 } from "lucide-react";
+import { ArrowLeft, ThumbsUp, ThumbsDown, MessageSquare, MapPin, Tag, Clock, AlertTriangle, Star, Megaphone, Shield, MessageCircle, User, Loader2, FileText, Users, Share2, PhoneCall, Phone } from "lucide-react";
 import ReportButton from "@/components/posts/ReportButton";
 import { formatDistanceToNow } from "date-fns";
 import { useLanguage } from "@/context/LanguageContext";
@@ -39,6 +39,22 @@ import { useAuthModal } from "@/context/AuthModalContext";
 import CommentSection from "@/components/comments/CommentSection";
 import SponsorThisIssue from "@/components/sponsors/SponsorThisIssue";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
+
+function SafeMediaImage({ url, alt }) {
+  const [hasError, setHasError] = useState(false);
+  if (hasError || !url) return null;
+  return (
+    <div className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-video">
+      <img
+        src={url}
+        alt={alt}
+        onError={() => setHasError(true)}
+        className="w-full h-full object-cover"
+        loading="lazy"
+      />
+    </div>
+  );
+}
 
 const TYPE_CONFIG = {
   complaint: { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-50 dark:bg-red-900/20", label_en: "Complaint", label_ta: "புகார்" },
@@ -202,7 +218,7 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
 
           {/* CIVIC RECEIPT VIEW */}
           {showCivicPath ? (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="space-y-5">
               {/* Receipt header — Public Case File identity */}
               <CivicReceiptHeader post={post} />
 
@@ -311,8 +327,9 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
             </motion.div>
           ) : (
             <motion.article
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.15 }}
               className={`bg-white dark:bg-slate-800 border-2 rounded-3xl overflow-hidden mb-6 ${
                 isAlert ? "border-orange-300 dark:border-orange-700"
                 : isComplaintNoReceipt ? "border-red-300 dark:border-red-700"
@@ -446,12 +463,40 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                 {content && (
                   <div className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base whitespace-pre-wrap mb-5">{content}</div>
                 )}
+                {/* Official Helpline / Civic Department banner */}
+                {(post.helpline || post.assigned_department || post.source) && (
+                  <div className="mb-5 p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/80 border-2 border-blue-200 dark:border-blue-900/50 flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center flex-shrink-0 font-bold shadow-xs">
+                        <PhoneCall className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wider text-blue-800 dark:text-blue-300">
+                          {post.assigned_department || post.source || T("Official Civic Information", "அதிகாரப்பூர்வ தகவல்")}
+                        </p>
+                        {post.helpline && (
+                          <p className="text-sm font-extrabold text-slate-900 dark:text-white">
+                            {post.helpline}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {post.helpline && (
+                      <a
+                        href={`tel:${post.helpline.replace(/[^\d+]/g, "")}`}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-xs flex items-center gap-1.5"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        {T("Call Helpline", "உதவி எண் அழைக்க")}
+                      </a>
+                    )}
+                  </div>
+                )}
+
                 {post.media_urls && post.media_urls.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
                     {post.media_urls.map((url, idx) => (
-                      <div key={idx} className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-video">
-                        <Image src={url} alt={`media-${idx}`} width={1280} height={720} className="w-full h-full object-cover" />
-                      </div>
+                      <SafeMediaImage key={idx} url={url} alt={`media-${idx}`} />
                     ))}
                   </div>
                 )}

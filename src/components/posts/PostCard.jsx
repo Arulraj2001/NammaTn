@@ -52,6 +52,7 @@ const PostCard = memo(function PostCard({ post }) {
     : null;
 
   const firstPhoto = (post.before_photos?.[0] || post.media_urls?.[0]);
+  const [imgError, setImgError] = React.useState(false);
 
   return (
     <article className={`bg-white dark:bg-slate-900 rounded-2xl border-2 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group relative focus-within:z-30 hover:z-30 overflow-visible ${
@@ -119,7 +120,7 @@ const PostCard = memo(function PostCard({ post }) {
 
         {/* Title — clickable link to post detail */}
         <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-          <Link to={postUrl} className="hover:underline">
+          <Link to={postUrl} prefetch={true} className="hover:underline">
             {title}
           </Link>
         </h3>
@@ -132,9 +133,17 @@ const PostCard = memo(function PostCard({ post }) {
         )}
 
         {/* Media thumbnail — clickable link to post detail */}
-        {firstPhoto && (
-          <Link to={postUrl} className="block mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
-            <Image src={firstPhoto} alt={title} width={640} height={480} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" />
+        {firstPhoto && !imgError && (
+          <Link to={postUrl} prefetch={true} className="block mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
+            <Image
+              src={firstPhoto}
+              alt={title}
+              width={640}
+              height={480}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+            />
           </Link>
         )}
 
@@ -195,6 +204,7 @@ const PostCard = memo(function PostCard({ post }) {
         <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between gap-2">
           <Link
             to={postUrl}
+            prefetch={true}
             className={`text-xs font-medium hover:underline ${isCivic ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
           >
             {isCivic ? T("View Civic Receipt →", "குடிமை ரசீது பார்க்க →") : T("Read more →", "மேலும் படிக்க →")}

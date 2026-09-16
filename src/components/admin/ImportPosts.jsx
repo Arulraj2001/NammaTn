@@ -466,6 +466,15 @@ export default function ImportPosts({ onDone }) {
     qc.invalidateQueries({ queryKey: ["area-pulse-posts"] });
     qc.invalidateQueries({ queryKey: ["category-posts"] });
 
+    // Instantly purge Next.js server cache for Explore and news sitemaps
+    try {
+      fetch('/api/revalidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: '/explore' }),
+      }).catch(() => {});
+    } catch (_) {}
+
     toast({ description: `Successfully imported ${success.length} post(s).` });
   };
 
