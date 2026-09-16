@@ -308,21 +308,23 @@ No conversational intro, no commentary outside the JSON array.
 
   // Discover available models for this key
   try {
-    const modelList = await ai.models.list();
-    const availableNames = (modelList.models || modelList || []).map(m => m.name || m).slice(0, 15);
-    console.log('[GEMINI] Available Models for this API Key:', availableNames);
+    const list = await ai.models.list();
+    const names = [];
+    for await (const m of list) {
+      names.push(m.name || m.id || m);
+      if (names.length >= 15) break;
+    }
+    console.log('[GEMINI] Discovered Models for Key:', names);
   } catch (listErr) {
     console.warn(`[GEMINI] Model list check: ${listErr.message}`);
   }
 
   const CANDIDATE_MODELS = [
+    'gemini-3.5-flash-lite',
+    'gemini-3.5-flash',
+    'gemini-3.6-flash-lite',
     'gemini-3.6-flash',
-    'gemini-2.5-flash-lite',
-    'gemini-2.0-flash-lite',
-    'gemini-2.0-flash-lite-preview-02-05',
-    'gemini-2.0-flash',
-    'gemini-2.5-flash',
-    'gemini-1.5-flash-latest'
+    'gemini-3-flash'
   ];
 
   let lastError = null;
