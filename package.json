@@ -8,10 +8,13 @@
     "build": "next build",
     "start": "next start",
     "audit:seo": "node scripts/verify-seo.mjs",
+    "civic:cron": "node scripts/auto-civic-poster.mjs",
+    "civic:dry-run": "node scripts/auto-civic-poster.mjs --dry-run",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@google/genai": "^2.22.0",
     "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^4.1.2",
     "@radix-ui/react-accordion": "^1.2.3",
