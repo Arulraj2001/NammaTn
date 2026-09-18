@@ -93,6 +93,23 @@ const normalizePostSeo = (data = {}) => {
   };
 };
 
+const VALID_POST_COLUMNS = new Set([
+  'id', 'created_date', 'updated_date', 'created_by_id', 'created_by', 'is_sample',
+  'title_en', 'title_ta', 'content_en', 'content_ta', 'post_type',
+  'district_slug', 'district_name', 'area_slug', 'area_name', 'category_slug', 'category_name',
+  'is_anonymous', 'author_name', 'media_urls', 'upvotes', 'downvotes', 'comment_count',
+  'status', 'civic_receipt_id', 'location_text', 'urgency_level', 'civic_status',
+  'verification_count', 'duplicate_count', 'citizen_fixed_count', 'still_not_fixed_count',
+  'official_complaint_id', 'complaint_filed_date', 'complaint_notes', 'complaint_link',
+  'complaint_screenshot_url', 'assigned_department', 'escalation_level', 'timeline_events',
+  'before_photos', 'claimed_fixed_photos', 'final_resolution_photos', 'is_community_solved',
+  'is_publicly_visible', 'moderation_status', 'admin_note', 'resolution_quality_avg',
+  'resolution_quality_count', 'follow_up_count', 'evidence_update_count', 'bribe_requested',
+  'bribe_status', 'bribe_amount', 'bribe_department', 'bribe_officer_designation',
+  'bribe_specific_location', 'bribe_audio_url', 'slug', 'seo_title', 'seo_description',
+  'seo_keywords', 'canonical_url', 'is_indexable'
+]);
+
 export const createPost = async (data) => {
   const prepared = normalizePostSeo(data);
 
@@ -100,12 +117,30 @@ export const createPost = async (data) => {
     if (!prepared.assigned_department) {
       prepared.assigned_department = prepared.department_routing;
     }
-    delete prepared.department_routing;
+  }
+
+  if (prepared.source && !prepared.assigned_department) {
+    prepared.assigned_department = prepared.source;
+  }
+
+  if (!prepared.title_en && prepared.title) {
+    prepared.title_en = prepared.title;
+  }
+  if (!prepared.content_en && prepared.content) {
+    prepared.content_en = prepared.content;
+  }
+
+  // Sanitize payload to only existing database columns to avoid PostgREST schema cache errors
+  const sanitized = {};
+  for (const [key, val] of Object.entries(prepared)) {
+    if (VALID_POST_COLUMNS.has(key)) {
+      sanitized[key] = val;
+    }
   }
 
   const { data: created, error } = await supabase
     .from("post")
-    .insert(prepared)
+    .insert(sanitized)
     .select()
     .single();
   if (error) throw error;

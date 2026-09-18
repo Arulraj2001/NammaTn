@@ -253,8 +253,10 @@ export async function ensureBilingualPost(rawPost = {}) {
   result.content_en = contentEn || contentTa || "";
   result.content_ta = contentTa || contentEn || "";
 
-  if (!result.title) result.title = result.title_en;
-  if (!result.content) result.content = result.content_en;
+  // Remove virtual fields that do not exist as columns on the 'post' table
+  delete result.title;
+  delete result.content;
 
   return result;
 }
+

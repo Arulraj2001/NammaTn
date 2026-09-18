@@ -3,11 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "@/lib/router-compat";
 import { ExternalLink, Sparkles, Megaphone, X } from "lucide-react";
-import { fetchActiveCustomAds, recordCustomAdClick, recordCustomAdImpression, getAdSenseConfig } from "@/services/adService";
+import { fetchActiveCustomAds, recordCustomAdClick, recordCustomAdImpression } from "@/services/adService";
 
 export default function CustomAdBanner({ slot = "sidebar", district, fallbackType = "sponsorship" }) {
   const [activeAd, setActiveAd] = useState(null);
-  const [adsenseConfig, setAdsenseConfig] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -23,8 +22,6 @@ export default function CustomAdBanner({ slot = "sidebar", district, fallbackTyp
       }
     } else {
       setActiveAd(null);
-      const config = await getAdSenseConfig();
-      setAdsenseConfig(config);
     }
   };
 
@@ -167,25 +164,7 @@ export default function CustomAdBanner({ slot = "sidebar", district, fallbackTyp
     );
   }
 
-  // ── Render AdSense Slot fallback if configured ──────────────────────────────
-  if (adsenseConfig?.enabled && adsenseConfig?.pub_id) {
-    const slotId = adsenseConfig[`slot_${slot}`] || adsenseConfig.slot_banner;
-    if (slotId) {
-      return (
-        <div className="my-4 min-h-[90px] flex items-center justify-center bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 p-2 overflow-hidden">
-          <ins
-            className="adsbygoogle"
-            style={{ display: "block", width: "100%" }}
-            data-ad-client={adsenseConfig.pub_id}
-            data-ad-slot={slotId}
-            data-ad-format="auto"
-            data-full-width-responsive="true"
-          />
-        </div>
-      );
-    }
-  }
-
+  // ── No third-party ad network fallback — reserved for Google AdSense once approved ──
   // ── Render Default VizhiTN Sponsor CTA Fallback ─────────────────────────────
   if (fallbackType === "sponsorship") {
     return (
