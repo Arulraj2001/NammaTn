@@ -660,6 +660,7 @@ export const getAllRights = () => [
     department_en: "Civil Supplies and Consumer Protection Dept",
     department_ta: "உணவு மற்றும் நுகர்வோர் பாதுகாப்புத் துறை",
     portal_url: "https://edaakhil.nic.in",
+    image_url: "/images/evergreen/rti-rights.jpg",
   },
   {
     id: "right-police-check",
@@ -673,6 +674,7 @@ export const getAllRights = () => [
     department_en: "Home & Police Department",
     department_ta: "உள்துறை மற்றும் காவல்துறை",
     portal_url: "https://eservices.tnpolice.gov.in",
+    image_url: "/images/evergreen/rti-rights.jpg",
   },
   {
     id: "right-service",
@@ -686,6 +688,7 @@ export const getAllRights = () => [
     department_en: "Revenue and Disaster Management Dept",
     department_ta: "வருவாய் மற்றும் பேரிடர் மேலாண்மைத் துறை",
     portal_url: "https://cmhelpline.tn.gov.in",
+    image_url: "/images/evergreen/esevai-guide.jpg",
   },
   {
     id: "right-senior-citizen",
@@ -699,6 +702,7 @@ export const getAllRights = () => [
     department_en: "Social Welfare and Women Empowerment Dept",
     department_ta: "சமூக நலன் மற்றும் மகளிர் உரிமைத் துறை",
     portal_url: "https://tnsocialwelfare.tn.gov.in",
+    image_url: "/images/evergreen/rti-rights.jpg",
   },
   {
     id: "right-pwd",
@@ -712,6 +716,7 @@ export const getAllRights = () => [
     department_en: "Welfare of Differently Abled Persons Dept",
     department_ta: "மாற்றுத்திறனாளிகள் நலத் துறை",
     portal_url: "https://www.scda.tn.gov.in",
+    image_url: "/images/evergreen/rti-rights.jpg",
   },
   {
     id: "right-domestic-violence",
@@ -784,6 +789,7 @@ export const getAllArticles = () => [
     title_ta: "தமிழ்நாடு இ-சேவை சான்றிதழ்கள் ஆன்லைனில் பெறுவது எப்படி? முழு வழிகாட்டி",
     category_en: "Government Services",
     category_ta: "அரசு சேவைகள்",
+    image_url: "/images/evergreen/esevai-guide.jpg",
     readTime: "5 min read",
     date: "Aug 15, 2026",
     summary_en: "Learn how to apply for Community, Income, Native Residence, and First Graduate certificates online via TNEGA e-Sevai without middleman fees.",
@@ -828,6 +834,7 @@ export const getAllArticles = () => [
     title_ta: "தமிழ்நாட்டில் தகவல் அறியும் உரிமைச் சட்டத்தில் (RTI) விண்ணப்பிப்பது எப்படி?",
     category_en: "Citizen Rights",
     category_ta: "குடிமக்கள் உரிமைகள்",
+    image_url: "/images/evergreen/rti-rights.jpg",
     readTime: "7 min read",
     date: "Aug 15, 2026",
     summary_en: "Step-by-step instructions on drafting RTI queries, identifying Public Information Officers (PIO), court fee stamps, and 30-day first appeal process.",
@@ -863,6 +870,7 @@ export const getAllArticles = () => [
   {
     id: "art-cmchis-claims",
     slug: "cmchis-health-insurance-coverage-hospital-guide",
+    image_url: "/images/evergreen/cmchis-health.jpg",
     title_en: "Understanding CMCHIS Health Insurance Coverage, Hospital Network & Cashless Claims",
     title_ta: "முதலமைச்சர் விரிவான காப்பீட்டுத் திட்டத்தில் ₹5 லட்சம் இலவச சிகிச்சை பெறுவது எப்படி?",
     category_en: "Health & Insurance",
@@ -907,6 +915,7 @@ export const getAllArticles = () => [
     title_ta: "பட்டா, சிட்டா, வரைபடம் (FMB) மற்றும் வில்லங்கச் சான்றிதழ் (EC) — நில ஆவணங்களின் முழு விளக்கம்",
     category_en: "Property & Revenue",
     category_ta: "சொத்து & வருவாய்",
+    image_url: "/images/evergreen/esevai-guide.jpg",
     readTime: "8 min read",
     date: "Aug 15, 2026",
     summary_en: "Essential guide explaining land revenue terminology in Tamil Nadu, online verification steps, and avoiding property registration scams.",
@@ -938,6 +947,7 @@ EC is issued by the Sub-Registrar Office (tnreginet.gov.in). It records all regi
     title_ta: "வாகன சோதனையின் போது காவல்துறையிடம் ஓட்டுநர்களுக்கு உள்ள சட்டப்பூர்வ உரிமைகள்",
     category_en: "Traffic & Legal Rights",
     category_ta: "போக்குவரத்து & சட்ட உரிமை",
+    image_url: "/images/evergreen/rti-rights.jpg",
     readTime: "5 min read",
     date: "Aug 15, 2026",
     summary_en: "Know the legal rules under Motor Vehicles Act regarding officer rank requirements, DigiLocker validity, key seizure prohibition, and fine payment.",

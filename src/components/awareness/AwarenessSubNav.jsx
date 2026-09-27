@@ -7,6 +7,8 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const NAV_ITEMS = [
   { path: "/awareness", icon: Home, en: "Awareness Home", ta: "முக்கிய பக்கம்" },
+  { path: "/rti", icon: FileText, en: "RTI Generator", ta: "RTI மாதிரி விண்ணப்பம்" },
+  { path: "/esevai", icon: Globe, en: "e-Sevai Guide", ta: "இ-சேவை ஆவணங்கள்" },
   { path: "/awareness/rights", icon: Shield, en: "Citizen Rights", ta: "குடிமக்கள் உரிமைகள்" },
   { path: "/awareness/articles", icon: BookOpen, en: "Articles", ta: "கட்டுரைகள்" },
   { path: "/awareness/schemes", icon: Gift, en: "Schemes & Benefits", ta: "அரசு திட்டங்கள்" },

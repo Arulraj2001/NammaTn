@@ -40,6 +40,26 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
         </h3>
         <div className="space-y-2">
           <Link
+            href="/rti"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-200 dark:border-blue-900/60 text-blue-700 dark:text-blue-400 hover:bg-blue-100 transition-colors text-xs font-bold"
+          >
+            <span className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              {T("RTI Application Generator", "RTI மாதிரி விண்ணப்பம்")}
+            </span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+          <Link
+            href="/esevai"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 transition-colors text-xs font-bold"
+          >
+            <span className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              {T("e-Sevai Documents & Fees", "இ-சேவை ஆவண வழிகாட்டி")}
+            </span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+          <Link
             href="/bribes"
             className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-400 hover:bg-red-100 transition-colors text-xs font-bold"
           >
@@ -61,7 +81,7 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
           </Link>
           <Link
             href="/offices"
-            className="flex items-center justify-between p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-200 dark:border-blue-900/60 text-blue-700 dark:text-blue-400 hover:bg-blue-100 transition-colors text-xs font-bold"
+            className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors text-xs font-bold"
           >
             <span className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />

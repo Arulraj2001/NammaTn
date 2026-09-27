@@ -83,6 +83,24 @@ export default function AwarenessRelatedLinks({ currentSection }) {
 
   const CIVIC_TOOLS = [
     {
+      title_en: "RTI Application Generator",
+      title_ta: "RTI மாதிரி விண்ணப்பம்",
+      href: "/rti",
+      icon: Shield,
+      desc_en: "Instant bilingual draft with Section 6(1) & 1-click A4 print.",
+      desc_ta: "சாலை, பட்டா, மின்வெட்டு விபரங்களைக் கேட்கும் சட்டப்பூர்வ RTI.",
+      color: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200 dark:border-blue-800/50",
+    },
+    {
+      title_en: "e-Sevai Certificate Finder",
+      title_ta: "இ-சேவை ஆவண வழிகாட்டி",
+      href: "/esevai",
+      icon: BookOpen,
+      desc_en: "Patta Chitta, EC, Legal Heir & ₹60 fee checklist for TNeGA.",
+      desc_ta: "பட்டா, வில்லங்கம், வாரிசு மற்றும் சாதிச் சான்றிதழ் ஆவணங்கள்.",
+      color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50",
+    },
+    {
       title_en: "Bribe Tracker Log",
       title_ta: "லஞ்சக் கண்காணிப்பு",
       href: "/bribes",
@@ -107,7 +125,7 @@ export default function AwarenessRelatedLinks({ currentSection }) {
       icon: Building2,
       desc_en: "Find VAO, Tahsildar, EB, and Corporation offices in TN.",
       desc_ta: "உள்ளூர் VAO, தாசில்தார், EB அலுவலகங்களைக் கண்டறியவும்.",
-      color: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200 dark:border-blue-800/50",
+      color: "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 border-purple-200 dark:border-purple-800/50",
     },
     {
       title_en: "Ask Local Community",
@@ -116,7 +134,7 @@ export default function AwarenessRelatedLinks({ currentSection }) {
       icon: MessageCircle,
       desc_en: "Get real answers about procedures & locations from locals.",
       desc_ta: "உள்ளூர் மக்களிடம் கேள்விகள் கேட்டு தெளிவு பெறவும்.",
-      color: "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 border-purple-200 dark:border-purple-800/50",
+      color: "bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400 border-teal-200 dark:border-teal-800/50",
     },
   ];
 

@@ -9,6 +9,7 @@ import FormattedArticleContent from "@/components/awareness/FormattedArticleCont
 import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
 import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
+import RtiDraftGenerator from "@/components/tools/RtiDraftGenerator";
 
 export default function AwarenessRightDetail({ right }) {
   const { lang } = useLanguage();
@@ -117,6 +118,12 @@ export default function AwarenessRightDetail({ right }) {
                 </div>
               </div>
             </div>
+
+            {right.slug === "right-to-information-act-2005" && (
+              <div className="mt-8">
+                <RtiDraftGenerator />
+              </div>
+            )}
           </main>
 
           {/* Right-Side Sidebar */}

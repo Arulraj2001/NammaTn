@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { BookOpen, Clock, Calendar, ArrowLeft, Share2, Tag, ExternalLink, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import { BookOpen, Clock, Calendar, ArrowLeft, Share2, Tag, ExternalLink, CheckCircle2, Sparkles, FileText, ArrowRight } from "lucide-react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import FormattedArticleContent from "@/components/awareness/FormattedArticleContent";
@@ -12,6 +13,7 @@ import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 const FALLBACK_ARTICLES = [
   {
     slug: "tamil-nadu-esevai-online-services-guide",
+    image_url: "/images/evergreen/esevai-guide.jpg",
     title_en: "Complete Guide to Tamil Nadu e-Sevai Online Services & Certificate Applications",
     title_ta: "தமிழ்நாடு இ-சேவை சான்றிதழ்கள் ஆன்லைனில் பெறுவது எப்படி? முழு வழிகாட்டி",
     category_en: "Government Services",
@@ -55,6 +57,7 @@ const FALLBACK_ARTICLES = [
   },
   {
     slug: "how-to-file-rti-application-tamil-nadu-guide",
+    image_url: "/images/evergreen/rti-rights.jpg",
     title_en: "How to File an Effective RTI Application in Tamil Nadu: Laws, Fees & Appeal Workflow",
     title_ta: "தமிழ்நாட்டில் தகவல் அறியும் உரிமைச் சட்டத்தில் (RTI) விண்ணப்பிப்பது எப்படி?",
     category_en: "Citizen Rights",
@@ -93,6 +96,7 @@ const FALLBACK_ARTICLES = [
   },
   {
     slug: "cmchis-health-insurance-coverage-hospital-guide",
+    image_url: "/images/evergreen/cmchis-health.jpg",
     title_en: "Understanding CMCHIS Health Insurance Coverage, Hospital Network & Cashless Claims",
     title_ta: "முதலமைச்சர் விரிவான காப்பீட்டுத் திட்டத்தில் ₹5 லட்சம் இலவச சிகிச்சை பெறுவது எப்படி?",
     category_en: "Health & Insurance",
@@ -132,6 +136,7 @@ const FALLBACK_ARTICLES = [
   },
   {
     slug: "patta-chitta-fmb-ec-land-records-guide-tamil-nadu",
+    image_url: "/images/evergreen/esevai-guide.jpg",
     title_en: "Patta, Chitta, FMB Sketch & EC Demystified for Property Owners in TN",
     title_ta: "பட்டா, சிட்டா, வரைபடம் (FMB) மற்றும் வில்லங்கச் சான்றிதழ் (EC) — நில ஆவணங்களின் முழு விளக்கம்",
     category_en: "Property & Revenue",
@@ -162,6 +167,7 @@ EC is issued by the Sub-Registrar Office (tnreginet.gov.in). It records all regi
   },
   {
     slug: "traffic-police-vehicle-check-citizen-rights-guide",
+    image_url: "/images/evergreen/rti-rights.jpg",
     title_en: "Legal Protections & Citizen Rights During Traffic Police Vehicle Checks in TN",
     title_ta: "வாகன சோதனையின் போது காவல்துறையிடம் ஓட்டுநர்களுக்கு உள்ள சட்டப்பூர்வ உரிமைகள்",
     category_en: "Traffic & Legal Rights",
@@ -228,6 +234,19 @@ export default function AwarenessArticleDetail({ article }) {
         {/* 2-Column Grid: Article Content on Left (col-8), Sidebar Related Links on Right (col-4) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <main className="lg:col-span-8">
+            {activeArticle.image_url && (
+              <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] rounded-2xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-800 mb-6 bg-slate-900">
+                <Image
+                  src={activeArticle.image_url}
+                  alt={lang === "ta" ? activeArticle.title_ta : activeArticle.title_en}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 800px"
+                />
+              </div>
+            )}
+
             <article className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
               <div className="flex items-center justify-between gap-4 mb-4">
                 <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
@@ -250,6 +269,63 @@ export default function AwarenessArticleDetail({ article }) {
               <div className="mt-8">
                 <FormattedArticleContent content={contentText} />
               </div>
+
+              {/* Dedicated Tool Interactive Callout Banners */}
+              {(activeArticle.slug === "tamil-nadu-esevai-online-services-guide" || activeArticle.slug === "patta-chitta-fmb-ec-land-records-guide-tamil-nadu") && (
+                <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 text-white border border-emerald-500/30 shadow-md">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2.5 bg-emerald-500/20 text-emerald-300 rounded-xl flex-shrink-0">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-base text-white mb-1">
+                        {T("Interactive e-Sevai & Patta Checklist Tool", "இ-சேவை & பட்டா ஆவணங்கள் சரிபார்ப்புக் கருவி")}
+                      </h3>
+                      <p className="text-xs text-slate-300 mb-4 leading-relaxed">
+                        {T(
+                          "Need the complete list of documents, ₹60 fee schedule, and SLA timelines for Patta Chitta, EC, Legal Heir, and Community certificates? Use our interactive checklist.",
+                          "பட்டா மாறுதல், வில்லங்கச் சான்றிதழ் (EC), வாரிசு மற்றும் சாதிச் சான்றிதழ்களுக்கான அரசு கட்டணம் மற்றும் ஆவணப் பட்டியலை உடனே சரிபார்க்கவும்."
+                        )}
+                      </p>
+                      <Link
+                        href="/esevai"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl transition shadow"
+                      >
+                        <span>{T("Open e-Sevai Certificate Tool", "இ-சேவை கருவிக்குச் செல்")}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeArticle.slug === "how-to-file-rti-application-tamil-nadu-guide" && (
+                <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white border border-blue-500/30 shadow-md">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2.5 bg-blue-500/20 text-blue-300 rounded-xl flex-shrink-0">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-base text-white mb-1">
+                        {T("Launch Interactive RTI Application Generator", "RTI மாதிரி விண்ணப்பத்தை உருவாக்கவும்")}
+                      </h3>
+                      <p className="text-xs text-slate-300 mb-4 leading-relaxed">
+                        {T(
+                          "Draft a legally binding RTI application for Road Tender Audits, Patta Delays, or Electricity Outages in Tamil/English with 1-click A4 print.",
+                          "சாலை டெண்டர் நிதி, பட்டா தாமதம், மின்வெட்டு விபரங்களைக் கேட்கும் சட்டப்பூர்வ RTI விண்ணப்பத்தை தமிழில் உடனே உருவாக்குங்கள்."
+                        )}
+                      </p>
+                      <Link
+                        href="/rti"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs rounded-xl transition shadow"
+                      >
+                        <span>{T("Open RTI Generator Tool", "RTI விண்ணப்ப கருவிக்குச் செல்")}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
             </article>
           </main>
 

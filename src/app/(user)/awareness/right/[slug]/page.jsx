@@ -9,7 +9,8 @@ const SITE_URL = 'https://www.vizhitn.in';
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
-  const right = getRightBySlug(params.slug);
+  const resolvedParams = await params;
+  const right = getRightBySlug(resolvedParams.slug);
   if (!right) notFound();
 
   const title = right.name_en;
@@ -30,8 +31,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function Page({ params }) {
-  const right = getRightBySlug(params.slug);
+export default async function Page({ params }) {
+  const resolvedParams = await params;
+  const right = getRightBySlug(resolvedParams.slug);
   if (!right) notFound();
 
   const newsArticleSchema = generateNewsArticleSchema({
