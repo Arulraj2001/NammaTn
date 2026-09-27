@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Shield, FileText, Building, CheckCircle2, ExternalLink, ArrowLeft } from "lucide-react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
@@ -41,6 +42,18 @@ export default function AwarenessRightDetail({ right }) {
         {/* 2-Column Grid: Content on Left (col-8), Right Sidebar Links on Right (col-4) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <main className="lg:col-span-8">
+            {right.image_url && (
+              <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] rounded-2xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-800 mb-6 bg-slate-900">
+                <Image
+                  src={right.image_url}
+                  alt={lang === "ta" ? right.name_ta : right.name_en}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 800px"
+                />
+              </div>
+            )}
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">

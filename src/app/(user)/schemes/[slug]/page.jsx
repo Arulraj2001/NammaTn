@@ -15,7 +15,7 @@ export async function generateMetadata({ params }) {
 
   const title = `${scheme.name_en} (${scheme.name_ta}) - Eligibility & How to Apply`;
   const description = scheme.financial_benefit_en || scheme.benefits_en || `Complete guide to ${scheme.name_en} in Tamil Nadu with eligibility criteria, documents, and application steps.`;
-  const canonical = `${SITE_URL}/awareness/scheme/${scheme.slug}`;
+  const canonical = `${SITE_URL}/schemes/${scheme.slug}`;
   const ogImage = scheme.image_url ? `${SITE_URL}${scheme.image_url}` : `${SITE_URL}/og-image.png`;
 
   return {
@@ -50,7 +50,7 @@ export default async function Page({ params }) {
   const newsArticleSchema = generateNewsArticleSchema({
     headline: scheme.name_en,
     description: scheme.financial_benefit_en || scheme.benefits_en || scheme.name_en,
-    url: `${SITE_URL}/awareness/scheme/${scheme.slug}`,
+    url: `${SITE_URL}/schemes/${scheme.slug}`,
     imageUrl: ogImage,
     datePublished: '2026-01-01T00:00:00Z',
     dateModified: '2026-09-27T00:00:00Z',
@@ -59,7 +59,6 @@ export default async function Page({ params }) {
     language: 'ta-IN',
   });
 
-  // Programmatic FAQ Schema for SERP expandable snippets
   const faqSchema = scheme.faqs?.length ? {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -76,9 +75,9 @@ export default async function Page({ params }) {
   return (
     <>
       <Breadcrumbs items={[
-        { name: 'Awareness', href: '/awareness' },
-        { name: 'Schemes', href: '/awareness/schemes' },
-        { name: scheme.name_en, href: `/awareness/scheme/${scheme.slug}` },
+        { name: 'Home', href: '/' },
+        { name: 'Schemes', href: '/schemes' },
+        { name: scheme.name_en, href: `/schemes/${scheme.slug}` },
       ]} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
       {faqSchema && (
@@ -88,4 +87,3 @@ export default async function Page({ params }) {
     </>
   );
 }
-

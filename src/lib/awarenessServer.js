@@ -102,43 +102,465 @@ export const getFaqBySlug = (slug) => {
   return getAllFaqs().find(f => f.slug === slug);
 };
 
-// All schemes with slugs
+// All schemes with slugs — Comprehensive 2026 Tamil Nadu Welfare Database
 export const getAllSchemes = () => [
   {
-    id: "scheme-1",
-    slug: "mgnarega",
-    name_en: "MGNREGA - Mahatma Gandhi National Rural Employment Guarantee Act",
-    name_ta: "MGNREGA",
-    category_en: "Employment",
-    category_ta: "வேலை வாய்ப்பு",
-    department_en: "Rural Development",
-    department_ta: "கிராமப்புற வளர்ச்சி",
-    benefits_en: "Guaranteed rural employment",
-    benefits_ta: "கிராமப்புற வேலைக்கான உத்தரவாதம்",
-    apply_url: "https://www.mgnrega.tn.gov.in",
-    website_url: "https://www.mgnrega.tn.gov.in",
+    id: "magalir-urimai",
+    slug: "kalaignar-magalir-urimai-thogai",
+    name_en: "Kalaignar Magalir Urimai Thogai (KMUT)",
+    name_ta: "கலைஞர் மகளிர் உரிமைத் தொகை திட்டம்",
+    category_en: "Women Welfare",
+    category_ta: "பெண்கள் நலன்",
+    department_en: "Social Welfare & Women Empowerment Dept",
+    department_ta: "சமூக நலன் & மகளிர் உரிமைத் துறை",
+    financial_benefit_en: "₹1,000 per month transferred directly to bank account on the 15th of every month.",
+    financial_benefit_ta: "ஒவ்வொரு மாதமும் 15-ம் தேதி வங்கி கணக்கில் நேரடியாக ₹1,000 உரிமைத் தொகை வரவு வைக்கப்படும்.",
+    benefits_en: "₹1,000 per month Direct Benefit Transfer (DBT) empowering women heads of families with financial independence.",
+    benefits_ta: "குடும்பத் தலைவிகளுக்கு மாதம் ₹1,000 நேரடி வங்கி பணப் பரிமாற்றம் மூலம் நிதி சுயாட்சி மற்றும் பாதுகாப்பு.",
+    eligibility_en: "• Female head of the family (age 21 years or older)\n• Annual family income must be below ₹2.5 Lakh\n• Family must hold less than 5 acres of wetland or 10 acres of dryland\n• Annual domestic electricity consumption below 3,600 units\n• Family must not own a 4-wheeler (car/jeep/tractor)\n• Not a central/state government employee or income tax payer.",
+    eligibility_ta: "• குடும்பத் தலைவியாக உள்ள 21 வயது பூர்த்தியடைந்த பெண்கள்\n• குடும்ப ஆண்டு வருமானம் ₹2.5 லட்சத்திற்குள் இருக்க வேண்டும்\n• 5 ஏக்கருக்குள் நஞ்சை அல்லது 10 ஏக்கருக்குள் புஞ்சை நிலம் இருக்க வேண்டும்\n• ஆண்டு மின் நுகர்வு 3,600 யூனிட்டுகளுக்குள் இருக்க வேண்டும்\n• நான்கு சக்கர வாகனம் (கார், ஜீப், டிராக்டர்) வைத்திருக்கக் கூடாது\n• அரசு ஊழியர் அல்லது வருமான வரி செலுத்துபவராக இருக்கக் கூடாது.",
+    documents_required_en: [
+      "Aadhaar Card of Applicant",
+      "Smart Family Ration Card",
+      "Bank Account Passbook (Aadhaar linked)",
+      "Electricity Bill (EB Consumer Number)",
+      "Self-Declaration Form (supplied at camp/portal)"
+    ],
+    documents_required_ta: [
+      "விண்ணப்பதாரரின் ஆதார் அட்டை",
+      "ஸ்மார்ட் குடும்ப அட்டை (ரேஷன் கார்டு)",
+      "ஆதார் இணைக்கப்பட்ட வங்கி கணக்கு பாஸ்புக்",
+      "மின் கட்டண ரசீது (EB இணைப்பு எண்)",
+      "சுய அறிவிப்புப் படிவம் (முகாமில்/தளத்தில் கிடைக்கும்)"
+    ],
+    how_to_apply_en: "1. Obtain application form and token from nearest Ration Shop or designated Special Camp.\n2. Fill in Aadhaar, Smart Card, and Bank account details.\n3. Attend biometric e-KYC verification at the camp.\n4. Status can be tracked online at kmut.tn.gov.in using Aadhaar number.",
+    how_to_apply_ta: "1. நியாயவிலைக் கடை அல்லது சிறப்பு முகாம்களில் விண்ணப்பப் படிவம் மற்றும் டோக்கன் பெறவும்.\n2. ஆதார், ரேஷன் அட்டை, வங்கி கணக்கு விவரங்களைப் பூர்த்தி செய்யவும்.\n3. முகாமில் பயோமெட்ரிக் e-KYC கைரேகை பதிவு செய்யவும்.\n4. விண்ணப்ப நிலையை kmut.tn.gov.in தளத்தில் ஆதார் எண் மூலம் அறியலாம்.",
+    where_to_apply_en: "Special Revenue Ward Camps, Taluk Offices, and e-Sevai Centres across Tamil Nadu.",
+    where_to_apply_ta: "தமிழ்நாடு முழுவதும் உள்ள வருவாய்த் துறை சிறப்பு முகாம்கள், தாலுகா அலுவலகங்கள் மற்றும் இ-சேவை மையங்கள்.",
+    helpline: "044-25619200 / 1100 (CM Helpline)",
+    apply_url: "https://www.kmut.tn.gov.in",
+    website_url: "https://www.kmut.tn.gov.in",
+    image_url: "/images/evergreen/magalir-urimai.jpg",
     is_featured: true,
+    faqs: [
+      {
+        q_en: "Can unmarried or widowed women apply for Magalir Urimai Thogai?",
+        q_ta: "திருமணமாகாத அல்லது விதவை பெண்கள் மகளிர் உரிமைத் தொகைக்கு விண்ணப்பிக்கலாமா?",
+        a_en: "Yes. Unmarried women aged 21+ living alone or female heads of single-member households, widows, and transgender women are fully eligible if income criteria are met.",
+        a_ta: "ஆம். குடும்பத் தலைவியாக இருக்கும் விதவைகள், தனியாக வசிக்கும் 21 வயதுக்கு மேற்பட்ட பெண்கள் மற்றும் திருநங்கைகள் தகுதி நிபந்தனைகளுக்கு உட்பட்டு விண்ணப்பிக்கலாம்."
+      },
+      {
+        q_en: "What should I do if my application was rejected?",
+        q_ta: "விண்ணப்பம் நிராகரிக்கப்பட்டால் என்ன செய்ய வேண்டும்?",
+        a_en: "Applicants can file an appeal within 30 days via the e-Sevai portal or visit their local Revenue Divisional Officer (RDO) with requisite land, income, and electricity proof.",
+        a_ta: "விண்ணப்பம் நிராகரிக்கப்பட்ட 30 நாட்களுக்குள் இ-சேவை மையம் மூலம் அல்லது கோட்டாட்சியர் (RDO) அலுவலகத்தில் மேல்முறையீடு செய்யலாம்."
+      }
+    ]
   },
   {
-    id: "scheme-2",
-    slug: "pmay-tamil-nadu",
-    name_en: "Pradhan Mantri Awas Yojana - Tamil Nadu",
-    name_ta: "Pradhan Mantri Awas Yojana",
-    category_en: "Housing",
-    category_ta: "வீடு மைத்திரம்",
-    department_en: "Housing",
-    department_ta: "வீட்டுவசதி",
-    benefits_en: "Affordable housing assistance",
-    benefits_ta: "மலிவான வீட்டு உதவி",
-    apply_url: "https://pmaytnscsc.tnscsc.in",
-    website_url: "https://pmaytnscsc.tnscsc.in",
+    id: "pudhumai-penn",
+    slug: "pudhumai-penn-scheme-girl-students",
+    name_en: "Pudhumai Penn Scheme (Moovalur Ramamirtham Ammaiyar Higher Education)",
+    name_ta: "புதுமைப் பெண் திட்டம் (மூவலூர் ராமாமிர்தம் அம்மையார்)",
+    category_en: "Education",
+    category_ta: "கல்வி",
+    department_en: "Higher Education & Social Welfare Dept",
+    department_ta: "உயர்கல்வி மற்றும் சமூக நலத் துறை",
+    financial_benefit_en: "₹1,000 per month deposited directly into student's bank account till course completion.",
+    financial_benefit_ta: "பட்டப்படிப்பு அல்லது பட்டயப்படிப்பு முடியும் வரை மாணவிகளின் வங்கிக் கணக்கில் மாதம் ₹1,000 வரவு.",
+    benefits_en: "Financial assistance of ₹1,000/month for female students pursuing Under Graduate, Diploma, ITI, or professional degrees, preventing college dropouts.",
+    benefits_ta: "அரசுப் பள்ளி மாணவிகள் உயர்கல்வி பெறுவதை ஊக்குவிக்க மாதம் ₹1,000 உதவித்தொகை வழங்கி இடைநிற்றலைத் தடுத்தல்.",
+    eligibility_en: "• Must be a female student currently enrolled in regular college / polytechnic / ITI\n• Must have studied Classes 6 to 12 in Tamil Nadu Government schools (or Government-aided Tamil medium)\n• Private school / distance education students are not eligible.",
+    eligibility_ta: "• கல்லூரியில் பட்டப்படிப்பு, பட்டயப்படிப்பு (Diploma) அல்லது ITI பயிலும் மாணவி\n• 6 முதல் 12-ம் வகுப்பு வரை தமிழ்நாடு அரசுப் பள்ளிகளில் (அல்லது அரசு உதவிபெறும் தமிழ் வழிப் பள்ளிகளில்) படித்திருக்க வேண்டும்\n• தொலைதூரக் கல்வி பயில்பவர்களுக்கு இத்திட்டம் பொருந்தாது.",
+    documents_required_en: [
+      "Student Aadhaar Card",
+      "Classes 6–12 Government School Transfer Certificate (TC) or Study Certificate",
+      "College Identity Card & Admission Receipt",
+      "Bank Account Passbook in Student's Name (Aadhaar Seeded)",
+      "Passport Size Photograph"
+    ],
+    documents_required_ta: [
+      "மாணவியின் ஆதார் அட்டை",
+      "6 முதல் 12-ம் வகுப்பு அரசுப் பள்ளி மாற்றுச் சான்றிதழ் (TC) அல்லது பயின்றதற்கான சான்றிதழ்",
+      "கல்லூரி அடையாள அட்டை மற்றும் சேர்க்கை ரசீது",
+      "மாணவி பெயரில் உள்ள ஆதார் இணைக்கப்பட்ட வங்கி பாஸ்புக்",
+      "பாஸ்போர்ட் அளவு புகைப்படம்"
+    ],
+    how_to_apply_en: "1. Visit your college/polytechnic administration office (Nodal Officer).\n2. Submit school study certificates and Aadhaar-seeded bank account details.\n3. The college uploads details onto the official Pudhumai Penn portal.\n4. Verification is done by Social Welfare Dept and funds released monthly via DBT.",
+    how_to_apply_ta: "1. உங்கள் கல்லூரி அல்லது பாலிடெக்னிக் ஒருங்கிணைப்பாளரை (Nodal Officer) அணுகவும்.\n2. அரசுப் பள்ளி பயின்ற சான்றிதழ் மற்றும் வங்கி விவரங்களைச் சமர்ப்பிக்கவும்.\n3. கல்லூரி நிர்வாகம் புதுமைப் பெண் இணையதளத்தில் தகவல்களைப் பதிவேற்றும்.\n4. சரிபார்ப்புக்குப் பின் மாதம் தோறும் DBT வழியாக பணம் வங்கிக்கு வரும்.",
+    where_to_apply_en: "College / Polytechnic / Institute Administrative Office & pudhumapenn.tn.gov.in.",
+    where_to_apply_ta: "பயிலும் கல்லூரி அலுவலகம் மற்றும் pudhumapenn.tn.gov.in இணையதளம்.",
+    helpline: "044-25619200 / 14417 (School/Edu Helpline)",
+    apply_url: "https://www.pudhumapenn.tn.gov.in",
+    website_url: "https://www.pudhumapenn.tn.gov.in",
+    image_url: "/images/evergreen/pudhumai-penn.jpg",
     is_featured: true,
+    faqs: [
+      {
+        q_en: "Can students getting other scholarships apply for Pudhumai Penn?",
+        q_ta: "மற்ற கல்வி உதவித்தொகை பெறும் மாணவிகள் புதுமைப் பெண் திட்டத்தில் பயன்பெறலாமா?",
+        a_en: "Yes. Pudhumai Penn is an incentive allowance and does not restrict students from receiving merit, BC/MBC, or SC/ST government scholarships.",
+        a_ta: "ஆம். இத்திட்டம் மற்ற அரசு கல்வி உதவித்தொகைகளுடன் கூடுதலாகவே வழங்கப்படுகிறது. பிற உதவித்தொகை பெறுபவர்களும் தகுதியுடையவர்களே."
+      }
+    ]
   },
+  {
+    id: "tamil-pudhalvan",
+    slug: "tamil-pudhalvan-scheme-boy-students",
+    name_en: "Tamil Pudhalvan Scheme (Financial Support for Male Students)",
+    name_ta: "தமிழ்ப் புதல்வன் திட்டம் (மாணவர்களுக்கான உயர்கல்வி உதவி)",
+    category_en: "Education",
+    category_ta: "கல்வி",
+    department_en: "Higher Education Dept",
+    department_ta: "உயர்கல்வித் துறை",
+    financial_benefit_en: "₹1,000 per month deposited directly into male student's bank account.",
+    financial_benefit_ta: "கல்லூரி படிப்பு முடியும் வரை மாணவர்களின் வங்கிக் கணக்கில் மாதம் ₹1,000 வரவு.",
+    benefits_en: "Monthly allowance of ₹1,000 for government school boy students pursuing higher education, covering textbooks, study materials, and bus fare.",
+    benefits_ta: "அரசுப் பள்ளி மாணவர்கள் உயர்கல்வியில் சேர்வதை அதிகரிக்கவும், புத்தகங்கள் மற்றும் கல்விச் செலவுகளுக்காகவும் மாதம் ₹1,000 உதவி.",
+    eligibility_en: "• Male students enrolled in regular Undergraduate, Diploma, or ITI programs\n• Studied Classes 6 to 12 in Tamil Nadu Government schools (or Government-aided Tamil medium)\n• Aadhaar-seeded bank account in student's name.",
+    eligibility_ta: "• அரசு கல்லூரிகள், பாலிடெக்னிக் அல்லது ITI-யில் பயிலும் மாணவர்கள்\n• 6 முதல் 12-ம் வகுப்பு வரை தமிழ்நாடு அரசுப் பள்ளிகளில் படித்திருக்க வேண்டும்\n• மாணவர் பெயரில் ஆதார் இணைக்கப்பட்ட வங்கிக் கணக்கு இருக்க வேண்டும்.",
+    documents_required_en: [
+      "Student Aadhaar Card",
+      "Classes 6–12 Government School Study Certificate",
+      "College Admission Proof & Fee Receipt",
+      "Bank Account Passbook (Aadhaar linked)",
+      "Passport Size Photo"
+    ],
+    documents_required_ta: [
+      "மாணவரின் ஆதார் அட்டை",
+      "6-12 வகுப்பு வரை அரசுப் பள்ளியில் படித்ததற்கான சான்றிதழ்",
+      "கல்லூரி சேர்க்கை சான்று & ரசீது",
+      "ஆதார் இணைக்கப்பட்ட வங்கி பாஸ்புக் நகல்",
+      "புகைப்படம்"
+    ],
+    how_to_apply_en: "1. Apply directly through the University Management Information System (UMIS) college desk.\n2. Submit verified EMIS ID from school records.\n3. Verification by Directorate of Collegiate Education.",
+    how_to_apply_ta: "1. பயிலும் கல்லூரி அலுவலகத்தில் UMIS இணைய முகப்பு வழியாக விண்ணப்பிக்கவும்.\n2. பள்ளி EMIS எண் மற்றும் சான்றிதழ்களைச் சமர்ப்பிக்கவும்.\n3. கல்லூரி சரிபார்ப்புக்குப் பின் மாதந்தோறும் வங்கிக் கணக்கிற்கு நிதி அனுப்பப்படும்.",
+    where_to_apply_en: "Respective College / Institution UMIS Desk.",
+    where_to_apply_ta: "கல்லூரி அல்லது கல்வி நிறுவன UMIS முகப்பு.",
+    helpline: "1100 / 044-24343105",
+    apply_url: "https://umis.tn.gov.in",
+    website_url: "https://umis.tn.gov.in",
+    image_url: "/images/evergreen/pudhumai-penn.jpg",
+    is_featured: true,
+    faqs: [
+      {
+        q_en: "Are polytechnic and ITI students eligible for Tamil Pudhalvan?",
+        q_ta: "பாலிடெக்னிக் மற்றும் ITI படிக்கும் மாணவர்களுக்கு இத்திட்டம் கிடைக்குமா?",
+        a_en: "Yes, regular full-time polytechnic and ITI diploma students from government schools are 100% eligible.",
+        a_ta: "ஆம். அரசுப் பள்ளிகளில் படித்த முழுநேர பாலிடெக்னிக் மற்றும் ITI மாணவர்களுக்கும் இத்திட்டம் முழுமையாகப் பொருந்தும்."
+      }
+    ]
+  },
+  {
+    id: "cmchis",
+    slug: "chief-ministers-comprehensive-health-insurance-scheme-cmchis",
+    name_en: "Chief Minister's Comprehensive Health Insurance Scheme (CMCHIS)",
+    name_ta: "முதலமைச்சர் விரிவான மருத்துவக் காப்பீட்டுத் திட்டம் (CMCHIS)",
+    category_en: "Healthcare",
+    category_ta: "மருத்துவம் & சுகாதாரம்",
+    department_en: "Health & Family Welfare Dept",
+    department_ta: "மக்கள் நல்வாழ்வு மற்றும் குடும்ப நலத் துறை",
+    financial_benefit_en: "Cashless medical and surgical treatment up to ₹5,00,000 per family per year.",
+    financial_benefit_ta: "ஒரு குடும்பத்திற்கு ஆண்டிற்கு ₹5,00,000 வரை அரசு மற்றும் தனியார் மருத்துவமனைகளில் பணமில்லா சிகிச்சை.",
+    benefits_en: "Cashless coverage for over 1,090 medical/surgical procedures, 52 specialized diagnostic tests, and critical surgeries across 1,150+ network hospitals.",
+    benefits_ta: "இதய அறுவை சிகிச்சை, புற்றுநோய், டயாலிசிஸ் உள்ளிட்ட 1,090க்கும் மேற்பட்ட சிகிச்சைகளுக்கு 1,150+ அங்கீகரிக்கப்பட்ட மருத்துவமனைகளில் இலவச சிகிச்சை.",
+    eligibility_en: "• Must be a resident of Tamil Nadu holding a valid Smart Family Ration Card\n• Annual family income less than ₹1,20,000 (relaxed for specific categories, orphans, and migrants)\n• Covers all members listed on the family card.",
+    eligibility_ta: "• குடும்பத்தில் செல்லுபடியாகும் ஸ்மார்ட் குடும்ப அட்டை (ரேஷன் கார்டு) இருக்க வேண்டும்\n• குடும்ப ஆண்டு வருமானம் ₹1,20,000-க்குள் இருக்க வேண்டும்\n• குடும்ப அட்டையில் உள்ள அனைத்து உறுப்பினர்களுக்கும் காப்பீடு உண்டு.",
+    documents_required_en: [
+      "Smart Family Ration Card",
+      "Aadhaar Cards of all Family Members",
+      "Income Certificate from Village Administrative Officer (VAO) / Tahsildar",
+      "Passport Size Photos of Family Members"
+    ],
+    documents_required_ta: [
+      "ஸ்மார்ட் குடும்ப அட்டை (ரேஷன் கார்டு)",
+      "அனைத்து குடும்ப உறுப்பினர்களின் ஆதார் அட்டை",
+      "VAO அல்லது தாசில்தார் வழங்கிய வருமானச் சான்றிதழ்",
+      "குடும்ப உறுப்பினர்களின் புகைப்படங்கள்"
+    ],
+    how_to_apply_en: "1. Visit the CMCHIS Kiosk at your District Collectorate Office or Government Medical College Hospital.\n2. Present Smart Ration card, Aadhaar cards, and Income certificate.\n3. Biometric enrolment and digital photo capture.\n4. Instant issuance of plastic CMCHIS smart card.",
+    how_to_apply_ta: "1. மாவட்ட ஆட்சியர் அலுவலகம் அல்லது அரசு மருத்துவக் கல்லூரி மருத்துவமனையில் உள்ள CMCHIS மையத்தை அணுகவும்.\n2. ரேஷன் கார்டு, ஆதார் மற்றும் வருமானச் சான்றிதழைச் சமர்ப்பிக்கவும்.\n3. கைரேகை பதிவு மற்றும் புகைப்படம் எடுக்கப்படும்.\n4. ஸ்மார்ட் காப்பீட்டு அட்டை உடனடியாக வழங்கப்படும்.",
+    where_to_apply_en: "District Collectorate CMCHIS Enrolment Centres & Government Medical Colleges.",
+    where_to_apply_ta: "மாவட்ட ஆட்சியர் அலுவலக CMCHIS மையம் மற்றும் அரசு மருத்துவமனைகள்.",
+    helpline: "1800-425-3993 (Toll-Free 24x7)",
+    apply_url: "https://www.cmchis.tn.gov.in",
+    website_url: "https://www.cmchis.tn.gov.in",
+    image_url: "/images/evergreen/cmchis-health.jpg",
+    is_featured: true,
+    faqs: [
+      {
+        q_en: "What should I do if a private hospital refuses CMCHIS card?",
+        q_ta: "அங்கீகரிக்கப்பட்ட தனியார் மருத்துவமனை காப்பீட்டை ஏற்க மறுத்தால் என்ன செய்வது?",
+        a_en: "Immediately call the 24x7 CMCHIS toll-free grievance cell at 1800-425-3993 or contact the District Kiosk Coordinator.",
+        a_ta: "உடனடியாக 1800-425-3993 என்ற 24 மணி நேர இலவச உதவி எண்ணில் அல்லது மாவட்ட CMCHIS ஒருங்கிணைப்பாளரிடம் புகார் தெரிவிக்கலாம்."
+      }
+    ]
+  },
+  {
+    id: "breakfast-scheme",
+    slug: "chief-ministers-breakfast-scheme-primary-schools",
+    name_en: "Chief Minister's Breakfast Scheme (CMBS)",
+    name_ta: "முதலமைச்சர் காலை உணவுத் திட்டம்",
+    category_en: "Education",
+    category_ta: "பள்ளிக் கல்வி",
+    department_en: "Social Welfare & School Education Dept",
+    department_ta: "சமூக நலன் மற்றும் பள்ளிக் கல்வித் துறை",
+    financial_benefit_en: "100% Free nutritious hot breakfast on all school days.",
+    financial_benefit_ta: "அனைத்துப் பள்ளி வேலை நாட்களிலும் மாணவர்களுக்கு 100% இலவச சத்தான சூடான காலை உணவு.",
+    benefits_en: "Provides healthy breakfast (Rava Upma, Kichadi, Pongal, Kesari, Sambar) across all 31,000+ government primary schools, eradicating classroom hunger.",
+    benefits_ta: "31,000க்கும் மேற்பட்ட அரசு தொடக்கப் பள்ளிகளில் படிக்கும் குழந்தைகளுக்கு காலை உணவு வழங்கி ஊட்டச்சத்து மற்றும் வருகை விகிதத்தை அதிகரித்தல்.",
+    eligibility_en: "All students studying in Classes 1 to 5 in Tamil Nadu Government primary and middle schools.",
+    eligibility_ta: "தமிழ்நாடு அரசு தொடக்க மற்றும் நடுநிலைப் பள்ளிகளில் 1 முதல் 5-ம் வகுப்பு வரை பயிலும் அனைத்துக் குழந்தைகள்.",
+    documents_required_en: ["No documents required. Automatic enrolment upon school admission."],
+    documents_required_ta: ["எந்த ஆவணமும் தேவையில்லை. பள்ளியில் சேர்ந்தவுடன் தானாகவே உணவு வழங்கப்படும்."],
+    how_to_apply_en: "Automatic — No application needed. Served directly in schools from 8:15 AM to 8:50 AM.",
+    how_to_apply_ta: "தானியங்கி முறை — விண்ணப்பம் தேவையில்லை. காலை 8:15 முதல் 8:50 வரை பள்ளியிலேயே உணவு பரிமாறப்படுகிறது.",
+    where_to_apply_en: "Tamil Nadu Government Primary Schools.",
+    where_to_apply_ta: "தமிழ்நாடு அரசு தொடக்கப் பள்ளிகள்.",
+    helpline: "14417 / 1100",
+    apply_url: "https://tnschools.gov.in",
+    website_url: "https://tnschools.gov.in",
+    image_url: "/images/evergreen/pudhumai-penn.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "Is the breakfast scheme applicable to aided schools?",
+        q_ta: "அரசு உதவிபெறும் பள்ளிகளுக்கு இத்திட்டம் உண்டா?",
+        a_en: "The government has extended the scheme to rural government-aided primary schools in phased batches.",
+        a_ta: "ஊரகப் பகுதிகளில் உள்ள அரசு உதவிபெறும் தொடக்கப் பள்ளிகளுக்கும் இத்திட்டம் கட்டம் கட்டமாக விரிவுபடுத்தப்பட்டுள்ளது."
+      }
+    ]
+  },
+  {
+    id: "vidiyal-payanam",
+    slug: "vidiyal-payanam-free-bus-travel-scheme-women",
+    name_en: "Vidiyal Payanam — Free Bus Travel Scheme for Women",
+    name_ta: "விடியல் பயணம் — மகளிருக்கு கட்டணமில்லா பேருந்து பயணம்",
+    category_en: "Transport",
+    category_ta: "போக்குவரத்து",
+    department_en: "Transport Department",
+    department_ta: "போக்குவரத்துத் துறை",
+    financial_benefit_en: "100% Free travel in ordinary fare state transport buses (saving ₹800–₹1,200 monthly).",
+    financial_benefit_ta: "சாதாரண நகரப் பேருந்துகளில் கட்டணமில்லா பயணம் (மாதம் ₹800 முதல் ₹1,200 வரை மிச்சம்).",
+    benefits_en: "Zero bus fare for women passengers, transgender persons, and differently-abled individuals in ordinary pink-board city buses across Tamil Nadu.",
+    benefits_ta: "நகரப் பேருந்துகளில் பெண்கள், திருநங்கைகள் மற்றும் மாற்றுத்திறனாளிகள் கட்டணமின்றி பயணம் செய்ய அனுமதி.",
+    eligibility_en: "All women, transgender persons, and differently abled persons in Tamil Nadu.",
+    eligibility_ta: "தமிழ்நாட்டில் உள்ள அனைத்துப் பெண்கள், திருநங்கைகள் மற்றும் மாற்றுத்திறனாளிகள்.",
+    documents_required_en: ["No registration required. Zero-rupee ticket issued by conductor."],
+    documents_required_ta: ["முன் பதிவு தேவையில்லை. பேருந்தில் ஏறியவுடன் பூஜ்ஜிய கட்டண ரசீது (Zero Ticket) பெறலாம்."],
+    how_to_apply_en: "Board any ordinary town bus (marked with pink color board or front display).",
+    how_to_apply_ta: "பிங்க் நிற பலகை கொண்ட சாதாரண கட்டண பேருந்துகளில் ஏறினால் போதுமானது.",
+    where_to_apply_en: "TNSTC and MTC Ordinary Town Buses across all districts.",
+    where_to_apply_ta: "அனைத்து மாவட்ட TNSTC மற்றும் MTC சாதாரண பேருந்துகள்.",
+    helpline: "1800-599-1500 (Transport Grievance)",
+    apply_url: "https://transport.tn.gov.in",
+    website_url: "https://transport.tn.gov.in",
+    image_url: "/images/evergreen/magalir-urimai.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "Is free bus travel valid in Express and Deluxe buses?",
+        q_ta: "எக்ஸ்பிரஸ் மற்றும் டீலக்ஸ் பேருந்துகளில் இலவச பயணம் செல்லுபடியாகுமா?",
+        a_en: "No. The scheme is strictly valid in white-board / pink-board ordinary fare town buses only.",
+        a_ta: "இல்லை. இத்திட்டம் சாதாரண கட்டண நகரப் பேருந்துகளுக்கு மட்டுமே பொருந்தும்."
+      }
+    ]
+  },
+  {
+    id: "oap-scheme",
+    slug: "tamil-nadu-old-age-pension-oap-scheme",
+    name_en: "Tamil Nadu Old Age Pension Scheme (OAP)",
+    name_ta: "முதியோர் ஓய்வூதியத் திட்டம் (OAP)",
+    category_en: "Social Welfare",
+    category_ta: "சமூகப் பாதுகாப்பு",
+    department_en: "Revenue and Disaster Management Dept",
+    department_ta: "வருவாய்த் துறை (சமூகப் பாதுகாப்பு)",
+    financial_benefit_en: "₹1,200 per month deposited directly into bank account / postal account.",
+    financial_benefit_ta: "மாதந்தோறும் ₹1,200 ஓய்வூதியம் நேரடியாக வங்கி அல்லது அஞ்சலக கணக்கில் வரவு.",
+    benefits_en: "Social security monthly pension of ₹1,200 plus 2 free sarees/dhotis annually and free subsidized rice at PDS shops for destitute elderly citizens.",
+    benefits_ta: "ஆதரவற்ற முதியோர்களுக்கு மாதம் ₹1,200 ஓய்வூதியம், ஆண்டுக்கு 2 இலவச வேட்டி/சேலை மற்றும் ரேஷனில் இலவச அரிசி.",
+    eligibility_en: "• Age 60 years or older\n• Destitute with no source of regular income\n• Annual income below ₹24,000\n• No adult earning children supporting the applicant.",
+    eligibility_ta: "• 60 வயது பூர்த்தியடைந்தவராக இருக்க வேண்டும்\n• வாழ்வாதாரத்திற்கு நிலையான வருமானம் இல்லாத ஆதரவற்றவர்\n• ஆண்டு வருமானம் ₹24,000-க்குள் இருக்க வேண்டும்\n• பராமரிக்கும் மகன் அல்லது குடும்பத்தினர் இல்லாதவர்.",
+    documents_required_en: [
+      "Aadhaar Card",
+      "Smart Ration Card",
+      "Age Proof (Voter ID / Birth Certificate / School TC / Medical Certificate)",
+      "Bank Account Passbook (single holder)",
+      "No-income Destitute Certificate from VAO"
+    ],
+    documents_required_ta: [
+      "ஆதார் அட்டை",
+      "குடும்ப அட்டை",
+      "வயது சான்று (வாக்காளர் அட்டை / மருத்துவ சான்றிதழ்)",
+      "வங்கி கணக்கு பாஸ்புக்",
+      "VAO வழங்கிய வருமானமின்மை சான்றிதழ்"
+    ],
+    how_to_apply_en: "1. Visit nearest e-Sevai centre or Taluk Office.\n2. Submit Form with VAO certificate and age proof.\n3. Revenue Inspector (RI) and Tahsildar conduct home verification.\n4. Pension sanction order issued within 30 days.",
+    how_to_apply_ta: "1. அருகிலுள்ள இ-சேவை மையம் அல்லது தாலுகா அலுவலகத்திற்குச் செல்லவும்.\n2. VAO சான்றிதழுடன் விண்ணப்பிக்கவும்.\n3. வருவாய் ஆய்வாளர் (RI) கள ஆய்வு செய்து தகுதியை உறுதிசெய்வார்.\n4. 30 நாட்களில் தாலுகா அலுவலகம் மூலம் ஆணை பிறப்பிக்கப்படும்.",
+    where_to_apply_en: "Local Taluk Office (Special Tahsildar Social Security Schemes) & e-Sevai Centres.",
+    where_to_apply_ta: "வட்டாட்சியர் அலுவலகம் (சமூக பாதுகாப்பு திட்டம்) மற்றும் இ-சேவை மையங்கள்.",
+    helpline: "1100 / 14567 (Senior Citizen Helpline)",
+    apply_url: "https://www.tnesevai.tn.gov.in",
+    website_url: "https://www.tnesevai.tn.gov.in",
+    image_url: "/images/evergreen/magalir-urimai.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "Can senior citizens with sons apply for OAP?",
+        q_ta: "மகன் உள்ள முதியவர்கள் ஓய்வூதியம் பெற முடியுமா?",
+        a_en: "If the son is below poverty line, missing, incapacitated, or not living together, exemption can be granted upon Tahsildar inquiry.",
+        a_ta: "மகன் ஆதரவற்ற வறுமைக் கோட்டிற்கு கீழ் இருந்தாலோ அல்லது கைவிட்டிருந்தாலோ தாசில்தார் ஆய்வுக்குப் பின் ஓய்வூதியம் பெறலாம்."
+      }
+    ]
+  },
+  {
+    id: "first-graduate",
+    slug: "tamil-nadu-first-graduate-certificate-scheme",
+    name_en: "First Graduate Tuition Fee Concession Scheme",
+    name_ta: "முதல் பட்டதாரி கல்விக் கட்டணச் சலுகை திட்டம்",
+    category_en: "Education",
+    category_ta: "உயர்கல்வி",
+    department_en: "Higher Education Dept & Revenue Dept",
+    department_ta: "உயர்கல்வி மற்றும் வருவாய்த் துறை",
+    financial_benefit_en: "100% Tuition fee waiver in engineering, medical, and professional colleges via single-window counseling.",
+    financial_benefit_ta: "TNEA மற்றும் மருத்துவக் கலந்தாய்வில் சேரும் மாணவர்களுக்கு முழுக் கல்விக் கட்டண விலக்கு.",
+    benefits_en: "Saves up to ₹25,000–₹50,000 annually in government and private self-financing engineering/medical seats for students whose family has no prior graduates.",
+    benefits_ta: "குடும்பத்தில் முதல் பட்டதாரி மாணவர்களுக்கு பொறியியல் மற்றும் மருத்துவ கல்லூரிகளில் ஆண்டுதோறும் அரசு கட்டண விலக்கு அளிக்கிறது.",
+    eligibility_en: "• No other member in the student's family (father, mother, brothers, sisters) must be a graduate\n• Student must obtain admission through Anna University / Directorate of Medical Education counseling (TNEA/NEET single window)\n• Resident of Tamil Nadu with Nativity Certificate.",
+    eligibility_ta: "• குடும்பத்தில் பெற்றோர், உடன் பிறந்தவர்கள் யாரும் பட்டப்படிப்பு முடித்திருக்கக் கூடாது\n• அண்ணா பல்கலைக்கழகம் அல்லது மருத்துவ கலந்தாய்வு மூலம் சேர்க்கை பெற்றிருக்க வேண்டும்\n• தமிழ்நாட்டில் வசிப்பவராக இருத்தல் வேண்டும்.",
+    documents_required_en: [
+      "Applicant Aadhaar Card",
+      "Smart Ration Card",
+      "Parents' School TC / Transfer Certificate (showing highest educational qualification)",
+      "Siblings' Educational Certificates",
+      "Self-Declaration Affidavits from parents",
+      "Nativity Certificate"
+    ],
+    documents_required_ta: [
+      "மாணவரின் ஆதார் அட்டை",
+      "குடும்ப அட்டை",
+      "பெற்றோரின் பள்ளி மாற்றுச் சான்றிதழ் (TC)",
+      "உடன் பிறந்தவர்களின் கல்விச் சான்றிதழ்",
+      "பெற்றோர் உறுதிமொழிப் படிவம்",
+      "இருப்பிடச் சான்றிதழ்"
+    ],
+    how_to_apply_en: "1. Apply online for 'First Graduate Certificate (REV-104)' at tnesevai.tn.gov.in.\n2. Pay ₹60 application fee.\n3. VAO and Tahsildar verify family education history.\n4. Download digitally signed certificate with QR code for counseling submission.",
+    how_to_apply_ta: "1. tnesevai.tn.gov.in தளத்தில் 'First Graduate Certificate' விண்ணப்பிக்கவும்.\n2. ₹60 கட்டணம் செலுத்தவும்.\n3. VAO மற்றும் தாசில்தார் ஆவணங்களைச் சரிபார்ப்பார்கள்.\n4. QR குறியீட்டுடன் கூடிய டிஜிட்டல் சான்றிதழைப் பதிவிறக்கி கலந்தாய்வில் சமர்ப்பிக்கவும்.",
+    where_to_apply_en: "e-Sevai Portal (tnesevai.tn.gov.in) or nearest e-Sevai Centre.",
+    where_to_apply_ta: "இ-சேவை தளம் (tnesevai.tn.gov.in) அல்லது அருகிலுள்ள இ-சேவை மையம்.",
+    helpline: "1100 / 044-40344444",
+    apply_url: "https://www.tnesevai.tn.gov.in",
+    website_url: "https://www.tnesevai.tn.gov.in",
+    image_url: "/images/evergreen/pudhumai-penn.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "Can a younger brother apply if elder brother already got First Graduate benefit?",
+        q_ta: "மூத்த சகோதரர் சலுகை பெற்றிருந்தால் தம்பிக்கு முதல் பட்டதாரி சான்றிதழ் கிடைக்குமா?",
+        a_en: "No. First Graduate benefit is strictly available for only one person per family.",
+        a_ta: "இல்லை. ஒரு குடும்பத்தில் ஒருவருக்கு மட்டுமே முதல் பட்டதாரி சலுகை கிடைக்கும்."
+      }
+    ]
+  },
+  {
+    id: "mgnrega",
+    slug: "mgnrega-100-days-employment-scheme-tamil-nadu",
+    name_en: "MGNREGA — 100 Days Rural Employment Guarantee Scheme",
+    name_ta: "100 நாள் வேலைத் திட்டம் (MGNREGA)",
+    category_en: "Employment",
+    category_ta: "வேலை வாய்ப்பு",
+    department_en: "Rural Development & Panchayat Raj Dept",
+    department_ta: "ஊரக வளர்ச்சி மற்றும் ஊராட்சித் துறை",
+    financial_benefit_en: "Guaranteed statutory daily wage (₹319/day in TN) credited directly to bank account.",
+    financial_benefit_ta: "தமிழ்நாட்டில் நாளொன்றுக்கு ₹319 சட்டப்பூர்வ கூலி நேரடியாக வங்கிக் கணக்கில் வரவு.",
+    benefits_en: "Legal entitlement to 100 days of guaranteed manual wage work per financial year per rural household for pond desilting, canal cleaning, and afforestation.",
+    benefits_ta: "கிராமப்புற குடும்பங்களுக்கு ஆண்டுக்கு 100 நாட்கள் சட்டப்பூர்வ வேலை உத்தரவாதம். ஏரி தூர்வாருதல், கால்வாய் சீரமைப்பு பணிகள்.",
+    eligibility_en: "• Adult (18+) member of a rural household in Tamil Nadu\n• Willing to do unskilled manual civic work\n• Must hold a valid Job Card issued by Gram Panchayat.",
+    eligibility_ta: "• கிராமப்புறத்தில் வசிக்கும் 18 வயது பூர்த்தியடைந்த நபர்கள்\n• உடலுழைப்பு செய்ய விருப்பமுள்ளவர்\n• கிராம பஞ்சாயத்து வழங்கிய வேலை அட்டை (Job Card) வைத்திருக்க வேண்டும்.",
+    documents_required_en: [
+      "Applicant Aadhaar Card",
+      "Smart Ration Card",
+      "Bank Account Passbook (Aadhaar linked)",
+      "Passport Size Photo",
+      "Gram Panchayat Job Card"
+    ],
+    documents_required_ta: [
+      "ஆதார் அட்டை",
+      "குடும்ப அட்டை",
+      "ஆதார் இணைக்கப்பட்ட வங்கி கணக்கு பாஸ்புக்",
+      "புகைப்படம்",
+      "கிராம ஊராட்சி வேலை அட்டை"
+    ],
+    how_to_apply_en: "1. Apply to your Gram Panchayat Secretary for a Job Card (Form 1).\n2. Job card is issued free of cost within 15 days.\n3. Demand work in writing; work must be provided within 15 days, or unemployment allowance is mandatory.",
+    how_to_apply_ta: "1. கிராம ஊராட்சி செயலாளரிடம் வேலை அட்டைக்கு விண்ணப்பிக்கவும்.\n2. 15 நாட்களுக்குள் இலவசமாக வேலை அட்டை வழங்கப்படும்.\n3. வேலை கோரி மனு கொடுத்த 15 நாட்களுக்குள் வேலை தர வேண்டும், இல்லையேல் வேலையின்மை கொடுப்பனவு வழங்கப்படும்.",
+    where_to_apply_en: "Local Gram Panchayat Office & nrega.nic.in.",
+    where_to_apply_ta: "கிராம ஊராட்சி மன்ற அலுவலகம் மற்றும் nrega.nic.in.",
+    helpline: "1800-345-2244",
+    apply_url: "https://nrega.nic.in",
+    website_url: "https://nrega.nic.in",
+    image_url: "/images/evergreen/magalir-urimai.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "How are wages paid under MGNREGA?",
+        q_ta: "100 நாள் வேலை திட்டத்திற்கான கூலி எவ்வாறு வழங்கப்படுகிறது?",
+        a_en: "Wages are calculated by the Panchayat Overseer based on work measurements and credited weekly via Aadhaar-based Payment Bridge (ABPS).",
+        a_ta: "பணிகளை அளவீடு செய்து வாரம் ஒருமுறை ஆதார் பாங்கிங் (ABPS) மூலம் நேரடியாக வங்கிக்கு அனுப்பப்படுகிறது."
+      }
+    ]
+  },
+  {
+    id: "differently-abled-welfare",
+    slug: "tamil-nadu-differently-abled-welfare-schemes",
+    name_en: "Welfare Schemes for Persons with Disabilities",
+    name_ta: "மாற்றுத்திறனாளிகள் நலத் திட்டங்கள் மற்றும் உதவித்தொகை",
+    category_en: "Social Welfare",
+    category_ta: "மாற்றுத்திறனாளிகள் நலன்",
+    department_en: "Welfare of Differently Abled Persons Dept",
+    department_ta: "மாற்றுத்திறனாளிகள் நலத் துறை",
+    financial_benefit_en: "₹2,000 per month maintenance allowance + free bus pass + retrofitted scooters.",
+    financial_benefit_ta: "மாதம் ₹2,000 பராமரிப்பு உதவித்தொகை + கட்டணமில்லா பேருந்து பாஸ் + இலவச இணைப்பு சக்கரம் பொருத்திய வாகனம்.",
+    benefits_en: "Monthly financial aid, free assistive aids and appliances (hearing aids, motorized tricycles, braille kits), and 4% job reservation.",
+    benefits_ta: "கடுமையான மாற்றுத்திறனாளிகளுக்கு மாதம் ₹2,000 உதவி, 4% அரசு வேலைவாய்ப்பு இடஒதுக்கீடு, கட்டணமில்லா அரசு பேருந்து பயணம்.",
+    eligibility_en: "• Person with 40%+ disability (75%+ for ₹2,000 monthly maintenance allowance)\n• Possesses valid Medical Board Disability Certificate & Unique Disability ID (UDID).",
+    eligibility_ta: "• மருத்துவக் குழு வழங்கிய 40% அல்லது அதற்கு மேற்பட்ட மாற்றுத்திறனாளி சான்றிதழ் (உதவித்தொகைக்கு 75%+)\n• UDID ஸ்மார்ட் கார்டு அட்டை பெற்றிருக்க வேண்டும்.",
+    documents_required_en: [
+      "UDID Card / Disability Certificate from Medical Board",
+      "Aadhaar Card",
+      "Smart Ration Card",
+      "Bank Account Passbook (Aadhaar Seeded)",
+      "Passport Size Photos (showing disability)"
+    ],
+    documents_required_ta: [
+      "மருத்துவக் குழு வழங்கிய மாற்றுத்திறனாளி சான்றிதழ் / UDID அட்டை",
+      "ஆதார் அட்டை",
+      "குடும்ப அட்டை",
+      "வங்கி கணக்கு பாஸ்புக் நகல்",
+      "புகைப்படம்"
+    ],
+    how_to_apply_en: "1. Register on swavlambancard.gov.in to get UDID card.\n2. Visit the District Differently Abled Welfare Officer (DDAWO) at District Collectorate.\n3. Submit medical certificate and bank details for monthly pension.",
+    how_to_apply_ta: "1. swavlambancard.gov.in தளம் மூலம் UDID கார்டுக்குப் பதிவு செய்யவும்.\n2. மாவட்ட ஆட்சியர் அலுவலகத்தில் உள்ள மாவட்ட மாற்றுத்திறனாளிகள் நல அலுவலரை (DDAWO) அணுகவும்.\n3. மருத்துவ சான்றிதழ் வழங்கி மாதாந்திர உதவித்தொகைக்கு விண்ணப்பிக்கவும்.",
+    where_to_apply_en: "District Differently Abled Welfare Office (Collectorate) & scda.tn.gov.in.",
+    where_to_apply_ta: "மாவட்ட ஆட்சியர் வளாகத்தில் உள்ள மாற்றுத்திறனாளிகள் நல அலுவலகம்.",
+    helpline: "1800-425-0111",
+    apply_url: "https://www.scda.tn.gov.in",
+    website_url: "https://www.scda.tn.gov.in",
+    image_url: "/images/evergreen/cmchis-health.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "How to get a free motorized retrofitted scooter?",
+        q_ta: "இணைப்பு சக்கரம் பொருத்திய இலவச இருசக்கர வாகனம் பெறுவது எப்படி?",
+        a_en: "Locomotor disabled individuals with both lower limbs affected, aged 18–45, who are employed or studying can apply annually to the DDAWO office.",
+        a_ta: "இரண்டு கால்களும் பாதிக்கப்பட்ட 18 முதல் 45 வயதுடைய பணிபுரியும் அல்லது கல்லூரி பயிலும் மாற்றுத்திறனாளிகள் DDAWO அலுவலகத்தில் விண்ணப்பிக்கலாம்."
+      }
+    ]
+  }
 ];
 
-// Get scheme by slug
+// Get scheme by slug or id
 export const getSchemeBySlug = (slug) => {
-  return getAllSchemes().find(s => s.slug === slug);
+  return getAllSchemes().find(s => s.slug === slug || s.id === slug);
 };
 
 export const GOVT_SCHEMES = getAllSchemes();
@@ -224,6 +646,7 @@ export const getAllRights = () => [
     department_en: "Personnel and Administrative Reforms Dept",
     department_ta: "பணியாளர் மற்றும் நிர்வாக சீர்திருத்தத் துறை",
     portal_url: "https://rtionline.tn.gov.in",
+    image_url: "/images/evergreen/rti-rights.jpg",
   },
   {
     id: "right-consumer",

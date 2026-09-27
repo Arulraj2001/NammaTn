@@ -212,6 +212,11 @@ export default async function sitemap() {
           changeFrequency: 'weekly',
           priority: 0.7,
         });
+        entries.push({
+          url: `${SITE_URL}/schemes/${s.slug}`,
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        });
       }
     });
 
@@ -228,6 +233,17 @@ export default async function sitemap() {
   } catch (e) {
     console.warn('[sitemap] Awareness detail pages fetch failed:', e.message);
   }
+
+  [
+    '/schemes', '/helplines', '/rights',
+  ].forEach(path => {
+    entries.push({
+      url: `${SITE_URL}${path}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    });
+  });
 
   [
     '/districts', '/areas', '/awareness', '/awareness/articles', '/awareness/rights',

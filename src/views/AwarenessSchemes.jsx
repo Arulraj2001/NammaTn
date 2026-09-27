@@ -447,32 +447,34 @@ export default function AwarenessSchemesPage() {
                         {T(scheme.how_en, scheme.how_ta)}
                       </p>
                     </div>
-                    <div className="sm:col-span-2 flex flex-wrap gap-2 pt-1">
-                      <a
-                        href={scheme.website_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors"
+                    <div className="sm:col-span-2 flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/60 mt-2">
+                      <Link
+                        to={`/awareness/scheme/${scheme.slug || scheme.id}`}
+                        className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors shadow-sm"
                       >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        {T("Check Eligibility", "தகுதி சரிபார்")}
-                      </a>
-                      <a
-                        href={scheme.apply_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-xs font-medium px-4 py-2 rounded-xl transition-colors"
-                      >
-                        {T("Apply Now →", "விண்ணப்பிக்க →")}
-                      </a>
-                      <a
-                        href="https://www.myscheme.gov.in"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-medium px-4 py-2 rounded-xl transition-colors"
-                      >
-                        {T("All Schemes →", "அனைத்து திட்டங்கள் →")}
-                      </a>
+                        {T("Full Scheme Guide & Documents →", "முழு வழிகாட்டி & ஆவணங்கள் →")}
+                      </Link>
+                      {scheme.apply_url && (
+                        <a
+                          href={scheme.apply_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-xs font-medium px-4 py-2 rounded-xl transition-colors"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          {T("Official Apply Portal", "அரசு விண்ணப்ப தளம்")}
+                        </a>
+                      )}
+                      {scheme.website_url && scheme.website_url !== scheme.apply_url && (
+                        <a
+                          href={scheme.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-medium px-4 py-2 rounded-xl transition-colors"
+                        >
+                          {T("Department Site", "துறை தளம்")}
+                        </a>
+                      )}
                     </div>
                   </div>
                 )}
