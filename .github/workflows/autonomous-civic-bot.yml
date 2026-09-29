@@ -41,8 +41,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
+
+      - name: Print Runtime Info
+        run: |
+          echo "Node: $(node --version)"
+          echo "NPM:  $(npm --version)"
+          echo "OS:   $(uname -a)"
 
       - name: Install Dependencies
         run: npm ci
@@ -50,8 +56,9 @@ jobs:
       - name: Run Autonomous Civic Poster
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
         run: |
           INPUT_PULSE="${{ github.event.inputs.pulse }}"
