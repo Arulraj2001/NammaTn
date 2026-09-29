@@ -224,11 +224,25 @@ async function main() {
   let exclusionSummary = [];
 
   if (supabaseUrl && supabaseKey) {
+    // Bug Fix #1 (final): createClient() throws on Node.js 20 because @supabase/realtime-js
+    // requires a WebSocket implementation. The library's own suggestion: pass the 'ws' package
+    // as the Realtime transport. 'ws' is already installed as a transitive dep of @google/genai.
     try {
+      const ws = (await import('ws')).default;
+      supabase = createClient(supabaseUrl, supabaseKey, {
+        auth: { persistSession: false },
+        realtime: { transport: ws }
+      });
+    } catch (wsErr) {
+      // Fallback: try without the ws transport option (works on Node.js 22+)
+      console.warn(`[WARN] Could not load ws package (${wsErr.message}), trying native WebSocket...`);
       supabase = createClient(supabaseUrl, supabaseKey, {
         auth: { persistSession: false }
       });
+    }
+    console.log('[SUPABASE] Client initialized successfully.');
 
+    try {
       const fortyEightHoursAgo = new Date(Date.now() - 48 * 3600 * 1000).toISOString();
       const { data: recentPosts, error: fetchErr } = await supabase
         .from('post')
@@ -246,10 +260,12 @@ async function main() {
         });
         console.log(`[ANTI-DUP] Loaded ${recentSlugs.size} existing recent post slugs from Supabase to prevent duplicates.`);
       } else if (fetchErr) {
-        console.warn(`[WARN] Supabase query warning: ${fetchErr.message}`);
+        console.warn(`[WARN] Supabase anti-dup query warning: ${fetchErr.message}`);
       }
     } catch (err) {
-      console.warn(`[WARN] Could not pre-fetch recent posts: ${err.message}`);
+      // Prefetch failed (e.g. WebSocket/network error) — log and continue.
+      // The supabase client is still valid and inserts will proceed normally.
+      console.warn(`[WARN] Could not pre-fetch recent posts (anti-dup skipped): ${err.message}`);
     }
   } else {
     console.log('[WARN] Supabase credentials not fully provided; running in isolated generator mode.');
@@ -319,39 +335,61 @@ No conversational intro, no commentary outside the JSON array.
     console.warn(`[GEMINI] Model list check: ${listErr.message}`);
   }
 
-  const CANDIDATE_MODELS = [
-    'gemini-flash-latest',
-    'gemini-flash-lite-latest',
-    'gemini-3-flash-preview',
-    'gemini-3.1-flash-lite-preview',
-    'gemini-2.5-flash-lite',
-    'gemini-2.5-flash'
-  ];
+  // Bug Fix #2: Only use Search Grounding for morning/weekend pulses (higher value, lower frequency).
+  // Midday and evening go straight to standard generation to preserve daily grounding quota (429 prevention).
+  const useGrounding = ['morning', 'weekend'].includes(pulse);
+
+  // Prioritize gemini-2.5-flash first for grounding (higher quota), lite models as fallbacks
+  const CANDIDATE_MODELS = useGrounding
+    ? ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-2.5-flash-lite']
+    : ['gemini-flash-lite-latest', 'gemini-2.5-flash-lite', 'gemini-flash-latest', 'gemini-2.5-flash'];
+
+  console.log(`[GEMINI] Grounding: ${useGrounding ? 'ENABLED (morning/weekend pulse)' : 'DISABLED (midday/evening — quota conservation)'}`);
 
   let lastError = null;
 
   for (const modelName of CANDIDATE_MODELS) {
-    // Attempt 1: With Google Search Grounding
-    try {
-      console.log(`[GEMINI] Attempting model: ${modelName} with Google Search Grounding...`);
-      const response = await ai.models.generateContent({
-        model: modelName,
-        contents: masterPrompt,
-        config: {
-          tools: [{ googleSearch: {} }]
-        }
-      });
-
-      rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      if (rawResponseText) {
-        console.log(`[GEMINI ✓] Successfully received grounded response from ${modelName}`);
-        break;
-      }
-    } catch (groundErr) {
-      console.warn(`[GEMINI WARN] Search Grounding failed on ${modelName} (${groundErr.message}). Retrying standard mode...`);
-      
-      // Attempt 2: Standard generation fallback (unbilled free tier compatible)
+    if (useGrounding) {
+      // Attempt 1: With Google Search Grounding (morning/weekend only)
       try {
+        console.log(`[GEMINI] Attempting model: ${modelName} with Google Search Grounding...`);
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: masterPrompt,
+          config: {
+            tools: [{ googleSearch: {} }]
+          }
+        });
+
+        rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (rawResponseText) {
+          console.log(`[GEMINI ✓] Successfully received grounded response from ${modelName}`);
+          break;
+        }
+      } catch (groundErr) {
+        console.warn(`[GEMINI WARN] Search Grounding failed on ${modelName} (${groundErr.message}). Retrying standard mode...`);
+
+        // Attempt 2: Standard generation fallback
+        try {
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: masterPrompt
+          });
+
+          rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (rawResponseText) {
+            console.log(`[GEMINI ✓] Successfully received standard response from ${modelName}`);
+            break;
+          }
+        } catch (stdErr) {
+          console.warn(`[GEMINI WARN] Standard generation on ${modelName} failed: ${stdErr.message}`);
+          lastError = stdErr;
+        }
+      }
+    } else {
+      // No grounding for midday/evening — go straight to standard generation
+      try {
+        console.log(`[GEMINI] Attempting model: ${modelName} (standard, no grounding)...`);
         const response = await ai.models.generateContent({
           model: modelName,
           contents: masterPrompt
