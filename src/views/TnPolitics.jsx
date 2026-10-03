@@ -121,7 +121,7 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
         <div className="mb-6">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight">MLA District Tracker</h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Official representatives of the 16th Tamil Nadu Legislative Assembly
+            Official representatives of the 17th Tamil Nadu Legislative Assembly (2026–2031)
           </p>
         </div>
         <div className="mla-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">

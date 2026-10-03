@@ -740,7 +740,7 @@ export default function TnPoliticsDetailView({ post, relatedPosts = [], mlaTrack
                 Track All 38 District MLAs
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Constituency representatives across Tamil Nadu — official stats, vote shares, and monthly civic action
+                Constituency representatives of the 17th Tamil Nadu Legislative Assembly (2026–2031) across all 38 districts
               </p>
             </div>
             <Link
