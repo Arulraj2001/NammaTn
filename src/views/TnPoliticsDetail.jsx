@@ -7,6 +7,7 @@ import {
   Bookmark, ThumbsUp, Lightbulb, Search, MessageSquare, ChevronRight,
   TrendingUp, Users, Building2, MapPin
 } from 'lucide-react'
+import MlaPhoto from '@/components/MlaPhoto'
 
 const POST_TYPE_LABELS = {
   speech_summary: '🎤 Speech Summary',
@@ -132,8 +133,9 @@ export default function TnPoliticsDetailView({ post, relatedPosts = [], mlaTrack
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(pageUrl)}`, '_blank')
   }
 
-  // Find spotlight MLA (e.g. Chief Minister M.K. Stalin for Chennai, or first available)
-  const spotlightMLA = mlaTrackers.find(m => m.district_slug === 'chennai') || mlaTrackers[0]
+  // Find spotlight MLA (match article's district if relevant, or CM M.K. Stalin for Chennai)
+  const matchedDistrictMLA = post.district_slug ? mlaTrackers.find(m => m.district_slug === post.district_slug) : null
+  const spotlightMLA = matchedDistrictMLA || mlaTrackers.find(m => m.district_slug === 'chennai') || mlaTrackers[0]
 
   return (
     <div className="tn-politics-detail-wrapper bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
@@ -608,15 +610,12 @@ export default function TnPoliticsDetailView({ post, relatedPosts = [], mlaTrack
                 </div>
 
                 <div className="flex items-center gap-3 pt-1">
-                  {spotlightMLA.photo_url ? (
-                    <img 
-                      src={spotlightMLA.photo_url} 
-                      alt={spotlightMLA.mla_name}
-                      referrerPolicy="no-referrer"
-                      className="w-14 h-14 rounded-2xl object-cover object-top border border-slate-200 dark:border-slate-700 shadow-xs shrink-0 bg-slate-100"
-                      onError={e => { e.target.style.display = 'none' }}
-                    />
-                  ) : null}
+                  <MlaPhoto 
+                    photoUrl={spotlightMLA.photo_url} 
+                    name={spotlightMLA.mla_name} 
+                    partySlug={spotlightMLA.party_slug} 
+                    size="lg" 
+                  />
                   <div className="min-w-0 flex-1">
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">
                       {spotlightMLA.mla_name}
@@ -760,15 +759,12 @@ export default function TnPoliticsDetailView({ post, relatedPosts = [], mlaTrack
                 className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-all flex flex-col justify-between group"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  {m.photo_url ? (
-                    <img 
-                      src={m.photo_url} 
-                      alt={m.mla_name}
-                      referrerPolicy="no-referrer"
-                      className="w-7 h-7 rounded-lg object-cover object-top border border-slate-200 dark:border-slate-700 bg-slate-100 shrink-0"
-                      onError={e => { e.target.style.display = 'none' }}
-                    />
-                  ) : null}
+                  <MlaPhoto 
+                    photoUrl={m.photo_url} 
+                    name={m.mla_name} 
+                    partySlug={m.party_slug} 
+                    size="xs" 
+                  />
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide truncate">
                     {m.district_name}
                   </span>

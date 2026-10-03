@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { Link } from '@/lib/router-compat'
 
+import MlaPhoto from '@/components/MlaPhoto'
+
 const POST_TYPE_LABELS = {
   speech_summary: 'Speech Summary',
   policy_explainer: 'Policy',
@@ -119,7 +121,7 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
         <div className="mb-6">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight">MLA District Tracker</h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Track your district MLA performance since May 2026
+            Official representatives of the 16th Tamil Nadu Legislative Assembly
           </p>
         </div>
         <div className="mla-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -129,31 +131,12 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
               href={`/tn-politics/mla/${mla.district_slug}`}
               className="mla-card p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-all flex items-center gap-3 group"
             >
-              <div className="relative shrink-0">
-                {mla.photo_url ? (
-                  <img
-                    src={mla.photo_url}
-                    alt={mla.mla_name}
-                    referrerPolicy="no-referrer"
-                    className="w-11 h-11 rounded-xl object-cover object-top border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800"
-                    onError={(e) => {
-                      e.target.style.display = 'none'
-                      if (e.target.nextElementSibling) {
-                        e.target.nextElementSibling.style.display = 'flex'
-                      }
-                    }}
-                  />
-                ) : null}
-                <div
-                  className={`w-11 h-11 rounded-xl items-center justify-center text-xs font-black border border-slate-200 dark:border-slate-700 ${mla.photo_url ? 'hidden' : 'flex'}`}
-                  style={{
-                    backgroundColor: (PARTY_COLORS[mla.party_slug] || '#64748b') + '20',
-                    color: PARTY_COLORS[mla.party_slug] || '#64748b'
-                  }}
-                >
-                  {mla.mla_name ? mla.mla_name.split(' ').filter(Boolean).slice(-1)[0]?.charAt(0) || 'M' : 'M'}
-                </div>
-              </div>
+              <MlaPhoto 
+                photoUrl={mla.photo_url} 
+                name={mla.mla_name} 
+                partySlug={mla.party_slug} 
+                size="sm" 
+              />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
                   <span className="district-name block text-[11px] font-bold text-slate-400 uppercase tracking-wide truncate">
