@@ -339,10 +339,13 @@ No conversational intro, no commentary outside the JSON array.
   // Midday and evening go straight to standard generation to preserve daily grounding quota (429 prevention).
   const useGrounding = ['morning', 'weekend'].includes(pulse);
 
-  // Prioritize gemini-2.5-flash first for grounding (higher quota), lite models as fallbacks
-  const CANDIDATE_MODELS = useGrounding
-    ? ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-2.5-flash-lite']
-    : ['gemini-flash-lite-latest', 'gemini-2.5-flash-lite', 'gemini-flash-latest', 'gemini-2.5-flash'];
+  // Use available modern models (gemini-2.5 is deprecated 404)
+  const CANDIDATE_MODELS = [
+    'gemini-flash-lite-latest',
+    'gemini-3.1-flash-lite-preview',
+    'gemini-flash-latest',
+    'gemini-3-flash-preview',
+  ];
 
   console.log(`[GEMINI] Grounding: ${useGrounding ? 'ENABLED (morning/weekend pulse)' : 'DISABLED (midday/evening — quota conservation)'}`);
 
@@ -357,7 +360,7 @@ No conversational intro, no commentary outside the JSON array.
           model: modelName,
           contents: masterPrompt,
           config: {
-            tools: [{ googleSearch: {} }]
+            tools: [{ googleSearch: {} }],
           }
         });
 
@@ -369,11 +372,14 @@ No conversational intro, no commentary outside the JSON array.
       } catch (groundErr) {
         console.warn(`[GEMINI WARN] Search Grounding failed on ${modelName} (${groundErr.message}). Retrying standard mode...`);
 
-        // Attempt 2: Standard generation fallback
+        // Attempt 2: Standard generation fallback with JSON mode
         try {
           const response = await ai.models.generateContent({
             model: modelName,
-            contents: masterPrompt
+            contents: masterPrompt,
+            config: {
+              responseMimeType: 'application/json',
+            }
           });
 
           rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -387,12 +393,15 @@ No conversational intro, no commentary outside the JSON array.
         }
       }
     } else {
-      // No grounding for midday/evening — go straight to standard generation
+      // No grounding for midday/evening — go straight to standard generation with JSON mode
       try {
         console.log(`[GEMINI] Attempting model: ${modelName} (standard, no grounding)...`);
         const response = await ai.models.generateContent({
           model: modelName,
-          contents: masterPrompt
+          contents: masterPrompt,
+          config: {
+            responseMimeType: 'application/json',
+          }
         });
 
         rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -412,32 +421,81 @@ No conversational intro, no commentary outside the JSON array.
     process.exit(1);
   }
 
-  // --- STEP 4: PARSE AND CLEAN JSON ---
-  let cleanedText = rawResponseText.trim();
-  // Strip markdown code fences if wrapped in ```json ... ```
-  if (cleanedText.includes('```')) {
-    cleanedText = cleanedText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
-    // If there's still surrounding text, find array bounds
-    const firstBracket = cleanedText.indexOf('[');
-    const lastBracket = cleanedText.lastIndexOf(']');
-    if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
-      cleanedText = cleanedText.substring(firstBracket, lastBracket + 1);
+  // --- STEP 4: PARSE AND CLEAN JSON WITH MULTI-PASS RECOVERY ---
+  function parseCivicJson(rawText) {
+    let cleaned = (rawText || '').trim();
+
+    // Strip markdown code fences
+    if (cleaned.includes('```')) {
+      cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    }
+
+    // Locate boundary of outer JSON structure
+    const firstBracket = cleaned.indexOf('[');
+    const firstBrace = cleaned.indexOf('{');
+    let startIndex = -1;
+    let isArray = false;
+
+    if (firstBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace)) {
+      startIndex = firstBracket;
+      isArray = true;
+    } else if (firstBrace !== -1) {
+      startIndex = firstBrace;
+      isArray = false;
+    }
+
+    if (startIndex !== -1) {
+      const endChar = isArray ? ']' : '}';
+      const lastIndex = cleaned.lastIndexOf(endChar);
+      if (lastIndex !== -1 && lastIndex > startIndex) {
+        cleaned = cleaned.substring(startIndex, lastIndex + 1);
+      } else {
+        cleaned = cleaned.substring(startIndex);
+      }
+    }
+
+    // Pass 1: Direct JSON.parse
+    try {
+      const parsed = JSON.parse(cleaned);
+      return Array.isArray(parsed) ? parsed : (parsed.posts || [parsed]);
+    } catch (_) {
+      // Pass 2: Clean comments and trailing commas before closing brackets
+      let sanitized = cleaned
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/(^|[^\\:])\/\/[^\n]*/g, '$1')
+        .replace(/,\s*([\]}])/g, '$1');
+
+      try {
+        const parsed = JSON.parse(sanitized);
+        return Array.isArray(parsed) ? parsed : (parsed.posts || [parsed]);
+      } catch (err2) {
+        // Pass 3: Truncation recovery — extract each completed { ... } post object
+        console.warn(`[JSON WARN] Direct JSON parse failed (${err2.message}). Attempting chunked object extraction...`);
+        const objectRegex = /\{[\s\S]*?\}(?=\s*[,\]]|\s*$)/g;
+        const matches = sanitized.match(objectRegex);
+        if (matches && matches.length > 0) {
+          const recovered = [];
+          for (const match of matches) {
+            try {
+              const cleanMatch = match.replace(/,\s*([\]}])/g, '$1');
+              recovered.push(JSON.parse(cleanMatch));
+            } catch (_) {}
+          }
+          if (recovered.length > 0) {
+            console.log(`[JSON RECOVERY] Successfully extracted ${recovered.length} valid post objects from partial response.`);
+            return recovered;
+          }
+        }
+        throw new Error(`Failed to parse Gemini response as JSON: ${err2.message}\nResponse snippet: ${cleaned.slice(0, 500)}`);
+      }
     }
   }
 
   let parsedBatch = [];
   try {
-    parsedBatch = JSON.parse(cleanedText);
-    if (!Array.isArray(parsedBatch)) {
-      if (parsedBatch.posts && Array.isArray(parsedBatch.posts)) {
-        parsedBatch = parsedBatch.posts;
-      } else {
-        parsedBatch = [parsedBatch];
-      }
-    }
+    parsedBatch = parseCivicJson(rawResponseText);
   } catch (parseErr) {
-    console.error(`[FATAL] Failed to parse Gemini response as JSON: ${parseErr.message}`);
-    console.error('Response snippet:', cleanedText.slice(0, 500));
+    console.error(`[FATAL] ${parseErr.message}`);
     process.exit(1);
   }
 
