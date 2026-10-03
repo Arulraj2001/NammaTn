@@ -1,5 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
-import { getPoliticsPost } from '@/services/politicsServer'
+import { getPoliticsPost, getPoliticsPosts, getAllMLATrackers } from '@/services/politicsServer'
 import TnPoliticsDetailView from '@/views/TnPoliticsDetail'
 
 export const revalidate = 3600
@@ -37,5 +37,21 @@ export default async function TnPoliticsDetailPage({ params }) {
     redirect(`/tn-politics/${post.slug}`)
   }
 
-  return <TnPoliticsDetailView post={post} />
+  // Fetch related articles and MLAs for rich interlinking
+  const [allPosts, allMLAs] = await Promise.all([
+    getPoliticsPosts({ limit: 8 }),
+    getAllMLATrackers()
+  ])
+
+  const relatedPosts = (allPosts || [])
+    .filter(p => p.id !== post.id && p.slug !== post.slug)
+    .slice(0, 5)
+
+  return (
+    <TnPoliticsDetailView 
+      post={post} 
+      relatedPosts={relatedPosts} 
+      mlaTrackers={allMLAs || []} 
+    />
+  )
 }
