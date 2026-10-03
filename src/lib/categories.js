@@ -14,5 +14,31 @@ export const CATEGORIES = [
   { slug: "tn-politics", name_en: "TN Politics", name_ta: "தமிழ்நாடு அரசியல்", icon: "🗳️", color: "indigo" }
 ];
 
-export const getCategoryBySlug = (slug) =>
-  CATEGORIES.find((c) => c.slug === slug) || null;
+export const CATEGORY_ALIASES = {
+  'power-cut': 'electricity',
+  'power-cuts': 'electricity',
+  'eb-shutdown': 'electricity',
+  'water-issue': 'water-sanitation',
+  'water-supply': 'water-sanitation',
+  'water-shortage': 'water-sanitation',
+  'road-problem': 'road-infrastructure',
+  'road-issues': 'road-infrastructure',
+  'pothole': 'road-infrastructure',
+  'potholes': 'road-infrastructure',
+  'scam': 'public-safety',
+  'scams': 'public-safety',
+  'scam-alert': 'public-safety',
+  'politics': 'tn-politics',
+};
+
+export const resolveCategorySlug = (slug) => {
+  if (!slug) return null;
+  const clean = String(slug).toLowerCase().trim();
+  return CATEGORY_ALIASES[clean] || clean;
+};
+
+export const getCategoryBySlug = (slug) => {
+  if (!slug) return null;
+  const canonical = resolveCategorySlug(slug);
+  return CATEGORIES.find((c) => c.slug === canonical) || null;
+};

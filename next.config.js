@@ -141,9 +141,26 @@ const nextConfig = {
       // ── Canonical alias redirects: old issue slugs → current canonical slugs ──
       // These aliases previously served identical content with no redirect,
       // creating duplicate crawl paths. Consolidate to the canonical slug.
-      { source: '/:city/electricity',            destination: '/:city/power-cut',    permanent: true },
-      { source: '/:city/water-sanitation',       destination: '/:city/water-issue',  permanent: true },
-      { source: '/:city/road-infrastructure',    destination: '/:city/road-problem', permanent: true },
+      // We exclude system roots (category, explore, etc.) so :city does not intercept /category/*.
+      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|bribes|tn-today|tn-politics|api|_next)[^/]+)/electricity',            destination: '/:city/power-cut',    permanent: true },
+      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|bribes|tn-today|tn-politics|api|_next)[^/]+)/water-sanitation',       destination: '/:city/water-issue',  permanent: true },
+      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|bribes|tn-today|tn-politics|api|_next)[^/]+)/road-infrastructure',    destination: '/:city/road-problem', permanent: true },
+      // ── Category alias redirects: common category URLs → canonical routes ──
+      { source: '/category/power-cut',         destination: '/category/electricity',        permanent: true },
+      { source: '/category/power-cuts',        destination: '/category/electricity',        permanent: true },
+      { source: '/category/eb-shutdown',       destination: '/category/electricity',        permanent: true },
+      { source: '/category/water-issue',       destination: '/category/water-sanitation',    permanent: true },
+      { source: '/category/water-supply',      destination: '/category/water-sanitation',    permanent: true },
+      { source: '/category/water-shortage',    destination: '/category/water-sanitation',    permanent: true },
+      { source: '/category/road-problem',      destination: '/category/road-infrastructure', permanent: true },
+      { source: '/category/road-issues',       destination: '/category/road-infrastructure', permanent: true },
+      { source: '/category/scam',              destination: '/scams',                       permanent: true },
+      { source: '/category/scam-alert',        destination: '/scams',                       permanent: true },
+      { source: '/category/scams',             destination: '/scams',                       permanent: true },
+      { source: '/category/jobs',              destination: '/jobs',                        permanent: true },
+      { source: '/category/stay',              destination: '/stay',                        permanent: true },
+      { source: '/category/politics',          destination: '/tn-politics',                 permanent: true },
+
       // ── Canonical redirects for rights and schemes ──
       { source: '/awareness/rights',             destination: '/rights',             permanent: true },
       { source: '/awareness/right/:slug',        destination: '/rights/:slug',        permanent: true },

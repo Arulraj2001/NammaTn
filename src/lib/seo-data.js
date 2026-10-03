@@ -214,3 +214,11 @@ export const CATEGORY_MAP = Object.fromEntries(
 // Map common aliases to canonical category objects
 CATEGORY_MAP['scams'] = CATEGORY_MAP['scam'];
 CATEGORY_MAP['job'] = CATEGORY_MAP['jobs'];
+CATEGORY_MAP['power-cuts'] = CATEGORY_MAP['electricity'];
+CATEGORY_MAP['eb-shutdown'] = CATEGORY_MAP['electricity'];
+CATEGORY_MAP['water-supply'] = CATEGORY_MAP['water-sanitation'];
+CATEGORY_MAP['water-shortage'] = CATEGORY_MAP['water-sanitation'];
+CATEGORY_MAP['road-issues'] = CATEGORY_MAP['road-infrastructure'];
+CATEGORY_MAP['pothole'] = CATEGORY_MAP['road-infrastructure'];
+CATEGORY_MAP['potholes'] = CATEGORY_MAP['road-infrastructure'];
+

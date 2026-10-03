@@ -394,6 +394,8 @@ export async function getCategoryHubData(slug) {
   if (slug === 'water-issue') targetSlugs.push('water-sanitation');
   if (slug === 'road-infrastructure') targetSlugs.push('road-problem');
   if (slug === 'road-problem') targetSlugs.push('road-infrastructure');
+  if (slug === 'public-safety') targetSlugs.push('scam', 'scams', 'scam-alert');
+  if (slug === 'scam' || slug === 'scams' || slug === 'scam-alert') targetSlugs.push('public-safety');
 
   try {
     const { data, error } = await supabase

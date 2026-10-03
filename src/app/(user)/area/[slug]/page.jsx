@@ -9,7 +9,12 @@ export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const area = await getPublicArea(params.slug);
-  if (!area) notFound();
+  if (!area) {
+    return {
+      title: 'Area Reports | VizhiTN',
+      robots: { index: false, follow: false },
+    };
+  }
 
   const district = area.district_name_en || area.district_name || 'Tamil Nadu';
   const title = `${area.name_en} Civic Issues, Alerts & Local Updates`;

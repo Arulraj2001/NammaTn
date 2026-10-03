@@ -1,9 +1,8 @@
-// src/app/(user)/category/[slug]/page.jsx
 import React from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
-import { getCategoryBySlug } from '@/lib/categories';
+import { getCategoryBySlug, CATEGORY_ALIASES, resolveCategorySlug } from '@/lib/categories';
 import PageSchema from '@/components/seo/PageSchema';
 import { CategoryDistrictLinks } from '@/components/seo/InternalLinks';
 import CategoryDetail from '@/views/CategoryDetail';
@@ -20,16 +19,23 @@ function slugToLabel(slug) {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const publicCategory = getCategoryBySlug(slug);
-  if (!publicCategory) notFound();
-  const category = CATEGORY_MAP[slug];
-  const label = category?.plural ?? publicCategory.name_en ?? slugToLabel(slug);
+  const canonicalSlug = resolveCategorySlug(slug);
+  const publicCategory = getCategoryBySlug(canonicalSlug);
+  if (!publicCategory) {
+    return {
+      title: 'Category Reports | VizhiTN',
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const category = CATEGORY_MAP[canonicalSlug] || CATEGORY_MAP[slug];
+  const label = category?.plural ?? publicCategory.name_en ?? slugToLabel(canonicalSlug);
 
   const title = `${label} Reports in Tamil Nadu`;
   const description =
     `Browse all ${label.toLowerCase()} reports across Tamil Nadu submitted by citizens. ` +
     `Track ${category?.descriptionFragment ?? label.toLowerCase()} on VizhiTN.`;
-  const canonicalUrl = `${SITE_URL}/category/${slug}`;
+  const canonicalUrl = `${SITE_URL}/category/${canonicalSlug}`;
 
   return {
     title,
@@ -51,12 +57,21 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { slug } = await params;
-  const publicCategory = getCategoryBySlug(slug);
+
+  // Canonical redirect for aliases (e.g., /category/power-cut -> /category/electricity)
+  if (CATEGORY_ALIASES[slug]) {
+    permanentRedirect(`/category/${CATEGORY_ALIASES[slug]}`);
+  }
+
+  const canonicalSlug = resolveCategorySlug(slug);
+  const publicCategory = getCategoryBySlug(canonicalSlug);
   if (!publicCategory) notFound();
-  const category = CATEGORY_MAP[slug];
-  const label = category?.plural ?? publicCategory.name_en ?? slugToLabel(slug);
-  const canonicalUrl = `${SITE_URL}/category/${slug}`;
-  const initialData = await getCategoryHubData(slug);
+
+  const category = CATEGORY_MAP[canonicalSlug] || CATEGORY_MAP[slug];
+  const label = category?.plural ?? publicCategory.name_en ?? slugToLabel(canonicalSlug);
+  const canonicalUrl = `${SITE_URL}/category/${canonicalSlug}`;
+  const initialData = await getCategoryHubData(canonicalSlug);
+
 
   return (
     <>
@@ -96,11 +111,11 @@ export default async function Page({ params }) {
         </p>
       </main>
 
-      <CategoryDetail initialSlug={slug} initialData={initialData} />
+      <CategoryDetail initialSlug={canonicalSlug} initialData={initialData} />
 
       {/* Internal links: category → district cross-links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-slate-100 dark:border-slate-800">
-        <CategoryDistrictLinks categorySlug={slug} categoryName={label} />
+        <CategoryDistrictLinks categorySlug={canonicalSlug} categoryName={label} />
       </div>
     </>
   );

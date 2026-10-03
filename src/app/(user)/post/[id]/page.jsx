@@ -15,7 +15,12 @@ export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const { post } = await getPublicPostDetail(params.id);
-  if (!post) notFound();
+  if (!post) {
+    return {
+      title: 'Civic Report | VizhiTN',
+      robots: { index: false, follow: false },
+    };
+  }
 
   const seo = buildPostSeo(post);
   const postTitle = getPageTitle(seo.seo_title || post.title_en || post.title, 'Civic Report');
