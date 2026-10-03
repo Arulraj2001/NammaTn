@@ -10,6 +10,8 @@
     "audit:seo": "node scripts/verify-seo.mjs",
     "civic:cron": "node scripts/auto-civic-poster.mjs",
     "civic:dry-run": "node scripts/auto-civic-poster.mjs --dry-run",
+    "politics:cron": "node scripts/auto-politics-poster.mjs",
+    "politics:dry-run": "node scripts/auto-politics-poster.mjs --dry-run",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix"
   },
