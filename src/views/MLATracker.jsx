@@ -22,26 +22,55 @@ export default function MLATrackerView({ mla, recentPosts = [] }) {
       )}
 
       <div className="mla-profile-card mt-6 p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="mla-info space-y-2 flex-1">
-          <span className="party-name inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-            {mla.party_name}
-          </span>
-          <h2 className="text-xl sm:text-2xl font-bold">{mla.mla_name}</h2>
-          {mla.mla_name_ta && <p className="text-sm text-slate-500">{mla.mla_name_ta}</p>}
-          <p className="constituency text-sm text-slate-600 dark:text-slate-300">
-            <strong>Constituency:</strong> {mla.constituency}
-          </p>
-          <p className="elected-date text-xs text-slate-500">
-            Elected: {mla.elected_date ? new Date(mla.elected_date).toLocaleDateString('en-IN', {
-              day: 'numeric', month: 'long', year: 'numeric'
-            }) : 'May 2026'}
-          </p>
-          {mla.vote_share && <p className="text-xs text-slate-500">Vote Share: {mla.vote_share}%</p>}
-          {mla.winning_margin && (
-            <p className="text-xs text-slate-500">
-              Winning Margin: {Number(mla.winning_margin).toLocaleString('en-IN')} votes
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 flex-1">
+          {/* MLA Official Portrait */}
+          <div className="relative shrink-0">
+            {mla.photo_url ? (
+              <img
+                src={mla.photo_url}
+                alt={mla.mla_name}
+                referrerPolicy="no-referrer"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-top border-2 border-slate-200 dark:border-slate-700 shadow-md bg-slate-100 dark:bg-slate-800"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  if (e.target.nextElementSibling) {
+                    e.target.nextElementSibling.style.display = 'flex'
+                  }
+                }}
+              />
+            ) : null}
+            <div
+              className={`w-24 h-24 sm:w-28 sm:h-28 rounded-2xl items-center justify-center text-2xl font-black border-2 border-slate-200 dark:border-slate-700 shadow-md ${mla.photo_url ? 'hidden' : 'flex'}`}
+              style={{
+                backgroundColor: '#3b82f615',
+                color: '#2563eb'
+              }}
+            >
+              {mla.mla_name ? mla.mla_name.split(' ').filter(Boolean).slice(-1)[0]?.charAt(0) || 'M' : 'M'}
+            </div>
+          </div>
+
+          <div className="mla-info space-y-2 flex-1">
+            <span className="party-name inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              {mla.party_name}
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold">{mla.mla_name}</h2>
+            {mla.mla_name_ta && <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{mla.mla_name_ta}</p>}
+            <p className="constituency text-sm text-slate-600 dark:text-slate-300">
+              <strong>Constituency:</strong> {mla.constituency} {mla.constituency_ta && `(${mla.constituency_ta})`}
             </p>
-          )}
+            <p className="elected-date text-xs text-slate-500">
+              Elected: {mla.elected_date ? new Date(mla.elected_date).toLocaleDateString('en-IN', {
+                day: 'numeric', month: 'long', year: 'numeric'
+              }) : 'May 2021 (16th Assembly)'}
+            </p>
+            {mla.vote_share && <p className="text-xs text-slate-500">Vote Share: {mla.vote_share}%</p>}
+            {mla.winning_margin && (
+              <p className="text-xs text-slate-500">
+                Winning Margin: {Number(mla.winning_margin).toLocaleString('en-IN')} votes
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="performance-score w-full md:w-auto p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center shrink-0">

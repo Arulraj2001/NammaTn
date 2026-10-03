@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabaseServer'
+import { TN_MLAS_DATA, MLAS_BY_DISTRICT } from '@/lib/mlaData'
 
 // Get all politics posts (paginated)
 export async function getPoliticsPosts({ 
@@ -66,6 +67,7 @@ export async function getPoliticsPost(slug) {
 
 // Get MLA tracker for a district
 export async function getMLATracker(districtSlug) {
+  const fallback = MLAS_BY_DISTRICT[districtSlug] || null
   try {
     const supabase = createClient()
     const { data, error } = await supabase
@@ -75,11 +77,15 @@ export async function getMLATracker(districtSlug) {
       .eq('is_active', true)
       .single()
 
-    if (error) return null
-    return data
+    if (error || !data) return fallback
+    // If database still contains placeholder test strings, merge with real verified data
+    if (data.mla_name === 'TVK Representative' || data.mla_name === 'Multiple MLAs') {
+      return { ...fallback, ...data, mla_name: fallback?.mla_name || data.mla_name, mla_name_ta: fallback?.mla_name_ta || data.mla_name_ta, photo_url: fallback?.photo_url || data.photo_url, party_slug: fallback?.party_slug || data.party_slug, party_name: fallback?.party_name || data.party_name }
+    }
+    return { ...fallback, ...data }
   } catch (err) {
     console.warn('[politicsServer] getMLATracker exception:', err.message)
-    return null
+    return fallback
   }
 }
 
@@ -93,14 +99,26 @@ export async function getAllMLATrackers() {
       .eq('is_active', true)
       .order('district_name', { ascending: true })
 
-    if (error) {
-      console.warn('[politicsServer] getAllMLATrackers error:', error.message)
-      return []
+    if (error || !data || data.length === 0) {
+      return TN_MLAS_DATA
     }
-    return data || []
+
+    // Check if database contains outdated TVK placeholders
+    const hasPlaceholders = data.some(m => m.mla_name === 'TVK Representative')
+    if (hasPlaceholders) {
+      return data.map(dbRow => {
+        const fallback = MLAS_BY_DISTRICT[dbRow.district_slug]
+        if (dbRow.mla_name === 'TVK Representative' || dbRow.mla_name === 'Multiple MLAs') {
+          return { ...fallback, ...dbRow, mla_name: fallback?.mla_name || dbRow.mla_name, mla_name_ta: fallback?.mla_name_ta || dbRow.mla_name_ta, photo_url: fallback?.photo_url || dbRow.photo_url, party_slug: fallback?.party_slug || dbRow.party_slug, party_name: fallback?.party_name || dbRow.party_name }
+        }
+        return { ...fallback, ...dbRow }
+      })
+    }
+
+    return data
   } catch (err) {
     console.warn('[politicsServer] getAllMLATrackers exception:', err.message)
-    return []
+    return TN_MLAS_DATA
   }
 }
 

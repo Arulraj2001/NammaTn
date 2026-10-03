@@ -17,9 +17,13 @@ const PARTY_COLORS = {
   tvk: '#FF6B00',
   dmk: '#E31E24',
   aiadmk: '#00A651',
+  bjp: '#FF9933',
   'bjp-tn': '#FF9933',
-  ntk: '#000000',
-  pmk: '#FFDF00'
+  inc: '#1E40AF',
+  vck: '#0284C7',
+  pmk: '#CA8A04',
+  ntk: '#18181B',
+  independent: '#64748B'
 }
 
 export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
@@ -123,22 +127,54 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
             <Link
               key={mla.district_slug}
               href={`/tn-politics/mla/${mla.district_slug}`}
-              className="mla-card p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-all flex flex-col justify-between"
+              className="mla-card p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-all flex items-center gap-3 group"
             >
-              <div>
-                <span className="district-name block text-xs font-bold text-slate-400 uppercase tracking-wide">
-                  {mla.district_name}
-                </span>
-                <span className="mla-name block text-sm font-bold text-slate-900 dark:text-white mt-1 truncate">
+              <div className="relative shrink-0">
+                {mla.photo_url ? (
+                  <img
+                    src={mla.photo_url}
+                    alt={mla.mla_name}
+                    referrerPolicy="no-referrer"
+                    className="w-11 h-11 rounded-xl object-cover object-top border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      if (e.target.nextElementSibling) {
+                        e.target.nextElementSibling.style.display = 'flex'
+                      }
+                    }}
+                  />
+                ) : null}
+                <div
+                  className={`w-11 h-11 rounded-xl items-center justify-center text-xs font-black border border-slate-200 dark:border-slate-700 ${mla.photo_url ? 'hidden' : 'flex'}`}
+                  style={{
+                    backgroundColor: (PARTY_COLORS[mla.party_slug] || '#64748b') + '20',
+                    color: PARTY_COLORS[mla.party_slug] || '#64748b'
+                  }}
+                >
+                  {mla.mla_name ? mla.mla_name.split(' ').filter(Boolean).slice(-1)[0]?.charAt(0) || 'M' : 'M'}
+                </div>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="district-name block text-[11px] font-bold text-slate-400 uppercase tracking-wide truncate">
+                    {mla.district_name}
+                  </span>
+                  <span
+                    className="party-badge px-1.5 py-0.5 rounded text-[9px] font-extrabold text-white shrink-0"
+                    style={{ background: PARTY_COLORS[mla.party_slug] || '#666' }}
+                  >
+                    {mla.party_name}
+                  </span>
+                </div>
+                <span className="mla-name block text-xs font-bold text-slate-900 dark:text-white mt-0.5 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {mla.mla_name}
                 </span>
+                {mla.mla_name_ta && (
+                  <span className="mla-name-ta block text-[10px] text-slate-400 truncate">
+                    {mla.mla_name_ta}
+                  </span>
+                )}
               </div>
-              <span
-                className="party-badge inline-block mt-3 px-2 py-0.5 rounded text-[10px] font-extrabold text-white self-start"
-                style={{ background: PARTY_COLORS[mla.party_slug] || '#666' }}
-              >
-                {mla.party_name}
-              </span>
             </Link>
           ))}
         </div>
