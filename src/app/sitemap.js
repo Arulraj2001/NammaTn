@@ -85,7 +85,7 @@ export default async function sitemap() {
       if (!CATEGORY_MAP[issue]) return;
       const lastModified = issueDates.get(`${city.slug}:${issue}`);
       entries.push({
-        url: `${SITE_URL}/${city.slug}/${issue}`,
+        url: `${SITE_URL}/${city.slug + '/' + issue}`,
         ...(lastModified ? { lastModified } : {}),
         changeFrequency: 'daily',
         priority: 0.7,
@@ -129,13 +129,30 @@ export default async function sitemap() {
     // ── Posts (Civic Reports & Community Updates) ────────────────────────
     const { data: publicPosts } = await supabase
       .from('post')
-      .select('slug, id, updated_date, created_date')
+      .select('slug, id, updated_date, created_date, is_publicly_visible, moderation_status')
       .eq('status', 'active')
       .order('created_date', { ascending: false })
       .limit(1000);
 
     (publicPosts || []).forEach(p => {
-      const path = p.slug?.trim() ? `/post/${p.slug.trim()}` : `/post/${p.id}`;
+      // Exclude seed/test posts from sitemap to prevent "Excluded by noindex" and crawl budget waste
+      const idStr = String(p.id || '');
+      const slugStr = String(p.slug || '').trim();
+      const isSeed = idStr.startsWith('post-dist-seed-') ||
+        idStr.startsWith('sit-seed-') ||
+        idStr.startsWith('scam-seed-') ||
+        idStr.startsWith('emerg-seed-') ||
+        idStr.startsWith('post-explore-') ||
+        slugStr.startsWith('post-dist-seed-') ||
+        slugStr.startsWith('sit-seed-') ||
+        slugStr.startsWith('scam-seed-') ||
+        slugStr.startsWith('emerg-seed-') ||
+        slugStr.startsWith('post-explore-');
+
+      if (isSeed) return;
+      if (p.is_publicly_visible === false || p.moderation_status === 'rejected' || p.moderation_status === 'hidden') return;
+
+      const path = slugStr ? `/post/${slugStr}` : `/post/${idStr}`;
       entries.push({
         url: `${SITE_URL}${path}`,
         ...(p.updated_date || p.created_date
@@ -197,11 +214,6 @@ export default async function sitemap() {
     (rights || []).forEach(r => {
       if (r.slug) {
         entries.push({
-          url: `${SITE_URL}/awareness/right/${r.slug}`,
-          changeFrequency: 'weekly',
-          priority: 0.7,
-        });
-        entries.push({
           url: `${SITE_URL}/rights/${r.slug}`,
           changeFrequency: 'weekly',
           priority: 0.8,
@@ -212,11 +224,6 @@ export default async function sitemap() {
     const schemes = typeof getAllSchemes === 'function' ? getAllSchemes() : GOVT_SCHEMES;
     (schemes || []).forEach(s => {
       if (s.slug) {
-        entries.push({
-          url: `${SITE_URL}/awareness/scheme/${s.slug}`,
-          changeFrequency: 'weekly',
-          priority: 0.7,
-        });
         entries.push({
           url: `${SITE_URL}/schemes/${s.slug}`,
           changeFrequency: 'weekly',
@@ -251,12 +258,12 @@ export default async function sitemap() {
   });
 
   [
-    '/districts', '/areas', '/awareness', '/awareness/articles', '/awareness/rights',
+    '/districts', '/areas', '/awareness', '/awareness/articles',
     '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',
-    '/awareness/schemes', '/community', '/community/wins', '/scams',
+    '/community', '/community/wins', '/scams',
     '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
     '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
-    '/support', '/rwa', '/csr', '/dashboard',
+    '/support', '/rwa', '/csr',
     '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
   ].forEach(path => {
     entries.push({

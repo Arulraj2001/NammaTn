@@ -12,6 +12,8 @@ export function generateNewsArticleSchema({
   datePublished,
   dateModified,
   authorName = 'VizhiTN Reporter',
+  author,
+  publisher,
   section,
   language = 'en-IN',
 }) {
@@ -36,11 +38,11 @@ export function generateNewsArticleSchema({
         },
     datePublished: datePublished || new Date().toISOString(),
     dateModified: dateModified || datePublished || new Date().toISOString(),
-    author: {
+    author: author || {
       '@type': 'Person',
       name: authorName || 'VizhiTN Reporter',
     },
-    publisher: {
+    publisher: publisher || {
       '@type': 'Organization',
       name: 'VizhiTN',
       url: 'https://www.vizhitn.in',

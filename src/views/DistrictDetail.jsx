@@ -267,6 +267,56 @@ export default function DistrictDetail() {
         </div>
       )}
 
+      {/* Canonical Civic Issue Portals (Direct Internal Linking for Googlebot Crawl Budget) */}
+      <div className="mt-12 border-t border-slate-200 dark:border-slate-800 pt-8">
+        <div className="mb-4">
+          <h3 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            ⚡ {T(`${district.name_en} Civic Services & Issue Portals`, `${district.name_en} குடிமை சேவைகள் மற்றும் சிக்கல் தீர்வு இணையங்கள்`)}
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            {T(`Direct access to dedicated complaint feeds, scheduled maintenance alerts, and local updates for ${district.name_en}`, `${district.name_en} பிரத்யேக புகார் மற்றும் உதவி மையங்கள்`)}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {[
+            { slug: "power-cut", icon: "⚡", en: "Power Cuts & EB", ta: "மின்வெட்டு & மின்வாரியம்", desc: "TANGEDCO outages & helpline" },
+            { slug: "water-issue", icon: "💧", en: "Water & Sanitation", ta: "தண்ணீர் & சுகாதாரம்", desc: "TWAD supply & drainage" },
+            { slug: "road-problem", icon: "🛣️", en: "Roads & Potholes", ta: "சாலை & குழிகள்", desc: "Highway & pothole reports" },
+            { slug: "scam", icon: "🛡️", en: "Scam Alerts", ta: "மோசடி எச்சரிக்கை", desc: "Cyber fraud & safety" },
+            { slug: "jobs", icon: "💼", en: "Jobs & Careers", ta: "வேலைவாய்ப்பு", desc: "Local vacancies & drives" },
+            { slug: "stay", icon: "🏠", en: "Rooms & Stays", ta: "அறைகள் & தங்குமிடம்", desc: "Rental listings & PG stays" },
+            { slug: "education", icon: "🎓", en: "Education & Exams", ta: "கல்வி & தேர்வுகள்", desc: "School & college notices" },
+            { slug: "government-schemes", icon: "📜", en: "Govt Schemes", ta: "அரசு திட்டங்கள்", desc: "Welfare eligibility & e-Sevai" },
+            { slug: "healthcare", icon: "🏥", en: "Healthcare & PHC", ta: "சுகாதாரம் & மருத்துவமனை", desc: "Hospital services & 108" },
+            { slug: "environment", icon: "🌱", en: "Environment & Lakes", ta: "சுற்றுச்சூழல் & ஏரிகள்", desc: "Pollution alerts & desilting" },
+            { slug: "general", icon: "📢", en: "Civic Notices", ta: "பொது அறிவிப்புகள்", desc: "Municipal & community updates" },
+          ].map((cat) => (
+            <Link
+              key={cat.slug}
+              to={`/${slug}/${cat.slug}`}
+              className="group p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:shadow-sm transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-lg">{cat.icon}</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                    {T(cat.en, cat.ta)}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
+                  {cat.desc}
+                </p>
+              </div>
+              <div className="mt-2.5 pt-1.5 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                <span>View {cat.en}</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* Evergreen Municipal Directory & FAQ Accordion (SEO Powerhouse) */}
       <div className="mt-12 border-t border-slate-200 dark:border-slate-800 pt-8 space-y-6">
         <div>

@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: { canonical },
-    robots: { index: true, follow: true },
+    robots: { index: false, follow: true },
     openGraph: { title, description, url: canonical, type: 'article' },
   };
 }

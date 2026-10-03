@@ -144,6 +144,11 @@ const nextConfig = {
       { source: '/:city/electricity',            destination: '/:city/power-cut',    permanent: true },
       { source: '/:city/water-sanitation',       destination: '/:city/water-issue',  permanent: true },
       { source: '/:city/road-infrastructure',    destination: '/:city/road-problem', permanent: true },
+      // ── Canonical redirects for rights and schemes ──
+      { source: '/awareness/rights',             destination: '/rights',             permanent: true },
+      { source: '/awareness/right/:slug',        destination: '/rights/:slug',        permanent: true },
+      { source: '/awareness/schemes',            destination: '/schemes',            permanent: true },
+      { source: '/awareness/scheme/:slug',       destination: '/schemes/:slug',       permanent: true },
     ];
   },
 

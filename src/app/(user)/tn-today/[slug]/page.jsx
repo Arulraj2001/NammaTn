@@ -90,6 +90,8 @@ export default async function Page({ params }) {
         datePublished: article.publish_date || article.created_date,
         dateModified: article.updated_date || article.publish_date || article.created_date,
         authorName: article.author_name || 'VizhiTN Team',
+        author: getArticleAuthor(article.author_name),
+        publisher: getPublisherSchema(),
         section: article.category || 'Tamil Nadu News',
         language: 'en-IN',
       })

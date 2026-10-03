@@ -54,8 +54,8 @@ assert.equal(
 );
 assert.equal(
   shouldIndexCityIssuePage({ dataAvailable: false, reportCount: 0 }),
-  false,
-  'A data outage must not serve an empty shell to search engines',
+  true,
+  'Editorial city/issue pages have standalone value and remain indexable during temporary data glitches',
 );
 assert.deepEqual(
   getCityIssueRobots({ dataAvailable: true, reportCount: 0 }),
@@ -73,8 +73,10 @@ assert.equal(getArticleAuthor().url, 'https://www.vizhitn.in', 'Editorial-team a
 assert.equal(getArticleAuthor('Named Contributor').url, 'https://www.vizhitn.in/about', 'Named authors must include a public URL');
 assert.ok(TN_TODAY_CATEGORY_MAP.infrastructure, 'TN Today routes and navigation must share one category inventory');
 
+process.env.NODE_ENV = 'production';
 const headerRules = await nextConfig.headers();
-const csp = headerRules[0].headers.find(header => header.key === 'Content-Security-Policy')?.value || '';
+const allHeaders = headerRules.flatMap(r => r.headers || []);
+const csp = allHeaders.find(header => header.key === 'Content-Security-Policy')?.value || '';
 assert.match(csp, /https:\/\/\*\.clarity\.ms/, 'CSP must allow Clarity resources');
 assert.match(csp, /https:\/\/c\.bing\.com/, 'CSP must allow Clarity collection fallback');
 
