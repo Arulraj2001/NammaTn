@@ -17,7 +17,7 @@ const FOOTER_COLUMNS = [
       { path: "/bribes",      en: "Bribe Tracker",        ta: "லஞ்சக் கண்காணிப்பு" },
       { path: "/explore",     en: "Explore",              ta: "ஆராய்க" },
       { path: "/trending",    en: "Trending",             ta: "டிரெண்டிங்" },
-      { path: "/situations",  en: "Live",                 ta: "நேரடி" },
+      { path: "/situations",  en: "Live Situations",      ta: "நேரடி நிகழ்வுகள்" },
       { path: "/leaderboard", en: "Leaderboard",          ta: "தகுதிப் பட்டி" },
     ],
   },
@@ -135,10 +135,10 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="flex-shrink-0 w-full lg:w-64 flex flex-col items-center lg:items-start text-center lg:text-left">
-            <Link to="/" className="inline-flex items-center gap-2 mb-2">
+            <Link to="/" className="inline-flex items-center gap-2 mb-2" aria-label="VizhiTN Home">
               <Image
                 src={settings.site_logo_url || "/apple-touch-icon.png"}
-                alt="VizhiTN"
+                alt=""
                 width={28}
                 height={28}
                 className="rounded-lg object-contain flex-shrink-0"
@@ -183,9 +183,9 @@ export default function Footer() {
           <div className="flex-1 w-full grid grid-cols-3 sm:grid-cols-5 gap-6 lg:gap-8 text-center sm:text-left">
             {FOOTER_COLUMNS.map((col, idx) => (
               <div key={col.en_title} className={ORDER_CLASSES[idx]}>
-                <h4 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
+                <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
                   {T(col.en_title, col.ta_title)}
-                </h4>
+                </h3>
                 <ul className="space-y-2">
                   {col.links
                     .filter((link) => {

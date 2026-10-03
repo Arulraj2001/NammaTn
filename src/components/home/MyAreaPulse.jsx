@@ -23,7 +23,7 @@ async function fetchAreaPosts(areaSlug) {
     .eq("status", "active")
     .gte("created_date", since)
     .order("created_date", { ascending: false })
-    .limit(500);
+    .limit(60);
 
   if (areaSlug) {
     q = q.eq("area_slug", areaSlug);

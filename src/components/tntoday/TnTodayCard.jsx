@@ -25,7 +25,7 @@ export default function TnTodayCard({ className }) {
   const { data: article, isLoading } = useQuery({
     queryKey: ["tn-today-featured"],
     queryFn: getFeaturedTnToday,
-    staleTime: 0,
+    staleTime: 300_000,
   });
 
   const [dismissed, setDismissed] = useState(false);
@@ -162,10 +162,10 @@ export default function TnTodayCard({ className }) {
           </span>
         </div>
 
-        {/* Title (Blue colored link styling matching Reference 1) */}
-        <h3 className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 group-hover:underline leading-snug line-clamp-2 mb-2">
+        {/* Title */}
+        <p className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 group-hover:underline leading-snug line-clamp-2 mb-2">
           {article.title}
-        </h3>
+        </p>
 
         {/* Footer Row */}
         <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-2">

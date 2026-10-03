@@ -114,17 +114,25 @@ export default function CustomAdBanner({ slot = "sidebar", district, fallbackTyp
           className="block group relative"
         >
           {hasValidImage ? (
-            <div className="relative overflow-hidden bg-slate-900">
+            <div className="relative overflow-hidden bg-slate-900 rounded-2xl" style={{ minHeight: "120px" }}>
               <img
                 src={
-                  activeAd.image_url?.startsWith("data:")
-                    ? activeAd.image_url
-                    : activeAd.image_url?.includes("?")
-                    ? activeAd.image_url
-                    : `${activeAd.image_url}?v=${encodeURIComponent(activeAd.updated_at || activeAd.created_at || 'v2')}`
+                  (() => {
+                    let url = activeAd.image_url || "";
+                    if (url.startsWith("/banners/") && url.includes(".png")) {
+                      url = url.replace(".png", ".webp");
+                    }
+                    if (url.startsWith("data:") || url.includes("?")) return url;
+                    return `${url}?v=${encodeURIComponent(activeAd.updated_at || activeAd.created_at || 'v2')}`;
+                  })()
                 }
                 alt={activeAd.title || "Advertisement"}
+                width={965}
+                height={243}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-auto block object-cover group-hover:scale-102 transition-transform duration-500"
+                style={{ aspectRatio: "965 / 243" }}
                 onError={() => setImageError(true)}
               />
               {activeAd.cta_text && (

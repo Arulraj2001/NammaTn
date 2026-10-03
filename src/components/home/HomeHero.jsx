@@ -52,26 +52,41 @@ export default function HomeHero({ userLocation, setUserLocation }) {
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
   const [locating, setLocating] = useState(false);
+  const [shouldLoadMap, setShouldLoadMap] = useState(false);
+
+  useEffect(() => {
+    // Unblock mobile First Contentful Paint and Largest Contentful Paint:
+    // Prioritize the Hero H1 headline, then load the heavy Leaflet canvas during idle.
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        const id = window.requestIdleCallback(() => setShouldLoadMap(true), { timeout: 1200 });
+        return () => window.cancelIdleCallback(id);
+      } else {
+        const timer = setTimeout(() => setShouldLoadMap(true), 800);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
 
   const { data: civicPosts = [] } = useQuery({
     queryKey: ["home-civic-posts"],
     queryFn: () => getActiveCivicPosts(20),
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
   const { data: situations = [] } = useQuery({
     queryKey: ["home-situations"],
     queryFn: () => getActiveSituations(20),
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
   const { data: stays = [] } = useQuery({
     queryKey: ["home-stays"],
     queryFn: () => getActiveListings(20),
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
   const { data: scams = [] } = useQuery({
     queryKey: ["home-scams"],
     queryFn: () => getActiveScams(20),
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
 
   const allMapItems = useMemo(() => [
@@ -175,8 +190,22 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
           {/* RIGHT MAP */}
           <div className="w-full lg:flex-1 flex flex-col gap-4">
-            <div className="w-full h-[220px] sm:h-[300px] lg:h-[400px] rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative shadow-lg">
-              <InteractiveHomeMap items={allMapItems} userLocation={userLocation} />
+            <div className="w-full h-[220px] sm:h-[300px] lg:h-[400px] rounded-2xl overflow-hidden bg-slate-900 border border-slate-700 relative shadow-lg">
+              {shouldLoadMap ? (
+                <InteractiveHomeMap items={allMapItems} userLocation={userLocation} />
+              ) : (
+                <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center text-center p-6 select-none relative overflow-hidden">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 mb-3 animate-pulse z-10">
+                    <MapPin className="w-6 h-6" />
+                  </div>
+                  <p className="text-white font-extrabold text-sm mb-1 z-10">
+                    {T("Tamil Nadu Civic Incident Map", "தமிழ்நாடு குடிமை வரைபடம்")}
+                  </p>
+                  <p className="text-slate-400 text-xs max-w-xs z-10">
+                    {T("Connecting to 38 district live feeds…", "38 மாவட்ட நேரடி ஊட்டங்கள் இணைக்கப்படுகின்றன…")}
+                  </p>
+                </div>
+              )}
               <div className="absolute top-3 right-3 z-20">
                 <Link to="/explore"
                   className="flex items-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-all">

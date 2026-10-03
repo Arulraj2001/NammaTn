@@ -97,7 +97,7 @@ export default function RecentReceipts() {
                     <MapPin className="w-3 h-3 flex-shrink-0" />
                     <span className="truncate">{post.area_name || post.district_name || "Tamil Nadu"}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-3">
+                  <div suppressHydrationWarning className="flex items-center gap-1 text-[11px] text-slate-400 mb-3">
                     <Clock className="w-3 h-3 flex-shrink-0" />
                     {timeAgo(post.created_date)}
                   </div>

@@ -9,17 +9,17 @@ import Script from 'next/script';
 export default function PublicScripts() {
   return (
     <>
-      {/* GA4 — analytics only */}
+      {/* GA4 — analytics only, loaded lazily to preserve critical render path */}
       <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-CJ0JDFHPV3"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
-      <Script id="ga4-init" strategy="afterInteractive">
+      <Script id="ga4-init" strategy="lazyOnload">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-CJ0JDFHPV3');
+          gtag('config', 'G-CJ0JDFHPV3', { send_page_view: true });
         `}
       </Script>
     </>

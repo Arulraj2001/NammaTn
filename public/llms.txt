@@ -1,0 +1,13 @@
+# VizhiTN — Hyperlocal Citizen Reporting & Civic Proof System
+
+> VizhiTN is Tamil Nadu's civic proof, citizen reporting, and hyperlocal news platform covering all 38 districts in English and Tamil.
+
+## Core Navigation & Endpoints
+- [Explore Civic Reports](https://www.vizhitn.in/explore): Live civic feed and community-verified reports across Tamil Nadu.
+- [Tamil Nadu Politics Hub](https://www.vizhitn.in/tn-politics): 17th Tamil Nadu Legislative Assembly (2026-2031) MLA directory, party trackers, and policy updates.
+- [TN Today News](https://www.vizhitn.in/tn-today): In-depth state development, infrastructure, and governance journalism.
+- [Live Incidents & Utility Situations](https://www.vizhitn.in/situations): Real-time TANGEDCO power outage alerts, water supply disruptions, and traffic diversions.
+- [Bribe Tracker](https://www.vizhitn.in/bribes): Anonymous civic corruption logs and regional department statistics.
+- [Public Safety & Scams](https://www.vizhitn.in/scams): Verified online scam warnings and official cybercrime advisories.
+- [Citizen Rights & Helplines](https://www.vizhitn.in/rights): Verified government helplines, Right to Information guides, and consumer rights.
+- [District Hubs](https://www.vizhitn.in/districts): Dedicated hubs for all 38 districts of Tamil Nadu.

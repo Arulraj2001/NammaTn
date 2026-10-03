@@ -201,9 +201,8 @@ export default function Navbar() {
         <div className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6">
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-3">
 
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <Image src={settings.site_logo_url || "/apple-touch-icon.png"} alt="VizhiTN" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-contain" />
+            <Link to="/" className="flex items-center gap-2 flex-shrink-0" aria-label="VizhiTN Home">
+              <Image src={settings.site_logo_url || "/apple-touch-icon.png"} alt="" width={32} height={32} priority className="w-8 h-8 rounded-lg object-contain" />
               <div className="hidden sm:block">
                 <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">VizhiTN</span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-none block whitespace-nowrap">

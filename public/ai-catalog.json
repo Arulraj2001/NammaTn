@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agenticresourcediscovery.org/spec/v1/schema.json",
+  "name": "VizhiTN Agent Catalog",
+  "description": "Tamil Nadu hyperlocal civic proof, public alerts, and governance reporting resource catalog for AI agents.",
+  "url": "https://www.vizhitn.in",
+  "version": "1.0.0",
+  "resources": [
+    {
+      "id": "civic-feed",
+      "name": "Unified Explore Feed",
+      "description": "Verified public complaints, power cuts, road issues, and civic status updates across Tamil Nadu districts.",
+      "url": "https://www.vizhitn.in/explore",
+      "type": "dataset"
+    },
+    {
+      "id": "mla-tracker",
+      "name": "17th Legislative Assembly Tracker",
+      "description": "Sitting MLAs, district representatives, and political developments for the 2026-2031 term.",
+      "url": "https://www.vizhitn.in/tn-politics",
+      "type": "directory"
+    },
+    {
+      "id": "tn-today",
+      "name": "TN Today Editorial Articles",
+      "description": "Daily verified news coverage of Tamil Nadu governance, state infrastructure, and welfare schemes.",
+      "url": "https://www.vizhitn.in/tn-today",
+      "type": "publication"
+    }
+  ]
+}
