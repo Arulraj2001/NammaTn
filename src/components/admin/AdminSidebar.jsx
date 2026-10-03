@@ -13,6 +13,7 @@ import { base44 } from "@/api/base44Client";
 const NAV = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { label: "TN Today", icon: Newspaper, path: "/admin/tn-today", badge: "CMS" },
+  { label: "MLA Tracker", icon: Shield, path: "/admin/mla-tracker", badge: "POLITICS" },
   { label: "Posts", icon: FileText, path: "/admin/posts" },
   { label: "Comments", icon: MessageSquare, path: "/admin/comments" },
   { label: "Reports", icon: Flag, path: "/admin/reports" },

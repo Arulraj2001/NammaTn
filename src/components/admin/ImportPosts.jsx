@@ -13,7 +13,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const VALID_TYPES = ["complaint", "civic", "appreciation", "local_update", "alert", "discussion", "bribe"];
+const VALID_TYPES = [
+  "complaint", "civic", "appreciation", "local_update", "alert", "discussion", "bribe",
+  "speech_summary", "policy_explainer", "party_update", "mla_update", "performance_tracker", "controversy", "bylection", "weekly_digest"
+];
 
 const SAMPLE_POSTS = [
   {
@@ -133,9 +136,9 @@ const POST_FORMAT_SCHEMA = [
     "title_ta": "string (Optional - Title in Tamil)",
     "content_en": "string (Required - Content in English)",
     "content_ta": "string (Optional - Content in Tamil)",
-    "post_type": "complaint | local_update | appreciation | alert | discussion | bribe",
+    "post_type": "complaint | local_update | appreciation | alert | discussion | bribe | speech_summary | policy_explainer | party_update | mla_update | performance_tracker | controversy | bylection | weekly_digest",
     "district_slug": "chennai | coimbatore | madurai | salem | tiruchirappalli | etc.",
-    "category_slug": "road-infrastructure | water-sanitation | electricity | public-safety | environment",
+    "category_slug": "road-infrastructure | water-sanitation | electricity | public-safety | environment | tn-politics",
     "area_name": "string (e.g. Perungudi)",
     "area_slug": "string (e.g. perungudi)",
     "author_name": "string (Reporter / Author Name)",

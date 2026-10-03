@@ -18,6 +18,7 @@ const MAIN_NAV = [
   { path: "/", en: "📍 Map", ta: "📍 வரைபடம்" },
   { path: "/explore", en: "⚡ Live Feed", ta: "⚡ நேரடி ஊட்டம்" },
   { path: "/tn-today", en: "📰 TN Today", ta: "📰 TN Today" },
+  { path: "/tn-politics", en: "🗳️ TN Politics", ta: "🗳️ அரசியல்" },
   { path: "/trending", en: "🔥 Trending", ta: "🔥 டிரெண்டிங்" },
   { path: "/bribes", en: "🚨 Bribe Log", ta: "🚨 லஞ்சப் பதிவு" },
 ];

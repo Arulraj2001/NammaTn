@@ -126,6 +126,62 @@ export default async function sitemap() {
       });
     });
 
+    // ── TN Politics hub and static pages ────────────────────────────────
+    const politicsStaticUrls = [
+      { url: `${SITE_URL}/tn-politics`, changeFrequency: 'daily', priority: 0.9, lastModified: new Date() },
+      ...['tvk','dmk','aiadmk','bjp-tn','ntk','pmk'].map(party => ({
+        url: `${SITE_URL}/tn-politics/party/${party}`,
+        changeFrequency: 'daily',
+        priority: 0.8,
+        lastModified: new Date()
+      }))
+    ];
+    politicsStaticUrls.forEach(u => entries.push(u));
+
+    // TN Politics MLA pages (38 districts)
+    const POLITICS_DISTRICT_SLUGS = [
+      'chennai','coimbatore','madurai','tiruchirappalli','salem',
+      'tirunelveli','vellore','erode','thoothukudi','thanjavur',
+      'dindigul','kancheepuram','nagapattinam','namakkal','nilgiris',
+      'perambalur','pudukkottai','ramanathapuram','ranipet','sivaganga',
+      'tenkasi','theni','tiruppur','tiruvallur','tiruvannamalai',
+      'tiruvarur','villupuram','virudhunagar','ariyalur','chengalpattu',
+      'cuddalore','dharmapuri','kallakurichi','karur','krishnagiri',
+      'mayiladuthurai','tirupattur'
+    ];
+
+    POLITICS_DISTRICT_SLUGS.forEach(slug => {
+      entries.push({
+        url: `${SITE_URL}/tn-politics/mla/${slug}`,
+        changeFrequency: 'monthly',
+        priority: 0.7,
+        lastModified: new Date()
+      });
+    });
+
+    // TN Politics posts from Supabase
+    try {
+      const { data: politicsPosts } = await supabase
+        .from('post')
+        .select('slug, id, updated_date, created_date')
+        .eq('category_slug', 'tn-politics')
+        .eq('status', 'active')
+        .eq('is_publicly_visible', true)
+        .order('created_date', { ascending: false })
+        .limit(500);
+
+      (politicsPosts || []).forEach(post => {
+        entries.push({
+          url: `${SITE_URL}/tn-politics/${post.slug || post.id}`,
+          changeFrequency: 'weekly',
+          priority: 0.8,
+          lastModified: new Date(post.updated_date || post.created_date)
+        });
+      });
+    } catch (e) {
+      console.warn('[sitemap] Failed to fetch politicsPosts:', e.message);
+    }
+
     // ── Posts (Civic Reports & Community Updates) ────────────────────────
     const { data: publicPosts } = await supabase
       .from('post')
