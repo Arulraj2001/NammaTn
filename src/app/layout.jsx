@@ -116,23 +116,26 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-KH62BKVW');`,
           }}
         />
-        {/* Subscribe with Google (Google News) */}
-        <script
-          async
-          type="application/javascript"
-          src="https://news.google.com/swg/js/v1/swg-basic.js"
-        />
+        {/* Subscribe with Google (Google News) — only loaded outside localhost to prevent CORS & pre-hydration mutation */}
         <script
           id="swg-init"
           dangerouslySetInnerHTML={{
-            __html: `(self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
-  basicSubscriptions.init({
-    type: "NewsArticle",
-    isPartOfType: ["Product"],
-    isPartOfProductId: "CAowlefHDA:openaccess",
-    clientOptions: { theme: "light", lang: "en" },
-  });
-});`,
+            __html: `(function(){
+  if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://news.google.com/swg/js/v1/swg-basic.js';
+    document.head.appendChild(s);
+    (self.SWG_BASIC = self.SWG_BASIC || []).push(function(basicSubscriptions) {
+      basicSubscriptions.init({
+        type: "NewsArticle",
+        isPartOfType: ["Product"],
+        isPartOfProductId: "CAowlefHDA:openaccess",
+        clientOptions: { theme: "light", lang: "en" },
+      });
+    });
+  }
+})();`,
           }}
         />
         {/* Synchronous theme init — runs before React hydration to prevent CLS */}
@@ -175,6 +178,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* Organization structured data */}
         <script
           type="application/ld+json"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
@@ -201,6 +205,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* WebSite structured data with SearchAction */}
         <script
           type="application/ld+json"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
