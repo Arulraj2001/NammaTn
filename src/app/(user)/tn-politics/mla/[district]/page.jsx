@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getMLATracker, getPoliticsPosts } from '@/services/politicsServer'
+import { getMLATracker, getAllMLATrackers, getPoliticsPosts, getDistrictCivicPosts } from '@/services/politicsServer'
 import MLATrackerView from '@/views/MLATracker'
 
 export const revalidate = 86400
@@ -19,12 +19,21 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function MLATrackerPage({ params }) {
-  const [mla, posts] = await Promise.all([
+  const [mla, posts, allMLAs, districtPosts] = await Promise.all([
     getMLATracker(params.district),
-    getPoliticsPosts({ limit: 10 })
+    getPoliticsPosts({ limit: 6 }),
+    getAllMLATrackers(),
+    getDistrictCivicPosts(params.district, 6)
   ])
   
   if (!mla) notFound()
 
-  return <MLATrackerView mla={mla} recentPosts={posts} />
+  return (
+    <MLATrackerView
+      mla={mla}
+      recentPosts={posts}
+      allMLAs={allMLAs}
+      districtPosts={districtPosts}
+    />
+  )
 }

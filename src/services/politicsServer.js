@@ -146,3 +146,30 @@ export async function getPoliticsPostsByParty(partySlug, limit = 10) {
     return []
   }
 }
+
+// Get recent civic posts for a specific district to link MLA accountability to ground reality
+export async function getDistrictCivicPosts(districtSlug, limit = 6) {
+  try {
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('post')
+      .select(`
+        id, slug, title_en, title_ta, post_type, category_slug,
+        civic_status, urgency_level, civic_receipt_id, created_date,
+        area_name, assigned_department
+      `)
+      .eq('district_slug', districtSlug)
+      .eq('status', 'active')
+      .eq('is_publicly_visible', true)
+      .neq('category_slug', 'tn-politics')
+      .order('created_date', { ascending: false })
+      .limit(limit)
+
+    if (error) return []
+    return data || []
+  } catch (err) {
+    console.warn('[politicsServer] getDistrictCivicPosts exception:', err.message)
+    return []
+  }
+}
+
