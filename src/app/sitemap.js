@@ -303,12 +303,13 @@ export default async function sitemap() {
   }
 
   [
+    '/power-cuts-today-tamil-nadu', '/school-college-holiday-alerts',
     '/schemes', '/helplines', '/rights', '/rti', '/esevai',
   ].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'daily',
       priority: 0.9,
     });
   });

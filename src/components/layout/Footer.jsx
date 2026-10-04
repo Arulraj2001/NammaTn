@@ -13,6 +13,8 @@ const FOOTER_COLUMNS = [
     en_title: "Civic Proof",
     ta_title: "குடிமை ஆதாரம்",
     links: [
+      { path: "/power-cuts-today-tamil-nadu", en: "Power Cuts Today",     ta: "இன்றைய மின்தடை" },
+      { path: "/school-college-holiday-alerts", en: "Holiday Alerts",    ta: "பள்ளி விடுமுறை" },
       { path: "/create",      en: "Create Civic Receipt", ta: "குடிமை ரசீது உருவாக்கு" },
       { path: "/bribes",      en: "Bribe Tracker",        ta: "லஞ்சக் கண்காணிப்பு" },
       { path: "/explore",     en: "Explore",              ta: "ஆராய்க" },

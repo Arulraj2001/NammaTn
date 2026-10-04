@@ -138,12 +138,21 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
             <div className="flex flex-wrap gap-x-5 gap-y-2 mb-3">
               {[
-                { icon: "⚡", en: "Power cuts.",       ta: "மின் வெட்டு." },
+                { icon: "⚡", en: "Power cuts.",       ta: "மின் வெட்டு.", href: "/power-cuts-today-tamil-nadu" },
+                { icon: "🌧️", en: "Holiday alerts.",   ta: "பள்ளி விடுமுறை.", href: "/school-college-holiday-alerts" },
                 { icon: "💧", en: "Water issues.",     ta: "நீர் சிக்கல்." },
                 { icon: "🚧", en: "Road problems.",    ta: "சாலை சிக்கல்." },
                 { icon: "⚠️", en: "Scam alerts.",     ta: "மோசடி எச்சரிக்கை." },
                 { icon: "👥", en: "Community updates.", ta: "சமூக செய்திகள்." },
-              ].map((pill, i) => (
+              ].map((pill, i) => pill.href ? (
+                <Link
+                  key={i}
+                  to={pill.href}
+                  className="flex items-center gap-1 text-sm text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 font-semibold underline decoration-amber-400/50 underline-offset-4 transition-colors"
+                >
+                  <span>{pill.icon}</span>{T(pill.en, pill.ta)}
+                </Link>
+              ) : (
                 <span key={i} className="flex items-center gap-1 text-sm text-slate-700 dark:text-slate-300 font-medium">
                   <span>{pill.icon}</span>{T(pill.en, pill.ta)}
                 </span>

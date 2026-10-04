@@ -744,7 +744,13 @@ No conversational intro, no commentary outside the JSON array.
     if (publishedUrls.length > 0) {
       const INDEXNOW_KEY = '6dda567a62b7b1c8c971a8b90bda6a0ed368c012cc32df60eee7144a99444b56';
       const host = new URL(siteUrl).hostname;
-      console.log(`[INDEXNOW] Pushing ${publishedUrls.length} new URLs to IndexNow (Bing/Copilot/Yandex)...`);
+      const hubUrls = [
+        `${siteUrl}/power-cuts-today-tamil-nadu`,
+        `${siteUrl}/school-college-holiday-alerts`
+      ];
+      const allUrlsToIndex = Array.from(new Set([...publishedUrls, ...hubUrls]));
+
+      console.log(`[INDEXNOW] Pushing ${allUrlsToIndex.length} URLs (including evergreen hubs) to IndexNow (Bing/Copilot/Yandex)...`);
       try {
         const inRes = await fetch('https://api.indexnow.org/indexnow', {
           method: 'POST',
@@ -753,7 +759,7 @@ No conversational intro, no commentary outside the JSON array.
             host,
             key: INDEXNOW_KEY,
             keyLocation: `${siteUrl}/${INDEXNOW_KEY}.txt`,
-            urlList: publishedUrls
+            urlList: allUrlsToIndex
           })
         });
         console.log(`[INDEXNOW ✓] Dispatched (${inRes.status})`);

@@ -35,6 +35,8 @@ const MEGA_GROUPS = [
       { path: "/trending", icon: TrendingUp, en: "Trending", ta: "டிரெண்டிங்", desc_en: "Most discussed civic issues", desc_ta: "அதிகம் விவாதிக்கப்பட்ட சிக்கல்கள்" },
       { path: "/bribes", icon: AlertTriangle, en: "Bribe Tracker", ta: "லஞ்சக் கண்காணிப்பு", desc_en: "Track local corruption reports", desc_ta: "லஞ்சப் புகார்களை கண்காணிக்கவும்" },
       { path: "/ask", icon: MessageCircle, en: "Ask Local", ta: "கேளுங்கள்", desc_en: "Get answers from locals", desc_ta: "உள்ளூரினரிடம் பதில் பெறுங்கள்" },
+      { path: "/power-cuts-today-tamil-nadu", icon: Zap, en: "Power Cuts Today", ta: "இன்றைய மின்தடை", desc_en: "Live TANGEDCO power shutdowns", desc_ta: "நேரடி மின் தடை தகவல்கள்" },
+      { path: "/school-college-holiday-alerts", icon: AlertTriangle, en: "Holiday Alerts", ta: "பள்ளி விடுமுறை", desc_en: "Rain & Collector holiday orders", desc_ta: "ஆட்சியர் விடுமுறை அறிவிப்புகள்" },
       { path: "/situations", icon: Zap, en: "Live Situations", ta: "நேரடி நிலைமைகள்", desc_en: "Real-time alerts and updates", desc_ta: "நேரடி எச்சரிக்கைகள்" },
       { path: "/scams", icon: AlertTriangle, en: "Scams", ta: "மோசடி", desc_en: "Local scam and fraud alerts", desc_ta: "உள்ளூர் மோசடி எச்சரிக்கைகள்" },
       { path: "/awareness", icon: Shield, en: "Awareness", ta: "விழிப்புணர்வு", desc_en: "Safety and public awareness", desc_ta: "பாகாப்பு விழிப்புணர்வு" },

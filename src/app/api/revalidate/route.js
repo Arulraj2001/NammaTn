@@ -16,13 +16,19 @@ export async function POST(request) {
       return NextResponse.json({ revalidated: true, path, now: Date.now() });
     }
 
-    // Default: revalidate the active feeds and explore pages
+    // Default: revalidate the active feeds, evergreen hubs, and sitemaps
     revalidatePath('/explore');
     revalidatePath('/');
+    revalidatePath('/power-cuts-today-tamil-nadu');
+    revalidatePath('/school-college-holiday-alerts');
     revalidatePath('/sitemap-news.xml');
     revalidatePath('/sitemap.xml');
 
-    return NextResponse.json({ revalidated: true, paths: ['/explore', '/', '/sitemap-news.xml', '/sitemap.xml'], now: Date.now() });
+    return NextResponse.json({
+      revalidated: true,
+      paths: ['/explore', '/', '/power-cuts-today-tamil-nadu', '/school-college-holiday-alerts', '/sitemap-news.xml', '/sitemap.xml'],
+      now: Date.now()
+    });
   } catch (err) {
     return NextResponse.json({ message: 'Error revalidating', error: err?.message }, { status: 500 });
   }
