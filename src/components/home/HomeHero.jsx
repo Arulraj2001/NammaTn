@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
