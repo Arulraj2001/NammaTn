@@ -123,9 +123,15 @@ function determinePulse() {
   if (day === 5 && hours >= 17) {
     return 'weekend';
   }
-  if (hours >= 5 && hours < 11) {
+  // Early morning emergency / rain alert pulse (05:00 AM - 07:00 AM IST)
+  if (hours >= 5 && hours < 7) {
+    return 'rain';
+  }
+  // Main morning civic batch (07:00 AM - 11:00 AM IST)
+  if (hours >= 7 && hours < 11) {
     return 'morning';
   }
+  // Midday grievance & scheme pulse (11:00 AM - 04:00 PM IST)
   if (hours >= 11 && hours < 16) {
     return 'midday';
   }
@@ -137,64 +143,75 @@ function getPulseSpec(pulse, todayStr) {
   switch (pulse) {
     case 'morning':
       return {
-        name: 'Morning Civic Batch (7:00 AM – 8:15 AM IST)',
-        targetCount: 8,
+        name: 'Morning Civic & Power Batch (7:00 AM – 8:15 AM IST)',
+        targetCount: 14,
         mixPrompt: `
-Generate 8 real, scheduled civic updates for Tamil Nadu for TODAY (${todayStr}):
-- 4 × post_type: "alert" (TANGEDCO power cut schedules with exact hours, Metrowater maintenance, water pipeline repair, morning bus/train alterations)
-- 2 × post_type: "local_update" (Aadhaar / Ration card grievance camps, district collectorate notices, public health camps)
-- 1 × post_type: "complaint" (Real civic grievance pattern: water leak, road pothole, or street light hazard)
-- 1 × post_type: "appreciation" (Recognition of sanitary workers, GCC drain desilting, or swift repair)
-Focus districts: Chennai, Coimbatore, Madurai, Tiruchirappalli, Salem, Tiruvallur, Chengalpattu, Kancheepuram.
+Generate 14 real, scheduled civic updates for Tamil Nadu for TODAY (${todayStr}):
+- 6 × post_type: "alert" (TANGEDCO power cut schedules with exact hours, Metrowater maintenance, water pipeline repair, morning bus/train alterations)
+- 4 × post_type: "local_update" (Aadhaar / Ration card grievance camps, district collectorate notices, public health camps)
+- 2 × post_type: "complaint" (Real civic grievance pattern: water leak, road pothole, or street light hazard)
+- 2 × post_type: "appreciation" (Recognition of sanitary workers, GCC drain desilting, or swift repair)
+Focus districts (North & West TN): Chennai, Coimbatore, Madurai, Tiruchirappalli, Salem, Tiruvallur, Chengalpattu, Kancheepuram, Erode, Tiruppur.
 `,
       };
 
     case 'midday':
       return {
-        name: 'Midday Civic Progress Pulse (1:00 PM – 2:00 PM IST)',
-        targetCount: 6,
+        name: 'Midday Civic Progress & Welfare Pulse (12:30 PM – 2:00 PM IST)',
+        targetCount: 12,
         mixPrompt: `
-Generate 6 civic progress updates and active advisories for Tamil Nadu for TODAY (${todayStr}):
-- 3 × post_type: "local_update" (Ongoing municipal road resurfacing, flyover construction milestone, desilting of lakes/canals, e-Sevai / Patta transfer camp updates)
-- 2 × post_type: "alert" (Afternoon traffic diversions, weather/rain alert updates from IMD / TNDMA, water tanker supply helpline)
-- 1 × post_type: "complaint" (Unaddressed garbage pile-up or drainage overflow in residential areas)
-Focus districts: Erode, Tirunelveli, Thoothukudi, Nilgiris, Vellore, Thanjavur, Dindigul, Tiruppur.
+Generate 12 civic progress updates and active advisories for Tamil Nadu for TODAY (${todayStr}):
+- 5 × post_type: "local_update" (Ongoing municipal road resurfacing, flyover milestone, canal irrigation water release, e-Sevai / Patta transfer settlement drives)
+- 4 × post_type: "alert" (Afternoon traffic diversions, weather/rain alert updates from IMD / TNDMA, water tanker supply helpline)
+- 3 × post_type: "complaint" (Unaddressed garbage pile-up or drainage overflow in residential areas)
+Focus districts (Central, Delta & South TN): Tiruchirappalli, Thanjavur, Dindigul, Tirunelveli, Thoothukudi, Cuddalore, Vellore, Nilgiris, Nagapattinam, Pudukkottai.
 `,
       };
 
     case 'evening':
       return {
         name: 'Evening Advisory & Tomorrow Advance Batch (5:30 PM – 6:30 PM IST)',
-        targetCount: 6,
+        targetCount: 14,
         mixPrompt: `
-Generate 6 evening advisories and ADVANCE notices for TOMORROW across Tamil Nadu:
-- 3 × post_type: "alert" (ADVANCE power shutdown notice for TOMORROW from TANGEDCO with exact 9 AM - 2 PM timings & streets, Southern Railway line block / train diversions)
-- 1 × post_type: "alert" (Cyber fraud warning: fake electricity bill SMS, WhatsApp job scams, OTP theft with National Cyber Helpline 1930)
-- 1 × post_type: "local_update" (Civic work completed today: street lights fixed, garbage cleared by corporation)
-- 1 × post_type: "appreciation" (Commendation of TANGEDCO line workers or civic staff)
-Focus districts: Namakkal, Dharmapuri, Cuddalore, Krishnagiri, Villupuram, Ranipet, Tiruvannamalai, Kanyakumari.
+Generate 14 evening advisories and ADVANCE notices for TOMORROW across Tamil Nadu:
+- 6 × post_type: "alert" (ADVANCE power shutdown notice for TOMORROW from TANGEDCO with exact 9 AM - 2 PM timings & streets, Southern Railway line block / train diversions)
+- 3 × post_type: "alert" (Cyber fraud warning: fake electricity bill SMS, WhatsApp job scams, OTP theft with National Cyber Helpline 1930)
+- 3 × post_type: "local_update" (Civic work completed today: street lights fixed, garbage cleared by corporation)
+- 2 × post_type: "appreciation" (Commendation of TANGEDCO line workers or civic staff)
+Focus districts: Namakkal, Dharmapuri, Krishnagiri, Villupuram, Ranipet, Tiruvannamalai, Kanyakumari, Theni, Sivaganga, Ramanathapuram.
+`,
+      };
+
+    case 'rain':
+      return {
+        name: 'Early Morning Emergency & Weather Alert Pulse (6:00 AM – 7:00 AM IST)',
+        targetCount: 8,
+        mixPrompt: `
+Generate 8 emergency weather and civic alerts for Tamil Nadu for TODAY (${todayStr}):
+- 6 × post_type: "alert" (District Collector school/college holiday announcements, IMD heavy rain red/orange warnings, closed flooded subways, TANGEDCO waterlogged electrical pillar safety, Corporation pumping stations)
+- 2 × post_type: "local_update" (Disaster control room helpline notices: 1077, 1070, 1913, emergency relief shelter locations)
+Focus coastal & rain districts: Chennai, Tiruvallur, Kancheepuram, Chengalpattu, Cuddalore, Nagapattinam, Mayiladuthurai, Kanyakumari.
 `,
       };
 
     case 'weekend':
       return {
         name: 'Weekend Line Block & Holiday Batch',
-        targetCount: 8,
+        targetCount: 12,
         mixPrompt: `
-Generate 8 weekend preparation notices for Tamil Nadu:
-- 4 × post_type: "alert" (Southern Railway weekend megablocks / suburban train cancellations on Chennai Beach-Tambaram or Central-Arakkonam, SETC special weekend bus arrangements)
-- 2 × post_type: "local_update" (Saturday Taluk Office special camps: Smart Ration card corrections, Patta change drives)
-- 1 × post_type: "alert" (Tourist spot / hill station advisory for Nilgiris / Kodaikanal e-pass or traffic regulations)
-- 1 × post_type: "appreciation" (Commendation of public transport or municipal sanitation teams)
+Generate 12 weekend preparation notices for Tamil Nadu:
+- 6 × post_type: "alert" (Southern Railway weekend megablocks / suburban train cancellations on Chennai Beach-Tambaram or Central-Arakkonam, SETC special weekend bus arrangements)
+- 4 × post_type: "local_update" (Saturday Taluk Office special camps: Smart Ration card corrections, Patta change drives)
+- 2 × post_type: "alert" (Tourist spot / hill station advisory for Nilgiris / Kodaikanal e-pass or traffic regulations)
 `,
       };
 
     default:
       return {
         name: 'General Daily Civic Batch',
-        targetCount: 6,
+        targetCount: 10,
         mixPrompt: `
-Generate 6 real, verified civic posts for Tamil Nadu for TODAY (${todayStr}) across power, water, transport, and public schemes.
+Generate 10 real, verified civic posts for Tamil Nadu for TODAY (${todayStr}) across power, water, transport, and public schemes.
 `,
       };
   }
@@ -355,9 +372,9 @@ No conversational intro, no commentary outside the JSON array.
     console.warn(`[GEMINI] Model list check: ${listErr.message}`);
   }
 
-  // Bug Fix #2: Only use Search Grounding for morning/weekend pulses (higher value, lower frequency).
+  // Bug Fix #2: Only use Search Grounding for morning/weekend/rain pulses (higher value, lower frequency).
   // Midday and evening go straight to standard generation to preserve daily grounding quota (429 prevention).
-  const useGrounding = ['morning', 'weekend'].includes(pulse);
+  const useGrounding = ['morning', 'weekend', 'rain'].includes(pulse);
 
   // Use available modern models (gemini-2.5 is deprecated 404)
   const CANDIDATE_MODELS = [
