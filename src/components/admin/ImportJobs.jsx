@@ -4,8 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createJob } from "@/services/jobAlerts";
 import { DISTRICTS } from "@/lib/districts";
 import {
-  Upload, FileJson, ClipboardPaste, X, CheckCircle2, AlertCircle,
-  Loader2, Sparkles, Copy
+  Upload, CheckCircle2, AlertCircle,
+  Loader2, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

@@ -1,8 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
-  X, ZoomIn, ZoomOut, RotateCw, RefreshCw,
-  Image as ImageIcon, Sparkles, Crop, Maximize2,
+  X, ZoomIn, ZoomOut, RotateCw, RefreshCw, Sparkles, Crop, Maximize2,
   Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

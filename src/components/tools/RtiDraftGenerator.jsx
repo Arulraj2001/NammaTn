@@ -2,8 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import {
-  FileText, Printer, Copy, Check, MessageCircle, HelpCircle,
-  AlertTriangle, Shield, CheckCircle2, ChevronRight, RefreshCw, Send
+  FileText, Printer, Copy, Check, MessageCircle, CheckCircle2
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { DISTRICTS } from "@/lib/seo-data";

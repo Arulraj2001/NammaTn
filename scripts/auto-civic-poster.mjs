@@ -42,6 +42,21 @@ const VALID_CATEGORIES = [
   'general'
 ];
 
+const CATEGORY_IMAGE_MAP = {
+  'electricity': '/images/categories/electricity.webp',
+  'water-sanitation': '/images/categories/water-sanitation.webp',
+  'road-infrastructure': '/images/categories/road-infrastructure.webp',
+  'transport': '/images/categories/transport.webp',
+  'government-schemes': '/images/categories/government-schemes.webp',
+  'public-safety': '/images/categories/public-safety.webp',
+  'healthcare': '/images/categories/healthcare.webp',
+  'education': '/images/categories/education.webp',
+  'agriculture': '/images/categories/agriculture.webp',
+  'environment': '/images/categories/environment.webp',
+  'local-development': '/images/categories/local-development.webp',
+  'general': '/images/categories/general.webp'
+};
+
 const VALID_DISTRICTS = [
   'chennai', 'coimbatore', 'madurai', 'tiruchirappalli', 'salem', 'tirunelveli',
   'vellore', 'erode', 'thoothukudi', 'dindigul', 'thanjavur', 'ranipet',
@@ -597,7 +612,9 @@ No conversational intro, no commentary outside the JSON array.
       comment_count: 0,
       verification_count,
       duplicate_count: 0,
-      media_urls: Array.isArray(raw.media_urls) ? raw.media_urls : [],
+      media_urls: (Array.isArray(raw.media_urls) && raw.media_urls.length > 0)
+        ? raw.media_urls
+        : [CATEGORY_IMAGE_MAP[category_slug] || '/images/categories/general.webp'],
       civic_receipt_id,
       official_complaint_id: raw.official_complaint_id || '',
       assigned_department,

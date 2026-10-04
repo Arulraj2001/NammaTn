@@ -1,6 +1,6 @@
 ﻿import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { MapPin, Briefcase, Clock, Phone, Flag, AlertTriangle, Users, Package, Wrench, FileText, Box, User, ShieldCheck } from "lucide-react";
+import { MapPin, Briefcase, Clock, Phone, Flag, Package, Wrench, FileText, Box, User } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { getSession } from "@/lib/spamGuard";
 import { useQuery } from "@tanstack/react-query";

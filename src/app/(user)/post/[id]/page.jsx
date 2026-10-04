@@ -31,7 +31,23 @@ export async function generateMetadata({ params }) {
     `Civic report from ${post.area_name || post.district_name || 'Tamil Nadu'}.`,
   );
   const canonical = getPostCanonicalUrl(post);
-  const image = post.before_photos?.[0] || post.media_urls?.[0] || post.image_url || `${SITE_URL}/og-image.png`;
+
+  // Generate dynamic OG card for WhatsApp and social sharing
+  const ogUrl = new URL(`${SITE_URL}/api/og`);
+  ogUrl.searchParams.set('title', post.title_en || post.title || 'Civic Report');
+  if (post.title_ta) ogUrl.searchParams.set('title_ta', post.title_ta);
+  if (post.district_slug) ogUrl.searchParams.set('district', post.district_slug);
+  if (post.category_slug) ogUrl.searchParams.set('category', post.category_slug);
+  if (post.urgency_level) ogUrl.searchParams.set('urgency', post.urgency_level);
+  if (post.civic_receipt_id) ogUrl.searchParams.set('receipt', post.civic_receipt_id);
+  if (post.assigned_department) ogUrl.searchParams.set('helpline', post.assigned_department);
+
+  const ogImageUrl = ogUrl.toString();
+  const rawPhoto = post.before_photos?.[0] || post.media_urls?.[0];
+  const postImages = [
+    { url: ogImageUrl, width: 1200, height: 630, alt: postTitle, type: 'image/png' },
+    ...(rawPhoto && rawPhoto.startsWith('http') ? [{ url: rawPhoto, width: 1200, height: 630, alt: postTitle }] : []),
+  ];
 
   return {
     title: postTitle,
@@ -39,11 +55,16 @@ export async function generateMetadata({ params }) {
     alternates: { canonical },
     robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
     openGraph: {
-      type: 'article', title: socialTitle, description, url: canonical, siteName: 'VizhiTN', locale: 'en_IN',
-      images: [{ url: image, width: 1200, height: 630, alt: postTitle }],
+      type: 'article',
+      title: socialTitle,
+      description,
+      url: canonical,
+      siteName: 'VizhiTN',
+      locale: 'en_IN',
+      images: postImages,
       publishedTime: post.created_date,
     },
-    twitter: { card: 'summary_large_image', title: socialTitle, description, images: [image] },
+    twitter: { card: 'summary_large_image', title: socialTitle, description, images: [ogImageUrl] },
   };
 }
 

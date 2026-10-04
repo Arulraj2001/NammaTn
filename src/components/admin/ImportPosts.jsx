@@ -209,9 +209,13 @@ function normalisePost(raw, idx) {
   const area_name = raw.area_name || raw.area || "";
   const area_slug = raw.area_slug || (area_name ? area_name.toLowerCase().replace(/[^\w-]/g, "") : "");
 
-  const media_urls = Array.isArray(raw.media_urls)
+  const parsedMedia = Array.isArray(raw.media_urls)
     ? raw.media_urls
     : (raw.image_url ? [raw.image_url] : (raw.photo_url ? [raw.photo_url] : []));
+
+  const media_urls = parsedMedia.length > 0
+    ? parsedMedia
+    : [`/images/categories/${category_slug || 'general'}.webp`];
 
   const civic_receipt_id = raw.civic_receipt_id || (
     ["complaint", "civic", "alert"].includes(post_type)

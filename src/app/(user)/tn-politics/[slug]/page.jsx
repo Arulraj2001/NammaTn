@@ -8,6 +8,16 @@ export async function generateMetadata({ params }) {
   const post = await getPoliticsPost(params.slug)
   if (!post) return { title: 'Not Found | VizhiTN' }
 
+  const SITE_URL = 'https://www.vizhitn.in'
+  const ogUrl = new URL(`${SITE_URL}/api/og`)
+  ogUrl.searchParams.set('title', post.title_en || post.title || 'Tamil Nadu Politics')
+  if (post.title_ta) ogUrl.searchParams.set('title_ta', post.title_ta)
+  if (post.district_slug) ogUrl.searchParams.set('district', post.district_slug)
+  ogUrl.searchParams.set('category', 'tn-politics')
+  ogUrl.searchParams.set('urgency', 'medium')
+  if (post.civic_receipt_id) ogUrl.searchParams.set('receipt', post.civic_receipt_id)
+  const ogImageUrl = ogUrl.toString()
+
   return {
     title: post.seo_title || post.title_en,
     description: post.seo_description,
@@ -21,8 +31,23 @@ export async function generateMetadata({ params }) {
       description: post.seo_description,
       url: post.canonical_url,
       type: 'article',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title_en,
+          type: 'image/png'
+        }
+      ],
       publishedTime: post.created_date,
       modifiedTime: post.updated_date
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.seo_title || post.title_en,
+      description: post.seo_description,
+      images: [ogImageUrl]
     }
   }
 }

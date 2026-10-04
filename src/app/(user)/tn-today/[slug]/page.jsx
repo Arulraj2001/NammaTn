@@ -21,7 +21,18 @@ export async function generateMetadata({ params }) {
     article.seo_description || article.subtitle || article.summary,
     'Tamil Nadu civic news and public-interest update from VizhiTN.',
   );
-  const image = article.social_image || article.featured_image || `${SITE_URL}/og-image.png`;
+  const tamilTitle = article.seo_title_ta || article.title_ta || '';
+  const tamilDesc = article.seo_description_ta || article.subtitle_ta || article.summary_ta || '';
+
+  let image = article.social_image || article.featured_image;
+  if (!image) {
+    const ogUrl = new URL(`${SITE_URL}/api/og`);
+    ogUrl.searchParams.set('title', article.seo_title || article.title || 'TN Today');
+    if (tamilTitle) ogUrl.searchParams.set('title_ta', tamilTitle);
+    if (article.category) ogUrl.searchParams.set('category', article.category);
+    ogUrl.searchParams.set('urgency', 'medium');
+    image = ogUrl.toString();
+  }
   const canonical = getTnTodayCanonical(article.slug);
   const publishedTime = article.publish_date || article.created_date;
   const modifiedTime = article.updated_date || publishedTime;
@@ -34,9 +45,6 @@ export async function generateMetadata({ params }) {
     'TN Today',
     'தமிழ்நாடு செய்திகள்',
   ].filter(Boolean).join(', ');
-
-  const tamilTitle = article.seo_title_ta || article.title_ta || '';
-  const tamilDesc = article.seo_description_ta || article.subtitle_ta || article.summary_ta || '';
 
   return {
     title,

@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import Image from "next/image";
-import {
-  FileText, Search, CheckCircle2, Copy, Check, MessageCircle, ExternalLink,
-  Clock, CreditCard, AlertCircle, HelpCircle, ShieldCheck, ChevronDown,
-  Building, Sparkles, UserCheck, Layers, FileCheck
+import { Search, Copy, Check, MessageCircle, ExternalLink,
+  Clock, CreditCard, AlertCircle, ShieldCheck, ChevronDown,
+  Building, Sparkles, UserCheck, FileCheck
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 

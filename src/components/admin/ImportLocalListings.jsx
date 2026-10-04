@@ -3,9 +3,8 @@ import React, { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/api/supabaseClient";
 import { DISTRICTS } from "@/lib/districts";
-import { LISTING_CATEGORIES } from "@/lib/listingCategories";
 import {
-  Upload, FileJson, ClipboardPaste, X, CheckCircle2, AlertCircle,
+  Upload, CheckCircle2, AlertCircle,
   Loader2, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
