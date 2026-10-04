@@ -221,11 +221,12 @@ export default function HomeHero({ userLocation, setUserLocation }) {
                   {T("View full map", "முழு வரைபடம்")} <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
-              <TnTodayCard className="absolute bottom-3 right-3 z-20" />
             </div>
           </div>
         </div>
       </div>
+      {/* Floating sticky TN Today widget */}
+      <TnTodayCard />
     </section>
   );
 }
