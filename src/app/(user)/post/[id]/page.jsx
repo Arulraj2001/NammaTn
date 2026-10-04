@@ -6,7 +6,7 @@ import { toMetaDescription } from '@/lib/metaDescription';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { CATEGORY_MAP } from '@/lib/seo-data';
 import { buildPostSeo } from '@/lib/postSeo';
-import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
+import { generateNewsArticleSchema, generateSpecialAnnouncementSchema } from '@/lib/seo/newsSchema';
 import { getPostUrl, getPostCanonicalUrl } from '@/lib/postUrl';
 
 const SITE_URL = 'https://www.vizhitn.in';
@@ -84,6 +84,7 @@ export default async function Page({ params }) {
 
   const newsArticleSchema = generateNewsArticleSchema({
     headline: post.title_en,
+    headlineTa: post.title_ta || null,
     description: post.seo_description || (post.content_en || '').slice(0, 160),
     url: canonical,
     imageUrl: post.media_urls?.[0] || post.before_photos?.[0] || null,
@@ -92,7 +93,21 @@ export default async function Page({ params }) {
     authorName: post.is_anonymous ? 'VizhiTN Reporter' : (post.author_name || 'VizhiTN Reporter'),
     section: post.category_slug || 'Civic News',
     language: 'en-IN',
+    districtName: post.district_name || post.district_slug || '',
+    areaName: post.area_name || '',
+    locationText: post.location_text || '',
   });
+
+  const isEmergencyOrAlert = post.post_type === 'alert' || ['critical', 'high'].includes(post.urgency_level);
+  const specialAnnouncementSchema = isEmergencyOrAlert ? generateSpecialAnnouncementSchema({
+    name: post.title_en || post.title,
+    text: post.content_en || post.description || '',
+    url: canonical,
+    datePosted: post.created_date,
+    districtName: post.district_name || post.district_slug || 'Tamil Nadu',
+    departmentName: post.assigned_department || 'Tamil Nadu Civic Authority',
+    helpline: post.assigned_department || '',
+  }) : null;
 
   const postSchema = post ? {
     '@context': 'https://schema.org',
@@ -130,6 +145,7 @@ export default async function Page({ params }) {
   return (
     <>
       {postSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(postSchema) }} />}
+      {specialAnnouncementSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(specialAnnouncementSchema) }} />}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
       <Breadcrumbs items={breadcrumbItems} />
       <PostDetail

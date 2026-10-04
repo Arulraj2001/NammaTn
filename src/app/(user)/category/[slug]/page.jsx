@@ -37,6 +37,13 @@ export async function generateMetadata({ params }) {
     `Track ${category?.descriptionFragment ?? label.toLowerCase()} on VizhiTN.`;
   const canonicalUrl = `${SITE_URL}/category/${canonicalSlug}`;
 
+  const ogUrl = new URL(`${SITE_URL}/api/og`);
+  ogUrl.searchParams.set('title', `${label} Reports & Alerts in Tamil Nadu`);
+  if (publicCategory.name_ta) ogUrl.searchParams.set('title_ta', `${publicCategory.name_ta} தகவல்கள் & புகார்கள்`);
+  ogUrl.searchParams.set('category', canonicalSlug);
+  ogUrl.searchParams.set('urgency', 'medium');
+  const ogImageUrl = ogUrl.toString();
+
   return {
     title,
     description,
@@ -46,6 +53,21 @@ export async function generateMetadata({ params }) {
       description,
       url: canonicalUrl,
       type: 'website',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+          type: 'image/png',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${label} Reports | VizhiTN`,
+      description,
+      images: [ogImageUrl],
     },
     robots: {
       index: true,

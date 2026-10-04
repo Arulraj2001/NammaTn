@@ -325,7 +325,7 @@ No conversational intro, no commentary outside the JSON array.
     }
   }
 
-  // --- STEP 5: INSTANT CACHE REVALIDATION ---
+  // --- STEP 5: INSTANT CACHE REVALIDATION & SEARCH ENGINE INGESTION ---
   if (!isDryRun && insertedCount > 0 && siteUrl) {
     console.log(`\n[REVALIDATE] Purging ISR cache for /tn-politics on ${siteUrl}...`);
     try {
@@ -342,6 +342,29 @@ No conversational intro, no commentary outside the JSON array.
     } catch (revErr) {
       console.warn(`  ⚠️ Revalidate request warning: ${revErr.message}`);
     }
+
+    // IndexNow for instant Bing / Copilot ingestion
+    const INDEXNOW_KEY = '6dda567a62b7b1c8c971a8b90bda6a0ed368c012cc32df60eee7144a99444b56';
+    const host = new URL(siteUrl).hostname;
+    try {
+      await fetch('https://api.indexnow.org/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify({
+          host,
+          key: INDEXNOW_KEY,
+          keyLocation: `${siteUrl}/${INDEXNOW_KEY}.txt`,
+          urlList: [`${siteUrl}/tn-politics`]
+        })
+      });
+      console.log('  ✓ Dispatched IndexNow ping for /tn-politics');
+    } catch (_) {}
+
+    try {
+      const sitemapUrl = encodeURIComponent(`${siteUrl}/sitemap-news.xml`);
+      await fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`);
+      console.log('  ✓ Dispatched Google News sitemap ping');
+    } catch (_) {}
   }
 
   console.log('\n====================================================');

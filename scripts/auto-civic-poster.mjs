@@ -323,8 +323,13 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
    - Chief Minister Helpline: 1100
    Always include the relevant helpline in "assigned_department" (e.g. "TANGEDCO (Helpline: 1912)") and in the content body!
 8. NO HALLUCINATION: All scheduled power shutdowns or maintenance must specify real streets and exact hours (e.g. "9:00 AM to 2:00 PM").
-9. BILINGUAL: Both English and Tamil ("title_en", "title_ta", "content_en", "content_ta") MUST be authentic and accurate.
-10. SLUG: Provide a clean, SEO-friendly English slug ending with a date code (e.g. "tambaram-power-cut-chennai-${todayStr.replace(/-/g, '')}").
+9. BILINGUAL & INVERTED PYRAMID:
+   - First sentence of content_en & content_ta MUST state the core facts immediately: Who (Department), What (Shutdown/Camp/Alert), Where (Specific streets/locations), When (Exact hours), and Helpline.
+   - Example lead: "TANGEDCO has scheduled power shutdown today from 9:00 AM to 2:00 PM across Kamarajar High Road and Balaji Nagar for maintenance. Contact Minnalagam at 1912."
+10. SEARCH-INTENT TITLES:
+   - For electricity shutdowns: "[Area] Power Cut Today ([Date]): [Start Time] to [End Time] for Substation Maintenance"
+   - In Tamil: "[பகுதி] பகுதியில் இன்று ([தேதி]) மின்தடை: [நேரம்] வரை மின்சாரம் நிறுத்தம்"
+11. SLUG: Provide a clean, SEO-friendly English slug ending with a date code (e.g. "tambaram-power-cut-chennai-${todayStr.replace(/-/g, '')}").
 
 OUTPUT FORMAT:
 Return ONLY a valid JSON array containing the post objects.
@@ -658,6 +663,7 @@ No conversational intro, no commentary outside the JSON array.
   
   let successCount = 0;
   let failCount = 0;
+  const publishedUrls = [];
 
   for (const post of validPosts) {
     try {
@@ -677,6 +683,7 @@ No conversational intro, no commentary outside the JSON array.
             failCount++;
           } else {
             console.log(`[✓ PUBLISHED] ${post.title_en} (Salted slug)`);
+            publishedUrls.push(post.canonical_url);
             successCount++;
           }
         } else {
@@ -685,6 +692,7 @@ No conversational intro, no commentary outside the JSON array.
         }
       } else {
         console.log(`[✓ PUBLISHED] [${post.district_slug}] ${post.title_en}`);
+        publishedUrls.push(post.canonical_url);
         successCount++;
       }
     } catch (err) {
@@ -713,6 +721,34 @@ No conversational intro, no commentary outside the JSON array.
       }
     } catch (revalErr) {
       console.warn(`[CACHE WARN] Could not ping /api/revalidate (${revalErr.message}). Next.js ISR fallback will update within 30s.`);
+    }
+
+    // --- STEP 8: INSTANT SEARCH ENGINE INGESTION (INDEXNOW & GOOGLE PING) ---
+    if (publishedUrls.length > 0) {
+      const INDEXNOW_KEY = '6dda567a62b7b1c8c971a8b90bda6a0ed368c012cc32df60eee7144a99444b56';
+      const host = new URL(siteUrl).hostname;
+      console.log(`[INDEXNOW] Pushing ${publishedUrls.length} new URLs to IndexNow (Bing/Copilot/Yandex)...`);
+      try {
+        const inRes = await fetch('https://api.indexnow.org/indexnow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify({
+            host,
+            key: INDEXNOW_KEY,
+            keyLocation: `${siteUrl}/${INDEXNOW_KEY}.txt`,
+            urlList: publishedUrls
+          })
+        });
+        console.log(`[INDEXNOW ✓] Dispatched (${inRes.status})`);
+      } catch (inErr) {
+        console.warn(`[INDEXNOW WARN] ${inErr.message}`);
+      }
+
+      try {
+        const sitemapUrl = encodeURIComponent(`${siteUrl}/sitemap-news.xml`);
+        await fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`);
+        console.log(`[GOOGLE PING ✓] Google News sitemap ping dispatched.`);
+      } catch (_) {}
     }
   }
 }

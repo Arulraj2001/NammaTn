@@ -16,6 +16,9 @@ export function generateNewsArticleSchema({
   publisher,
   section,
   language = 'en-IN',
+  districtName = '',
+  areaName = '',
+  locationText = '',
 }) {
   const schema = {
     '@context': 'https://schema.org',
@@ -66,11 +69,71 @@ export function generateNewsArticleSchema({
     },
   };
 
+  if (districtName || areaName) {
+    schema.contentLocation = {
+      '@type': 'Place',
+      name: [areaName, districtName, 'Tamil Nadu'].filter(Boolean).join(', '),
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: areaName || districtName,
+        addressRegion: 'Tamil Nadu',
+        addressCountry: 'IN',
+      },
+    };
+    schema.spatialCoverage = {
+      '@type': 'Place',
+      name: `${districtName || 'Tamil Nadu'}, India`,
+    };
+  }
+
   if (headlineTa) {
     schema.alternativeHeadline = headlineTa.slice(0, 110);
   }
 
   return schema;
+}
+
+export function generateSpecialAnnouncementSchema({
+  name,
+  text,
+  url,
+  datePosted,
+  expires,
+  category = 'https://schema.org/SpecialAnnouncement',
+  districtName = 'Tamil Nadu',
+  departmentName = 'Tamil Nadu Government',
+  helpline = '',
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SpecialAnnouncement',
+    name: name?.slice(0, 110) || '',
+    text: text || '',
+    url: url || 'https://www.vizhitn.in',
+    datePosted: datePosted || new Date().toISOString(),
+    ...(expires ? { expires } : {}),
+    category,
+    spatialCoverage: {
+      '@type': 'AdministrativeArea',
+      name: `${districtName}, Tamil Nadu, India`,
+    },
+    announcementLocation: {
+      '@type': 'CivicStructure',
+      name: `${districtName} Public Jurisdiction`,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: districtName,
+        addressRegion: 'Tamil Nadu',
+        addressCountry: 'IN',
+      },
+    },
+    serviceOperator: {
+      '@type': 'GovernmentOrganization',
+      name: departmentName,
+      ...(helpline ? { telephone: helpline } : {}),
+      url: 'https://www.vizhitn.in',
+    },
+  };
 }
 
 export function generateTamilNewsArticleSchema(params) {
