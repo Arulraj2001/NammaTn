@@ -121,7 +121,7 @@ export default function TnTodayCard({ className }) {
     <aside
       aria-label="Today's featured story"
       className={cn(
-        "fixed top-20 right-3 sm:top-24 sm:right-6 z-40 max-w-[calc(100vw-24px)] pointer-events-auto",
+        "fixed top-24 right-3 sm:right-6 z-40 max-w-[calc(100vw-24px)] pointer-events-auto",
         className
       )}
     >
