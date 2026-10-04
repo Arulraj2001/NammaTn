@@ -292,9 +292,9 @@ No conversational intro, no commentary outside the JSON array.
       content_ta: String(raw.content_ta || '').trim(),
       author_name: raw.author_name || 'VizhiTN Politics Desk',
       civic_receipt_id: raw.civic_receipt_id || `VTN-POL-${yearStr}-${Math.floor(100 + Math.random() * 900)}`,
-      media_urls: (Array.isArray(raw.media_urls) && raw.media_urls.length > 0)
+      media_urls: (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/mlas/'))
         ? raw.media_urls
-        : [`/images/mlas/${(raw.district_slug || 'chennai').toLowerCase()}.webp`],
+        : [`${siteUrl}/api/og?title=${encodeURIComponent(postObj.title_en)}&district=${encodeURIComponent(postObj.district_slug)}&category=tn-politics&urgency=medium&receipt=${encodeURIComponent(postObj.civic_receipt_id)}&helpline=TN+Legislative+Assembly`],
       slug: finalSlug,
       seo_title: raw.seo_title || raw.title_en,
       seo_description: raw.seo_description || (raw.content_en ? raw.content_en.slice(0, 150) : ''),

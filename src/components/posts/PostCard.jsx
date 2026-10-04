@@ -1,7 +1,11 @@
 import Image from "next/image";
 import React, { memo } from "react";
 import { Link } from "@/lib/router-compat";
-import { MapPin, Tag, ThumbsUp, MessageSquare, Clock, AlertTriangle, Star, Megaphone, Shield, MessageCircle, Users, FileText, CheckCircle, Zap } from "lucide-react";
+import {
+  MapPin, Tag, ThumbsUp, MessageSquare, Clock, AlertTriangle, Star, Megaphone,
+  Shield, MessageCircle, Users, FileText, CheckCircle, Zap, Droplets, Construction,
+  Bus, Landmark, GraduationCap, HeartPulse, Sprout, Scale
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatDistanceToNow } from "date-fns";
 import EngagementBadge, { computeBadge } from "@/components/engagement/EngagementBadge";
@@ -9,6 +13,173 @@ import ShareBar from "@/components/sharing/ShareBar";
 import { isCivicPost, getDaysOpen, getUrgency } from "@/lib/civicReceipt";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
 import { getPostUrl } from "@/lib/postUrl";
+
+const CATEGORY_BULLETINS = {
+  'public-safety': {
+    icon: Shield,
+    label: 'Public Safety & Cyber',
+    bg: 'bg-gradient-to-br from-rose-950 via-slate-900 to-red-950',
+    border: 'border-rose-700/50 hover:border-rose-400',
+    badge: 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
+    accentText: 'text-rose-400',
+    dept: 'Cyber Crime Wing & Police (1930 / 112)',
+  },
+  'electricity': {
+    icon: Zap,
+    label: 'Electricity & Power',
+    bg: 'bg-gradient-to-br from-amber-950 via-slate-900 to-yellow-950',
+    border: 'border-amber-700/50 hover:border-amber-400',
+    badge: 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
+    accentText: 'text-amber-400',
+    dept: 'TANGEDCO Minnalagam (1912)',
+  },
+  'water-sanitation': {
+    icon: Droplets,
+    label: 'Water & Sanitation',
+    bg: 'bg-gradient-to-br from-cyan-950 via-slate-900 to-blue-950',
+    border: 'border-cyan-700/50 hover:border-cyan-400',
+    badge: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30',
+    accentText: 'text-cyan-400',
+    dept: 'Metrowater / TWAD (1913)',
+  },
+  'road-infrastructure': {
+    icon: Construction,
+    label: 'Roads & Flyovers',
+    bg: 'bg-gradient-to-br from-orange-950 via-slate-900 to-stone-900',
+    border: 'border-orange-700/50 hover:border-orange-400',
+    badge: 'bg-orange-500/20 text-orange-300 border border-orange-500/30',
+    accentText: 'text-orange-400',
+    dept: 'Highways & GCC Works (1913)',
+  },
+  'transport': {
+    icon: Bus,
+    label: 'Transport & Transit',
+    bg: 'bg-gradient-to-br from-blue-950 via-slate-900 to-indigo-950',
+    border: 'border-blue-700/50 hover:border-blue-400',
+    badge: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
+    accentText: 'text-blue-400',
+    dept: 'CMRL / MTC / Southern Railway (139)',
+  },
+  'government-schemes': {
+    icon: Landmark,
+    label: 'Govt Schemes',
+    bg: 'bg-gradient-to-br from-indigo-950 via-slate-900 to-violet-950',
+    border: 'border-indigo-700/50 hover:border-indigo-400',
+    badge: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30',
+    accentText: 'text-indigo-400',
+    dept: 'e-Sevai & Civil Supplies (1967)',
+  },
+  'education': {
+    icon: GraduationCap,
+    label: 'Education & Schools',
+    bg: 'bg-gradient-to-br from-teal-950 via-slate-900 to-emerald-950',
+    border: 'border-teal-700/50 hover:border-teal-400',
+    badge: 'bg-teal-500/20 text-teal-300 border border-teal-500/30',
+    accentText: 'text-teal-400',
+    dept: 'School Education Department (14417)',
+  },
+  'healthcare': {
+    icon: HeartPulse,
+    label: 'Public Health',
+    bg: 'bg-gradient-to-br from-red-950 via-slate-900 to-rose-950',
+    border: 'border-red-700/50 hover:border-red-400',
+    badge: 'bg-red-500/20 text-red-300 border border-red-500/30',
+    accentText: 'text-red-400',
+    dept: 'Public Health Care (108 / 104)',
+  },
+  'agriculture': {
+    icon: Sprout,
+    label: 'Agriculture & Farmers',
+    bg: 'bg-gradient-to-br from-lime-950 via-slate-900 to-emerald-950',
+    border: 'border-lime-700/50 hover:border-lime-400',
+    badge: 'bg-lime-500/20 text-lime-300 border border-lime-500/30',
+    accentText: 'text-lime-400',
+    dept: 'Agriculture & Farmer Welfare',
+  },
+  'tn-politics': {
+    icon: Scale,
+    label: 'TN Politics',
+    bg: 'bg-gradient-to-br from-purple-950 via-slate-900 to-fuchsia-950',
+    border: 'border-purple-700/50 hover:border-purple-400',
+    badge: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
+    accentText: 'text-purple-400',
+    dept: 'TN Legislative Assembly & Parties',
+  },
+  'general': {
+    icon: FileText,
+    label: 'Civic Dispatch',
+    bg: 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800',
+    border: 'border-slate-700 hover:border-slate-500',
+    badge: 'bg-slate-700/50 text-slate-300 border border-slate-600',
+    accentText: 'text-slate-400',
+    dept: 'Tamil Nadu Civic Administration (1100)',
+  }
+};
+
+const isStaticPlaceholder = (url) => {
+  if (!url || typeof url !== "string") return true;
+  const trimmed = url.trim().toLowerCase();
+  return (
+    trimmed.startsWith("/images/categories/") ||
+    trimmed.startsWith("/images/mlas/") ||
+    trimmed === "/images/placeholder.webp" ||
+    trimmed === "/images/default-post.webp"
+  );
+};
+
+function CivicBulletinCard({ post, title, postUrl }) {
+  const category = (post.category_slug || "general").toLowerCase();
+  const theme = CATEGORY_BULLETINS[category] || CATEGORY_BULLETINS.general;
+  const CategoryIcon = theme.icon;
+
+  return (
+    <Link
+      to={postUrl}
+      prefetch={true}
+      className={`block mb-3 rounded-xl overflow-hidden relative border ${theme.border} ${theme.bg} p-3 sm:p-3.5 shadow-md group/bulletin transition-all duration-300 min-h-[148px] flex flex-col justify-between`}
+    >
+      {/* Background glow & watermark icon */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent pointer-events-none" />
+      <div className="absolute -right-4 -bottom-4 opacity-10 pointer-events-none">
+        <CategoryIcon className="w-24 h-24 text-white" />
+      </div>
+
+      {/* Top Bar: Category pill + District chip */}
+      <div className="flex items-center justify-between gap-2 relative z-10">
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${theme.badge}`}>
+          <CategoryIcon className="w-3 h-3" />
+          {theme.label}
+        </span>
+        {post.district_slug && (
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-200 bg-black/50 px-2 py-0.5 rounded-md border border-white/10 capitalize">
+            <MapPin className="w-3 h-3 text-red-400" />
+            {post.area_name || post.district_slug}
+          </span>
+        )}
+      </div>
+
+      {/* Centerpiece: Dynamic Story Headline with High-Contrast Typography */}
+      <div className="my-2 relative z-10">
+        <p className="font-extrabold text-white text-xs sm:text-sm leading-snug line-clamp-2 group-hover/bulletin:text-blue-300 transition-colors">
+          {title}
+        </p>
+      </div>
+
+      {/* Bottom Bar: Verified Helpline + Receipt ID */}
+      <div className="flex items-center justify-between text-[10px] text-slate-300/90 pt-2 border-t border-white/10 relative z-10">
+        <span className="font-semibold flex items-center gap-1 truncate max-w-[70%]">
+          <Shield className="w-3 h-3 text-amber-400 flex-shrink-0" />
+          <span className="truncate">{post.assigned_department || theme.dept}</span>
+        </span>
+        {post.civic_receipt_id && (
+          <span className="font-mono font-bold text-slate-400 text-[9px] bg-white/10 px-1.5 py-0.5 rounded tracking-wide">
+            {post.civic_receipt_id}
+          </span>
+        )}
+      </div>
+    </Link>
+  );
+}
 
 const TYPE_CONFIG = {
   complaint: { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-50 dark:bg-red-900/20", label_en: "Complaint", label_ta: "புகார்" },
@@ -132,8 +303,8 @@ const PostCard = memo(function PostCard({ post }) {
           </p>
         )}
 
-        {/* Media thumbnail — clickable link to post detail */}
-        {firstPhoto && !imgError && (
+        {/* Media thumbnail or Dynamic Civic Bulletin */}
+        {firstPhoto && !isStaticPlaceholder(firstPhoto) && !imgError ? (
           <Link to={postUrl} prefetch={true} className="block mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
             <Image
               src={firstPhoto}
@@ -145,6 +316,8 @@ const PostCard = memo(function PostCard({ post }) {
               className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
             />
           </Link>
+        ) : (
+          <CivicBulletinCard post={post} title={title} postUrl={postUrl} />
         )}
 
         {/* Civic stats row — unchanged, still driven by isCivicPost */}
