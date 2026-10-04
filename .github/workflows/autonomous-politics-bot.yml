@@ -1,0 +1,52 @@
+name: VizhiTN Autonomous Politics Bot
+
+on:
+  schedule:
+    # 13:30 UTC = 07:00 PM IST (Daily Evening Tamil Nadu Politics Batch)
+    - cron: '30 13 * * *'
+
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode (no database writes)'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: autonomous-politics-bot
+  cancel-in-progress: false
+
+jobs:
+  politics-dispatch:
+    name: Generate & Publish Evening Politics Batch (7:00 PM IST)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Autonomous Politics Poster
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo "Executing in dry-run mode"
+            node scripts/auto-politics-poster.mjs --dry-run
+          else
+            echo "Executing production 7:00 PM IST political news generation"
+            node scripts/auto-politics-poster.mjs
+          fi
