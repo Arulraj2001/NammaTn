@@ -2,8 +2,8 @@ name: VizhiTN Autonomous Politics Bot
 
 on:
   schedule:
-    # 13:30 UTC = 07:00 PM IST (Daily Evening Tamil Nadu Politics Batch)
-    - cron: '30 13 * * *'
+    # 13:15 UTC = 06:45 PM IST (Daily Evening Tamil Nadu Politics Batch - off-peak minute avoids runner queue stall)
+    - cron: '15 13 * * *'
 
   workflow_dispatch:
     inputs:
