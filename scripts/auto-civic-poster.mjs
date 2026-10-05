@@ -636,7 +636,7 @@ No conversational intro, no commentary outside the JSON array.
       duplicate_count: 0,
       media_urls: (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/categories/'))
         ? raw.media_urls
-        : [`${siteUrl}/api/og?title=${encodeURIComponent(title_en)}&district=${encodeURIComponent(district_slug)}&category=${encodeURIComponent(category_slug)}&urgency=${encodeURIComponent(urgency_level)}&receipt=${encodeURIComponent(civic_receipt_id)}&helpline=${encodeURIComponent(assigned_department)}`],
+        : [`${siteUrl}/api/og?title=${encodeURIComponent(title_en)}&title_ta=${encodeURIComponent(title_ta || '')}&district=${encodeURIComponent(district_slug)}&category=${encodeURIComponent(category_slug)}&urgency=${encodeURIComponent(urgency_level)}&receipt=${encodeURIComponent(civic_receipt_id)}&helpline=${encodeURIComponent(assigned_department)}`],
       civic_receipt_id,
       official_complaint_id: raw.official_complaint_id || '',
       assigned_department,

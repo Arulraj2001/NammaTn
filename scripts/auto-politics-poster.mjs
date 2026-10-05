@@ -291,7 +291,7 @@ No conversational intro, no commentary outside the JSON array.
 
     const media_urls = (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/mlas/'))
       ? raw.media_urls
-      : [`${siteUrl}/api/og?title=${encodeURIComponent(title_en)}&district=${encodeURIComponent(district_slug)}&category=tn-politics&urgency=medium&receipt=${encodeURIComponent(civic_receipt_id)}&helpline=TN+Legislative+Assembly`];
+      : [`${siteUrl}/api/og?title=${encodeURIComponent(title_en)}&title_ta=${encodeURIComponent(title_ta || '')}&district=${encodeURIComponent(district_slug)}&category=tn-politics&urgency=medium&receipt=${encodeURIComponent(civic_receipt_id)}&helpline=TN+Legislative+Assembly`];
 
     const postObj = {
       category_slug: 'tn-politics',
