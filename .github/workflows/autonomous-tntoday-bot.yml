@@ -1,0 +1,63 @@
+name: VizhiTN Autonomous TN Today Bot
+
+on:
+  schedule:
+    # 02:15 UTC = 07:45 AM IST (Daily Morning Transit & Infrastructure Edition)
+    - cron: '15 2 * * *'
+    # 08:15 UTC = 01:45 PM IST (Daily Midday Governance & Welfare Schemes Edition)
+    - cron: '15 8 * * *'
+    # 13:15 UTC = 06:45 PM IST (Daily Evening Economy, Agriculture & Features Edition)
+    - cron: '15 13 * * *'
+
+  workflow_dispatch:
+    inputs:
+      pulse:
+        description: 'Editorial Pulse to execute'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - morning
+          - midday
+          - evening
+          - dry-run
+
+concurrency:
+  group: autonomous-tntoday-bot
+  cancel-in-progress: false
+
+jobs:
+  tntoday-dispatch:
+    name: Generate & Publish TN Today In-Depth Article
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Autonomous TN Today Poster
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
+        run: |
+          INPUT_PULSE="${{ github.event.inputs.pulse }}"
+          if [ -n "$INPUT_PULSE" ] && [ "$INPUT_PULSE" != "auto" ]; then
+            echo "Executing manually requested pulse: $INPUT_PULSE"
+            node scripts/auto-tntoday-poster.mjs --pulse="$INPUT_PULSE"
+          else
+            echo "Executing autonomous time-based pulse detection"
+            node scripts/auto-tntoday-poster.mjs --pulse="auto"
+          fi
