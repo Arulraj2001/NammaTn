@@ -279,25 +279,37 @@ No conversational intro, no commentary outside the JSON array.
       continue;
     }
 
+    const title_en = String(raw.title_en || '').trim();
+    const title_ta = String(raw.title_ta || '').trim();
+    const content_en = String(raw.content_en || '').trim();
+    const content_ta = String(raw.content_ta || '').trim();
+    const district_slug = (raw.district_slug || 'chennai').toLowerCase();
+    const post_type = VALID_POST_TYPES.includes(raw.post_type) ? raw.post_type : 'party_update';
+    const area_name = raw.area_name || 'Tamil Nadu';
+    const author_name = raw.author_name || 'VizhiTN Politics Desk';
+    const civic_receipt_id = raw.civic_receipt_id || `VTN-POL-${yearStr}-${Math.floor(100 + Math.random() * 900)}`;
+
+    const media_urls = (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/mlas/'))
+      ? raw.media_urls
+      : [`${siteUrl}/api/og?title=${encodeURIComponent(title_en)}&district=${encodeURIComponent(district_slug)}&category=tn-politics&urgency=medium&receipt=${encodeURIComponent(civic_receipt_id)}&helpline=TN+Legislative+Assembly`];
+
     const postObj = {
       category_slug: 'tn-politics',
       status: 'active',
       is_publicly_visible: true,
-      post_type: VALID_POST_TYPES.includes(raw.post_type) ? raw.post_type : 'party_update',
-      district_slug: (raw.district_slug || 'chennai').toLowerCase(),
-      area_name: raw.area_name || 'Tamil Nadu',
-      title_en: String(raw.title_en || '').trim(),
-      title_ta: String(raw.title_ta || '').trim(),
-      content_en: String(raw.content_en || '').trim(),
-      content_ta: String(raw.content_ta || '').trim(),
-      author_name: raw.author_name || 'VizhiTN Politics Desk',
-      civic_receipt_id: raw.civic_receipt_id || `VTN-POL-${yearStr}-${Math.floor(100 + Math.random() * 900)}`,
-      media_urls: (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/mlas/'))
-        ? raw.media_urls
-        : [`${siteUrl}/api/og?title=${encodeURIComponent(postObj.title_en)}&district=${encodeURIComponent(postObj.district_slug)}&category=tn-politics&urgency=medium&receipt=${encodeURIComponent(postObj.civic_receipt_id)}&helpline=TN+Legislative+Assembly`],
+      post_type,
+      district_slug,
+      area_name,
+      title_en,
+      title_ta,
+      content_en,
+      content_ta,
+      author_name,
+      civic_receipt_id,
+      media_urls,
       slug: finalSlug,
-      seo_title: raw.seo_title || raw.title_en,
-      seo_description: raw.seo_description || (raw.content_en ? raw.content_en.slice(0, 150) : ''),
+      seo_title: raw.seo_title || title_en,
+      seo_description: raw.seo_description || (content_en ? content_en.slice(0, 150) : ''),
       created_date: new Date().toISOString()
     };
 
