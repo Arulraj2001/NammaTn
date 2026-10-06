@@ -22,7 +22,9 @@ concurrency:
 jobs:
   politics-dispatch:
     name: Generate & Publish Evening Politics Batch (7:00 PM IST)
-    runs-on: ubuntu-latest
+    # Pin to a stable LTS image. `ubuntu-latest` will roll over to Ubuntu 26.04
+    # beginning Oct 19, 2026, which can cause runner-pool churn/provisioning stalls.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
 
     steps:

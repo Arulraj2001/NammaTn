@@ -31,7 +31,9 @@ concurrency:
 jobs:
   civic-dispatch:
     name: Generate & Publish Civic Batch
-    runs-on: ubuntu-latest
+    # Pin to a stable LTS image. `ubuntu-latest` will roll over to Ubuntu 26.04
+    # beginning Oct 19, 2026, which can cause runner-pool churn/provisioning stalls.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
 
     steps:

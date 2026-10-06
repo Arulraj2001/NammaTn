@@ -1,0 +1,66 @@
+name: VizhiTN Publishing Watchdog
+
+# Self-healing watchdog: detects when a scheduled bot batch silently failed to publish
+# (e.g. GitHub could not provision a hosted runner) and backfills the missing content.
+# GitHub's scheduled cron fires once with no retry, so this is the safety net.
+
+on:
+  schedule:
+    # 04:30 UTC = 10:00 AM IST — catches any morning batch (civic 6:45 AM, TN Today 7:45 AM) that missed
+    - cron: '30 4 * * *'
+    # 14:30 UTC = 08:00 PM IST — catches any midday/evening batch that missed
+    - cron: '30 14 * * *'
+
+  workflow_dispatch:
+    inputs:
+      window:
+        description: 'Which window to verify/backfill'
+        required: true
+        default: 'morning'
+        type: choice
+        options:
+          - morning
+          - evening
+
+concurrency:
+  group: autonomous-watchdog
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watchdog:
+    name: Verify & Backfill Missing Batches
+    # Pin to a stable LTS image (see note on the bot workflows).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Publishing Watchdog
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ "${{ github.event.inputs.window }}" = "evening" ]; then
+            node scripts/auto-watchdog.mjs --window=evening
+          else
+            node scripts/auto-watchdog.mjs --window=morning
+          fi
