@@ -558,6 +558,23 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     console.warn(`[GOOGLE PING WARN] ${pingErr.message}`);
   }
 
+  // --- STEP 9: INSTANT BROADCAST TO VIZHITN WHATSAPP CHANNEL ---
+  try {
+    const { postToWhatsAppChannel } = await import('./lib/whatsappChannel.mjs');
+    console.log(`[WHATSAPP] Broadcasting article to official WhatsApp Channel...`);
+    const broadcastTitle = articleObj.title_ta || articleObj.title;
+    const broadcastSummary = articleObj.subtitle_ta || articleObj.summary_ta || articleObj.subtitle || articleObj.summary;
+    await postToWhatsAppChannel({
+      title: broadcastTitle,
+      summary: broadcastSummary,
+      url: publishedUrl,
+      category: articleObj.category,
+      urgency: 'normal'
+    });
+  } catch (waErr) {
+    console.warn(`[WHATSAPP WARN] Channel broadcast warning: ${waErr.message}`);
+  }
+
   console.log('\n====================================================');
   console.log(`🎉 COMPLETED: Published TN Today article via ${successfulModel}`);
   console.log('====================================================');

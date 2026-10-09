@@ -36,3 +36,6 @@ out
 *.sql
 backup/
 import_backup.cjs
+
+# WhatsApp Baileys Auth Session
+scripts/baileys_auth/
