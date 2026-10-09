@@ -76,6 +76,12 @@ function getPulseSpec(pulseName, dateStr) {
       targetCategories: ['infrastructure', 'transport', 'environment'],
       author: 'VizhiTN Infrastructure & Transit Desk',
       isFeatured: true,
+      searchAnchors: [
+        `Chennai Metro Phase 2 CMRL tunnel station trial run ${dateStr}`,
+        `Tamil Nadu NHAI highway elevated bypass opening ${dateStr}`,
+        `Southern Railway Tamil Nadu suburban line block Vande Bharat ${dateStr}`,
+        `Tamil Nadu Climate Change Mission dam water release ${dateStr}`
+      ],
       focusDirective: `Focus on Tamil Nadu infrastructure, urban transit, or environmental milestones from the last 24–48 hours:
 - Chennai Metro Phase 2 tunneling, trial runs, or station progress (CMRL)
 - NHAI elevated corridors, city bypasses, or ring roads across Chennai, Coimbatore, Madurai, Tiruchirappalli
@@ -89,6 +95,12 @@ Write 1 high-impact, flagship editorial article (750–1,000 words).`
       targetCategories: ['governance', 'social', 'education', 'healthcare'],
       author: 'VizhiTN Governance & Policy Desk',
       isFeatured: false,
+      searchAnchors: [
+        `Kalaignar Magalir Urimai Thogai government order ${dateStr}`,
+        `Tamil Nadu school education college department announcement ${dateStr}`,
+        `Makkalai Thedi Maruthuvam Tamil Nadu health minister ${dateStr}`,
+        `TNeGA e-Sevai online patta chitta settlement camp ${dateStr}`
+      ],
       focusDirective: `Focus on Tamil Nadu governance reforms, welfare schemes, or education/health initiatives from the last 24–48 hours:
 - Kalaignar Magalir Urimai scheme audit, additions, or grievance redressal
 - School Education department initiatives, Naan Mudhalvan, Pudhumai Penn, or Breakfast Scheme
@@ -102,6 +114,11 @@ Write 1 in-depth, citizen-first analytical article (750–1,000 words).`
       targetCategories: ['economy', 'agriculture', 'technology', 'india'],
       author: 'VizhiTN State & Economy Desk',
       isFeatured: false,
+      searchAnchors: [
+        `SIPCOT Tamil Nadu investment semiconductor EV manufacturing ${dateStr}`,
+        `Delta paddy procurement DPC Tamil Nadu agriculture minister ${dateStr}`,
+        `Tamil Nadu Startup Mission Tier 2 city IT corridor ${dateStr}`
+      ],
       focusDirective: `Focus on Tamil Nadu state economy, industrial corridors, agricultural developments, or high-profile state milestones:
 - SIPCOT industrial parks, semiconductor, electronic, or EV manufacturing investments in Hosur, Sriperumbudur, Coimbatore
 - Delta direct paddy procurement centers (DPC), farmer subsidies, or cooperative loan waivers
@@ -212,6 +229,9 @@ Generate 1 in-depth, people-first, investigative news article (750 to 1,000 word
 
 EDITORIAL FOCUS:
 ${spec.focusDirective}
+
+TARGET REAL-TIME SEARCH ANCHORS (Query Google Search Grounding for these real-time topics):
+${(spec.searchAnchors || []).map(q => `- "${q}"`).join('\n')}
 
 CATEGORY CONSTRAINTS:
 Pick EXACTLY ONE category from this allowed list that best fits the topic:

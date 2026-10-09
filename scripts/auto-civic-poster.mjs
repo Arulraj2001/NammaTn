@@ -145,6 +145,12 @@ function getPulseSpec(pulse, todayStr) {
       return {
         name: 'Morning Civic & Power Batch (7:00 AM – 8:15 AM IST)',
         targetCount: 14,
+        searchAnchors: [
+          `TANGEDCO power cut shutdown schedule ${todayStr} Chennai Coimbatore Madurai Salem`,
+          `Tamil Nadu heavy rain school college holiday collector order ${todayStr}`,
+          `Aadhaar ration card grievance camp Tamil Nadu taluk office ${todayStr}`,
+          `Southern Railway suburban train cancellation Beach Tambaram Central ${todayStr}`
+        ],
         mixPrompt: `
 Generate 14 real, scheduled civic updates for Tamil Nadu for TODAY (${todayStr}):
 - 6 × post_type: "alert" (TANGEDCO power cut schedules with exact hours, Metrowater maintenance, water pipeline repair, morning bus/train alterations)
@@ -159,6 +165,11 @@ Focus districts (North & West TN): Chennai, Coimbatore, Madurai, Tiruchirappalli
       return {
         name: 'Midday Civic Progress & Welfare Pulse (12:30 PM – 2:00 PM IST)',
         targetCount: 12,
+        searchAnchors: [
+          `Tamil Nadu municipal development flyover road work progress ${todayStr}`,
+          `IMD Chennai rainfall warning alert orange yellow Tamil Nadu ${todayStr}`,
+          `DIPR Tamil Nadu press release welfare scheme ${todayStr}`
+        ],
         mixPrompt: `
 Generate 12 civic progress updates and active advisories for Tamil Nadu for TODAY (${todayStr}):
 - 5 × post_type: "local_update" (Ongoing municipal road resurfacing, flyover milestone, canal irrigation water release, e-Sevai / Patta transfer settlement drives)
@@ -172,6 +183,11 @@ Focus districts (Central, Delta & South TN): Tiruchirappalli, Thanjavur, Dindigu
       return {
         name: 'Evening Advisory & Tomorrow Advance Batch (5:30 PM – 6:30 PM IST)',
         targetCount: 14,
+        searchAnchors: [
+          `TANGEDCO tomorrow scheduled power shutdown notice Tamil Nadu`,
+          `Tamil Nadu cyber crime police advisory fake bill SMS 1930`,
+          `Southern Railway line block train diversion Tamil Nadu tomorrow`
+        ],
         mixPrompt: `
 Generate 14 evening advisories and ADVANCE notices for TOMORROW across Tamil Nadu:
 - 6 × post_type: "alert" (ADVANCE power shutdown notice for TOMORROW from TANGEDCO with exact 9 AM - 2 PM timings & streets, Southern Railway line block / train diversions)
@@ -186,6 +202,11 @@ Focus districts: Namakkal, Dharmapuri, Krishnagiri, Villupuram, Ranipet, Tiruvan
       return {
         name: 'Early Morning Emergency & Weather Alert Pulse (6:00 AM – 7:00 AM IST)',
         targetCount: 8,
+        searchAnchors: [
+          `Tamil Nadu school college holiday heavy rain District Collector announcement ${todayStr}`,
+          `IMD Chennai Red alert heavy rain warning Tamil Nadu today`,
+          `Chennai Corporation subway waterlogging flood relief GCC 1913`
+        ],
         mixPrompt: `
 Generate 8 emergency weather and civic alerts for Tamil Nadu for TODAY (${todayStr}):
 - 6 × post_type: "alert" (District Collector school/college holiday announcements, IMD heavy rain red/orange warnings, closed flooded subways, TANGEDCO waterlogged electrical pillar safety, Corporation pumping stations)
@@ -198,6 +219,11 @@ Focus coastal & rain districts: Chennai, Tiruvallur, Kancheepuram, Chengalpattu,
       return {
         name: 'Weekend Line Block & Holiday Batch',
         targetCount: 12,
+        searchAnchors: [
+          `Southern Railway suburban train cancellation Beach Tambaram Saturday Sunday`,
+          `Tamil Nadu taluk office ration aadhaar special grievance camp Saturday`,
+          `Nilgiris Kodaikanal e-pass tourist traffic regulation Tamil Nadu`
+        ],
         mixPrompt: `
 Generate 12 weekend preparation notices for Tamil Nadu:
 - 6 × post_type: "alert" (Southern Railway weekend megablocks / suburban train cancellations on Chennai Beach-Tambaram or Central-Arakkonam, SETC special weekend bus arrangements)
@@ -319,6 +345,9 @@ YOUR TASK:
 Use Google Search Grounding to find real, current Tamil Nadu departmental announcements, TANGEDCO power shutdowns, Southern Railway line blocks, Corporation water/road updates, and cyber scam advisories.
 
 ${spec.mixPrompt}
+
+TARGET REAL-TIME SEARCH ANCHORS (Query Google Search Grounding for these verified topics):
+${(spec.searchAnchors || []).map(q => `- "${q}"`).join('\n')}
 
 ${exclusionSection}
 
