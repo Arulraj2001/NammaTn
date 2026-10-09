@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
   const canonical = `${SITE_URL}/awareness/right/${right.slug}`;
 
   return {
-    title: `${title} - Citizen Rights | VizhiTN`,
+    title: `${title} — Citizen Rights Guide`,
     description,
     alternates: { canonical },
     robots: { index: true, follow: true },

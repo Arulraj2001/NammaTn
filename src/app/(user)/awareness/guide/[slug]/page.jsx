@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
   const canonical = `${SITE_URL}/awareness/guide/${guide.slug}`;
 
   return {
-    title: `${title} - Civic Guide | VizhiTN`,
+    title: `${title} — Civic Guide`,
     description,
     alternates: { canonical },
     robots: { index: true, follow: true },

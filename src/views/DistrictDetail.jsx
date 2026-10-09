@@ -26,16 +26,17 @@ const POST_TYPES = [
   { value: "discussion", en: "Discussion", ta: "விவாதம்" },
 ];
 
-export default function DistrictDetail() {
-  const { slug } = useParams();
+export default function DistrictDetail({ initialSlug }) {
+  const routeParams = useParams();
+  const slug = initialSlug || routeParams?.city || routeParams?.slug;
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const district = getDistrictBySlug(slug);
   const districtName = district ? district.name_en : "District";
 
   usePageMeta({
-    title: district ? `${T(district.name_en, district.name_ta)} Civic Hub & Municipal Complaints | VizhiTN` : "District | VizhiTN",
-    description: district ? `View citizen reports, track municipal complaints, inspect area pulse statistics, and explore local issues across ${district.name_en}, Tamil Nadu.` : "",
+    title: district ? `${T(district.name_en, district.name_ta)} Civic Hub & Municipal Complaints | VizhiTN` : undefined,
+    description: district ? `View citizen reports, track municipal complaints, inspect area pulse statistics, and explore local issues across ${district.name_en}, Tamil Nadu.` : undefined,
   });
 
   React.useEffect(() => {

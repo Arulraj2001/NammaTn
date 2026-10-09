@@ -2,7 +2,7 @@ import AwarenessArticles from '@/views/AwarenessArticles';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
-  title: 'Citizen Knowledge Base & In-Depth Guides | VizhiTN',
+  title: 'Citizen Knowledge Base & In-Depth Guides',
   description: 'In-depth guides on Tamil Nadu e-Sevai online services, RTI filing, CMCHIS health insurance, Patta land record verification, and traffic police rights.',
   alternates: { canonical: '/awareness/articles' },
   robots: { index: true, follow: true },

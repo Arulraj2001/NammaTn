@@ -161,6 +161,14 @@ const nextConfig = {
       { source: '/category/stay',              destination: '/stay',                        permanent: true },
       { source: '/category/politics',          destination: '/tn-politics',                 permanent: true },
 
+      // ── Zombie & Legacy Slug Redirects (Bing Crawl Sanitization) ──
+      { source: '/about-1',                                                 destination: '/about',                                                permanent: true },
+      { source: '/districts-1',                                             destination: '/districts',                                            permanent: true },
+      { source: '/verification-methodology',                                destination: '/how-to-use',                                            permanent: true },
+      { source: '/verification-methodology-2',                              destination: '/how-to-use',                                            permanent: true },
+      { source: '/awareness/right/protection-of-women-from-domestic-violence-act-3', destination: '/rights/protection-of-women-from-domestic-violence-act', permanent: true },
+      { source: '/rights/protection-of-women-from-domestic-violence-act-3',          destination: '/rights/protection-of-women-from-domestic-violence-act', permanent: true },
+
       // ── Canonical redirects for rights and schemes ──
       { source: '/awareness/rights',             destination: '/rights',             permanent: true },
       { source: '/awareness/right/:slug',        destination: '/rights/:slug',        permanent: true },

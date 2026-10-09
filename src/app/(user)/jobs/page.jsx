@@ -6,7 +6,7 @@ import Breadcrumbs from '@/components/seo/Breadcrumbs';
 export const revalidate = 300;
 
 export const metadata = {
-  title: 'Local Jobs & Employment Opportunities in Tamil Nadu | VizhiTN',
+  title: 'Local Jobs & Employment Opportunities in Tamil Nadu',
   description: 'Discover local job alerts, employment opportunities, and community-shared work posts across Tamil Nadu. Part-time, temporary, delivery, helper roles, and more.',
   alternates: { canonical: '/jobs' },
   robots: { index: true, follow: true },

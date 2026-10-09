@@ -2,7 +2,7 @@ import AwarenessGuides from '@/views/AwarenessGuides';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
-  title: 'Practical Civic Guides for Tamil Nadu Citizens | VizhiTN',
+  title: 'Practical Civic Guides for Tamil Nadu Citizens',
   description: 'Step-by-step guides for accessing government services, filing complaints, obtaining documents, and exercising civic rights in Tamil Nadu.',
   alternates: { canonical: '/awareness/guides' },
   robots: { index: true, follow: true },

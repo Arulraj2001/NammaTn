@@ -303,7 +303,7 @@ export default async function Page({ params }) {
       </div>
 
       {/* DistrictDetail: ssr:true — full interactive district view */}
-      <DistrictDetail />
+      <DistrictDetail initialSlug={city} />
 
       {/* Internal linking section */}
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 border-t border-slate-100 dark:border-slate-800">

@@ -23,7 +23,7 @@ export async function generateMetadata({ params }) {
   const publicCategory = getCategoryBySlug(canonicalSlug);
   if (!publicCategory) {
     return {
-      title: 'Category Reports | VizhiTN',
+      title: 'Category Reports',
       robots: { index: false, follow: false },
     };
   }

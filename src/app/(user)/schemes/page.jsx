@@ -2,7 +2,7 @@ import AwarenessSchemes from '@/views/AwarenessSchemes';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
-  title: 'Tamil Nadu Government Schemes Encyclopedia (திட்டங்கள்) 2026 | VizhiTN',
+  title: 'Tamil Nadu Government Schemes Encyclopedia (திட்டங்கள்) 2026',
   description: 'Complete verified directory of 200+ Tamil Nadu government welfare schemes — Magalir Urimai, Pudhumai Penn, CMCHIS Health, OAP Pension, Scholarships, and eligibility guides.',
   alternates: { canonical: '/schemes' },
   robots: { index: true, follow: true },

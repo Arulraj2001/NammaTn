@@ -6,7 +6,7 @@ import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks"
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 
 export const metadata = {
-  title: "Tamil Nadu RTI Application Generator (RTI மாதிரி விண்ணப்பம்) | VizhiTN",
+  title: "Tamil Nadu RTI Application Generator (RTI மாதிரி விண்ணப்பம்)",
   description: "Free interactive RTI Application Builder for Tamil Nadu citizens. Generate legally compliant bilingual (Tamil & English) RTI drafts for Road Quality audits, Patta transfer delays, TANGEDCO power cut logs, and Ration card grievances with 1-click A4 print.",
   alternates: { canonical: "/rti" },
   robots: { index: true, follow: true },

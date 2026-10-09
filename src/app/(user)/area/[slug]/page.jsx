@@ -11,7 +11,7 @@ export async function generateMetadata({ params }) {
   const area = await getPublicArea(params.slug);
   if (!area) {
     return {
-      title: 'Area Reports | VizhiTN',
+      title: 'Area Reports',
       robots: { index: false, follow: false },
     };
   }

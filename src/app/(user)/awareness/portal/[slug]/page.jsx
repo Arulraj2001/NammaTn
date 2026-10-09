@@ -16,7 +16,7 @@ export async function generateMetadata({ params }) {
   const canonical = `${SITE_URL}/awareness/portal/${portal.slug}`;
 
   return {
-    title: `${title} - Government Portal | VizhiTN`,
+    title: `${title} — Official Government Portal`,
     description,
     alternates: { canonical },
     robots: { index: true, follow: true },

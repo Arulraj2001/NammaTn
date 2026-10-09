@@ -129,8 +129,8 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
   }, [post?.id, actorId]);
 
   usePageMeta({
-    title: post?.civic_receipt_id ? `${post.civic_receipt_id} — ${post.title_en}` : post?.title_en,
-    description: post?.content_en?.substring(0, 160),
+    title: post?.title_en || post?.title,
+    description: post?.content_en?.substring(0, 160) || post?.description?.substring(0, 160),
     image: (post?.before_photos?.[0] || post?.media_urls?.[0]),
     url: typeof window !== "undefined" ? window.location.href : undefined,
     type: "article",

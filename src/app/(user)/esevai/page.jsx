@@ -6,7 +6,7 @@ import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks"
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 
 export const metadata = {
-  title: "Tamil Nadu e-Sevai Online Services & Certificate Documents Guide (இ-சேவை) | VizhiTN",
+  title: "Tamil Nadu e-Sevai Online Services & Certificate Documents Guide (இ-சேவை)",
   description: "Complete 2026 checklist for TNeGA e-Sevai certificates in Tamil Nadu. Apply for Patta Chitta transfer, EC, Legal Heir, Income, Community, and First Graduate certificates with verified ₹60 fees and exact document requirements.",
   alternates: { canonical: "/esevai" },
   robots: { index: true, follow: true },

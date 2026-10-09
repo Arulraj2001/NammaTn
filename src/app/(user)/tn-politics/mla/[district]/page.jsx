@@ -9,7 +9,7 @@ export async function generateMetadata({ params }) {
   if (!mla) return { title: 'Not Found | VizhiTN' }
 
   return {
-    title: `${mla.district_name} MLA ${mla.mla_name} — ${mla.party_name} Performance Tracker | VizhiTN`,
+    title: `${mla.district_name} MLA ${mla.mla_name} — ${mla.party_name} Performance Tracker`,
     description: `Track ${mla.district_name} MLA ${mla.mla_name} (${mla.party_name}) performance, key actions, and civic issues in ${mla.district_name} district.`,
     alternates: {
       canonical: `https://www.vizhitn.in/tn-politics/mla/${params.district}`

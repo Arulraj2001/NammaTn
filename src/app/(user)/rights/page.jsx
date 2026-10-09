@@ -2,7 +2,7 @@ import AwarenessRights from '@/views/AwarenessRights';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
-  title: 'Tamil Nadu Citizen Rights & Legal Protection Guide (உரிமைகள்) | VizhiTN',
+  title: 'Tamil Nadu Citizen Rights & Legal Protection Guide (உரிமைகள்)',
   description: 'Complete guide to statutory rights in Tamil Nadu — Right to Information (RTI Act 2005), Traffic Police Check Rights, Consumer Protection, Tenant & Senior Citizen Laws.',
   alternates: { canonical: '/rights' },
   robots: { index: true, follow: true },

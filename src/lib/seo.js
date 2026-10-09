@@ -70,45 +70,45 @@ export function setPageMeta({
   canonical,
   noindex = false,
 } = {}) {
-  const t   = title ? getSocialTitle(title) : DEFAULT.title;
-  const d   = description || DEFAULT.description;
-  const img = image       || DEFAULT.image;
-  const currentUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}${window.location.pathname}`
-    : DEFAULT.url;
-  const u   = url || currentUrl;
-  const canon = canonical || u;
+  // Guard: In SSR / Next.js App Router, server-rendered head tags must NOT be overwritten
+  // by client hydration unless an explicit, valid title/description is passed.
+  if (typeof window === 'undefined') return;
 
-  // Title
-  document.title = t;
+  if (title && typeof title === 'string' && title.trim()) {
+    const t = getSocialTitle(title);
+    document.title = t;
+    setMeta('og:title', t, 'property');
+    setMeta('twitter:title', t);
+  }
 
-  // Standard
-  setMeta('description', d);
-  setMeta('robots', noindex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
-  setMeta('author', 'VizhiTN');
-  setMeta('theme-color', '#4f46e5');
+  if (description && typeof description === 'string' && description.trim()) {
+    setMeta('description', description);
+    setMeta('og:description', description, 'property');
+    setMeta('twitter:description', description);
+  }
 
-  // Open Graph
-  setMeta('og:type',        type,           'property');
-  setMeta('og:title',       t,              'property');
-  setMeta('og:description', d,              'property');
-  setMeta('og:image',       img,            'property');
-  setMeta('og:image:width', '1200',         'property');
-  setMeta('og:image:height','630',          'property');
-  setMeta('og:url',         u,              'property');
-  setMeta('og:site_name',   DEFAULT.siteName,'property');
-  setMeta('og:locale',      DEFAULT.locale, 'property');
+  if (image) {
+    setMeta('og:image', image, 'property');
+    setMeta('og:image:width', '1200', 'property');
+    setMeta('og:image:height', '630', 'property');
+    setMeta('twitter:image', image);
+  }
 
-  // Twitter
-  setMeta('twitter:card',        'summary_large_image');
-  setMeta('twitter:site',        '@VizhiTN');
-  setMeta('twitter:creator',     '@VizhiTN');
-  setMeta('twitter:title',       t);
-  setMeta('twitter:description', d);
-  setMeta('twitter:image',       img);
+  if (url) {
+    setMeta('og:url', url, 'property');
+  }
 
-  // Canonical
-  setLink('canonical', canon);
+  if (type) {
+    setMeta('og:type', type, 'property');
+  }
+
+  if (canonical) {
+    setLink('canonical', canonical);
+  }
+
+  if (noindex) {
+    setMeta('robots', 'noindex, nofollow');
+  }
 }
 
 // ── Structured Data Helpers ──────────────────────────────────────────────────

@@ -2,7 +2,7 @@ import AwarenessRights from '@/views/AwarenessRights';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 export const metadata = {
-  title: 'Citizen Statutory Rights & Protection Laws in Tamil Nadu | VizhiTN',
+  title: 'Citizen Statutory Rights & Protection Laws in Tamil Nadu',
   description: 'Explore citizen statutory rights in Tamil Nadu: RTI Act 2005, Consumer Protection, Police Check rights, Senior Citizens Protection, and Labor Laws.',
   alternates: { canonical: '/awareness/rights' },
   robots: { index: true, follow: true },

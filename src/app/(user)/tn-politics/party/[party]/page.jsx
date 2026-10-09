@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
   if (!party) return { title: 'Not Found | VizhiTN' }
 
   return {
-    title: `${party.fullName} (${party.name}) News & Updates | VizhiTN TN Politics`,
+    title: `${party.fullName} (${party.name}) News & Policy Updates`,
     description: `Latest ${party.name} party news, speeches, policy positions and updates from Tamil Nadu. ${party.fullName} coverage on VizhiTN.`,
     alternates: {
       canonical: `https://www.vizhitn.in/tn-politics/party/${params.party}`

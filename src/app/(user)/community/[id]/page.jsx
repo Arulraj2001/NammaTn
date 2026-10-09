@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
 
   if (!discussion) notFound();
 
-  const title = `${discussion.title || 'Community Discussion'} | VizhiTN Community`;
+  const title = discussion.title || 'Community Discussion';
   const description = (discussion.content || '').trim().length
     ? `${discussion.content.slice(0, 155)}${discussion.content.length > 155 ? '…' : ''}`
     : `Join the discussion on ${discussion.district_name || 'Tamil Nadu'} and see community updates from the VizhiTN community.`;

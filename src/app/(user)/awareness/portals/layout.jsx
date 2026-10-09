@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Official Government Portals for Tamil Nadu | VizhiTN',
+  title: 'Official Government Portals for Tamil Nadu',
   description: 'Direct links to official government websites and portals for accessing services, filing complaints, and tracking applications in Tamil Nadu.',
   alternates: { canonical: '/awareness/portals' },
   robots: { index: true, follow: true },

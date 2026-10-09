@@ -6,7 +6,7 @@ export const revalidate = 1800
 
 export async function generateMetadata() {
   return {
-    title: 'TN Politics — Tamil Nadu Political News, Speeches & Policy Tracker | VizhiTN',
+    title: 'TN Politics — Tamil Nadu Political News, Speeches & Policy Tracker',
     description: 'Tamil Nadu politics coverage — CM Vijay TVK government updates, DMK opposition watch, MLA district trackers, speech summaries and policy explainers. Updated daily.',
     alternates: {
       canonical: 'https://www.vizhitn.in/tn-politics'

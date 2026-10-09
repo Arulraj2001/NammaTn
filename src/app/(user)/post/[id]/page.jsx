@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
   const { post } = await getPublicPostDetail(params.id);
   if (!post) {
     return {
-      title: 'Civic Report | VizhiTN',
+      title: 'Civic Report',
       robots: { index: false, follow: false },
     };
   }

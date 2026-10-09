@@ -19,7 +19,7 @@ export async function generateMetadata({ params }) {
   const ogImage = scheme.image_url ? `${SITE_URL}${scheme.image_url}` : `${SITE_URL}/og-image.png`;
 
   return {
-    title: `${title} | VizhiTN`,
+    title,
     description,
     alternates: { canonical },
     robots: { index: true, follow: true },

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Emergency Contacts & Crisis Helplines for Tamil Nadu | VizhiTN',
+  title: 'Emergency Contacts & Crisis Helplines for Tamil Nadu',
   description: 'Quick reference for emergency services, crisis helplines, and urgent assistance contacts available 24/7 in Tamil Nadu.',
   alternates: { canonical: '/awareness/emergency' },
   robots: { index: true, follow: true },

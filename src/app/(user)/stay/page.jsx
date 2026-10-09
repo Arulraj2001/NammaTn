@@ -6,7 +6,7 @@ import Breadcrumbs from '@/components/seo/Breadcrumbs';
 export const revalidate = 300;
 
 export const metadata = {
-  title: 'PG, Shared Rooms & Stay Listings in Tamil Nadu | VizhiTN',
+  title: 'PG, Shared Rooms & Stay Listings in Tamil Nadu',
   description: 'Find PG accommodations, shared rooms, roommates, temporary stays, and hostels across Tamil Nadu. Privacy-protected, community-verified listings.',
   alternates: { canonical: '/stay' },
   robots: { index: true, follow: true },

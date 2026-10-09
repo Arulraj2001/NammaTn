@@ -7,7 +7,7 @@ export const revalidate = 300;
 
 export async function generateMetadata() {
   return {
-    title: 'TN Today - All Topics & Categories | VizhiTN',
+    title: 'TN Today - All Topics & Categories',
     description: 'Explore all community news topics, public interest journalism, and civic updates across Tamil Nadu.',
     alternates: { canonical: '/tn-today' },
     openGraph: { title: 'TN Today - All Topics | VizhiTN', description: 'Explore all community news topics across Tamil Nadu.', url: '/tn-today', type: 'website' },

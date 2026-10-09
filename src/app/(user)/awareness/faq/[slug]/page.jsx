@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
   const canonical = `${SITE_URL}/awareness/faq/${faq.slug}`;
 
   return {
-    title: `${title} | VizhiTN FAQ`,
+    title: `${title} — Civic FAQ`,
     description,
     alternates: { canonical },
     robots: { index: true, follow: true },
