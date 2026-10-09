@@ -21,11 +21,35 @@ export async function generateMetadata({ params }) {
   const description = `Track public complaints, resolved issues, alerts, and community updates in ${area.name_en}, ${district}.`;
   const canonical = `${SITE_URL}/area/${area.slug}`;
 
+  const ogUrl = new URL(`${SITE_URL}/api/og`);
+  ogUrl.searchParams.set('title', `${area.name_en} Civic Issues & Local Updates`);
+  if (area.name_ta) ogUrl.searchParams.set('title_ta', `${area.name_ta} உள்ளூர் நிலவரம்`);
+  if (area.district_slug) ogUrl.searchParams.set('district', area.district_slug);
+  ogUrl.searchParams.set('category', 'local-development');
+  const ogImageUrl = ogUrl.toString();
+
   return {
     title,
     description,
     alternates: { canonical },
-    openGraph: { title, description, url: canonical, type: 'website' },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'website',
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 

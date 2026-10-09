@@ -82,12 +82,22 @@ export default async function Page({ params }) {
   const title = post?.title_en || post?.title || 'Civic Report';
   const category = CATEGORY_MAP[post.category_slug];
 
+  const ogUrl = new URL(`${SITE_URL}/api/og`);
+  ogUrl.searchParams.set('title', post.title_en || post.title || 'Civic Report');
+  if (post.title_ta) ogUrl.searchParams.set('title_ta', post.title_ta);
+  if (post.district_slug) ogUrl.searchParams.set('district', post.district_slug);
+  if (post.category_slug) ogUrl.searchParams.set('category', post.category_slug);
+  if (post.urgency_level) ogUrl.searchParams.set('urgency', post.urgency_level);
+  if (post.civic_receipt_id) ogUrl.searchParams.set('receipt', post.civic_receipt_id);
+  if (post.assigned_department) ogUrl.searchParams.set('helpline', post.assigned_department);
+  const ogImageUrl = ogUrl.toString();
+
   const newsArticleSchema = generateNewsArticleSchema({
     headline: post.title_en,
     headlineTa: post.title_ta || null,
     description: post.seo_description || (post.content_en || '').slice(0, 160),
     url: canonical,
-    imageUrl: post.media_urls?.[0] || post.before_photos?.[0] || null,
+    imageUrl: post.media_urls?.[0] || post.before_photos?.[0] || ogImageUrl,
     datePublished: post.created_date,
     dateModified: post.updated_date || post.created_date,
     authorName: post.is_anonymous ? 'VizhiTN Reporter' : (post.author_name || 'VizhiTN Reporter'),
