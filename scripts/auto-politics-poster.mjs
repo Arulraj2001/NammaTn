@@ -268,6 +268,7 @@ No conversational intro, no commentary outside the JSON array.
 
   // --- STEP 4: SANITIZE, DEDUPLICATE, AND INSERT INTO SUPABASE ---
   let insertedCount = 0;
+  const insertedArticles = [];
 
   for (let i = 0; i < posts.length; i++) {
     const raw = posts[i];
@@ -329,6 +330,7 @@ No conversational intro, no commentary outside the JSON array.
           console.error(`     ✗ Failed to insert into Supabase: ${insertErr.message}`);
         } else {
           console.log(`     ✅ Published to Supabase post table successfully!`);
+          insertedArticles.push(postObj);
           insertedCount++;
         }
       } catch (dbErr) {
@@ -377,6 +379,26 @@ No conversational intro, no commentary outside the JSON array.
       await fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`);
       console.log('  ✓ Dispatched Google News sitemap ping');
     } catch (_) {}
+
+    // --- STEP 6: SMART HIGHLIGHT BROADCAST TO VIZHITN WHATSAPP CHANNEL ---
+    // Broadcast at most 1 top breakthrough policy/legislative highlight per day (never spam routine updates)
+    if (insertedArticles.length > 0) {
+      try {
+        const topArticle = insertedArticles[0];
+        const { postToWhatsAppChannel } = await import('./lib/whatsappChannel.mjs');
+        console.log(`[WHATSAPP] 📢 Broadcasting top political news highlight: "${topArticle.title_ta || topArticle.title_en}"`);
+        await postToWhatsAppChannel({
+          title: topArticle.title_ta || topArticle.title_en,
+          summary: topArticle.content_ta || topArticle.content_en,
+          url: `${siteUrl}/post/${topArticle.slug}`,
+          category: 'tn-politics',
+          urgency: 'normal',
+          district: topArticle.district_slug
+        });
+      } catch (waErr) {
+        console.warn(`[WHATSAPP WARN] Politics channel broadcast warning: ${waErr.message}`);
+      }
+    }
   }
 
   console.log('\n====================================================');

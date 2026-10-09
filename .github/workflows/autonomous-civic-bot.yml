@@ -55,6 +55,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
+          WHATSAPP_SESSION: ${{ secrets.WHATSAPP_SESSION }}
         run: |
           INPUT_PULSE="${{ github.event.inputs.pulse }}"
           if [ -n "$INPUT_PULSE" ] && [ "$INPUT_PULSE" != "auto" ]; then

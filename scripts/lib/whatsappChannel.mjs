@@ -35,8 +35,18 @@ function prepareAuthDir(authDir) {
  * @param {string} options.url - Full URL to vizhitn.in
  * @param {string} [options.category] - Category slug or label
  * @param {string} [options.urgency] - Urgency level (e.g. critical, high)
+ * @param {string} [options.district] - District name or slug
+ * @param {string} [options.helpline] - Department / Helpline contact info
  */
-export async function postToWhatsAppChannel({ title, summary = "", url, category = "news", urgency = "normal" }) {
+export async function postToWhatsAppChannel({
+  title,
+  summary = "",
+  url,
+  category = "news",
+  urgency = "normal",
+  district = "",
+  helpline = ""
+}) {
   const authDir = path.resolve("scripts/baileys_auth");
   prepareAuthDir(authDir);
 
@@ -50,10 +60,19 @@ export async function postToWhatsAppChannel({ title, summary = "", url, category
 
   // Format professional broadcast text
   let messageText = `${urgencyIcon} *${title.trim()}*\n\n`;
+  if (district && district.trim()) {
+    messageText += `📍 *மாவட்டம்:* ${district.toUpperCase()}\n`;
+  }
+  if (helpline && helpline.trim()) {
+    messageText += `📞 *துறை / உதவி எண்:* ${helpline.trim()}\n`;
+  }
+  if (district || helpline) {
+    messageText += `\n`;
+  }
   if (summary && summary.trim()) {
     messageText += `${summary.trim().slice(0, 280)}...\n\n`;
   }
-  messageText += `👉 *முழு செய்தி & விவரங்களுக்கு:* ${url}\n\n`;
+  messageText += `👉 *முழு விவரங்களுக்கு:* ${url}\n\n`;
   messageText += `🌐 *VizhiTN* | தமிழ்நாடு உண்மை செய்திகள் & மக்கள் களம்`;
 
   return new Promise(async (resolve, reject) => {

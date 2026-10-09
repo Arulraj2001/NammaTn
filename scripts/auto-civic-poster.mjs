@@ -773,6 +773,46 @@ No conversational intro, no commentary outside the JSON array.
         console.log(`[GOOGLE PING ✓] Google News sitemap ping dispatched.`);
       } catch (_) {}
     }
+
+    // --- STEP 9: SMART CURATION BROADCAST TO VIZHITN WHATSAPP CHANNEL ---
+    // Strict Curation Rule:
+    // Only broadcast high-impact emergencies (e.g. school rain holidays, Red Alert rain, major grid shutdown).
+    // Routine complaints (potholes, garbage, local streetlights, etc.) stay on the website to avoid spamming subscribers.
+    // Cap at MAXIMUM 1 alert per pulse batch.
+    try {
+      const criticalAlerts = validPosts.filter(p =>
+        p.urgency_level === 'critical' ||
+        (p.post_type === 'alert' && p.urgency_level === 'high' && ['education', 'electricity', 'public-safety', 'transport'].includes(p.category_slug))
+      );
+
+      if (criticalAlerts.length > 0) {
+        // Prioritize education (school rain holidays) and critical alerts
+        criticalAlerts.sort((a, b) => {
+          if (a.urgency_level === 'critical' && b.urgency_level !== 'critical') return -1;
+          if (b.urgency_level === 'critical' && a.urgency_level !== 'critical') return 1;
+          if (a.category_slug === 'education' && b.category_slug !== 'education') return -1;
+          return 0;
+        });
+
+        const topAlert = criticalAlerts[0];
+        console.log(`[WHATSAPP] 🚨 Found high-impact civic alert: "${topAlert.title_ta || topAlert.title_en}". Broadcasting to channel...`);
+
+        const { postToWhatsAppChannel } = await import('./lib/whatsappChannel.mjs');
+        await postToWhatsAppChannel({
+          title: topAlert.title_ta || topAlert.title_en,
+          summary: topAlert.content_ta || topAlert.content_en,
+          url: topAlert.canonical_url,
+          category: topAlert.category_slug,
+          urgency: topAlert.urgency_level,
+          district: topAlert.district_slug,
+          helpline: topAlert.assigned_department
+        });
+      } else {
+        console.log(`[WHATSAPP] ℹ️ Smart Filter: No critical emergencies in this batch of ${validPosts.length} posts. All routine reports remain on the website feed (zero channel spam).`);
+      }
+    } catch (waErr) {
+      console.warn(`[WHATSAPP WARN] Channel broadcast warning: ${waErr.message}`);
+    }
   }
 }
 
