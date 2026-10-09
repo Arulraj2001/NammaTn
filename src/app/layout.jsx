@@ -143,7 +143,7 @@ export default function RootLayout({ children }) {
           basicSubscriptions.init({
             type: "NewsArticle",
             isPartOfType: ["Product"],
-            isPartOfProductId: "CAowlefHDA:openaccess",
+            isPartOfProductId: "CAowlufHDA:openaccess",
             clientOptions: { theme: "light", lang: "en" },
           });
         });

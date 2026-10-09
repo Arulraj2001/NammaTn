@@ -10,5 +10,22 @@ Disallow: /reset-password
 Disallow: /dashboard
 Disallow: /bookmarks
 Disallow: /me
+
+# Agentic Browsing & AI Assistive Search Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
 Sitemap: https://www.vizhitn.in/sitemap.xml
 Sitemap: https://www.vizhitn.in/sitemap-news.xml

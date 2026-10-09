@@ -24,15 +24,21 @@ export async function generateMetadata({ params }) {
   const tamilTitle = article.seo_title_ta || article.title_ta || '';
   const tamilDesc = article.seo_description_ta || article.subtitle_ta || article.summary_ta || '';
 
-  let image = article.social_image || article.featured_image;
-  if (!image) {
-    const ogUrl = new URL(`${SITE_URL}/api/og`);
+  const categorySlug = article.category || 'general';
+  const cleanImage = article.featured_image && !article.featured_image.includes('/api/og?')
+    ? article.featured_image
+    : `${SITE_URL}/images/tntoday/${categorySlug}.webp`;
+
+  let socialImage = article.social_image;
+  if (!socialImage || socialImage.includes('/api/og?')) {
+    const ogUrl = new URL(`${SITE_URL}/api/og/tn-today`);
     ogUrl.searchParams.set('title', article.seo_title || article.title || 'TN Today');
     if (tamilTitle) ogUrl.searchParams.set('title_ta', tamilTitle);
-    if (article.category) ogUrl.searchParams.set('category', article.category);
-    ogUrl.searchParams.set('urgency', 'medium');
-    image = ogUrl.toString();
+    ogUrl.searchParams.set('category', categorySlug);
+    ogUrl.searchParams.set('lang', tamilTitle ? 'ta' : 'en');
+    socialImage = ogUrl.toString();
   }
+  const image = socialImage;
   const canonical = getTnTodayCanonical(article.slug);
   const publishedTime = article.publish_date || article.created_date;
   const modifiedTime = article.updated_date || publishedTime;
@@ -94,7 +100,9 @@ export default async function Page({ params }) {
         description: article.seo_description || (article.subtitle || '').slice(0, 160),
         descriptionTa: article.seo_description_ta || (article.subtitle_ta || '').slice(0, 160),
         url: canonical,
-        imageUrl: article.social_image || article.featured_image || null,
+        imageUrl: (article.featured_image && !article.featured_image.includes('/api/og?'))
+          ? article.featured_image
+          : `${SITE_URL}/images/tntoday/${article.category || 'general'}.webp`,
         datePublished: article.publish_date || article.created_date,
         dateModified: article.updated_date || article.publish_date || article.created_date,
         authorName: article.author_name || 'VizhiTN Team',

@@ -55,17 +55,29 @@ export default function HomeHero({ userLocation, setUserLocation }) {
   const [shouldLoadMap, setShouldLoadMap] = useState(false);
 
   useEffect(() => {
-    // Unblock mobile First Contentful Paint and Largest Contentful Paint:
-    // Prioritize the Hero H1 headline, then load the heavy Leaflet canvas during idle.
-    if (typeof window !== "undefined") {
-      if ("requestIdleCallback" in window) {
-        const id = window.requestIdleCallback(() => setShouldLoadMap(true), { timeout: 1200 });
-        return () => window.cancelIdleCallback(id);
-      } else {
-        const timer = setTimeout(() => setShouldLoadMap(true), 800);
-        return () => clearTimeout(timer);
-      }
+    // Prevent external OpenStreetMap PNG tiles from blocking mobile LCP.
+    // Desktop: load on idle after main content renders.
+    // Mobile: load on first interaction or explicit click.
+    if (typeof window === "undefined") return;
+
+    const isDesktop = window.innerWidth >= 1024;
+    if (isDesktop) {
+      const timer = setTimeout(() => setShouldLoadMap(true), 2500);
+      return () => clearTimeout(timer);
     }
+
+    const triggerMap = () => {
+      setShouldLoadMap(true);
+      window.removeEventListener("scroll", triggerMap);
+      window.removeEventListener("touchstart", triggerMap);
+    };
+    window.addEventListener("scroll", triggerMap, { passive: true, once: true });
+    window.addEventListener("touchstart", triggerMap, { passive: true, once: true });
+
+    return () => {
+      window.removeEventListener("scroll", triggerMap);
+      window.removeEventListener("touchstart", triggerMap);
+    };
   }, []);
 
   const { data: civicPosts = [] } = useQuery({

@@ -150,24 +150,24 @@ export default function TnTodayCard({ className }) {
             )}
 
             {/* Quick Action Buttons (Minimize & Dismiss) */}
-            <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-30">
+            <div className="absolute top-2 right-2 flex items-center gap-1 z-30">
               <button
                 type="button"
                 onClick={handleMinimize}
-                className="p-1 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 border border-slate-200/60 dark:border-slate-700/60 shadow-sm transition-all"
+                className="relative flex items-center justify-center w-8 h-8 rounded-full bg-white/85 dark:bg-slate-900/85 hover:bg-white dark:hover:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 border border-slate-200/60 dark:border-slate-700/60 shadow-xs transition-all touch-manipulation before:absolute before:inset-[-6px] before:content-['']"
                 title="Minimize to top-right pill"
                 aria-label="Minimize today's story"
               >
-                <ChevronUp className="w-3.5 h-3.5" />
+                <ChevronUp className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={handleDismiss}
-                className="p-1 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 border border-slate-200/60 dark:border-slate-700/60 shadow-sm transition-all"
+                className="relative flex items-center justify-center w-8 h-8 rounded-full bg-white/85 dark:bg-slate-900/85 hover:bg-white dark:hover:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 border border-slate-200/60 dark:border-slate-700/60 shadow-xs transition-all touch-manipulation before:absolute before:inset-[-6px] before:content-['']"
                 title="Dismiss from homepage"
                 aria-label="Dismiss today's story"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -238,7 +238,7 @@ export default function TnTodayCard({ className }) {
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleExpand(); }}
             aria-label="Open today's story"
-            className="flex items-center gap-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-xl hover:shadow-2xl rounded-full pl-2.5 pr-1.5 py-1.5 transition-all cursor-pointer group hover:border-blue-500/60"
+            className="flex items-center min-h-[44px] gap-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-xl hover:shadow-2xl rounded-full pl-3 pr-2 py-1.5 transition-all cursor-pointer group hover:border-blue-500/60 touch-manipulation"
           >
             {/* Live Indicator Dot + Badge */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -263,11 +263,11 @@ export default function TnTodayCard({ className }) {
             <button
               type="button"
               onClick={handleDismiss}
-              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors flex-shrink-0 ml-0.5"
+              className="relative flex items-center justify-center w-8 h-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors flex-shrink-0 ml-0.5 touch-manipulation before:absolute before:inset-[-6px] before:content-['']"
               title="Dismiss"
               aria-label="Dismiss today's story"
             >
-              <X className="w-3 h-3" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </motion.div>
         )}

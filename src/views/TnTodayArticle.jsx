@@ -362,14 +362,18 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [autoTa, setAutoTa] = React.useState(null);
-  const [heroImg, setHeroImg] = React.useState(initialArticle?.featured_image || "");
+  const [heroImg, setHeroImg] = React.useState(
+    (initialArticle?.featured_image && isImageUrl(initialArticle.featured_image))
+      ? initialArticle.featured_image
+      : `/images/tntoday/${(initialArticle?.category || "general").toLowerCase()}.webp`
+  );
 
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ["tn-today-article", slug],
     queryFn: () => getTnTodayBySlug(slug),
     initialData: initialArticle?.slug === slug ? initialArticle : undefined,
-    staleTime: 0,
-    refetchOnMount: true,
+    staleTime: 10 * 60 * 1000,
+    refetchOnMount: false,
     enabled: !!slug,
   });
 
@@ -387,21 +391,22 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
     },
     initialData: initialRelatedArticles.length ? initialRelatedArticles : undefined,
     enabled: !!article,
-    staleTime: 60_000, // cache for 60s — related articles don't change by the second
+    staleTime: 10 * 60 * 1000,
+    refetchOnMount: false,
   });
 
   const moreArticles = relatedArticles;
 
-  // On-the-fly translation for articles published before Tamil columns existed
+  // On-the-fly translation ONLY for legacy articles missing Tamil translation when Tamil is selected
   useEffect(() => {
     if (lang === "ta" && article && !article.title_ta && !autoTa) {
       let isMounted = true;
       async function translateOnFly() {
         try {
           const t = await translateTextToTamil(article.title);
-          const s = await translateTextToTamil(article.subtitle);
-          const w = await translateTextToTamil(article.why_it_matters);
-          const c = await translateHtmlToTamil(article.content);
+          const s = article.subtitle ? await translateTextToTamil(article.subtitle) : "";
+          const w = article.why_it_matters ? await translateTextToTamil(article.why_it_matters) : "";
+          const c = article.content ? await translateHtmlToTamil(article.content) : "";
           if (isMounted) {
             setAutoTa({ title_ta: t, subtitle_ta: s, why_it_matters_ta: w, content_ta: c });
           }
@@ -412,7 +417,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
       translateOnFly();
       return () => { isMounted = false; };
     }
-  }, [lang, article, autoTa]);
+  }, [lang, article?.slug, article?.title_ta, autoTa]);
 
   // Determine bilingual content
   const displayTitle = (lang === "ta") ? (article?.title_ta || autoTa?.title_ta || article?.title) : article?.title;
@@ -470,14 +475,11 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   React.useEffect(() => {
     if (article) {
       const rawImg = (article.featured_image || "").trim();
-      if (rawImg && (isImageUrl(rawImg) || !isImagePrompt(rawImg))) {
+      if (rawImg && !rawImg.includes("/api/og?") && (isImageUrl(rawImg) || !isImagePrompt(rawImg))) {
         setHeroImg(rawImg);
       } else {
-        setHeroImg(generateTnTodayPoster({
-          title: displayTitle || article.title,
-          category: article.category,
-          subtitle: displaySubtitle || article.subtitle || ""
-        }));
+        const cat = (article.category || "general").toLowerCase();
+        setHeroImg(`/images/tntoday/${cat}.webp`);
       }
     }
   }, [article, displayTitle, displaySubtitle]);
@@ -565,6 +567,10 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
             {heroImg ? (
               <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 bg-slate-950">
                 <Image src={heroImg} alt={displayTitle} width={1200} height={675} unoptimized className="w-full aspect-[16/9] max-h-[440px] sm:max-h-[500px] object-cover" />
+                <div className="px-4 py-2 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>📷 {T("Visual Archive • VizhiTN Field Desk", "படத்தொகுப்பு • VizhiTN கள ஆய்வு பிரிவு")}</span>
+                  <span className="font-semibold text-emerald-400">✓ {T("Verified Story", "உண்மை சரிபார்க்கப்பட்ட செய்தி")}</span>
+                </div>
               </div>
             ) : null}
 

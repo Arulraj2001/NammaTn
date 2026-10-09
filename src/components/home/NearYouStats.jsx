@@ -29,22 +29,22 @@ export default function NearYouStats({ userLocation }) {
   const { data: civicPosts = [], isLoading: l1 } = useQuery({
     queryKey: ["home-civic-posts"],
     queryFn: () => getActiveCivicPosts(20),
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
   const { data: situations = [], isLoading: l2 } = useQuery({
     queryKey: ["home-situations"],
     queryFn: () => getActiveSituations(20),
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
   const { data: scams = [], isLoading: l3 } = useQuery({
     queryKey: ["home-scams"],
     queryFn: () => getActiveScams(20),
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
   const { data: emergencies = [], isLoading: l4 } = useQuery({
     queryKey: ["home-emergencies"],
     queryFn: () => getActiveEmergencies(10),
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
 
   const loading = l1 || l2 || l3 || l4;

@@ -481,14 +481,16 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
   ctx.shadowOffsetY = 6;
 
   const maxTextWidth = isSquareMode ? 700 : width - 160;
+  const isTamil = /[\u0B80-\u0BFF]/.test(title);
 
-  let fontSize = isSquareMode ? 46 : 52;
-  ctx.font = `800 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+  let fontSize = isTamil ? (isSquareMode ? 36 : 42) : (isSquareMode ? 46 : 52);
+  const fontFam = "'Noto Sans Tamil', 'Anek Tamil', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+  ctx.font = `800 ${fontSize}px ${fontFam}`;
   let titleLines = wrapText(ctx, title, maxTextWidth);
 
   if (titleLines.length > 3) {
-    fontSize = isSquareMode ? 38 : 42;
-    ctx.font = `800 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+    fontSize = isTamil ? (isSquareMode ? 30 : 34) : (isSquareMode ? 38 : 42);
+    ctx.font = `800 ${fontSize}px ${fontFam}`;
     titleLines = wrapText(ctx, title, maxTextWidth);
   }
   if (titleLines.length > 4) {
@@ -497,7 +499,7 @@ export function generateTnTodayPoster({ title = "TNToday News Update", category 
   }
 
   const startY = 185;
-  const lineHeight = fontSize * 1.22;
+  const lineHeight = fontSize * (isTamil ? 1.35 : 1.22);
   titleLines.forEach((line, idx) => {
     ctx.fillText(line, 70, startY + idx * lineHeight);
   });

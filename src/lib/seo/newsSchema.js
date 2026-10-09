@@ -63,6 +63,11 @@ export function generateNewsArticleSchema({
     articleSection: section || 'Civic News',
     inLanguage: headlineTa ? ['en-IN', 'ta-IN'] : language,
     isAccessibleForFree: true,
+    isPartOf: {
+      '@type': ['CreativeWork', 'Product'],
+      name: 'VizhiTN',
+      productID: 'CAowlufHDA:openaccess',
+    },
     copyrightHolder: {
       '@type': 'Organization',
       name: 'VizhiTN',

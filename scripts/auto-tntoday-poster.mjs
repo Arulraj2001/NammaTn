@@ -458,8 +458,8 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     category,
     district_slug,
     district_name: String(parsed.district_name || 'Tamil Nadu').trim(),
-    featured_image: `${siteUrl}/api/og?title=${encodeURIComponent(title)}&category=${encodeURIComponent(category)}&title_ta=${encodeURIComponent(title_ta || '')}&urgency=medium`,
-    social_image: `${siteUrl}/api/og?title=${encodeURIComponent(title)}&category=${encodeURIComponent(category)}&title_ta=${encodeURIComponent(title_ta || '')}&urgency=medium`,
+    featured_image: `${siteUrl}/images/tntoday/${category}.webp`,
+    social_image: `${siteUrl}/api/og/tn-today?category=${encodeURIComponent(category)}&title=${encodeURIComponent(title)}&title_ta=${encodeURIComponent(title_ta || '')}&lang=ta&district=${encodeURIComponent(district_slug || '')}`,
     author_name: spec.author,
     status: 'published', // MANDATORY FOR TN_TODAY
     publish_date: new Date().toISOString(),
