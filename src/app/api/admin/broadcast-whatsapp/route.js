@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
+import { postToWhatsAppChannel } from '@/lib/whatsappChannel';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -15,10 +15,6 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-
-    // Dynamically import the WhatsApp channel helper
-    const channelModulePath = path.resolve(process.cwd(), 'scripts/lib/whatsappChannel.mjs');
-    const { postToWhatsAppChannel } = await import(`file://${channelModulePath.replace(/\\/g, '/')}`);
 
     console.log(`[API /admin/broadcast-whatsapp] Broadcasting "${title}" to WhatsApp Channel...`);
 
