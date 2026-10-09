@@ -314,6 +314,22 @@ export default async function sitemap() {
     });
   });
 
+  // ── District-specific School Holiday & Power Cut Hubs (38 districts each) ──
+  DISTRICTS.forEach(city => {
+    entries.push({
+      url: `${SITE_URL}/school-college-holiday-alerts/${city.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly',
+      priority: 0.9,
+    });
+    entries.push({
+      url: `${SITE_URL}/power-cuts-today-tamil-nadu/${city.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly',
+      priority: 0.9,
+    });
+  });
+
   [
     '/districts', '/areas', '/awareness', '/awareness/articles',
     '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',

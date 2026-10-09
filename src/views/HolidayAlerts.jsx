@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { GraduationCap, PhoneCall, AlertCircle, Search, CheckCircle2, ShieldAlert } from "lucide-react";
+import { GraduationCap, PhoneCall, AlertCircle, Search, CheckCircle2, ShieldAlert, Share2, MessageCircle, MapPin, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import PostCard from "@/components/posts/PostCard";
-import { Link } from "@/lib/router-compat";
+import { Link, useNavigate } from "@/lib/router-compat";
 import AdSlot from "@/components/ads/AdSlot";
+import { DISTRICTS } from "@/lib/districts";
 
 const PRIORITY_DISTRICTS = [
   { slug: "all", name_en: "All Districts", name_ta: "அனைத்து மாவட்டங்கள்" },
@@ -18,13 +19,17 @@ const PRIORITY_DISTRICTS = [
   { slug: "cuddalore", name_en: "Cuddalore", name_ta: "கடலூர்" },
   { slug: "nagapattinam", name_en: "Nagapattinam", name_ta: "நாகப்பட்டினம்" },
   { slug: "madurai", name_en: "Madurai", name_ta: "மதுரை" },
+  { slug: "tirunelveli", name_en: "Tirunelveli", name_ta: "திருநெல்வேலி" },
+  { slug: "salem", name_en: "Salem", name_ta: "சேலம்" },
+  { slug: "thanjavur", name_en: "Thanjavur", name_ta: "தஞ்சாவூர்" },
 ];
 
-export default function HolidayAlerts({ initialPosts = [] }) {
+export default function HolidayAlerts({ initialPosts = [], targetDistrict = null }) {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
+  const navigate = useNavigate();
 
-  const [selectedDistrict, setSelectedDistrict] = useState("all");
+  const [selectedDistrict, setSelectedDistrict] = useState(targetDistrict ? targetDistrict.slug : "all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredPosts = useMemo(() => {
@@ -36,6 +41,32 @@ export default function HolidayAlerts({ initialPosts = [] }) {
     });
   }, [initialPosts, selectedDistrict, searchQuery]);
 
+  // Determine district status badge
+  const activeHolidayPost = useMemo(() => {
+    return filteredPosts.find((p) => {
+      const title = `${p.title_en || ""} ${p.title_ta || ""}`.toLowerCase();
+      return (p.urgency_level === "high" || p.urgency_level === "critical") &&
+        (title.includes("holiday") || title.includes("விடுமுறை") || title.includes("closed") || title.includes("rain"));
+    });
+  }, [filteredPosts]);
+
+  const hasHolidayDeclared = !!activeHolidayPost;
+  const currentDistrictObj = targetDistrict || DISTRICTS.find((d) => d.slug === selectedDistrict);
+
+  const districtNameDisplay = currentDistrictObj
+    ? (lang === "ta" ? currentDistrictObj.name_ta : currentDistrictObj.name_en)
+    : T("All Tamil Nadu Districts", "அனைத்து மாவட்டங்கள்");
+
+  const pageUrl = targetDistrict
+    ? `https://www.vizhitn.in/school-college-holiday-alerts/${targetDistrict.slug}`
+    : "https://www.vizhitn.in/school-college-holiday-alerts";
+
+  const shareText = encodeURIComponent(
+    `📢 *${districtNameDisplay} School & College Holiday Update*\n` +
+    `Status: ${hasHolidayDeclared ? "✅ Holiday Declared" : "⚪ Normal Working Day / Monitoring"}\n` +
+    `Check Collector official notice & helplines: ${pageUrl}`
+  );
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16">
       {/* ── HERO BANNER ── */}
@@ -45,15 +76,17 @@ export default function HolidayAlerts({ initialPosts = [] }) {
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 bg-black/25 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-sky-200 mb-3 border border-sky-400/30">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                {T("OFFICIAL COLLECTORATE & WEATHER DESK", "மாவட்ட ஆட்சியர் அறிவிப்புகள்")}
+                {targetDistrict ? `${districtNameDisplay.toUpperCase()} DESK` : T("OFFICIAL COLLECTORATE & WEATHER DESK", "மாவட்ட ஆட்சியர் அறிவிப்புகள்")}
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3">
-                {T("TN School & College Holiday Alerts", "பள்ளி & கல்லூரி விடுமுறை அறிவிப்புகள்")}
+                {targetDistrict
+                  ? `${districtNameDisplay} ${T("School & College Holiday Status", "பள்ளி & கல்லூரி விடுமுறை நிலை")}`
+                  : T("TN School & College Holiday Alerts", "பள்ளி & கல்லூரி விடுமுறை அறிவிப்புகள்")}
               </h1>
               <p className="text-blue-100 text-sm sm:text-base leading-relaxed max-w-2xl">
                 {T(
-                  "Verified emergency school and college holiday declarations by District Collectors, IMD heavy rain alerts (Red/Orange), and State Disaster Management updates.",
-                  "கனமழை, புயல் மற்றும் அவசர காலங்களில் மாவட்ட ஆட்சியர்களால் அறிவிக்கப்படும் பள்ளி மற்றும் கல்லூரி விடுமுறை விவரங்கள்."
+                  `Verified emergency school and college holiday declarations by ${targetDistrict ? districtNameDisplay + " District Collector" : "District Collectors"}, IMD rain alerts (Red/Orange), and State Disaster Management updates.`,
+                  `கனமழை, புயல் மற்றும் அவசர காலங்களில் ${targetDistrict ? districtNameDisplay + " மாவட்ட ஆட்சியரால்" : "மாவட்ட ஆட்சியர்களால்"} அறிவிக்கப்படும் பள்ளி மற்றும் கல்லூரி விடுமுறை விவரங்கள்.`
                 )}
               </p>
             </div>
@@ -85,23 +118,45 @@ export default function HolidayAlerts({ initialPosts = [] }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 flex flex-col md:flex-row gap-4 items-center justify-between">
           {/* Search Box */}
-          <div className="relative w-full md:w-96">
+          <div className="relative w-full md:w-80">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={T("Search district, school order, or rain alert...", "மாவட்டம் அல்லது அறிவிப்பு தேடுக...")}
+              placeholder={T("Search school, taluk or order...", "பள்ளி அல்லது ஆணை தேடுக...")}
               className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
             />
           </div>
 
-          {/* District Filter Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
-            {PRIORITY_DISTRICTS.map((dist) => (
-              <button
+          {/* District Selector & Crawlable Links */}
+          <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+            {/* Quick 38 District Dropdown */}
+            <select
+              value={selectedDistrict}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "all") {
+                  navigate("/school-college-holiday-alerts");
+                } else {
+                  navigate(`/school-college-holiday-alerts/${val}`);
+                }
+              }}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value="all">📍 {T("Choose Any District (38)", "மாவட்டத்தை தேர்வு செய்க (38)")}</option>
+              {DISTRICTS.map((d) => (
+                <option key={d.slug} value={d.slug}>
+                  {d.name_en} - {d.name_ta}
+                </option>
+              ))}
+            </select>
+
+            {/* Popular District Chips */}
+            {PRIORITY_DISTRICTS.slice(0, 7).map((dist) => (
+              <Link
                 key={dist.slug}
-                onClick={() => setSelectedDistrict(dist.slug)}
+                to={dist.slug === "all" ? "/school-college-holiday-alerts" : `/school-college-holiday-alerts/${dist.slug}`}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   selectedDistrict === dist.slug
                     ? "bg-blue-600 text-white shadow-md shadow-blue-600/30 scale-105"
@@ -109,8 +164,70 @@ export default function HolidayAlerts({ initialPosts = [] }) {
                 }`}
               >
                 {T(dist.name_en, dist.name_ta)}
-              </button>
+              </Link>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── HIGH-IMPACT GLANCEABLE STATUS CARD ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div className={`rounded-3xl p-6 sm:p-8 border-2 shadow-lg transition-all ${
+          hasHolidayDeclared
+            ? "bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-green-950/40 border-emerald-500"
+            : "bg-gradient-to-r from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-900 dark:via-blue-950/20 dark:to-indigo-950/20 border-slate-200 dark:border-slate-800"
+        }`}>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+                  hasHolidayDeclared
+                    ? "bg-emerald-600 text-white shadow-sm"
+                    : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${hasHolidayDeclared ? "bg-white animate-ping" : "bg-emerald-500"}`} />
+                  {hasHolidayDeclared ? T("OFFICIAL ORDER ACTIVE", "விடுமுறை ஆணை வெளியிடப்பட்டுள்ளது") : T("CURRENT STATUS", "தற்போதைய நிலை")}
+                </span>
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  {new Date().toLocaleDateString(lang === "ta" ? "ta-IN" : "en-IN", { weekday: "long", day: "numeric", month: "short", year: "numeric" })}
+                </span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                {hasHolidayDeclared
+                  ? T(`✅ School & College Holiday Declared in ${districtNameDisplay}`, `✅ ${districtNameDisplay} மாவட்டத்தில் பள்ளி & கல்லூரிகளுக்கு விடுமுறை`)
+                  : T(`⚪ Regular Working Day in ${districtNameDisplay} (No Holiday Announced)`, `⚪ ${districtNameDisplay} மாவட்டத்தில் வழக்கமான வேலை நாள் (விடுமுறை இல்லை)`)}
+              </h2>
+
+              <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                {hasHolidayDeclared
+                  ? (activeHolidayPost?.title_en || T("Official order issued by District Collector. Check affected taluks and advisory below.", "மாவட்ட ஆட்சியரால் விடுமுறை அறிவிக்கப்பட்டுள்ளது."))
+                  : T("No rain holidays or emergency school closures have been announced by the District Collectorate at this time. Morning updates are evaluated between 6:30 AM and 7:30 AM.", "மாவட்ட ஆட்சியர் அலுவலகத்திலிருந்து தற்போதைக்கு விடுமுறை உத்தரவு எதுவும் பிறப்பிக்கப்படவில்லை.")}
+              </p>
+            </div>
+
+            {/* Quick Action Buttons (WhatsApp Share & Channel) */}
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 min-w-[240px]">
+              <a
+                href={`https://api.whatsapp.com/send?text=${shareText}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md transition-all group"
+              >
+                <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                {T("Share to WhatsApp Group", "வாட்ஸ்அப் குழுவில் பகிர்க")}
+              </a>
+
+              <a
+                href="https://whatsapp.com/channel/0029Va..."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 text-xs font-extrabold shadow-sm transition-all"
+              >
+                <MessageCircle className="w-4 h-4" />
+                {T("Join VizhiTN WhatsApp Channel", "வாட்ஸ்அப் சேனலில் இணைய")}
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -121,13 +238,13 @@ export default function HolidayAlerts({ initialPosts = [] }) {
           {/* Left Column: Posts Feed */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-blue-500" />
                 {T(
-                  selectedDistrict === "all" ? "Active Educational & Weather Alerts" : `${selectedDistrict.toUpperCase()} Holiday Alerts`,
-                  selectedDistrict === "all" ? "விடுமுறை & அவசர அறிவிப்புகள்" : `${selectedDistrict.toUpperCase()} விடுமுறை அறிவிப்புகள்`
+                  selectedDistrict === "all" ? "Active Educational & Weather Alerts" : `${districtNameDisplay} Holiday Dispatches`,
+                  selectedDistrict === "all" ? "விடுமுறை & அவசர அறிவிப்புகள்" : `${districtNameDisplay} அறிவிப்புகள்`
                 )}
-              </h2>
+              </h3>
               <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200 border border-blue-300 dark:border-blue-800">
                 {filteredPosts.length} {T("Alerts", "அறிவிப்புகள்")}
               </span>
@@ -136,13 +253,13 @@ export default function HolidayAlerts({ initialPosts = [] }) {
             {filteredPosts.length === 0 ? (
               <div className="bg-white dark:bg-slate-900 rounded-2xl p-10 text-center border border-slate-200 dark:border-slate-800">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                  {T("Normal Working Day Across Districts", "இயல்பான வேலை நாள்")}
-                </h3>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
+                  {T(`Normal Working Day in ${districtNameDisplay}`, `${districtNameDisplay} - இயல்பான வேலை நாள்`)}
+                </h4>
                 <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
                   {T(
-                    "No rain holidays or emergency school closures have been announced by District Collectors at this time.",
-                    "தற்போதைக்கு மாவட்ட ஆட்சியர்களால் பள்ளி, கல்லூரிகளுக்கு விடுமுறை எதுவும் அறிவிக்கப்படவில்லை."
+                    "No rain holidays or emergency closures reported for this district. Subscribe to our WhatsApp channel for instant alerts.",
+                    "இந்த மாவட்டத்திற்கு விடுமுறை எதுவும் பதிவாகவில்லை. நேரடி தகவலுக்கு வாட்ஸ்அப் சேனலில் இணையுங்கள்."
                   )}
                 </p>
                 <Link
@@ -190,23 +307,23 @@ export default function HolidayAlerts({ initialPosts = [] }) {
               <div className="space-y-4 text-xs leading-relaxed">
                 <div>
                   <h4 className="font-bold text-slate-900 dark:text-white mb-1">
-                    {T("Who declares school holidays during heavy rain in TN?", "தமிழகத்தில் கனமழை விடுமுறையை யார் அறிவிக்கிறார்கள்?")}
+                    {T(`Who declares school holidays in ${districtNameDisplay}?`, `${districtNameDisplay} மாவட்டத்தில் பள்ளி விடுமுறையை யார் அறிவிக்கிறார்கள்?`)}
                   </h4>
                   <p className="text-slate-600 dark:text-slate-300">
                     {T(
-                      "Each District Collector evaluates rainfall intensity and subway/road flooding to declare holidays for schools and colleges in their district.",
-                      "அந்தந்த மாவட்ட ஆட்சித் தலைவர்கள் மழை அளவை பொறுத்து பள்ளி கல்லூரிகளுக்கான விடுமுறை அறிவிப்பை வெளியிடுவார்கள்."
+                      `The ${districtNameDisplay} District Collector evaluates local rain intensity, waterlogged subways, and school accessibility to declare holidays.`,
+                      `${districtNameDisplay} மாவட்ட ஆட்சித் தலைவர் மழை அளவை பொறுத்து விடுமுறை அறிவிப்பை வெளியிடுவார்.`
                     )}
                   </p>
                 </div>
                 <div>
                   <h4 className="font-bold text-slate-900 dark:text-white mb-1">
-                    {T("What are the official emergency helplines?", "அவசர உதவி எண்கள் என்ன?")}
+                    {T("What is the official emergency helpline?", "அவசர உதவி எண்கள் என்ன?")}
                   </h4>
                   <p className="text-slate-600 dark:text-slate-300">
                     {T(
-                      "Call 1077 for District Disaster Control Rooms, 1070 for State Disaster Management, and 1913 for Greater Chennai Corporation flood assistance.",
-                      "மாவட்ட கட்டுப்பாட்டு அறைக்கு 1077, மாநில அவசர சேவைக்கு 1070 மற்றும் சென்னை மாநகராட்சிக்கு 1913 என்ற எண்களை அழைக்கவும்."
+                      "Call 1077 for District Disaster Control, 1070 for State Disaster Management, and 1913 for GCC.",
+                      "மாவட்ட கட்டுப்பாட்டு அறைக்கு 1077 மற்றும் மாநில பேரிடர் சேவைக்கு 1070 எண்களை அழைக்கவும்."
                     )}
                   </p>
                 </div>
