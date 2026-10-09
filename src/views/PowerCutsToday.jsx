@@ -7,6 +7,7 @@ import PostCard from "@/components/posts/PostCard";
 import { Link, useNavigate } from "@/lib/router-compat";
 import AdSlot from "@/components/ads/AdSlot";
 import { DISTRICTS } from "@/lib/districts";
+import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
 
 const PRIORITY_DISTRICTS = [
   { slug: "all", name_en: "All Districts", name_ta: "அனைத்து மாவட்டங்கள்" },
@@ -280,6 +281,9 @@ export default function PowerCutsToday({ initialPosts = [], targetDistrict = nul
                 </li>
               </ul>
             </div>
+
+            {/* Google News Follow Badge (Discover Acceleration) */}
+            <GoogleNewsFollow />
 
             {/* Structured Search FAQ Section */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">

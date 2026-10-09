@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { GraduationCap, PhoneCall, AlertCircle, Search, CheckCircle2, ShieldAlert, Share2, MessageCircle, MapPin, ExternalLink } from "lucide-react";
+import { GraduationCap, PhoneCall, AlertCircle, Search, CheckCircle2, ShieldAlert, Share2, MessageCircle, MapPin, ExternalLink, CloudRain, Radio } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import PostCard from "@/components/posts/PostCard";
 import { Link, useNavigate } from "@/lib/router-compat";
 import AdSlot from "@/components/ads/AdSlot";
 import { DISTRICTS } from "@/lib/districts";
+import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
 
 const PRIORITY_DISTRICTS = [
   { slug: "all", name_en: "All Districts", name_ta: "அனைத்து மாவட்டங்கள்" },
@@ -298,6 +299,56 @@ export default function HolidayAlerts({ initialPosts = [], targetDistrict = null
                 {T("Verified Source: Collectorate Press Release", "சரிபார்க்கப்பட்ட ஆதாரம்: மாவட்ட ஆட்சியர் செய்திக்குறிப்பு")}
               </div>
             </div>
+
+            {/* Live IMD Monsoon Radar & Weather Warning Card */}
+            <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl border border-indigo-900/60 p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-800">
+                  <CloudRain className="w-3.5 h-3.5 animate-pulse" />
+                  {T("IMD Monsoon Radar", "வானிலை ரேடார்")}
+                </span>
+                <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  Live
+                </span>
+              </div>
+              <h4 className="text-sm font-bold text-white mb-1.5">
+                {T("Northeast Monsoon Heavy Rain Watch", "வடகிழக்கு பருவமழை தீவிர கண்காணிப்பு")}
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                {T(
+                  "Track real-time IMD Doppler Weather Radar observations and coastal rainfall alerts for Tamil Nadu.",
+                  "சென்னை வானிலை ஆய்வு மையத்தின் ரேடார் மற்றும் மாவட்ட வாரியான மழை எச்சரிக்கைகள்."
+                )}
+              </p>
+              <div className="space-y-2">
+                <a
+                  href="https://mausam.imd.gov.in/chennai/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-all border border-white/10"
+                >
+                  <span className="flex items-center gap-2">
+                    <Radio className="w-3.5 h-3.5 text-cyan-300" />
+                    {T("IMD Chennai Doppler Radar", "சென்னை வானிலை ரேடார்")}
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
+                </a>
+                <a
+                  href="tel:1070"
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-all border border-white/10"
+                >
+                  <span className="flex items-center gap-2">
+                    <PhoneCall className="w-3.5 h-3.5 text-emerald-300" />
+                    {T("TNDMA Disaster Control: 1070", "மாநில பேரிடர் கட்டுப்பாட்டு அறை: 1070")}
+                  </span>
+                  <span className="text-[10px] text-emerald-300 font-bold uppercase">24x7</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Google News Follow Badge (Discover Acceleration) */}
+            <GoogleNewsFollow />
 
             {/* Structured Search FAQ Section */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">

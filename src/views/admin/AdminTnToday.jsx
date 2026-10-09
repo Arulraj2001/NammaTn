@@ -16,7 +16,7 @@ import {
   Plus, Edit, Trash2, Eye, Save, Send, Archive, Star, StarOff,
   Clock, Calendar, Tag, FileText, Globe, Search, X, ArrowLeft,
   CheckCircle2, AlertCircle, BookOpen, ChevronDown, Image, Link2,
-  List, RefreshCw, FileJson, Loader2, Upload, Crop
+  List, RefreshCw, FileJson, Loader2, Upload, Crop, Share2
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -107,7 +107,7 @@ function Field({ label, hint, children, required }) {
 }
 
 // ─── Article list row ─────────────────────────────────────────────────────────
-function ArticleRow({ article, onEdit, onDelete, onToggleFeatured }) {
+function ArticleRow({ article, onEdit, onDelete, onToggleFeatured, onBroadcastWhatsApp, broadcastingId }) {
   const cat = CATEGORIES.find(c => c.value === article.category);
   return (
     <div className="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-700 last:border-b-0">
@@ -156,6 +156,20 @@ function ArticleRow({ article, onEdit, onDelete, onToggleFeatured }) {
             title="View live">
             <Eye className="w-4 h-4" />
           </a>
+        )}
+        {article.status === "published" && (
+          <button
+            onClick={() => onBroadcastWhatsApp(article)}
+            disabled={broadcastingId === article.id}
+            className="p-1.5 rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+            title="Broadcast to WhatsApp Channel"
+          >
+            {broadcastingId === article.id ? (
+              <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+            ) : (
+              <Share2 className="w-4 h-4" />
+            )}
+          </button>
         )}
         <button onClick={() => onEdit(article)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors" title="Edit">
           <Edit className="w-4 h-4" />
@@ -433,6 +447,46 @@ export default function AdminTnToday() {
     }
   };
 
+  const [broadcastingId, setBroadcastingId] = useState(null);
+
+  const handleBroadcastWhatsApp = async (article) => {
+    if (!article) return;
+    setBroadcastingId(article.id);
+    try {
+      const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://www.vizhitn.in';
+      const pageUrl = `${siteUrl}/tn-today/${article.slug}`;
+      const res = await fetch('/api/admin/broadcast-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: article.title_ta || article.title,
+          summary: article.subtitle_ta || article.summary_ta || article.subtitle || article.summary || '',
+          url: pageUrl,
+          category: article.category || 'general',
+          urgency: 'normal',
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to broadcast');
+      }
+
+      toast({
+        title: "✅ WhatsApp Channel-ல் பகிரப்பட்டது!",
+        description: `"${article.title}" successfully broadcasted to official channel.`,
+      });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Broadcast Failed",
+        description: err.message,
+      });
+    } finally {
+      setBroadcastingId(null);
+    }
+  };
+
   const handlePublish = () => handleSave("published");
   const handleDraft = () => handleSave("draft");
   const handleArchive = () => handleSave("archived");
@@ -520,7 +574,15 @@ export default function AdminTnToday() {
             </div>
           ) : (
             filtered.map(a => (
-              <ArticleRow key={a.id} article={a} onEdit={handleEdit} onDelete={handleDelete} onToggleFeatured={handleToggleFeatured} />
+              <ArticleRow
+                key={a.id}
+                article={a}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleFeatured={handleToggleFeatured}
+                onBroadcastWhatsApp={handleBroadcastWhatsApp}
+                broadcastingId={broadcastingId}
+              />
             ))
           )}
         </div>
@@ -562,6 +624,22 @@ export default function AdminTnToday() {
           <Button size="sm" onClick={handlePublish} disabled={saving || loadingArticle} className="bg-green-600 hover:bg-green-700 text-white">
             <Send className="w-3.5 h-3.5 mr-1" /> {saving ? "Saving…" : "Publish"}
           </Button>
+          {form.status === "published" && editingId && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleBroadcastWhatsApp({ ...form, id: editingId })}
+              disabled={broadcastingId === editingId}
+              className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 font-semibold"
+            >
+              {broadcastingId === editingId ? (
+                <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin text-emerald-600" />
+              ) : (
+                <Share2 className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+              )}
+              WhatsApp-ல் பகிர்க
+            </Button>
+          )}
           {form.status === "published" && (
             <Button size="sm" variant="outline" onClick={handleArchive} disabled={saving || loadingArticle} className="text-rose-600 border-rose-200 hover:bg-rose-50">
               <Archive className="w-3.5 h-3.5 mr-1" /> Archive

@@ -20,6 +20,7 @@ import { resolveArticleInternalLinks } from "@/lib/seo/internalLinker";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
+import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -703,6 +704,9 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                 {T("Join Channel →", "இணையுங்கள் →")}
               </span>
             </a>
+
+            {/* Google News Follow Badge (Discover Accelerator) */}
+            <GoogleNewsFollow className="mt-4" />
 
             {/* Newsletter CTA */}
             <div className="mt-6 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
