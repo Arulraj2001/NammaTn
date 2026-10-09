@@ -222,11 +222,25 @@ ${exclusionSection}
 STRICT JOURNALISTIC & GOOGLE DISCOVER CONSTITUTION:
 1. ZERO HALLUCINATION: All project names, budget figures (₹ Crore), nodal agencies, deadlines, and official quotes must reflect real, reported Tamil Nadu government gazettes or primary press (DIPR TN, CMRL, TANGEDCO, TWAD, NHAI, The Hindu, Dinamani, Times of India).
 2. NEVER invent fake dates, fictional statistics, or imaginary officials.
-3. GOOGLE DISCOVER HEADLINE RULES:
-   - Must be compelling and curiosity-piquing WITHOUT sensationalist clickbait.
-   - Mention the specific entity upfront (e.g. "Chennai Metro Phase 2: Poonamallee–Porur Stretch Targets November Trial Runs — Key Stations & Traffic Plan").
-   - English title length: 65 to 85 characters.
-   - Tamil title: Authentic, evocative, professional Tamil journalism (45 to 75 characters).
+3. GOOGLE DISCOVER HIGH-CTR HEADLINE CONSTITUTION (MANDATORY):
+   Discover algorithms reward immediate curiosity gaps paired with concrete citizen utility, while severely downranking deceptive clickbait.
+   A. TAMIL TITLE (title_ta) RULES:
+      - STRICT LENGTH: 48 to 65 Tamil characters (avoids mobile truncation in Chrome Discover).
+      - THE 3-WORD HOOK: The first 3 words MUST contain the core entity, question, or location (e.g., "நாளை மின்தடை:", "பள்ளிகளுக்கு விடுமுறையா?", "ரூ.1000 வரவில்லையா?", "மெட்ரோ எப்போது பயன்பாட்டுக்கு வரும்?").
+      - HIGH-CTR ARCHETYPES:
+        * Archetype 1 (Utility/List): [காலம்/பகுதி] + [முக்கிய நிகழ்வு] + [உங்கள் பகுதி உள்ளதா?] + [பட்டியல்/விவரம் இதோ!]
+          Example: "நாளை மின்தடை: உங்கள் தெரு இருக்கிறதா? மின்வாரியம் வெளியிட்ட பகுதிகள் பட்டியல்!"
+        * Archetype 2 (Weather/Orders): [காரணம்] + [விடுமுறை கேள்வியா?] + [ஆட்சியரின் அதிகாரப்பூர்வ உத்தரவு இதோ!]
+          Example: "கனமழை எதிரொலி: நாளை பள்ளிகளுக்கு விடுமுறையா? ஆட்சியர் வெளியிட்ட முக்கிய தகவல்!"
+        * Archetype 3 (Govt Scheme/Welfare): [திட்டம் + பலன்] + [சிக்கல்/கேள்வி] + [உடனே செய்ய வேண்டிய சரிபார்ப்பு!]
+          Example: "மகளிர் உரிமைத் தொகை: பணம் வரவில்லையா? விடுபட்டவர்கள் உடனே செய்ய வேண்டிய நடைமுறை!"
+        * Archetype 4 (Milestone/Infra): [மக்கள் பலன்] + [எப்போது தொடங்கும்?] + [புதிய முக்கிய முன்னேற்றம்]
+          Example: "சென்னை டிராபிக் குறையப்போகுது! புதிய மெட்ரோ எப்போது பயன்பாட்டுக்கு வரும்? முக்கிய அப்டேட்"
+      - NO DECEPTIVE CLICKBAIT: The headline's exact question or promise MUST be answered directly within the first two paragraphs of content and content_ta.
+   B. SUBTITLE_TA:
+      - 1 punchy sentence (60 to 90 characters) providing the immediate factual answer/context to prevent reader bounce back and maximize dwell time.
+   C. ENGLISH TITLE (title):
+      - 65 to 85 characters. High authority, specific nouns upfront, clear civic benefit (e.g., "Chennai Metro Phase 2: Poonamallee–Porur Stretch Targets November Trial Runs — Key Stations & Traffic Plan").
 4. CRITICAL ARTICLE DEPTH & LENGTH (700–950 words HTML):
    - You MUST write a full-length, thorough journalistic feature. Do NOT write a short summary.
    - Lead Section (70 words): Inverted pyramid, immediate answers to Who, What, When, Where, and citizen impact.

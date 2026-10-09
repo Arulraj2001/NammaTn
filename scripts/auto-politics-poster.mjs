@@ -153,9 +153,12 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
 5. "district_slug": Set to the relevant district slug (e.g. "chennai", "salem", "madurai", "coimbatore", "erode") or relevant party code ("tvk", "dmk", "aiadmk", "bjp").
 6. "area_name": Specific constituency or governmental building (e.g. "Fort St. George", "Kolathur", "Edappadi", "Vikravandi", "Secretariat").
 7. "author_name": "VizhiTN Politics Desk".
-8. BILINGUAL CONTENT:
+8. BILINGUAL HIGH-CTR HEADLINES & CONTENT:
+   - "title_ta": 48 to 65 Tamil characters. Focus on citizen impact, government policy accountability, or legislative actions with an immediate 3-word hook:
+     * Policy/Welfare: "அரசு முக்கிய முடிவு: [திட்டம்] யாருக்கெல்லாம் கிடைக்கும்? புதிய வழிகாட்டுதல் இதோ!"
+     * Assembly/Debate: "சட்டப்பேரவையில் அனல் பறந்த விவாதம்: [விவகாரம்] குறித்து அரசு சொன்ன பதில் என்ன?"
+     * Party/Governance: "[கட்சி/தலைவர்] அதிரடி அறிவிப்பு: [பிரச்சனை] தொடர்பாக வெளியிட்ட முக்கிய அறிக்கை!"
    - "title_en": Engaging, informative headline in English (60-85 characters).
-   - "title_ta": Authentic, journalistic headline in Tamil.
    - "content_en": Structured article (3-4 paragraphs) with background context, key quotes, policy impact, and next steps.
    - "content_ta": Full Tamil translation of the article maintaining professional journalistic tone.
 9. "source": Specific official news or departmental source (e.g. "TN DIPR Press Release", "Tamil Nadu Legislative Assembly Secretariat", "Dinamalar Political Bureau", "The Hindu Chennai").

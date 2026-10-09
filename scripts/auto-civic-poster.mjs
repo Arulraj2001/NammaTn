@@ -343,9 +343,13 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
 9. BILINGUAL & INVERTED PYRAMID:
    - First sentence of content_en & content_ta MUST state the core facts immediately: Who (Department), What (Shutdown/Camp/Alert), Where (Specific streets/locations), When (Exact hours), and Helpline.
    - Example lead: "TANGEDCO has scheduled power shutdown today from 9:00 AM to 2:00 PM across Kamarajar High Road and Balaji Nagar for maintenance. Contact Minnalagam at 1912."
-10. SEARCH-INTENT TITLES:
-   - For electricity shutdowns: "[Area] Power Cut Today ([Date]): [Start Time] to [End Time] for Substation Maintenance"
-   - In Tamil: "[பகுதி] பகுதியில் இன்று ([தேதி]) மின்தடை: [நேரம்] வரை மின்சாரம் நிறுத்தம்"
+10. GOOGLE DISCOVER & SEARCH HIGH-CTR TITLES (TAMIL & ENGLISH):
+   - title_ta: 48 to 65 Tamil characters. Put the neighborhood and core hook in the first 3 words so mobile Chrome cards grab reader attention immediately.
+     * Electricity Alerts: "[பகுதி] மின்தடை: உங்கள் தெரு உள்ளதா? [நேரம்] வரை மின்சாரம் நிறுத்தம் — பகுதிகள் இதோ!"
+     * Rain/School Alerts: "கனமழை எச்சரிக்கை: [மாவட்டம்] பள்ளிகளுக்கு விடுமுறையா? ஆட்சியர் அறிவிப்பு விவரம்!"
+     * Camp/Aadhaar/Ration Drives: "[பகுதி] சிறப்பு மக்கள் முகாம்: விடுபட்டவர்கள் தவறவிடாதீர்கள் — நேரம் & ஆவணங்கள் விவரம்!"
+     * Transport/Railway Blocks: "[வழித்தடம்] ரயில்கள் ரத்து: பயணிகள் மாற்று ஏற்பாடுகள் என்ன? முழு நேர விவரம்!"
+   - title_en: Search-intent and location upfront (e.g. "[Area] Power Cut Today: Full Street List & Shutdown Timings | TANGEDCO Alert").
 11. SLUG: Provide a clean, SEO-friendly English slug ending with a date code (e.g. "tambaram-power-cut-chennai-${todayStr.replace(/-/g, '')}").
 
 OUTPUT FORMAT:
