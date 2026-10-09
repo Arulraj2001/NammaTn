@@ -219,7 +219,7 @@ export default function HolidayAlerts({ initialPosts = [], targetDistrict = null
               </a>
 
               <a
-                href="https://whatsapp.com/channel/0029Va..."
+                href="https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 text-xs font-extrabold shadow-sm transition-all"

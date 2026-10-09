@@ -196,7 +196,7 @@ export default function PowerCutsToday({ initialPosts = [], targetDistrict = nul
               </a>
 
               <a
-                href="https://whatsapp.com/channel/0029Va..."
+                href="https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800 text-xs font-extrabold shadow-sm transition-all"
