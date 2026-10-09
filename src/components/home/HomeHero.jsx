@@ -8,8 +8,6 @@ import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown } from "lucide-react
 import { useLanguage } from "@/context/LanguageContext";
 import { getActiveCivicPosts } from "@/services/posts";
 import { getActiveSituations } from "@/services/situations";
-import { getActiveListings } from "@/services/stayListings";
-import { getActiveScams } from "@/services/scamAlerts";
 import TnTodayCard from "@/components/tntoday/TnTodayCard";
 
 const InteractiveHomeMap = dynamic(
@@ -17,8 +15,8 @@ const InteractiveHomeMap = dynamic(
   {
     ssr: false,
     fallback: (
-      <div className="h-full w-full bg-slate-100 dark:bg-slate-800 animate-pulse flex items-center justify-center text-slate-400 text-sm">
-        Loading Map…
+      <div className="h-full w-full bg-slate-900 animate-pulse flex flex-col items-center justify-center text-slate-400 text-xs">
+        Connecting to Tamil Nadu civic feeds…
       </div>
     )
   }
@@ -55,34 +53,14 @@ export default function HomeHero({ userLocation, setUserLocation }) {
   const [shouldLoadMap, setShouldLoadMap] = useState(false);
 
   useEffect(() => {
-    // Prevent external OpenStreetMap PNG tiles from blocking mobile LCP.
-    // Desktop: load on idle after main content renders.
-    // Mobile: load on first interaction or explicit click.
-    if (typeof window === "undefined") return;
-
-    const isDesktop = window.innerWidth >= 1024;
-    if (isDesktop) {
-      const timer = setTimeout(() => setShouldLoadMap(true), 2500);
-      return () => clearTimeout(timer);
-    }
-
-    const triggerMap = () => {
-      setShouldLoadMap(true);
-      window.removeEventListener("scroll", triggerMap);
-      window.removeEventListener("touchstart", triggerMap);
-    };
-    window.addEventListener("scroll", triggerMap, { passive: true, once: true });
-    window.addEventListener("touchstart", triggerMap, { passive: true, once: true });
-
-    return () => {
-      window.removeEventListener("scroll", triggerMap);
-      window.removeEventListener("touchstart", triggerMap);
-    };
+    // Mount map promptly without artificial 2.5s delay
+    const timer = setTimeout(() => setShouldLoadMap(true), 60);
+    return () => clearTimeout(timer);
   }, []);
 
   const { data: civicPosts = [] } = useQuery({
     queryKey: ["home-civic-posts"],
-    queryFn: () => getActiveCivicPosts(20),
+    queryFn: () => getActiveCivicPosts(30),
     staleTime: 300_000,
   });
   const { data: situations = [] } = useQuery({
@@ -90,23 +68,11 @@ export default function HomeHero({ userLocation, setUserLocation }) {
     queryFn: () => getActiveSituations(20),
     staleTime: 300_000,
   });
-  const { data: stays = [] } = useQuery({
-    queryKey: ["home-stays"],
-    queryFn: () => getActiveListings(20),
-    staleTime: 300_000,
-  });
-  const { data: scams = [] } = useQuery({
-    queryKey: ["home-scams"],
-    queryFn: () => getActiveScams(20),
-    staleTime: 300_000,
-  });
 
   const allMapItems = useMemo(() => [
-    ...civicPosts.map(p => ({ ...p, post_type: "civic" })),
     ...filterExpiredSituations(situations).map(s => ({ ...s, post_type: "situation" })),
-    ...stays.map(st => ({ ...st, post_type: "stay" })),
-    ...scams.map(sc => ({ ...sc, post_type: "scam" })),
-  ], [civicPosts, situations, stays, scams]);
+    ...civicPosts.map(p => ({ ...p, post_type: p.post_type || "civic" })),
+  ], [civicPosts, situations]);
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) return;
