@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Droplets, Users, GraduationCap, Heart, Briefcase, UtensilsCrossed, ArrowRight } from "lucide-react";
 import { Link } from "@/lib/router-compat";
@@ -126,52 +128,66 @@ export default function SchemesSection({ lang = "en" }) {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {SCHEMES.map((scheme) => {
           const Icon = scheme.icon;
+          const detailUrl = `/awareness/scheme/${scheme.slug || scheme.id}`;
           return (
             <div
               key={scheme.id}
-              className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-5 hover:shadow-md transition-all flex flex-col"
+              className="group bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700/80 hover:border-blue-500 dark:hover:border-blue-500 rounded-3xl p-5 sm:p-6 hover:shadow-lg transition-all flex flex-col justify-between"
             >
-              <div className="flex items-start gap-3 mb-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${scheme.iconBg}`}>
-                  <Icon className={`w-5 h-5 ${scheme.iconColor}`} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full mb-1.5 ${scheme.badgeCls}`}>
+              <div>
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm ${scheme.iconBg}`}>
+                    <Icon className={`w-6 h-6 ${scheme.iconColor}`} />
+                  </div>
+                  <span className={`inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full ${scheme.badgeCls}`}>
                     {T(scheme.badge_en, scheme.badge_ta)}
                   </span>
-                  <h3 className="text-sm font-semibold text-slate-800 dark:text-white line-clamp-2 leading-snug">
+                </div>
+
+                <Link to={detailUrl} className="block group-hover:text-blue-600 transition">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">
                     {T(scheme.name_en, scheme.name_ta)}
                   </h3>
-                </div>
+                </Link>
+
+                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-2 leading-relaxed">
+                  {T(scheme.desc_en, scheme.desc_ta)}
+                </p>
+
+                {scheme.eligibility_en && (
+                  <div className="mt-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300">
+                    <strong className="text-slate-700 dark:text-slate-200 block mb-0.5">
+                      ✓ {T("Eligibility:", "தகுதி:")}
+                    </strong>
+                    <span className="line-clamp-2">{T(scheme.eligibility_en, scheme.eligibility_ta)}</span>
+                  </div>
+                )}
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 flex-1">
-                {T(scheme.desc_en, scheme.desc_ta)}
-              </p>
-              <div className="flex gap-2 mt-auto flex-wrap">
-                <a
-                  href={scheme.website_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+
+              <div className="flex items-center gap-2 mt-5 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+                <Link
+                  to={detailUrl}
+                  className="flex-1 text-center py-2 px-3 bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white font-bold text-xs rounded-xl transition shadow-sm"
                 >
-                  {T("Check Eligibility", "தகுதி சரிபார்")}
-                </a>
-                <a
-                  href={scheme.apply_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-                >
-                  {T("Apply Now", "விண்ணப்பிக்க")}
-                </a>
+                  {T("Check Eligibility & Docs", "தகுதி & ஆவணங்கள்")} →
+                </Link>
+                {scheme.apply_url && (
+                  <a
+                    href={scheme.apply_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={T("Apply on Official Portal", "அரசு தளத்தில் விண்ணப்பிக்க")}
+                    className="p-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition"
+                  >
+                    ↗
+                  </a>
+                )}
               </div>
             </div>
           );
         })}
-      </div>
     </section>
   );
 }

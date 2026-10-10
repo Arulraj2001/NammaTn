@@ -61,7 +61,7 @@ export default function AwarenessSchemeDetail({ scheme }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-6 sm:py-10">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-6 pb-24 sm:py-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* Navigation Breadcrumb back */}
         <div className="flex items-center justify-between mb-6">
@@ -322,6 +322,37 @@ export default function AwarenessSchemeDetail({ scheme }) {
 
         {/* Cross-Linking Modules for SEO & User Discovery */}
         <AwarenessRelatedLinks currentSection="schemes" />
+      </div>
+
+      {/* Mobile Sticky Bottom Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3 sm:hidden shadow-xl flex items-center gap-2">
+        {scheme.apply_url && (
+          <a
+            href={scheme.apply_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 bg-blue-600 active:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            {T("Apply on Portal", "விண்ணப்பிக்கவும்")}
+          </a>
+        )}
+        {scheme.helpline && (
+          <a
+            href={`tel:${scheme.helpline.split('/')[0].replace(/[^0-9]/g, '')}`}
+            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs rounded-xl border border-slate-200 dark:border-slate-700"
+          >
+            <Phone className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            {scheme.helpline.split('/')[0].trim()}
+          </a>
+        )}
+        <button
+          onClick={handleWhatsAppShare}
+          aria-label="Share on WhatsApp"
+          className="w-10 h-10 flex items-center justify-center bg-emerald-600 text-white rounded-xl flex-shrink-0 active:scale-95 transition-transform"
+        >
+          <MessageCircle className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );

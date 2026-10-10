@@ -252,6 +252,15 @@ export default function AwarenessGuidesPage() {
                       )}
                     </div>
                   )}
+
+                  <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+                    <Link
+                      to={`/awareness/guide/${guide.slug || guide.id}`}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      {T("View Full Guide & Official Actions →", "முழு வழிகாட்டி & துறைசார் நடவடிக்கைகள் →")}
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>

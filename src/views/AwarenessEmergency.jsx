@@ -141,7 +141,7 @@ export default function AwarenessEmergency() {
         </div>
 
         {/* Unified 112 Flash Card */}
-        <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-2xl p-6 sm:p-7 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
+        <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-2xl p-6 sm:p-7 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6 mb-6">
           <div>
             <span className="bg-white/20 text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
               {T("National Emergency Response", "தேசிய அவசர கட்டுப்பாட்டு எண்")}
@@ -163,6 +163,40 @@ export default function AwarenessEmergency() {
             <Phone className="w-5 h-5 fill-current" />
             {T("Dial 112 Now", "112 அழைக்கவும்")}
           </a>
+        </div>
+
+        {/* 6 Key Speed-Dial Rapid Access Cards */}
+        <div className="mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+            ⚡ {T("Instant 1-Tap Emergency Speed Dial", "உடனடி அவசர அழைப்பு பொத்தான்கள்")}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+            {[
+              { num: "108", label_en: "Ambulance", label_ta: "ஆம்புலன்ஸ்", bg: "bg-red-50 dark:bg-red-950/40", border: "border-red-200 dark:border-red-900/60", text: "text-red-700 dark:text-red-400", btn: "bg-red-600 hover:bg-red-700" },
+              { num: "100", label_en: "Police", label_ta: "காவல்துறை", bg: "bg-blue-50 dark:bg-blue-950/40", border: "border-blue-200 dark:border-blue-900/60", text: "text-blue-700 dark:text-blue-400", btn: "bg-blue-600 hover:bg-blue-700" },
+              { num: "1912", label_en: "EB / Minnalagam", label_ta: "மின்னகம் (EB)", bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200 dark:border-amber-900/60", text: "text-amber-700 dark:text-amber-400", btn: "bg-amber-600 hover:bg-amber-700" },
+              { num: "1930", label_en: "Cyber Fraud", label_ta: "சைபர் கிரைம்", bg: "bg-purple-50 dark:bg-purple-950/40", border: "border-purple-200 dark:border-purple-900/60", text: "text-purple-700 dark:text-purple-400", btn: "bg-purple-600 hover:bg-purple-700" },
+              { num: "181", label_en: "Women Helpline", label_ta: "பெண்கள் உதவி", bg: "bg-pink-50 dark:bg-pink-950/40", border: "border-pink-200 dark:border-pink-900/60", text: "text-pink-700 dark:text-pink-400", btn: "bg-pink-600 hover:bg-pink-700" },
+              { num: "1100", label_en: "CM Helpline", label_ta: "முதல்வர் உதவி", bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200 dark:border-emerald-900/60", text: "text-emerald-700 dark:text-emerald-400", btn: "bg-emerald-600 hover:bg-emerald-700" },
+            ].map((s) => (
+              <div
+                key={s.num}
+                className={`${s.bg} border ${s.border} rounded-xl p-3 flex flex-col justify-between items-center text-center shadow-xs transition-transform hover:-translate-y-0.5`}
+              >
+                <span className={`text-xl font-black ${s.text} tracking-tight`}>{s.num}</span>
+                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 mt-0.5 mb-2 line-clamp-1">
+                  {T(s.label_en, s.label_ta)}
+                </span>
+                <a
+                  href={`tel:${s.num}`}
+                  className={`w-full py-1.5 px-2 ${s.btn} text-white font-bold text-[11px] rounded-lg inline-flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all`}
+                >
+                  <Phone className="w-3 h-3 fill-current" />
+                  {T("Call", "அழை")}
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Search & District Disaster Line Filter */}

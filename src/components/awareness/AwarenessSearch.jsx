@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
-import { Search, X, Star, Shield, Globe, HelpCircle, Phone, FileText } from "lucide-react";
-import * as LucideIcons from "lucide-react";
+"use client";
 
-const getIcon = (name) => LucideIcons[name] || LucideIcons.Info;
+import React, { useMemo } from "react";
+import { Search, X, Star, Shield, Globe, HelpCircle, Phone, FileText, ArrowRight, ExternalLink } from "lucide-react";
+import { Link } from "@/lib/router-compat";
 
 function matchesQuery(text, query) {
   if (!text || !query) return false;
@@ -20,7 +20,7 @@ export default function AwarenessSearch({
   emergencyContacts = [],
   onClose,
 }) {
-  const T = (en, ta) => lang === "ta" ? ta : en;
+  const T = (en, ta) => (lang === "ta" ? ta : en);
 
   const results = useMemo(() => {
     if (!query || query.trim().length < 2) return null;
@@ -28,21 +28,25 @@ export default function AwarenessSearch({
 
     const filteredSchemes = schemes.filter((s) =>
       matchesQuery(s.name_en, q) || matchesQuery(s.name_ta, q) ||
-      matchesQuery(s.category_en, q) || matchesQuery(s.description_en, q)
+      matchesQuery(s.category_en, q) || matchesQuery(s.category_ta, q) ||
+      matchesQuery(s.description_en, q) || matchesQuery(s.eligibility_en, q)
     );
 
     const filteredResources = resources.filter((r) =>
+      matchesQuery(r.name_en, q) || matchesQuery(r.name_ta, q) ||
       matchesQuery(r.title_en, q) || matchesQuery(r.title_ta, q) ||
-      matchesQuery(r.description_en, q)
+      matchesQuery(r.desc_en, q) || matchesQuery(r.desc_ta, q) ||
+      matchesQuery(r.content_en, q)
     );
 
     const filteredGuides = guides.filter((g) =>
-      matchesQuery(g.title_en, q) || matchesQuery(g.title_ta, q)
+      matchesQuery(g.title_en, q) || matchesQuery(g.title_ta, q) ||
+      matchesQuery(g.problem_type_en, q)
     );
 
     const filteredPortals = portals.filter((p) =>
       matchesQuery(p.name_en, q) || matchesQuery(p.name_ta, q) ||
-      matchesQuery(p.description_en, q)
+      matchesQuery(p.description_en, q) || matchesQuery(p.category_en, q)
     );
 
     const filteredFaqs = faqs.filter((f) =>
@@ -51,8 +55,9 @@ export default function AwarenessSearch({
     );
 
     const filteredEmergency = emergencyContacts.filter((e) =>
-      matchesQuery(e.department_en, q) || matchesQuery(e.department_ta, q) ||
-      matchesQuery(e.number, q)
+      matchesQuery(e.name_en, q) || matchesQuery(e.name_ta, q) ||
+      matchesQuery(e.department_en, q) || matchesQuery(e.number, q) ||
+      matchesQuery(e.desc_en, q)
     );
 
     return {
@@ -79,148 +84,198 @@ export default function AwarenessSearch({
     if (!items.length) return null;
     const IconComp = icon;
     return (
-      <div className="mb-6">
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-3">
-          <IconComp className="w-4 h-4" />
+      <div className="mb-6 last:mb-0">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-3">
+          <IconComp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           {title}
-          <span className="text-xs text-slate-400 font-normal">({items.length})</span>
+          <span className="text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-full">
+            {items.length}
+          </span>
         </h3>
-        <div className="space-y-2">
-          {items.slice(0, 5).map(renderItem)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          {items.slice(0, 6).map(renderItem)}
         </div>
       </div>
     );
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 mb-8 shadow-lg">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Search className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-semibold text-slate-800 dark:text-white">
-            {T("Search Results", "தேடல் முடிவுகள்")}
-          </span>
-          <span className="text-xs text-slate-400">
-            ({totalResults} {T("found", "கண்டறியப்பட்டது")})
-          </span>
+    <div className="bg-white dark:bg-slate-900 border-2 border-blue-500/30 rounded-3xl p-5 sm:p-7 mb-8 shadow-xl shadow-blue-500/5">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-5">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+            <Search className="w-4 h-4" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+              {T("Live Directory Search Results", "நேரடி தேடல் முடிவுகள்")}
+            </h2>
+            <p className="text-xs text-slate-500">
+              {totalResults} {T("matches for", "முடிவுகள்:")} <span className="font-semibold text-blue-600 dark:text-blue-400">&ldquo;{query}&rdquo;</span>
+            </p>
+          </div>
         </div>
         <button
           onClick={onClose}
-          className="w-7 h-7 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center transition-colors"
+          aria-label="Close search"
+          className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
         >
-          <X className="w-4 h-4 text-slate-500" />
+          <X className="w-5 h-5" />
         </button>
       </div>
 
       {totalResults === 0 ? (
-        <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-8">
-          {T(
-            `No results found for "${query}". Try different keywords.`,
-            `"${query}" க்கான முடிவுகள் இல்லை. வேறு சொற்களை முயற்சிக்கவும்.`
-          )}
-        </p>
+        <div className="text-center py-10">
+          <Search className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
+          <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
+            {T(`No matches found for "${query}"`, `"${query}" க்கான முடிவுகள் கிடைக்கவில்லை`)}
+          </p>
+          <p className="text-xs text-slate-500">
+            {T("Try checking spelling, or try words like: ration, power, rti, police, scholarship.", "எழுத்துப் பிழையை சரிபார்க்கவும், அல்லது: ration, 1912, rti, police முயற்சிக்கவும்.")}
+          </p>
+        </div>
       ) : (
-        <>
+        <div className="space-y-6">
+          {/* Emergency 24x7 Contacts first (top priority hot zone) */}
           {renderGroup(
-            T("Schemes", "திட்டங்கள்"), Star,
-            results.schemes,
-            (s) => (
-              <div key={s.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                <div className="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center flex-shrink-0">
-                  {(() => { const I = getIcon(s.icon); return <I className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />; })()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
-                    {lang === "ta" ? s.name_ta || s.name_en : s.name_en}
-                  </p>
-                  <p className="text-xs text-slate-400 truncate">
-                    {lang === "ta" ? s.category_ta || s.category_en : s.category_en}
-                  </p>
-                </div>
-              </div>
-            )
-          )}
-
-          {renderGroup(
-            T("Resources", "வளங்கள்"), Shield,
-            results.resources,
-            (r) => (
-              <div key={r.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                  {(() => { const I = getIcon(r.icon); return <I className="w-4 h-4 text-blue-600 dark:text-blue-400" />; })()}
-                </div>
-                <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
-                  {lang === "ta" ? r.title_ta || r.title_en : r.title_en}
-                </p>
-              </div>
-            )
-          )}
-
-          {renderGroup(
-            T("Guides", "வழிகாட்டிகள்"), FileText,
-            results.guides,
-            (g) => (
-              <div key={g.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                  {(() => { const I = getIcon(g.icon); return <I className="w-4 h-4 text-amber-600 dark:text-amber-400" />; })()}
-                </div>
-                <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
-                  {lang === "ta" ? g.title_ta || g.title_en : g.title_en}
-                </p>
-              </div>
-            )
-          )}
-
-          {renderGroup(
-            T("Portals", "இணையதளங்கள்"), Globe,
-            results.portals,
-            (p) => (
-              <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
-                  {(() => { const I = getIcon(p.icon); return <I className="w-4 h-4 text-green-600 dark:text-green-400" />; })()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
-                    {lang === "ta" ? p.name_ta || p.name_en : p.name_en}
-                  </p>
-                </div>
-              </div>
-            )
-          )}
-
-          {renderGroup(
-            T("FAQs", "கேள்விகள்"), HelpCircle,
-            results.faqs,
-            (f) => (
-              <div key={f.id} className="p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                <p className="text-sm font-medium text-slate-800 dark:text-white">
-                  {lang === "ta" ? f.question_ta || f.question_en : f.question_en}
-                </p>
-                <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                  {lang === "ta" ? f.answer_ta || f.answer_en : f.answer_en}
-                </p>
-              </div>
-            )
-          )}
-
-          {renderGroup(
-            T("Emergency Contacts", "அவசர தொடர்புகள்"), Phone,
+            T("Emergency Contacts & Helplines", "அவசர உதவி எண்கள்"), Phone,
             results.emergency,
             (e) => (
-              <div key={e.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-4 h-4 text-red-600 dark:text-red-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800 dark:text-white truncate">
-                    {lang === "ta" ? e.department_ta || e.department_en : e.department_en}
+              <div
+                key={e.id || e.number}
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 hover:border-red-400 transition"
+              >
+                <div className="min-w-0 pr-3">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                    {lang === "ta" ? e.name_ta || e.name_en : e.name_en}
                   </p>
-                  <p className="text-xs text-slate-400">{e.number}</p>
+                  <p className="text-xs text-slate-500 truncate">{e.department_en || e.desc_en}</p>
                 </div>
+                <a
+                  href={`tel:${e.number.replace(/[^0-9]/g, '')}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-mono font-bold text-xs rounded-xl shadow-sm whitespace-nowrap"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  {e.number}
+                </a>
               </div>
             )
           )}
-        </>
+
+          {/* Welfare Schemes */}
+          {renderGroup(
+            T("Government Welfare Schemes", "அரசு நலத்திட்டங்கள்"), Star,
+            results.schemes,
+            (s) => (
+              <Link
+                key={s.id || s.slug}
+                href={`/awareness/scheme/${s.slug || s.id}`}
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/80 hover:border-blue-500 hover:shadow-sm transition group"
+              >
+                <div className="min-w-0 pr-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 block mb-0.5">
+                    {lang === "ta" ? s.category_ta || s.category_en : s.category_en}
+                  </span>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {lang === "ta" ? s.name_ta || s.name_en : s.name_en}
+                  </p>
+                  {s.financial_benefit_en && (
+                    <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 truncate mt-0.5">
+                      💰 {lang === "ta" ? s.financial_benefit_ta || s.financial_benefit_en : s.financial_benefit_en}
+                    </p>
+                  )}
+                </div>
+                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition flex-shrink-0" />
+              </Link>
+            )
+          )}
+
+          {/* Citizen Rights */}
+          {renderGroup(
+            T("Citizen Statutory Rights", "குடிமக்கள் சட்ட உரிமைகள்"), Shield,
+            results.resources,
+            (r) => (
+              <Link
+                key={r.id || r.slug}
+                href={`/awareness/right/${r.slug || r.id}`}
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/80 hover:border-blue-500 hover:shadow-sm transition group"
+              >
+                <div className="min-w-0 pr-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block mb-0.5">
+                    {r.badge_en || T("Statutory Right", "சட்ட உரிமை")}
+                  </span>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {lang === "ta" ? r.name_ta || r.name_en : r.name_en}
+                  </p>
+                  <p className="text-xs text-slate-500 truncate mt-0.5">{lang === "ta" ? r.desc_ta : r.desc_en}</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition flex-shrink-0" />
+              </Link>
+            )
+          )}
+
+          {/* Procedural Guides */}
+          {renderGroup(
+            T("Civic Action Guides", "வழிகாட்டிகள்"), FileText,
+            results.guides,
+            (g) => (
+              <Link
+                key={g.id || g.slug}
+                href={`/awareness/guide/${g.slug || g.id}`}
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/80 hover:border-blue-500 hover:shadow-sm transition group"
+              >
+                <div className="min-w-0 pr-2">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600">
+                    {lang === "ta" ? g.title_ta || g.title_en : g.title_en}
+                  </p>
+                  <p className="text-xs text-slate-500 truncate mt-0.5">{g.department_en}</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition flex-shrink-0" />
+              </Link>
+            )
+          )}
+
+          {/* Official Portals */}
+          {renderGroup(
+            T("Official Government Portals", "அரசு இணையதளங்கள்"), Globe,
+            results.portals,
+            (p) => (
+              <Link
+                key={p.id || p.slug}
+                href={`/awareness/portal/${p.slug || p.id}`}
+                className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/80 hover:border-blue-500 hover:shadow-sm transition group"
+              >
+                <div className="min-w-0 pr-2">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600">
+                    {lang === "ta" ? p.name_ta || p.name_en : p.name_en}
+                  </p>
+                  <p className="text-xs text-slate-500 truncate mt-0.5">{p.url}</p>
+                </div>
+                <ExternalLink className="w-4 h-4 text-slate-300 group-hover:text-blue-600 transition flex-shrink-0" />
+              </Link>
+            )
+          )}
+
+          {/* Citizen FAQs */}
+          {renderGroup(
+            T("Citizen FAQs", "அடிக்கடி கேட்கப்படும் கேள்விகள்"), HelpCircle,
+            results.faqs,
+            (f) => (
+              <Link
+                key={f.id || f.slug}
+                href={`/awareness/faq/${f.slug || f.id}`}
+                className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/80 hover:border-blue-500 hover:shadow-sm transition block group"
+              >
+                <p className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-blue-600">
+                  {lang === "ta" ? f.question_ta || f.question_en : f.question_en}
+                </p>
+                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                  {lang === "ta" ? f.answer_ta || f.answer_en : f.answer_en}
+                </p>
+              </Link>
+            )
+          )}
+        </div>
       )}
     </div>
   );
