@@ -13,7 +13,7 @@ const InteractiveHomeMap = dynamic(
   () => import("@/components/home/InteractiveHomeMap"),
   {
     ssr: false,
-    fallback: (
+    loading: () => (
       <div className="h-full w-full bg-slate-900 animate-pulse flex flex-col items-center justify-center text-slate-400 text-xs">
         Connecting to Tamil Nadu civic feeds…
       </div>

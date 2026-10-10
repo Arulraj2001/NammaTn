@@ -1,7 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
-import dynamic from "next/dynamic";
+import React from "react";
 import HomeTopSection from "@/components/home/HomeTopSection";
 import LiveAlertsTicker from "@/components/home/LiveAlertsTicker";
 import QuickActions from "@/components/home/QuickActions";
@@ -9,8 +8,7 @@ import TnTodaySpotlight from "@/components/home/TnTodaySpotlight";
 import CivicProofSection from "@/components/home/CivicProofSection";
 import DistrictGateway from "@/components/home/DistrictGateway";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
-
-const CtaBanner = dynamic(() => import("@/components/home/CtaBanner"), { ssr: false });
+import CtaBanner from "@/components/home/CtaBanner";
 
 export default function Home() {
   return (
@@ -39,9 +37,7 @@ export default function Home() {
       </div>
 
       {/* Bottom Civic Action Banner */}
-      <Suspense fallback={null}>
-        <CtaBanner />
-      </Suspense>
+      <CtaBanner />
     </div>
   );
 }
