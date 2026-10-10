@@ -313,6 +313,7 @@ const PostCard = memo(function PostCard({ post }) {
               height={480}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               onError={() => setImgError(true)}
+              unoptimized={Boolean(typeof firstPhoto === 'string' && (firstPhoto.includes('/api/og') || firstPhoto.startsWith('data:')))}
               className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
             />
           </Link>
