@@ -174,6 +174,10 @@ const nextConfig = {
       { source: '/awareness/right/:slug',        destination: '/rights/:slug',        permanent: true },
       { source: '/awareness/schemes',            destination: '/schemes',            permanent: true },
       { source: '/awareness/scheme/:slug',       destination: '/schemes/:slug',       permanent: true },
+
+      // ── Decommissioned Community Routes (Clean 301 to Explore) ──
+      { source: '/community',                    destination: '/explore',            permanent: true },
+      { source: '/community/:path*',             destination: '/explore',            permanent: true },
     ];
   },
 

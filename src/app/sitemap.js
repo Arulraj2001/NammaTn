@@ -333,7 +333,7 @@ export default async function sitemap() {
   [
     '/districts', '/areas', '/awareness', '/awareness/articles',
     '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',
-    '/community', '/community/wins', '/scams',
+    '/scams',
     '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
     '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
     '/support', '/rwa', '/csr',

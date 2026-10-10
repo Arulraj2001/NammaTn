@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from "@/lib/router-compat";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "@/lib/router-compat";
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSettingsMap } from '@/services/admin/settings';
@@ -62,11 +62,8 @@ const OfficeDetail = lazy(() => import('@/pages/OfficeDetail'));
 const Jobs = lazy(() => import('@/pages/Jobs'));
 const Scams = lazy(() => import('@/pages/Scams'));
 const Help = lazy(() => import('@/pages/Help'));
-const Community = lazy(() => import('@/pages/Community'));
-const CommunityWins = lazy(() => import('@/views/CommunityWins'));
 const Support = lazy(() => import('@/pages/Support'));
 const AdminPhase8 = lazy(() => import('@/pages/admin/AdminPhase8'));
-const AdminCommunity = lazy(() => import('@/pages/admin/AdminCommunity'));
 const AdminContacts = lazy(() => import('@/pages/admin/AdminContacts'));
 const Stay = lazy(() => import('@/pages/Stay'));
 const AdminStay = lazy(() => import('@/pages/admin/AdminStay'));
@@ -229,8 +226,8 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/jobs" element={settings.jobs_enabled !== "false" ? <Jobs /> : <PageNotFound />} />
         <Route path="/scams" element={settings.scam_alerts_enabled !== "false" ? <Scams /> : <PageNotFound />} />
         <Route path="/help" element={settings.emergency_enabled !== "false" ? <Help /> : <PageNotFound />} />
-        <Route path="/community" element={settings.discussions_enabled !== "false" ? <Community /> : <PageNotFound />} />
-        <Route path="/community/wins" element={settings.discussions_enabled !== "false" ? <CommunityWins /> : <PageNotFound />} />
+        <Route path="/community" element={<Navigate to="/explore" replace />} />
+        <Route path="/community/*" element={<Navigate to="/explore" replace />} />
         <Route path="/support" element={<Support />} />
         <Route path="/stay" element={<Stay />} />
         <Route path="/listings" element={<LocalListings />} />

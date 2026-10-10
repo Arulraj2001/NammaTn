@@ -80,25 +80,6 @@ export default function SearchResultsSections({ scams, jobs, stay, listings, dis
           </div>
         </div>
       )}
-
-      {discussions.length > 0 && (
-        <div>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-            💬 {T("Discussions", "விவாதங்கள்")} ({discussions.length})
-          </p>
-          <div className="space-y-2">
-            {discussions.slice(0, 5).map((d) => (
-              <Link key={d.id} to="/community" className="flex items-start gap-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 hover:shadow-sm transition-all">
-                <Users className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm text-slate-900 dark:text-white truncate">{d.title}</p>
-                  <p className="text-xs text-slate-500">{d.district_name || ""}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </>
   );
 }

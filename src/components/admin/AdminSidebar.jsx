@@ -26,7 +26,6 @@ const NAV = [
   { label: "SEO Manager", icon: SearchCheck, path: "/admin/seo", badge: "SEO" },
   { label: "AI Settings", icon: Zap, path: "/admin/moderation-settings" },
   { label: "Phase 8 Hub", icon: Globe, path: "/admin/phase8", badge: "NEW" },
-  { label: "Community & Donations", icon: Users, path: "/admin/community" },
   { label: "Contact Messages", icon: Mail, path: "/admin/contacts" },
   { label: "Stay & Rooms", icon: Home, path: "/admin/stay" },
   { label: "Civic Receipts", icon: FileText, path: "/admin/civic", badge: "NEW" },
@@ -127,7 +126,6 @@ export default function AdminSidebar() {
             active={location.pathname === item.path}
             onClick={() => setMobileOpen(false)}
             pendingCount={
-              item.path === "/admin/community" ? pendingCount :
               item.path === "/admin/contacts" ? newContactCount :
               item.path === "/admin/stay" ? pendingStayCount :
               item.path === "/admin/monetization" ? pendingListingsCount : 0

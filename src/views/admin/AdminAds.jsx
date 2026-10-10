@@ -664,7 +664,7 @@ export default function AdminAds() {
                   <option value="listings">🏢 Business Directory (/listings)</option>
                   <option value="stay">🏨 Stay & Rooms (/stay)</option>
                   <option value="jobs">💼 Jobs Portal (/jobs)</option>
-                  <option value="community">👥 Community Hub (/community)</option>
+                  <option value="explore">🗺️ Live Explore (/explore)</option>
                   <option value="custom">🎯 Specific Custom Path (URL)</option>
                 </select>
               </div>

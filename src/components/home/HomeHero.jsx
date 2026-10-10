@@ -120,7 +120,7 @@ export default function HomeHero({ userLocation, setUserLocation }) {
                 { icon: "💧", en: "Water issues.",     ta: "நீர் சிக்கல்." },
                 { icon: "🚧", en: "Road problems.",    ta: "சாலை சிக்கல்." },
                 { icon: "⚠️", en: "Scam alerts.",     ta: "மோசடி எச்சரிக்கை." },
-                { icon: "👥", en: "Community updates.", ta: "சமூக செய்திகள்." },
+                { icon: "📢", en: "Civic notices.",   ta: "அரசு அறிவிப்புகள்." },
               ].map((pill, i) => pill.href ? (
                 <Link
                   key={i}

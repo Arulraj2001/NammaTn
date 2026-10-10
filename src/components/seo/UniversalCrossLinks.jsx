@@ -25,7 +25,7 @@ export default function UniversalCrossLinks({ pageType }) {
             { title_en: "Right to Information Act 2005", title_ta: "தகவல் அறியும் உரிமைச் சட்டம் 2005", href: "/awareness/right/right-to-information-act-2005", icon: Shield, desc_en: "30-day mandatory window for government replies.", desc_ta: "30 நாளில் பதில் பெற சட்டப்பூர்வ உரிமை." },
             { title_en: "Local Scam & Fraud Alerts", title_ta: "உள்ளூர் மோசடி எச்சரிக்கைகள்", href: "/scams", icon: AlertTriangle, desc_en: "Protect yourself against job & financial scams.", desc_ta: "வேலை மற்றும் நிதி மோசடிகளில் இருந்து பாதுகாப்போம்." },
             { title_en: "Government Offices Directory", title_ta: "அரசு அலுவலகங்கள் முகவரி", href: "/offices", icon: Building2, desc_en: "Find local VAO, EB, and Tahsildar offices.", desc_ta: "உள்ளூர் VAO, EB, தாசில்தார் அலுவலகங்கள்." },
-            { title_en: "Verified Community Wins", title_ta: "சரிபார்க்கப்பட்ட சமூக வெற்றிகள்", href: "/community/wins", icon: Trophy, desc_en: "See resolved civic issues across TN.", desc_ta: "தீர்க்கப்பட்ட குடிமைப் பிரச்சனைகள்." },
+            { title_en: "Civic Transparency Leaderboard", title_ta: "குடிமை முன்னிலை பட்டியல்", href: "/leaderboard", icon: Trophy, desc_en: "Top active civic contributors across TN.", desc_ta: "தீர்க்கப்பட்ட குடிமை சாதனைகள்." },
           ]
         };
 
@@ -84,7 +84,7 @@ export default function UniversalCrossLinks({ pageType }) {
           items: [
             { title_en: "Public Offices Directory", title_ta: "மாவட்ட அரசு அலுவலகங்கள்", href: "/offices", icon: Building2, desc_en: "Find VAO, EB, and Tahsildar offices.", desc_ta: "உள்ளூர் அரசு அலுவலகங்கள்." },
             { title_en: "Live Emergency Situations", title_ta: "நேரடி நிலைமைகள் & எச்சரிக்கைகள்", href: "/situations", icon: Zap, desc_en: "Real-time weather, power & road updates.", desc_ta: "நேரடி வானிலை மற்றும் சாலைத் தகவல்கள்." },
-            { title_en: "Community Discussions", title_ta: "சமூக விவாதங்கள்", href: "/community", icon: Users, desc_en: "Discuss civic issues in your district.", desc_ta: "மாவட்ட குடிமைப் பிரச்சனைகள் விவாதிக்க." },
+            { title_en: "TN Today State News", title_ta: "டிஎன் டுடே செய்திகள்", href: "/tn-today", icon: FileText, desc_en: "Daily verified state news and policies.", desc_ta: "தினசரி அரசு செய்திகள் மற்றும் திட்டங்கள்." },
             { title_en: "Bribe Tracker Reports", title_ta: "லஞ்சக் கண்காணிப்புப் பதிவு", href: "/bribes", icon: AlertTriangle, desc_en: "View corruption reports by district.", desc_ta: "மாவட்ட லஞ்சப் புகார்களைக் காண." },
           ]
         };
@@ -97,7 +97,7 @@ export default function UniversalCrossLinks({ pageType }) {
             { title_en: "Citizen Statutory Rights", title_ta: "குடிமக்கள் சட்ட உரிமைகள்", href: "/awareness/rights", icon: Shield, desc_en: "RTI Act 2005 & Consumer Protection.", desc_ta: "தகவல் உரிமை & நுகர்வோர் பாதுகாப்பு." },
             { title_en: "Government Welfare Schemes", title_ta: "அரசு நலத்திட்டங்கள்", href: "/awareness/schemes", icon: Gift, desc_en: "Magalir Urimai, Pudhumai Penn & CMCHIS.", desc_ta: "மகளிர் உரிமை & புதுமைப் பெண்." },
             { title_en: "Bribe Tracker Log", title_ta: "லஞ்சக் கண்காணிப்பு", href: "/bribes", icon: AlertTriangle, desc_en: "Anonymous corruption reporting.", desc_ta: "லஞ்சப் புகார்களைக் கண்காணிக்க." },
-            { title_en: "Community Wins", title_ta: "சமூக வெற்றிகள்", href: "/community/wins", icon: Trophy, desc_en: "Verified resolved civic issues.", desc_ta: "தீர்க்கப்பட்ட குடிமைப் பிரச்சனைகள்." },
+            { title_en: "Civic Leaderboard", title_ta: "குடிமை முன்னிலை பட்டியல்", href: "/leaderboard", icon: Trophy, desc_en: "Verified active civic contributors.", desc_ta: "குடிமை சாதனைகள் மற்றும் தீர்வுகள்." },
           ]
         };
     }

@@ -24,11 +24,9 @@ const FOOTER_COLUMNS = [
     ],
   },
   {
-    en_title: "Community",
-    ta_title: "சமுதாயம்",
+    en_title: "Awareness & Rights",
+    ta_title: "விழிப்புணர்வு & உரிமைகள்",
     links: [
-      { path: "/community",      en: "Community",      ta: "சமுதாயம்" },
-      { path: "/community/wins", en: "Community Wins", ta: "சமூக வெற்றிகள்" },
       { path: "/ask",            en: "Ask Local",      ta: "கேளுங்கள்" },
       { path: "/scams",          en: "Scams",          ta: "மோசடி" },
       { path: "/awareness",          en: "Awareness",          ta: "விழிப்புணர்வு" },
@@ -199,7 +197,6 @@ export default function Footer() {
                       if (link.path === "/situations" && settings.situations_enabled === "false") return false;
                       if (link.path === "/rwa" && settings.rwa_enabled === "false") return false;
                       if (link.path === "/csr" && settings.csr_enabled === "false") return false;
-                      if ((link.path === "/community" || link.path === "/community/wins") && settings.discussions_enabled === "false") return false;
                       return true;
                     })
                     .map((link) => (

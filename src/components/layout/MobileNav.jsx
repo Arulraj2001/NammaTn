@@ -23,14 +23,12 @@ const BOTTOM_TABS = [
 
 const MOBILE_MENU_GROUPS = [
   {
-    en_title: "Civic & Community",
-    ta_title: "குடிமை & சமுதாயம்",
+    en_title: "Civic Proof & Alerts",
+    ta_title: "குடிமை & எச்சரிக்கைகள்",
     items: [
       { path: "/dashboard", icon: BarChart2, en: "Dashboard", ta: "டாஷ்போர்டு", desc_en: "Live transparency stats", desc_ta: "நேரடி புள்ளிவிவரங்கள்" },
       { path: "/tn-today", icon: Newspaper, en: "TN Today", ta: "TN Today", desc_en: "Tamil Nadu's daily headline", desc_ta: "தினடைய தமிழ்நாடு தலைவரிசை" },
       { path: "/tn-politics", icon: Newspaper, en: "TN Politics", ta: "அரசியல்", desc_en: "Political news & MLA tracker", desc_ta: "அரசியல் மற்றும் MLA கண்காணிப்பு" },
-      { path: "/community", icon: Users, en: "Community", ta: "சமுதாயம்", desc_en: "Discuss local issues", desc_ta: "உள்ளூர் சிக்கல்கள் விவாதிக்கவும்" },
-      { path: "/community/wins", icon: Trophy, en: "Community Wins", ta: "சமூக வெற்றிகள்", desc_en: "Verified civic achievements", desc_ta: "சரிபார்க்கப்பட்ட குடிமை சாதனைகள்" },
       { path: "/trending", icon: TrendingUp, en: "Trending", ta: "டிரெண்டிங்", desc_en: "Most discussed issues", desc_ta: "அதிகம் விவாதிக்கப்பட்டவை" },
       { path: "/bribes", icon: AlertTriangle, en: "Bribe Tracker", ta: "லஞ்சக் கண்காணிப்பு", desc_en: "Track local corruption reports", desc_ta: "லஞ்சப் புகார்களை கண்காணிக்கவும்" },
       { path: "/ask", icon: MessageCircle, en: "Ask Local", ta: "கேளுங்கள்", desc_en: "Ask area-based questions", desc_ta: "பகுதி கேள்விகள் கேளுங்கள்" },
@@ -217,7 +215,6 @@ export default function MobileNav() {
                           if (item.path === "/situations" && settings.situations_enabled === "false") return false;
                           if (item.path === "/rwa" && settings.rwa_enabled === "false") return false;
                           if (item.path === "/csr" && settings.csr_enabled === "false") return false;
-                          if (item.path === "/community" && settings.discussions_enabled === "false") return false;
                           return true;
                         })
                         .map((item) => {

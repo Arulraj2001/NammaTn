@@ -26,12 +26,10 @@ const MAIN_NAV = [
 
 const MEGA_GROUPS = [
   {
-    en_title: "Civic & Community",
-    ta_title: "குடிமை & சமுதாயம்",
+    en_title: "Civic Proof & Alerts",
+    ta_title: "குடிமை & எச்சரிக்கைகள்",
     items: [
       { path: "/dashboard", icon: LayoutDashboard, en: "Dashboard", ta: "டாஷ்போர்டு", desc_en: "VizhiTN Civic Dashboard", desc_ta: "குடிமை டாஷ்போர்டு" },
-      { path: "/community", icon: Users, en: "Community", ta: "சமுதாயம்", desc_en: "Discuss local issues and connect", desc_ta: "உள்ளூர் சிக்கல்களை விவாதிக்கவும்" },
-      { path: "/community/wins", icon: Trophy, en: "Community Wins", ta: "சமூக வெற்றிகள்", desc_en: "Verified civic achievements", desc_ta: "சரிபார்க்கப்பட்ட குடிமை சாதனைகள்" },
       { path: "/trending", icon: TrendingUp, en: "Trending", ta: "டிரெண்டிங்", desc_en: "Most discussed civic issues", desc_ta: "அதிகம் விவாதிக்கப்பட்ட சிக்கல்கள்" },
       { path: "/bribes", icon: AlertTriangle, en: "Bribe Tracker", ta: "லஞ்சக் கண்காணிப்பு", desc_en: "Track local corruption reports", desc_ta: "லஞ்சப் புகார்களை கண்காணிக்கவும்" },
       { path: "/ask", icon: MessageCircle, en: "Ask Local", ta: "கேளுங்கள்", desc_en: "Get answers from locals", desc_ta: "உள்ளூரினரிடம் பதில் பெறுங்கள்" },
@@ -269,7 +267,6 @@ export default function Navbar() {
                                   if (item.path === "/situations" && settings.situations_enabled === "false") return false;
                                   if (item.path === "/rwa" && settings.rwa_enabled === "false") return false;
                                   if (item.path === "/csr" && settings.csr_enabled === "false") return false;
-                                  if (item.path === "/community" && settings.discussions_enabled === "false") return false;
                                   return true;
                                 })
                                 .map((item) => {

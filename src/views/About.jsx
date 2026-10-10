@@ -245,10 +245,10 @@ export default function About() {
               {T('Create Civic Receipt', 'குடிமை ரசீது உருவாக்கு')} <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              to="/community"
+              to="/explore"
               className="border-2 border-white/70 text-white font-semibold px-6 py-2.5 rounded-xl text-sm hover:bg-white/10 transition-colors"
             >
-              {T('Join Discussions', 'விவாதங்களில் இணை')}
+              {T('Explore Live Issues', 'கள நிலவரங்கள் பார்க்க')}
             </Link>
           </div>
         </section>

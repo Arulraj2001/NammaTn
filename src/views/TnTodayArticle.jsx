@@ -628,8 +628,8 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                   <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-blue-500" /> Join the Conversation
                   </h3>
-                  <Link to="/community" className="text-xs text-blue-600 font-medium hover:underline flex items-center gap-0.5">
-                    View Discussion <ArrowRight className="w-3 h-3" />
+                  <Link to="/explore" className="text-xs text-blue-600 font-medium hover:underline flex items-center gap-0.5">
+                    View Local Updates <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
                 <p className="text-xs text-slate-500 mb-3">Share your views, ask questions, and stay updated with your community.</p>

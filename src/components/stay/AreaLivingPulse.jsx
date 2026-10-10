@@ -78,8 +78,8 @@ export default function AreaLivingPulse({ districtSlug, districtName, areaSlug, 
             <Link to={`/jobs?district=${districtSlug}`} className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
               Jobs <ArrowRight className="w-3 h-3" />
             </Link>
-            <Link to="/community" className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
-              Discuss <ArrowRight className="w-3 h-3" />
+            <Link to="/explore" className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
+              Explore <ArrowRight className="w-3 h-3" />
             </Link>
             <Link to="/situations" className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
               Situations <ArrowRight className="w-3 h-3" />
