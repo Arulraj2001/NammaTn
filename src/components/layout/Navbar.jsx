@@ -279,15 +279,15 @@ export default function Navbar() {
 
                 <AnimatePresence>
                   {megaOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 6 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute top-full -right-28 xl:left-1/2 xl:-translate-x-1/2 pt-2 z-50 w-[880px] max-w-[calc(100vw-2rem)]"
-                    >
-                      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 ring-1 ring-black/5 dark:ring-white/5">
-                        <div className="grid grid-cols-4 gap-3.5 items-start">
+                    <div className="absolute top-full right-[-80px] sm:right-[-120px] lg:right-[-160px] xl:right-[-180px] pt-2 z-50 w-[820px] max-w-[calc(100vw-2rem)]">
+                      <motion.div
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 6 }}
+                        transition={{ duration: 0.15 }}
+                        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 ring-1 ring-black/5 dark:ring-white/5"
+                      >
+                        <div className="grid grid-cols-4 gap-3 items-start">
                           {MEGA_COLUMNS.map((column, ci) => {
                             const filteredItems = column.items.filter((item) => {
                               if (item.path === "/jobs" && settings.jobs_enabled === "false") return false;
@@ -357,8 +357,8 @@ export default function Navbar() {
                             <ArrowRight className="w-3 h-3" />
                           </Link>
                         </div>
-                      </div>
-                    </motion.div>
+                      </motion.div>
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
