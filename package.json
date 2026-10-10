@@ -14,6 +14,7 @@
     "politics:dry-run": "node scripts/auto-politics-poster.mjs --dry-run",
     "watchdog:morning": "node scripts/auto-watchdog.mjs --window=morning",
     "watchdog:evening": "node scripts/auto-watchdog.mjs --window=evening",
+    "indexnow:all": "node scripts/push-all-indexnow.mjs",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix"
   },
