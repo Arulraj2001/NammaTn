@@ -1022,7 +1022,7 @@ export default function AdminTnToday() {
           <Accordion title="Related Civic Activity" icon={Globe}>
             <Field label="Related Links on VizhiTN" hint="Link to related discussions, areas, or alerts">
               <textarea value={form.related_civic_links} onChange={e => setField("related_civic_links", e.target.value)}
-                rows={4} placeholder={"Metro Construction Issues | /community\nTransport Discussions | /community?topic=transport\nChennai Area Updates | /area/chennai"}
+                rows={4} placeholder={"Power Cut Advisories | /power-cuts-today-tamil-nadu\nTransport Alerts | /situations\nChennai Area Updates | /area/chennai"}
                 className="w-full border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-mono bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
             </Field>
           </Accordion>

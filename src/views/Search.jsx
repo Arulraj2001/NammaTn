@@ -9,7 +9,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  searchPosts, searchScams, searchJobs, searchStay, searchListings, searchDiscussions,
+  searchPosts, searchScams, searchJobs, searchStay, searchListings,
   getSearchSuggestions, addRecentSearch, getRecentSearches, clearRecentSearches
 } from "@/services/search";
 import PostCard from "@/components/posts/PostCard";
@@ -22,12 +22,11 @@ import SearchResultsSections from "@/components/search/SearchResultsSections";
 const CONTENT_TYPES = [
   { value: "all", en: "All", ta: "அனைத்தும்" },
   { value: "civic", en: "Civic Receipts", ta: "குடிமை ரசீதுகள்" },
-  { value: "posts", en: "Community Posts", ta: "சமுதாய பதிவுகள்" },
+  { value: "posts", en: "Civic & Utility Alerts", ta: "குடிமை & சேவை அறிவிப்புகள்" },
   { value: "scam", en: "Scam Alerts", ta: "மோசடி" },
   { value: "job", en: "Jobs", ta: "வேலைகள்" },
   { value: "stay", en: "Stay", ta: "தங்குமிடம்" },
   { value: "listing", en: "Listings", ta: "பட்டியல்" },
-  { value: "discussion", en: "Discussions", ta: "விவாதங்கள்" },
 ];
 
 const CIVIC_STATUS_OPTIONS = [
@@ -101,7 +100,7 @@ export default function Search() {
   // Determine post_type to pass based on contentType
   const postTypeFilter = contentType === "civic" ? "complaint" : (contentType === "posts" ? "all" : "all");
   const civicStatusFilter = contentType === "civic" ? (civicStatus === "all" ? "civic_only" : civicStatus) : civicStatus;
-  const skipPostSearch = ["scam", "job", "stay", "listing", "discussion"].includes(contentType);
+  const skipPostSearch = ["scam", "job", "stay", "listing"].includes(contentType);
 
   const { data: postData, isLoading: postsLoading } = useQuery({
     queryKey: ["search-posts", debouncedQuery, postTypeFilter, districtFilter, categoryFilter, civicStatusFilter, sort],
@@ -141,29 +140,20 @@ export default function Search() {
     staleTime: 60_000,
   });
 
-  const { data: discussions = [], isLoading: discussionsLoading } = useQuery({
-    queryKey: ["search-discussions", debouncedQuery],
-    queryFn: () => searchDiscussions(debouncedQuery),
-    enabled: (showOtherTypes || contentType === "discussion") && debouncedQuery.trim().length >= 2,
-    staleTime: 60_000,
-  });
-
   const civicMatch = postData?.civicMatch || null;
   const postResults = postData?.results || [];
   const suggestions = getSearchSuggestions(query);
-  const isLoading = postsLoading || scamsLoading || jobsLoading || stayLoading || listingsLoading || discussionsLoading;
+  const isLoading = postsLoading || scamsLoading || jobsLoading || stayLoading || listingsLoading;
   const activeFilterCount = [contentType !== "all", districtFilter !== "all", categoryFilter !== "all", civicStatus !== "all"].filter(Boolean).length;
 
   const showScams = (contentType === "all" || contentType === "scam") && scams.length > 0;
   const showJobs = (contentType === "all" || contentType === "job") && jobs.length > 0;
   const showStay = (contentType === "all" || contentType === "stay") && stay.length > 0;
   const showListings = (contentType === "all" || contentType === "listing") && listings.length > 0;
-  const showDiscussions = (contentType === "all" || contentType === "discussion") && discussions.length > 0;
 
   const totalCount = postResults.length +
     (showScams ? scams.length : 0) + (showJobs ? jobs.length : 0) +
-    (showStay ? stay.length : 0) + (showListings ? listings.length : 0) +
-    (showDiscussions ? discussions.length : 0);
+    (showStay ? stay.length : 0) + (showListings ? listings.length : 0);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
@@ -327,7 +317,6 @@ export default function Search() {
                 jobs={showJobs ? jobs : []}
                 stay={showStay ? stay : []}
                 listings={showListings ? listings : []}
-                discussions={showDiscussions ? discussions : []}
                 T={T}
               />
 

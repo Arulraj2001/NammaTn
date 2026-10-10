@@ -273,14 +273,10 @@ assert.match(areasPage, /getActiveAreas/, 'Areas must fetch initial server data'
 assert.match(areasView, /initialData:\s*initialAreas/, 'Areas must hydrate from server data');
 assert.doesNotMatch(officesPage, /ssr:\s*false/, 'The static offices directory must be server rendered');
 
-const communityPage = await read('src/app/(user)/community/page.jsx');
-const communityView = await read('src/views/Community.jsx');
 const trendingPage = await read('src/app/(user)/trending/page.jsx');
 const trendingView = await read('src/views/Trending.jsx');
 const bribesPage = await read('src/app/(user)/bribes/page.jsx');
 const bribesView = await read('src/views/BribeDashboard.jsx');
-assert.match(communityPage, /getCommunityHubData/, 'Community must fetch its public pulse on the server');
-assert.match(communityView, /initialData:\s*initialData\?\.settings/, 'Community settings must hydrate from server data');
 assert.match(trendingPage, /getTrendingHubData/, 'Trending must fetch initial rankings on the server');
 assert.match(trendingView, /initialPosts=/, 'Trending posts must hydrate from server data');
 assert.match(bribesPage, /getActiveBribePosts/, 'Bribe transparency reports must fetch on the server');
@@ -347,11 +343,6 @@ assert.match(askPage, /export const metadata/, 'Ask must emit server metadata');
 assert.doesNotMatch(askPage, /ssr:\s*false/, 'Ask must not be a client-only shell');
 assert.match(askView, /initialData:\s*!filterDistrict\s*\?\s*initialQuestions/, 'Ask filters must hydrate only from the unfiltered server list');
 
-const communityWinsPage = await read('src/app/(user)/community/wins/page.jsx');
-const communityWinsView = await read('src/views/CommunityWins.jsx');
-assert.match(communityWinsPage, /getResolvedCommunityWins/, 'Community Wins must fetch resolved posts on the server');
-assert.doesNotMatch(communityWinsPage, /ssr:\s*false/, 'Community Wins must not be a client-only shell');
-assert.match(communityWinsView, /initialData:\s*initialWins/, 'Community Wins must hydrate from server data');
 
 const leaderboardPage = await read('src/app/(user)/leaderboard/page.jsx');
 const leaderboardView = await read('src/views/CivicLeaderboard.jsx');

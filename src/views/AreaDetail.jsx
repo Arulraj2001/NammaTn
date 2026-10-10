@@ -313,7 +313,7 @@ export default function AreaDetail({ initialSlug, initialData }) {
     [civicPosts]
   );
 
-  /* Community wins (resolved posts) */
+  /* Resolved issues (citizen verified fixed) */
   const communityWins = useMemo(() =>
     civicPosts
       .filter((p) => ["resolved", "citizen_verified_fixed"].includes(p.status || p.civic_status))
@@ -563,7 +563,7 @@ export default function AreaDetail({ initialSlug, initialData }) {
 
   /* ── SECTION 5: MORE IN THIS AREA ──────────────── */
   const MORE_TABS = [
-    { key: "wins",   label: T("Community Wins", "சமூக வெற்றிகள்") },
+    { key: "wins",   label: T("Resolved Issues", "தீர்க்கப்பட்ட சிக்கல்கள்") },
     { key: "score",  label: T("Area Score", "பகுதி மதிப்பெண்") },
     { key: "emergency", label: T("Emergencies", "அவசர நிலைகள்") },
   ];
@@ -590,7 +590,7 @@ export default function AreaDetail({ initialSlug, initialData }) {
         ))}
       </div>
 
-      {/* Community Wins */}
+      {/* Resolved Issues */}
       {moreTab === "wins" && (
         <div className="space-y-2.5">
           {communityWins.length === 0 ? (

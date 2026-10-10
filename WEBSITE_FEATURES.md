@@ -153,12 +153,10 @@
 ## 7. What's NOT Built / Mocked / Planned Features
 
 1. **Direct Government API Synchronization:** Complaints are not automatically submitted into Tamil Nadu state government backend databases via official API endpoints.
-2. **Live WebRTC Audio Streaming:** While the `live_room` table schema exists in the database, real-time WebRTC audio streaming is not built; rooms operate as real-time text chat feeds.
-3. **Automated Payment Gateway Webhooks:** Stripe/Razorpay automated card processing and instant webhook verification are not active; payment submissions require manual admin review.
-4. **External LLM AI Auto-Moderation:** The `content_analysis` schema supports toxicity and trust scores, but runtime checking relies on local regex rules (`contentSafety.js`) rather than external LLM API endpoints.
-5. **Empty / Minimal Data Modules:** The following database tables currently contain 0 records:
+2. **Automated Payment Gateway Webhooks:** Stripe/Razorpay automated card processing and instant webhook verification are not active; payment submissions require manual admin review.
+3. **External LLM AI Auto-Moderation:** The `content_analysis` schema supports toxicity and trust scores, but runtime checking relies on local regex rules (`contentSafety.js`) rather than external LLM API endpoints.
+4. **Empty / Minimal Data Modules:** The following database tables currently contain 0 records:
    * Local Business Listings (`local_listing`)
-   * Community Discussions (`community_discussion`)
    * Corporate CSR Campaigns (`civic_sponsor`)
    * Direct Site Comments (`comment`)
    * Banner Advertisements (`ad`)
@@ -187,7 +185,6 @@
 | **Government Office Reports (`office_report`)** | **5** |
 | **Active RWA Groups (`rwa_group`)** | **1** |
 | **Local Business Listings (`local_listing`)** | **0** |
-| **Community Discussions (`community_discussion`)** | **0** |
 | **Submitted Comments (`comment`)** | **0** |
 | **Official Complaint Trackers (`complaint_tracker`)** | **0** |
 | **Submitted Payment Records (`payment_submission`)** | **0** |

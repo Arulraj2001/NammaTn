@@ -187,24 +187,7 @@ export const searchListings = async (query) => {
   );
 };
 
-/** Search community discussions */
-export const searchDiscussions = async (query) => {
-  const { data: items, error } = await supabase
-    .from("community_discussion")
-    .select("*")
-    .order("created_date", { ascending: false })
-    .limit(50);
-  if (error) return [];
 
-  const visible = items.filter((d) => d.status !== "removed" && d.status !== "hidden");
-  if (!query || query.trim().length < 2) return visible.slice(0, 10);
-  const q = query.toLowerCase();
-  return visible.filter((d) =>
-    (d.title || "").toLowerCase().includes(q) ||
-    (d.content || "").toLowerCase().includes(q) ||
-    (d.district_name || "").toLowerCase().includes(q)
-  );
-};
 
 export const getSearchSuggestions = (query) => {
   if (!query || query.trim().length < 1) return [];

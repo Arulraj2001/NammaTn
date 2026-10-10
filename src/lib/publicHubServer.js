@@ -346,41 +346,7 @@ export async function getQuestionDetailData(id) {
   }
 }
 
-export async function getCommunityDiscussionDetailData(id) {
-  const supabase = createServerSupabase();
-  const empty = { discussion: null, replies: [] };
-  if (!id) return empty;
-  if (!supabase) throw new Error('Supabase is not configured');
 
-  try {
-    const [discussionResult, repliesResult] = await Promise.all([
-      supabase
-        .from('community_discussion')
-        .select('*')
-        .eq('id', id)
-        .eq('status', 'active')
-        .maybeSingle(),
-      supabase
-        .from('discussion_reply')
-        .select('*')
-        .eq('discussion_id', id)
-        .eq('status', 'active')
-        .order('created_date', { ascending: true })
-        .limit(100),
-    ]);
-
-    if (discussionResult.error) throw discussionResult.error;
-    if (repliesResult.error) throw repliesResult.error;
-
-    return {
-      discussion: discussionResult.data || null,
-      replies: repliesResult.data || [],
-    };
-  } catch (error) {
-    console.warn(`[community:${id}] Server discussion fetch failed:`, error.message);
-    return empty;
-  }
-}
 
 export async function getCategoryHubData(slug) {
   const supabase = createServerSupabase();
@@ -512,22 +478,4 @@ export async function getLatestQuestions(limit = 40) {
   }
 }
 
-export async function getResolvedCommunityWins(limit = 200) {
-  const supabase = createServerSupabase();
-  if (!supabase) return [];
 
-  try {
-    const { data, error } = await supabase
-      .from('post')
-      .select('*')
-      .eq('status', 'active')
-      .in('civic_status', ['citizen_verified_fixed', 'resolved'])
-      .order('created_date', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return (data || []).filter(isPubliclyVisible);
-  } catch (error) {
-    console.warn('[community-wins] Server post fetch failed:', error.message);
-    return [];
-  }
-}

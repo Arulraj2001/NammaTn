@@ -226,8 +226,6 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/jobs" element={settings.jobs_enabled !== "false" ? <Jobs /> : <PageNotFound />} />
         <Route path="/scams" element={settings.scam_alerts_enabled !== "false" ? <Scams /> : <PageNotFound />} />
         <Route path="/help" element={settings.emergency_enabled !== "false" ? <Help /> : <PageNotFound />} />
-        <Route path="/community" element={<Navigate to="/explore" replace />} />
-        <Route path="/community/*" element={<Navigate to="/explore" replace />} />
         <Route path="/support" element={<Support />} />
         <Route path="/stay" element={<Stay />} />
         <Route path="/listings" element={<LocalListings />} />
@@ -270,7 +268,6 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="moderation" element={<AdminModeration />} />
         <Route path="moderation-settings" element={<AdminModerationSettings />} />
         <Route path="phase8" element={<AdminPhase8 />} />
-        <Route path="community" element={<AdminCommunity />} />
         <Route path="contacts" element={<AdminContacts />} />
         <Route path="stay" element={<AdminStay />} />
         <Route path="users" element={<AdminUsers />} />

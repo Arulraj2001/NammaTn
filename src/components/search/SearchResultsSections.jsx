@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "@/lib/router-compat";
-import { AlertTriangle, Briefcase, Home as HomeIcon, Building2, Users } from "lucide-react";
+import { AlertTriangle, Briefcase, Home as HomeIcon, Building2 } from "lucide-react";
 
-export default function SearchResultsSections({ scams, jobs, stay, listings, discussions, T }) {
+export default function SearchResultsSections({ scams, jobs, stay, listings, T }) {
   return (
     <>
       {scams.length > 0 && (

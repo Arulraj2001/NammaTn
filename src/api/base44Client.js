@@ -108,40 +108,6 @@ const entityProxy = new Proxy({}, {
             if (error) throw error;
             return { id, ...data };
           }
-        } else if (tableName === 'discussion_reply') {
-          if ('helpful_count' in data) {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session?.user) {
-              return { id, ...data };
-            }
-            const actorId = session.user.id;
-            const { data: existing } = await supabase
-              .from("reaction")
-              .select("id")
-              .eq("target_id", id)
-              .eq("target_type", "discussion_reply")
-              .eq("reaction_type", "helpful")
-              .eq("actor_id", actorId)
-              .maybeSingle();
-
-            if (existing) {
-              await supabase.from("reaction").delete().eq("id", existing.id);
-            } else {
-              await supabase.from("reaction").insert({
-                target_id: id,
-                target_type: "discussion_reply",
-                reaction_type: "helpful",
-                actor_id: actorId,
-                is_authenticated: true
-              });
-            }
-            return { id, ...data };
-          }
-        } else if (tableName === 'community_discussion') {
-          if ('reply_count' in data) {
-            // Handled by database trigger on discussion_reply table
-            return { id, ...data };
-          }
         }
 
         const { data: updated, error } = await supabase
