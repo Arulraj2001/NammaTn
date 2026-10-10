@@ -8,7 +8,6 @@ import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown } from "lucide-react
 import { useLanguage } from "@/context/LanguageContext";
 import { getActiveCivicPosts } from "@/services/posts";
 import { getActiveSituations } from "@/services/situations";
-import TnTodayCard from "@/components/tntoday/TnTodayCard";
 
 const InteractiveHomeMap = dynamic(
   () => import("@/components/home/InteractiveHomeMap"),
@@ -177,7 +176,7 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
           {/* RIGHT MAP */}
           <div className="w-full lg:flex-1 flex flex-col gap-4">
-            <div className="w-full h-[220px] sm:h-[300px] lg:h-[400px] rounded-2xl overflow-hidden bg-slate-900 border border-slate-700 relative shadow-lg">
+            <div className="w-full h-[260px] sm:h-[340px] lg:h-[420px] rounded-2xl overflow-hidden bg-slate-900 border border-slate-700/80 relative shadow-lg">
               {shouldLoadMap ? (
                 <InteractiveHomeMap items={allMapItems} userLocation={userLocation} />
               ) : (
@@ -195,7 +194,7 @@ export default function HomeHero({ userLocation, setUserLocation }) {
               )}
               <div className="absolute top-3 right-3 z-20">
                 <Link to="/explore"
-                  className="flex items-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-all">
+                  className="flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg shadow-md transition-all">
                   {T("View full map", "முழு வரைபடம்")} <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
@@ -203,8 +202,6 @@ export default function HomeHero({ userLocation, setUserLocation }) {
           </div>
         </div>
       </div>
-      {/* Floating sticky TN Today widget */}
-      <TnTodayCard />
     </section>
   );
 }

@@ -7,11 +7,18 @@ import 'leaflet/dist/leaflet.css';
 import { Link } from "@/lib/router-compat";
 import { DISTRICT_COORDS } from "@/lib/districts";
 
-// Helper to center and adjust zoom when coordinates change
+// Helper to center and adjust zoom when coordinates change and invalidate size for all screen sizes
 function ChangeMapView({ center, zoom }) {
   const map = useMap();
   useEffect(() => {
     map.setView(center, zoom);
+    // Invalidate size ensures tiles calculate correctly on mobile, tablets, and desktop
+    const timer = setTimeout(() => {
+      try {
+        map.invalidateSize();
+      } catch {}
+    }, 120);
+    return () => clearTimeout(timer);
   }, [center, zoom, map]);
   return null;
 }
@@ -266,7 +273,8 @@ export default function InteractiveHomeMap({ items = [], userLocation = null, zo
         center={center}
         zoom={currentZoom}
         style={{ height: '100%', width: '100%', background: '#0f172a' }}
-        scrollWheelZoom={true}
+        scrollWheelZoom={false}
+        touchZoom={true}
         attributionControl={false}
       >
         <ChangeMapView center={center} zoom={currentZoom} />
