@@ -39,7 +39,6 @@ import { useAuthModal } from "@/context/AuthModalContext";
 import CommentSection from "@/components/comments/CommentSection";
 import SponsorThisIssue from "@/components/sponsors/SponsorThisIssue";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
-import { getCivicPhoto } from "@/lib/civicPhotoCatalog";
 
 function SafeMediaImage({ url, alt }) {
   const [hasError, setHasError] = useState(false);
@@ -494,31 +493,11 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                   </div>
                 )}
 
-                {allPhotos && allPhotos.length > 0 ? (
+                {post.media_urls && post.media_urls.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-                    {allPhotos.map((url, idx) => (
+                    {post.media_urls.map((url, idx) => (
                       <SafeMediaImage key={idx} url={url} alt={`media-${idx}`} />
                     ))}
-                  </div>
-                ) : (
-                  <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 bg-slate-950">
-                    <div className="relative aspect-[16/9] max-h-[360px] overflow-hidden">
-                      <img
-                        src={getCivicPhoto(post).url}
-                        alt={getCivicPhoto(post).alt_en || title}
-                        className="w-full h-full object-cover"
-                        loading="eager"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent pointer-events-none" />
-                      <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white text-xs">
-                        <span className="font-semibold drop-shadow-md truncate max-w-[70%]">
-                          {getCivicPhoto(post).credit}
-                        </span>
-                        <span className="bg-emerald-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md flex-shrink-0">
-                          ✓ {T("Verified Context", "சரிபார்க்கப்பட்டது")}
-                        </span>
-                      </div>
-                    </div>
                   </div>
                 )}
 

@@ -30,7 +30,7 @@ const nextConfig = {
       { protocol: 'https', hostname: '*.bing.com' },
       { protocol: 'https', hostname: '*.bing.net' },
       { protocol: 'https', hostname: '*.tn.gov.in' },
-      { protocol: 'https', hostname: 'upload.wikimedia.org' },
+      { protocol: 'https', hostname: '*.gov.in' },
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'localhost' },
     ],

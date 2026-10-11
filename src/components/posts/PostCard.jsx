@@ -13,7 +13,6 @@ import ShareBar from "@/components/sharing/ShareBar";
 import { isCivicPost, getDaysOpen, getUrgency } from "@/lib/civicReceipt";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
 import { getPostUrl } from "@/lib/postUrl";
-import { getCivicPhoto } from "@/lib/civicPhotoCatalog";
 
 const CATEGORY_BULLETINS = {
   'public-safety': {
@@ -132,38 +131,27 @@ function CivicBulletinCard({ post, title, postUrl }) {
   const category = (post.category_slug || "general").toLowerCase();
   const theme = CATEGORY_BULLETINS[category] || CATEGORY_BULLETINS.general;
   const CategoryIcon = theme.icon;
-  const photo = getCivicPhoto(post);
 
   return (
     <Link
       to={postUrl}
       prefetch={true}
-      className={`block mb-3 rounded-2xl overflow-hidden relative border ${theme.border} p-3.5 sm:p-4 shadow-md hover:shadow-xl group/bulletin transition-all duration-300 min-h-[160px] sm:min-h-[175px] flex flex-col justify-between bg-slate-950`}
+      className={`block mb-3 rounded-xl overflow-hidden relative border ${theme.border} ${theme.bg} p-3 sm:p-3.5 shadow-md group/bulletin transition-all duration-300 min-h-[148px] flex flex-col justify-between`}
     >
-      {/* Real Photographic Background with subtle zoom on hover */}
-      {photo?.url ? (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <img
-            src={photo.url}
-            alt={photo.alt_en || title}
-            className="w-full h-full object-cover group-hover/bulletin:scale-105 transition-transform duration-700 opacity-40 group-hover/bulletin:opacity-50"
-            loading="lazy"
-          />
-          {/* Deep journalistic gradient scrim to guarantee text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/40" />
-        </div>
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent pointer-events-none" />
-      )}
+      {/* Background glow & watermark icon */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent pointer-events-none" />
+      <div className="absolute -right-4 -bottom-4 opacity-10 pointer-events-none">
+        <CategoryIcon className="w-24 h-24 text-white" />
+      </div>
 
       {/* Top Bar: Category pill + District chip */}
       <div className="flex items-center justify-between gap-2 relative z-10">
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${theme.badge} backdrop-blur-md`}>
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${theme.badge}`}>
           <CategoryIcon className="w-3 h-3" />
           {theme.label}
         </span>
         {post.district_slug && (
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20 capitalize shadow-xs">
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-200 bg-black/50 px-2 py-0.5 rounded-md border border-white/10 capitalize">
             <MapPin className="w-3 h-3 text-red-400" />
             {post.area_name || post.district_slug}
           </span>
@@ -171,21 +159,23 @@ function CivicBulletinCard({ post, title, postUrl }) {
       </div>
 
       {/* Centerpiece: Dynamic Story Headline with High-Contrast Typography */}
-      <div className="my-2.5 relative z-10">
-        <p className="font-extrabold text-white text-xs sm:text-sm leading-snug line-clamp-2 group-hover/bulletin:text-blue-300 transition-colors drop-shadow-md">
+      <div className="my-2 relative z-10">
+        <p className="font-extrabold text-white text-xs sm:text-sm leading-snug line-clamp-2 group-hover/bulletin:text-blue-300 transition-colors">
           {title}
         </p>
       </div>
 
-      {/* Bottom Bar: Verified Helpline / Department + Real Photo Credit Tag */}
-      <div className="flex items-center justify-between text-[10px] text-slate-300 pt-2.5 border-t border-white/15 relative z-10">
-        <span className="font-semibold flex items-center gap-1.5 truncate max-w-[70%]">
-          <Shield className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+      {/* Bottom Bar: Verified Helpline + Receipt ID */}
+      <div className="flex items-center justify-between text-[10px] text-slate-300/90 pt-2 border-t border-white/10 relative z-10">
+        <span className="font-semibold flex items-center gap-1 truncate max-w-[70%]">
+          <Shield className="w-3 h-3 text-amber-400 flex-shrink-0" />
           <span className="truncate">{post.assigned_department || theme.dept}</span>
         </span>
-        <span className="text-[10px] text-slate-400 font-medium truncate max-w-[28%] text-right font-mono">
-          {photo?.id ? "📷 FIELD DESK" : (post.civic_receipt_id || "VERIFIED")}
-        </span>
+        {post.civic_receipt_id && (
+          <span className="font-mono font-bold text-slate-400 text-[9px] bg-white/10 px-1.5 py-0.5 rounded tracking-wide">
+            {post.civic_receipt_id}
+          </span>
+        )}
       </div>
     </Link>
   );
@@ -236,10 +226,10 @@ const PostCard = memo(function PostCard({ post }) {
   const [imgError, setImgError] = React.useState(false);
 
   return (
-    <article className={`bg-white dark:bg-[#0D2B52] rounded-2xl border-2 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group relative focus-within:z-30 hover:z-30 overflow-visible ${
-      showReceiptBar ? "border-civic-300 dark:border-civic-700 hover:border-civic-500"
+    <article className={`bg-white dark:bg-slate-900 rounded-2xl border-2 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group relative focus-within:z-30 hover:z-30 overflow-visible ${
+      showReceiptBar ? "border-blue-300 dark:border-blue-800/80 hover:border-blue-500"
       : isAlert ? `${alertBorderColor} hover:border-orange-500`
-      : "border-civic-200 dark:border-civic-800 hover:border-civic-500"
+      : "border-slate-300 dark:border-slate-700 hover:border-blue-500"
     }`}>
 
       {/* Civic Receipt top bar — only for complaints that have a receipt ID */}
@@ -300,7 +290,7 @@ const PostCard = memo(function PostCard({ post }) {
         </div>
 
         {/* Title — clickable link to post detail */}
-        <h3 className="font-black text-civic-900 dark:text-white text-base leading-snug mb-2 group-hover:text-civic-600 dark:group-hover:text-civic-300 transition-colors line-clamp-2">
+        <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
           <Link to={postUrl} prefetch={true} className="hover:underline">
             {title}
           </Link>
@@ -385,11 +375,11 @@ const PostCard = memo(function PostCard({ post }) {
         )}
 
         {/* Footer */}
-        <div className="mt-3 pt-3 border-t border-civic-100 dark:border-civic-800/80 flex items-center justify-between gap-2">
+        <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between gap-2">
           <Link
             to={postUrl}
             prefetch={true}
-            className="text-xs font-bold text-civic-600 dark:text-civic-300 hover:text-civic-800 dark:hover:text-white hover:underline"
+            className={`text-xs font-medium hover:underline ${isCivic ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
           >
             {isCivic ? T("View Civic Receipt →", "குடிமை ரசீது பார்க்க →") : T("Read more →", "மேலும் படிக்க →")}
           </Link>

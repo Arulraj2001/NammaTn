@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Clock, ArrowRight, Sparkles, BookOpen } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getPublishedTnToday, getFeaturedTnToday } from "@/services/tnToday";
-import { getCivicPhoto } from "@/lib/civicPhotoCatalog";
+import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import { formatDistanceToNow } from "date-fns";
 
 const CATEGORY_TAG_COLORS = {
@@ -22,8 +22,15 @@ const CATEGORY_TAG_COLORS = {
 
 function resolveCoverImage(article) {
   if (!article) return "";
-  const photo = getCivicPhoto(article);
-  return photo?.url || "";
+  const rawImg = (article.featured_image || "").trim();
+  if (!rawImg || isImagePrompt(rawImg)) {
+    return generateTnTodayPoster({
+      title: article.title,
+      category: article.category,
+      subtitle: article.subtitle || article.summary || "",
+    });
+  }
+  return rawImg;
 }
 
 export default function TnTodaySpotlight() {
@@ -76,22 +83,22 @@ export default function TnTodaySpotlight() {
     : "";
 
   return (
-    <section className="py-12 bg-gradient-to-b from-white via-civic-50/40 to-white dark:from-[#071E3D] dark:via-[#071E3D] dark:to-[#071E3D] border-b-2 border-civic-200 dark:border-civic-900">
+    <section className="py-12 bg-white dark:bg-slate-900/60 border-b border-slate-200/80 dark:border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-black tracking-wider uppercase text-civic-500 dark:text-civic-400 mb-1.5">
+            <div className="inline-flex items-center gap-1.5 text-xs font-black tracking-wider uppercase text-blue-600 dark:text-blue-400 mb-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{T("TN Today Newsroom", "டிஎன் டுடே சிறப்புச் செய்திகள்")}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-civic-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {T("State Development & Civic Insights", "தமிழ்நாடு வளர்ச்சி & ஆளுகை சிறப்பு பார்வை")}
             </h2>
           </div>
           <Link
             to="/tn-today"
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-civic-500 hover:text-civic-700 dark:text-civic-400 dark:hover:text-civic-300 hover:underline flex-shrink-0 group"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline flex-shrink-0 group"
           >
             <span>{T("Explore all stories", "அனைத்து செய்திகளையும் பார்க்க")}</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -101,7 +108,7 @@ export default function TnTodaySpotlight() {
         {/* 2-Column Responsive Magazine Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Main / Lead Story (7 cols on desktop) */}
-          <article className="lg:col-span-7 flex flex-col justify-between bg-white dark:bg-[#0D2B52] rounded-3xl overflow-hidden border-2 border-civic-200 dark:border-civic-800 shadow-sm hover:shadow-xl hover:border-civic-500 transition-all group">
+          <article className="lg:col-span-7 flex flex-col justify-between bg-slate-50 dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all group">
             <Link to={`/tn-today/${lead.slug}`} className="block relative overflow-hidden aspect-[16/9] sm:aspect-[21/10] bg-slate-800">
               {leadImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -183,7 +190,7 @@ export default function TnTodaySpotlight() {
               return (
                 <article
                   key={item.id}
-                  className="p-4 sm:p-5 bg-white dark:bg-[#0D2B52] rounded-2xl border-2 border-civic-200 dark:border-civic-800 shadow-xs hover:shadow-md hover:border-civic-500 transition-all flex gap-4 items-center group"
+                  className="p-4 sm:p-5 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-blue-400/40 dark:hover:border-blue-600/40 transition-all flex gap-4 items-center group"
                 >
                   <Link
                     to={`/tn-today/${item.slug}`}

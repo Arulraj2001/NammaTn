@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { X, ArrowRight, Clock, ChevronUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { getCivicPhoto } from "@/lib/civicPhotoCatalog";
+import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 
 const CATEGORY_COLORS = {
   infrastructure: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800/30",
@@ -54,8 +54,16 @@ export default function TnTodayCard({ className }) {
   // Compute poster image
   useEffect(() => {
     if (article) {
-      const photo = getCivicPhoto(article);
-      setPosterSrc(photo?.url || "");
+      const rawImg = (article.featured_image || "").trim();
+      if (!rawImg || isImagePrompt(rawImg)) {
+        setPosterSrc(generateTnTodayPoster({
+          title: article.title,
+          category: article.category,
+          subtitle: article.subtitle || article.summary || ""
+        }));
+      } else {
+        setPosterSrc(rawImg);
+      }
     }
   }, [article]);
 
