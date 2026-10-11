@@ -2,7 +2,6 @@
 
 import React from "react";
 import HomeTopSection from "@/components/home/HomeTopSection";
-import LiveAlertsTicker from "@/components/home/LiveAlertsTicker";
 import QuickActions from "@/components/home/QuickActions";
 import TnTodaySpotlight from "@/components/home/TnTodaySpotlight";
 import CivicProofSection from "@/components/home/CivicProofSection";
@@ -15,9 +14,6 @@ export default function Home() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
       {/* Zone 1: Hero with Clean Interactive Live Map */}
       <HomeTopSection />
-
-      {/* Zone 2: Live Emergency & Utility Alerts Ticker */}
-      <LiveAlertsTicker />
 
       {/* Quick Civic Actions Bar */}
       <QuickActions />

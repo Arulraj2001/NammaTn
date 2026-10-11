@@ -8,6 +8,7 @@ import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown } from "lucide-react
 import { useLanguage } from "@/context/LanguageContext";
 import { getActiveCivicPosts } from "@/services/posts";
 import { getActiveSituations } from "@/services/situations";
+import HeroMicroAlerts from "./HeroMicroAlerts";
 
 const InteractiveHomeMap = dynamic(
   () => import("@/components/home/InteractiveHomeMap"),
@@ -172,6 +173,15 @@ export default function HomeHero({ userLocation, setUserLocation }) {
                 </span>
               )}
             </div>
+
+            {/* Tiny Sized Live Alerts placed below location row */}
+            <HeroMicroAlerts
+              userLocation={userLocation}
+              locating={locating}
+              situations={situations}
+              civicPosts={civicPosts}
+              calculateDistance={calculateDistance}
+            />
           </div>
 
           {/* RIGHT MAP */}
