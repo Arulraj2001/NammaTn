@@ -12,13 +12,11 @@ import {
   PhoneCall,
   Building2,
   HelpCircle,
-  Filter,
   Sparkles,
   Newspaper,
-  ExternalLink,
-  ShieldCheck,
   ChevronDown,
-  Clock,
+  ChevronLeft,
+  ChevronRight,
   Compass,
   FileText
 } from "lucide-react";
@@ -27,7 +25,7 @@ import { getDistrictBySlug } from "@/lib/districts";
 import { CATEGORIES } from "@/lib/categories";
 import PostCard from "@/components/posts/PostCard";
 import PostSkeleton from "@/components/posts/PostSkeleton";
-import { getDistrictPosts, getDistrictCivicPosts } from "@/services/posts";
+import { getDistrictPosts } from "@/services/posts";
 import { getPublishedTnToday } from "@/services/tnToday";
 import { getAreasByDistrict } from "@/services/areas";
 import { getSituationsByDistrict } from "@/services/situations";
@@ -43,6 +41,23 @@ const HELPLINES = [
   { name_en: "Emergency & 108", name_ta: "அவசர ஊர்தி", number: "108", desc: "Medical & Ambulance", color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
 ];
 
+const POSTS_PER_PAGE = 9;
+
+function getPageNumbers(currentPage, totalPages) {
+  if (totalPages <= 6) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  const pages = [];
+  if (currentPage <= 3) {
+    pages.push(1, 2, 3, 4, "...", totalPages);
+  } else if (currentPage >= totalPages - 2) {
+    pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+  } else {
+    pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+  }
+  return pages;
+}
+
 export default function DistrictDetail({ initialSlug }) {
   const routeParams = useParams();
   const slug = initialSlug || routeParams?.city || routeParams?.slug;
@@ -56,7 +71,30 @@ export default function DistrictDetail({ initialSlug }) {
   const [activeTab, setActiveTab] = useState("alerts");
   const [selectedArea, setSelectedArea] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
+  const handleAreaChange = (area) => {
+    setSelectedArea(area);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (cat) => {
+    setSelectedCategory(cat);
+    setCurrentPage(1);
+  };
+
+  const scrollToContent = () => {
+    const el = document.getElementById("district-content-hub");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   usePageMeta({
     title: district
@@ -96,7 +134,7 @@ export default function DistrictDetail({ initialSlug }) {
   // Queries
   const { data: posts = [], isLoading: postsLoading } = useQuery({
     queryKey: ["district-posts", slug],
-    queryFn: () => getDistrictPosts(slug, 80),
+    queryFn: () => getDistrictPosts(slug, 120),
     enabled: !!slug,
     staleTime: 60_000,
   });
@@ -170,6 +208,18 @@ export default function DistrictDetail({ initialSlug }) {
     return pool;
   }, [activeTab, alertsList, complaintsList, fixedList, posts, selectedArea, selectedCategory]);
 
+  // Pagination calculation
+  const totalPosts = displayedPosts.length;
+  const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const paginatedPosts = useMemo(() => {
+    return displayedPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+  }, [displayedPosts, startIndex]);
+
+  const pageNumbers = useMemo(() => {
+    return getPageNumbers(currentPage, totalPages);
+  }, [currentPage, totalPages]);
+
   if (!district) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
@@ -189,7 +239,7 @@ export default function DistrictDetail({ initialSlug }) {
   const totalTaluksCount = areas.length > 0 ? areas.length : 8;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-6">
       {/* ── Breadcrumb & Back ── */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
         <Link to="/districts" className="inline-flex items-center gap-1.5 hover:text-blue-600 transition-colors">
@@ -200,131 +250,135 @@ export default function DistrictDetail({ initialSlug }) {
         <span className="font-semibold text-slate-900 dark:text-white">{district.name_en}</span>
       </nav>
 
-      {/* ── ZONE 1: DISTRICT HERO & REAL-TIME STATUS BANNER ── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white p-6 sm:p-8 shadow-2xl border border-blue-500/20">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+      {/* ── ZONE 1: DISTRICT HERO & REAL-TIME STATUS BANNER (COMPACT SIZE) ── */}
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white p-4 sm:p-5 lg:p-6 shadow-xl border border-blue-500/20">
+        <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
 
-        <div className="relative z-10">
-          {/* Top Pill / Status Line */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/10 text-blue-200 border border-white/10">
-                <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                {district.region} TAMIL NADU
-              </span>
-            </div>
+        <div className="relative z-10 space-y-3.5">
+          {/* Top Row: Region & Live Pulse */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/10 text-blue-200 border border-white/10">
+              <MapPin className="w-3 h-3 text-blue-400" />
+              {district.region} TAMIL NADU
+            </span>
 
-            {/* Live Civic Pulse Badge */}
-            <div className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/60 border border-white/10 text-xs">
+            {/* Live Pulse Badge */}
+            <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-900/70 border border-white/10 text-[11px]">
               {activeAlertCount > 0 ? (
                 <>
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
                   </span>
-                  <span className="text-amber-300 font-medium">
+                  <span className="text-amber-300 font-semibold">
                     {activeAlertCount} {T("Active Alert(s) Today", "செயலில் உள்ள எச்சரிக்கைகள்")}
                   </span>
                 </>
               ) : (
                 <>
                   <span className="inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                  <span className="text-emerald-300 font-medium">
-                    {T("Systems Normal • Live Feed Active", "இயல்பு நிலை • நேரடி தகவல் கண்காணிப்பு")}
+                  <span className="text-emerald-300 font-semibold">
+                    {T("Systems Normal", "இயல்பு நிலை")}
                   </span>
                 </>
               )}
             </div>
           </div>
 
-          {/* Title & Core Subtitle */}
-          <div className="max-w-3xl mb-6">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight flex flex-wrap items-baseline gap-3">
-              <span>{district.name_en}</span>
-              <span className="text-xl sm:text-2xl lg:text-3xl font-medium text-blue-200/90 font-tamil">
-                {district.name_ta}
-              </span>
-            </h1>
-            <p className="mt-2 text-sm sm:text-base text-blue-100/90 leading-relaxed">
-              {T(
-                `Hyperlocal citizen grievance portal, verified utility shutdown alerts, and taluk-level civic resolution proof for ${district.name_en}.`,
-                `${district.name_en} மாவட்டத்திற்கான மின்தடை அறிவிப்புகள், குடிமை புகார்கள் மற்றும் சரிபார்க்கப்பட்ட தீர்வுகள்.`
-              )}
-            </p>
+          {/* Middle Row: Title Left, Action CTAs Right (Horizontal Compact) */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight flex flex-wrap items-baseline gap-2.5">
+                <span>{district.name_en}</span>
+                <span className="text-lg sm:text-2xl font-medium text-blue-200/90 font-tamil">
+                  {district.name_ta}
+                </span>
+              </h1>
+              <p className="mt-0.5 text-xs sm:text-sm text-blue-100/80 leading-snug line-clamp-2 max-w-xl">
+                {T(
+                  `Hyperlocal civic grievance portal, verified utility alerts, and taluk-level resolution proof for ${district.name_en}.`,
+                  `${district.name_en} மாவட்டத்திற்கான மின்தடை அறிவிப்புகள், குடிமை புகார்கள் மற்றும் சரிபார்க்கப்பட்ட தீர்வுகள்.`
+                )}
+              </p>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link
+                to={`/create?district=${slug}`}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                {T(`Report Issue`, `புகாரளி`)}
+              </Link>
+
+              <Link
+                to={`/power-cuts-today-tamil-nadu/${slug}`}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/15 transition-all"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                {T("Power Cuts", "மின்வெட்டு")}
+              </Link>
+            </div>
           </div>
 
-          {/* Call to Actions */}
-          <div className="flex flex-wrap items-center gap-3 mb-8">
-            <Link
-              to={`/create?district=${slug}`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
-            >
-              <Sparkles className="w-4 h-4" />
-              {T(`Report Issue in ${district.name_en}`, `${district.name_en} பகுதியில் புகாரளி`)}
-            </Link>
-
-            <Link
-              to={`/power-cuts-today-tamil-nadu/${slug}`}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/15 transition-all"
-            >
-              <Zap className="w-4 h-4 text-amber-400" />
-              {T("Power Cuts Today", "இன்றைய மின்தடை விபரம்")}
-            </Link>
-          </div>
-
-          {/* Integrated 4-Metric Ribbon */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-white/10">
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-3.5 border border-white/10">
-              <div className="flex items-center justify-between text-amber-400 mb-1">
-                <span className="text-[11px] font-semibold uppercase tracking-wider">{T("Alerts", "எச்சரிக்கைகள்")}</span>
-                <Zap className="w-4 h-4" />
+          {/* Compact 4-Metric Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 border-t border-white/10">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300/90 block">
+                  {T("Alerts", "எச்சரிக்கைகள்")}
+                </span>
+                <p className="text-lg sm:text-xl font-black leading-tight text-white">{activeAlertCount}</p>
               </div>
-              <p className="text-2xl font-black">{activeAlertCount}</p>
-              <p className="text-[11px] text-blue-200/70">{T("Power & Weather", "மின்சாரம் & மழை")}</p>
+              <Zap className="w-4 h-4 text-amber-400 opacity-80" />
             </div>
 
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-3.5 border border-white/10">
-              <div className="flex items-center justify-between text-blue-400 mb-1">
-                <span className="text-[11px] font-semibold uppercase tracking-wider">{T("Grievances", "குடிமை புகார்கள்")}</span>
-                <AlertTriangle className="w-4 h-4" />
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300/90 block">
+                  {T("Grievances", "குடிமை புகார்கள்")}
+                </span>
+                <p className="text-lg sm:text-xl font-black leading-tight text-white">{activeGrievanceCount}</p>
               </div>
-              <p className="text-2xl font-black">{activeGrievanceCount}</p>
-              <p className="text-[11px] text-blue-200/70">{T("Road, Water, Waste", "சாலை & கழிவுநீர்")}</p>
+              <AlertTriangle className="w-4 h-4 text-blue-400 opacity-80" />
             </div>
 
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-3.5 border border-white/10">
-              <div className="flex items-center justify-between text-emerald-400 mb-1">
-                <span className="text-[11px] font-semibold uppercase tracking-wider">{T("Fixed Proof", "தீர்வு காணப்பட்டவை")}</span>
-                <CheckCircle2 className="w-4 h-4" />
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/90 block">
+                  {T("Fixed Proof", "தீர்வு")}
+                </span>
+                <p className="text-lg sm:text-xl font-black leading-tight text-white">{verifiedFixedCount}</p>
               </div>
-              <p className="text-2xl font-black">{verifiedFixedCount}</p>
-              <p className="text-[11px] text-blue-200/70">{T("Citizen Verified", "சரிபார்க்கப்பட்டவை")}</p>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 opacity-80" />
             </div>
 
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-3.5 border border-white/10">
-              <div className="flex items-center justify-between text-indigo-300 mb-1">
-                <span className="text-[11px] font-semibold uppercase tracking-wider">{T("Coverage", "கண்காணிப்பு")}</span>
-                <Compass className="w-4 h-4" />
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-200/90 block">
+                  {T("Coverage", "வட்டாரங்கள்")}
+                </span>
+                <p className="text-lg sm:text-xl font-black leading-tight text-white">{totalTaluksCount}+</p>
               </div>
-              <p className="text-2xl font-black">{totalTaluksCount}+</p>
-              <p className="text-[11px] text-blue-200/70">{T("Monitored Taluks", "வட்டாரங்கள்")}</p>
+              <Compass className="w-4 h-4 text-indigo-300 opacity-80" />
             </div>
           </div>
         </div>
       </div>
 
       {/* ── ZONE 2: 1-TAP VERIFIED HELPLINES SPEED-DIAL BAR ── */}
-      <section aria-label="Official Government Helplines" className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center justify-between mb-3.5 flex-wrap gap-2">
+      <section aria-label="Official Government Helplines" className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center">
-              <PhoneCall className="w-4 h-4" />
+            <div className="w-7 h-7 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center">
+              <PhoneCall className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h2 className="text-sm font-black text-slate-900 dark:text-white">
+              <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
                 {T(`1-Tap Verified Helplines (${district.name_en})`, `அரசு அவசர உதவி எண்கள் (${district.name_ta})`)}
               </h2>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
                 {T("Direct departmental contact numbers for instant civic escalation", "அவசர தேவைகளுக்கான நேரடி அரசு எண்கள்")}
               </p>
             </div>
@@ -334,16 +388,16 @@ export default function DistrictDetail({ initialSlug }) {
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
           {HELPLINES.map((h) => (
             <a
               key={h.number}
               href={`tel:${h.number}`}
-              className={`flex flex-col justify-between p-3 rounded-2xl border transition-all hover:scale-[1.02] ${h.color}`}
+              className={`flex flex-col justify-between p-2.5 rounded-xl border transition-all hover:scale-[1.02] ${h.color}`}
             >
               <div>
-                <p className="text-lg font-black tracking-tight">{h.number}</p>
-                <p className="text-xs font-bold mt-0.5 leading-snug">{T(h.name_en, h.name_ta)}</p>
+                <p className="text-base sm:text-lg font-black tracking-tight">{h.number}</p>
+                <p className="text-xs font-bold leading-tight mt-0.5">{T(h.name_en, h.name_ta)}</p>
               </div>
               <p className="text-[10px] opacity-80 mt-1 truncate">{h.desc}</p>
             </a>
@@ -361,7 +415,7 @@ export default function DistrictDetail({ initialSlug }) {
             </span>
             {selectedArea !== "all" && (
               <button
-                onClick={() => setSelectedArea("all")}
+                onClick={() => handleAreaChange("all")}
                 className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
               >
                 {T("Show All Taluks", "அனைத்து பகுதிகளும்")}
@@ -371,8 +425,8 @@ export default function DistrictDetail({ initialSlug }) {
 
           <div className="flex gap-2 overflow-x-auto pb-1.5 scrollbar-hide">
             <button
-              onClick={() => setSelectedArea("all")}
-              className={`flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => handleAreaChange("all")}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 selectedArea === "all"
                   ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
                   : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-slate-400"
@@ -391,8 +445,8 @@ export default function DistrictDetail({ initialSlug }) {
               return (
                 <button
                   key={area.id || area.slug}
-                  onClick={() => setSelectedArea(area.slug)}
-                  className={`flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  onClick={() => handleAreaChange(area.slug)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     selectedArea === area.slug
                       ? "bg-blue-600 text-white shadow-sm"
                       : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-slate-400"
@@ -411,12 +465,12 @@ export default function DistrictDetail({ initialSlug }) {
         </section>
       )}
 
-      {/* ── ZONE 4: PURPOSEFUL 4-TAB CIVIC CONTENT HUB ── */}
-      <section className="space-y-6">
-        {/* Modern Tactile Tabs */}
+      {/* ── ZONE 4: PURPOSEFUL 4-TAB CIVIC CONTENT HUB (PAGINATED) ── */}
+      <section id="district-content-hub" className="space-y-6 pt-2">
+        {/* Tactile Tabs */}
         <div className="flex border-b border-slate-200 dark:border-slate-800 gap-2 sm:gap-4 overflow-x-auto scrollbar-hide">
           <button
-            onClick={() => setActiveTab("alerts")}
+            onClick={() => handleTabChange("alerts")}
             className={`pb-3 px-2 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all flex-shrink-0 ${
               activeTab === "alerts"
                 ? "border-amber-500 text-amber-600 dark:text-amber-400"
@@ -431,7 +485,7 @@ export default function DistrictDetail({ initialSlug }) {
           </button>
 
           <button
-            onClick={() => setActiveTab("complaints")}
+            onClick={() => handleTabChange("complaints")}
             className={`pb-3 px-2 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all flex-shrink-0 ${
               activeTab === "complaints"
                 ? "border-blue-600 text-blue-600 dark:text-blue-400"
@@ -446,7 +500,7 @@ export default function DistrictDetail({ initialSlug }) {
           </button>
 
           <button
-            onClick={() => setActiveTab("fixed")}
+            onClick={() => handleTabChange("fixed")}
             className={`pb-3 px-2 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all flex-shrink-0 ${
               activeTab === "fixed"
                 ? "border-emerald-500 text-emerald-600 dark:text-emerald-400"
@@ -461,7 +515,7 @@ export default function DistrictDetail({ initialSlug }) {
           </button>
 
           <button
-            onClick={() => setActiveTab("all")}
+            onClick={() => handleTabChange("all")}
             className={`pb-3 px-2 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all flex-shrink-0 ${
               activeTab === "all"
                 ? "border-slate-800 dark:border-white text-slate-900 dark:text-white"
@@ -480,7 +534,7 @@ export default function DistrictDetail({ initialSlug }) {
         {activeTab === "all" && (
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             <button
-              onClick={() => setSelectedCategory("all")}
+              onClick={() => handleCategoryChange("all")}
               className={`flex-shrink-0 px-3 py-1 rounded-xl text-xs font-semibold ${
                 selectedCategory === "all"
                   ? "bg-slate-800 dark:bg-white text-white dark:text-slate-900"
@@ -492,7 +546,7 @@ export default function DistrictDetail({ initialSlug }) {
             {CATEGORIES.map((c) => (
               <button
                 key={c.slug}
-                onClick={() => setSelectedCategory(c.slug)}
+                onClick={() => handleCategoryChange(c.slug)}
                 className={`flex-shrink-0 px-3 py-1 rounded-xl text-xs font-semibold ${
                   selectedCategory === c.slug
                     ? "bg-slate-800 dark:bg-white text-white dark:text-slate-900"
@@ -548,11 +602,91 @@ export default function DistrictDetail({ initialSlug }) {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {displayedPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {paginatedPosts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+
+            {/* ── PAGINATION CONTROLS (Next, 1, 2, 3, 5...) ── */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {T(
+                    `Showing ${startIndex + 1}–${Math.min(startIndex + POSTS_PER_PAGE, totalPosts)} of ${totalPosts} ${
+                      activeTab === "alerts"
+                        ? "alerts"
+                        : activeTab === "complaints"
+                        ? "grievances"
+                        : activeTab === "fixed"
+                        ? "resolved items"
+                        : "updates"
+                    }`,
+                    `மொத்தம் ${totalPosts} பதிவுகளில் ${startIndex + 1}–${Math.min(startIndex + POSTS_PER_PAGE, totalPosts)} காட்டப்படுகிறது`
+                  )}
+                </p>
+
+                <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        setCurrentPage((p) => p - 1);
+                        scrollToContent();
+                      }
+                    }}
+                    disabled={currentPage === 1}
+                    aria-label="Previous Page"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <span>{T("Prev", "முந்தைய")}</span>
+                  </button>
+
+                  {/* Page Numbers */}
+                  {pageNumbers.map((page, idx) =>
+                    page === "..." ? (
+                      <span key={`dots-${idx}`} className="px-2 text-xs text-slate-400">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={page}
+                        onClick={() => {
+                          setCurrentPage(page);
+                          scrollToContent();
+                        }}
+                        className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
+                          currentPage === page
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                            : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => {
+                      if (currentPage < totalPages) {
+                        setCurrentPage((p) => p + 1);
+                        scrollToContent();
+                      }
+                    }}
+                    disabled={currentPage === totalPages}
+                    aria-label="Next Page"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    <span>{T("Next", "அடுத்தது")}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </section>
 
@@ -727,7 +861,7 @@ export default function DistrictDetail({ initialSlug }) {
           {[
             {
               q: `How do I report a pothole, open manhole, or garbage pile in ${district.name_en}?`,
-              a: `Click "+ Report Issue in ${district.name_en}" above or go to the Create page. Take a clear photo, add the street/taluk location, and submit. VizhiTN assigns a public tracking ID and formats the data into an official grievance receipt ready for submission to the local municipal office.`,
+              a: `Click "+ Report Issue" above or go to the Create page. Take a clear photo, add the street/taluk location, and submit. VizhiTN assigns a public tracking ID and formats the data into an official grievance receipt ready for submission to the local municipal office.`,
             },
             {
               q: `How can I check scheduled TANGEDCO power shutdown timings in ${district.name_en}?`,
