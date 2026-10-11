@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import Link from 'next/link';
 import Home from '@/views/Home';
 import { HomeCityLinks, AllCategoryLinks } from '@/components/seo/InternalLinks';
 export const revalidate = 1800; // homepage — refresh every 30 min
@@ -14,6 +15,10 @@ const orgSchema = {
     'https://twitter.com/vizhitn',
     'https://instagram.com/vizhi_tn',
     'https://t.me/vizhitn',
+    'https://www.youtube.com/@VizhiTN',
+    'https://www.linkedin.com/company/vizhitn',
+    'https://medium.com/@vizhitn',
+    'https://www.koo.com/VizhiTN',
   ],
   description: 'Tamil Nadu civic proof platform — citizens report power cuts, road problems, water issues, and civic complaints across all 38 TN districts.',
   foundingDate: '2026',
@@ -80,7 +85,7 @@ export default function Page() {
       </Suspense>
 
       <section className="border-t border-slate-200 bg-white py-10 dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 md:grid-cols-3 lg:px-8">
           <div>
             <h2 className="mb-3 text-lg font-semibold text-slate-900 dark:text-white">Browse by district</h2>
             <HomeCityLinks />
@@ -88,6 +93,35 @@ export default function Page() {
           <div>
             <h2 className="mb-3 text-lg font-semibold text-slate-900 dark:text-white">Browse by civic issue</h2>
             <AllCategoryLinks />
+          </div>
+          <div>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900 dark:text-white">Trackers & Media</h2>
+            <ul className="flex flex-col gap-2.5">
+              <li>
+                <Link
+                  href="/power-cuts-today-tamil-nadu"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors flex items-center gap-1.5"
+                >
+                  <span>⚡</span> Power Cuts Today Tamil Nadu
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/tn-politics"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors flex items-center gap-1.5"
+                >
+                  <span>🏛️</span> TN Politics & Governance Hub
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/press"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors flex items-center gap-1.5"
+                >
+                  <span>📰</span> Press & Media Resources
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
