@@ -14,6 +14,7 @@ import TnTodayImageCropModal from "@/components/tntoday/TnTodayImageCropModal";
 
 import { translateTextToTamil, translateHtmlToTamil } from "@/services/translate";
 import { generateTnTodayPoster, generateTnTodayPosterAsync, isImagePrompt, fetchAiPhotoFromPrompt } from "@/lib/tntodayPosterGenerator";
+import { fetchIncidentImage } from "@/lib/incidentImageService";
 
 // ─── Field serializers (array of objects → plain text expected by article view) ──
 function serialiseKeyFacts(raw) {
@@ -553,6 +554,19 @@ export default function ImportTnToday({ onDone }) {
         }
         if (!payload.seo_keywords_ta && payload.seo_keywords) {
           payload.seo_keywords_ta = await translateTextToTamil(payload.seo_keywords);
+        }
+
+        // Attach genuine newsroom incident image if not provided or is an AI prompt
+        const curImg = (payload.featured_image || "").trim();
+        if (!curImg || isImagePrompt(curImg)) {
+          try {
+            const photoData = await fetchIncidentImage(payload.title, payload.category);
+            if (photoData?.image_url) {
+              payload.featured_image = photoData.image_url;
+              payload.social_image = payload.social_image || photoData.image_url;
+              payload.is_poster = false;
+            }
+          } catch (_) {}
         }
 
         await createTnToday(payload);

@@ -41,6 +41,7 @@ import {
 import { validateBatch } from '@/lib/autoPublish/postValidator';
 import { notifySearchEngines } from '@/lib/seo/instantIndexing';
 import { ensureBilingualPost } from '@/services/translate';
+import { attachIncidentPhotosToPosts } from '@/lib/incidentPhotoMatcher';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -322,10 +323,13 @@ export async function POST(request) {
       })
     );
 
-    // 12. Insert into Supabase
+    // 12. Attach genuine newsroom incident images if available
+    const postsWithPhotos = await attachIncidentPhotosToPosts(bilingualPosts);
+
+    // 13. Insert into Supabase
     const { data: inserted, error: insertError } = await supabase
       .from('post')
-      .insert(bilingualPosts)
+      .insert(postsWithPhotos)
       .select('id, slug, title_en');
 
     if (insertError) {

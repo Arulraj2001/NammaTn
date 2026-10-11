@@ -12,6 +12,7 @@ import {
   Loader2, ChevronDown, ChevronUp, Download, Sparkles, Copy
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { fetchIncidentImage } from "@/lib/incidentImageService";
 
 const VALID_TYPES = [
   "complaint", "civic", "appreciation", "local_update", "alert", "discussion", "bribe",
@@ -454,6 +455,15 @@ export default function ImportPosts({ onDone }) {
         let payload = { ...post, status: importStatus };
         if (autoTranslate) {
           payload = await ensureBilingualPost(payload);
+        }
+        if (!payload.media_urls?.length && !payload.before_photos?.length) {
+          try {
+            const photoData = await fetchIncidentImage(payload.title_en || payload.title_ta, payload.category_slug);
+            if (photoData?.image_url) {
+              payload.media_urls = [photoData.image_url];
+              if (!payload.source && photoData.source) payload.source = photoData.source;
+            }
+          } catch (_) {}
         }
         await createPost(payload);
         success.push(payload.title_en || payload.title_ta || `Post #${i + 1}`);

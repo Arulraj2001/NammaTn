@@ -28,6 +28,7 @@ import { validateBatch } from '@/lib/autoPublish/postValidator';
 import { notifySearchEngines } from '@/lib/seo/instantIndexing';
 import { ensureBilingualPost } from '@/services/translate';
 import { getISTDateSlug } from '@/lib/autoPublish/districtRotation';
+import { attachIncidentPhotosToPosts } from '@/lib/incidentPhotoMatcher';
 
 const SITE_URL = 'https://www.vizhitn.in';
 const GEMINI_MODEL = 'gemini-3.1-flash-lite';
@@ -248,8 +249,10 @@ export async function POST(request) {
       })
     );
 
+    const postsWithPhotos = await attachIncidentPhotosToPosts(bilingualPosts);
+
     const { data: inserted, error: insertError } = await supabase
-      .from('post').insert(bilingualPosts).select('id, slug, title_en');
+      .from('post').insert(postsWithPhotos).select('id, slug, title_en');
 
     if (insertError) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
