@@ -7,6 +7,7 @@ import { Clock, ArrowRight, Sparkles, BookOpen } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getPublishedTnToday, getFeaturedTnToday } from "@/services/tnToday";
 import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
+import { fetchIncidentImage } from "@/lib/incidentImageService";
 import { formatDistanceToNow } from "date-fns";
 
 const CATEGORY_TAG_COLORS = {
@@ -54,6 +55,16 @@ export default function TnTodaySpotlight() {
   // Pick remaining 3 stories for the side list
   const sideStories = recentArticles.filter((a) => !lead || a.id !== lead.id).slice(0, 3);
 
+  const [incidentCover, setIncidentCover] = React.useState(null);
+
+  React.useEffect(() => {
+    if (lead && (!lead.featured_image || isImagePrompt(lead.featured_image))) {
+      fetchIncidentImage(lead.title, lead.category).then((data) => {
+        if (data?.image_url) setIncidentCover(data.image_url);
+      });
+    }
+  }, [lead]);
+
   if (isLoading && recentArticles.length === 0) {
     return (
       <section className="py-12 bg-slate-50 dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800/80">
@@ -74,7 +85,7 @@ export default function TnTodaySpotlight() {
 
   if (!lead) return null;
 
-  const leadImage = resolveCoverImage(lead);
+  const leadImage = incidentCover || resolveCoverImage(lead);
   const leadTitle = T(lead.title, lead.title_ta);
   const leadSummary = T(lead.summary || lead.subtitle, lead.summary_ta || lead.subtitle_ta);
   const leadCategory = lead.category || "governance";
