@@ -7,7 +7,7 @@ import {
   AlertTriangle, Phone, Scale, Award, Heart, Camera,
   Building2, ArrowRight, Sparkles, Flame, Clock,
   ExternalLink, Compass, ShieldAlert, MessageSquare,
-  FileText, Check, HelpCircle
+  FileText, Check, HelpCircle, Mail
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
