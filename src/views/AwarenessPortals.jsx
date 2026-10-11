@@ -1,330 +1,312 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import {
-  Globe, Zap, ShieldAlert, FileText, MessageSquare,
-  CreditCard, Heart, BookOpen, ExternalLink, Copy,
-  Check, ArrowLeft, Search, X
+  Globe, Zap, CreditCard, ShieldAlert, Heart, FileText,
+  MessageSquare, BookOpen, ExternalLink, Copy, Check,
+  Search, X, ShieldCheck, Lock, Sparkles, Filter, Building2,
+  ArrowRight, ArrowLeft
 } from "lucide-react";
-import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
-import { usePageMeta } from "@/hooks/usePageMeta";
+import AwarenessSubNav from "@/components/awareness/AwarenessSubNav";
+import AwarenessRelatedLinks from "@/components/awareness/AwarenessRelatedLinks";
+import { getAllPortals } from "@/lib/awarenessServer";
 
-// All verified TN government portals
-const ALL_PORTALS = [
-  {
-    id: "esevai",
-    icon: Globe,
-    color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
-    category: "services",
-    name_en: "TN e-Sevai Portal",
-    name_ta: "TN e-சேவை இணையதளம்",
-    desc_en: "Access 150+ government services online — birth/death certificate, community certificate, income certificate, land records, licences and more.",
-    desc_ta: "பிறப்பு/இறப்பு சான்றிதழ், சமூக சான்றிதழ், வருமான சான்றிதழ், நில பதிவேடுகள் உட்பட 150+ அரசு சேவைகள் ஆன்லைனில்.",
-    url: "https://www.tnesevai.tn.gov.in",
-    dept_en: "Dept. of e-Governance (TNEGA)",
-    dept_ta: "இ-ஆட்சி துறை (TNEGA)",
-  },
-  {
-    id: "tneb",
-    icon: Zap,
-    color: "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400",
-    category: "utilities",
-    name_en: "TANGEDCO / TNEB",
-    name_ta: "TANGEDCO / TN மின்சார வாரியம்",
-    desc_en: "Pay electricity bills, apply for new connections, track power outages, file complaints, and manage your account online.",
-    desc_ta: "மின் கட்டணம் செலுத்துதல், புதிய இணைப்பு விண்ணப்பம், மின் தடை கண்காணிப்பு மற்றும் புகார்கள்.",
-    url: "https://www.tnebltd.org",
-    dept_en: "TANGEDCO (Tamil Nadu Generation & Distribution Corp.)",
-    dept_ta: "TANGEDCO (TN மின்சாரம் உற்பத்தி & விநியோகம்)",
-  },
-  {
-    id: "tnpds",
-    icon: CreditCard,
-    color: "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
-    category: "services",
-    name_en: "TN PDS — Ration Card Portal",
-    name_ta: "TN PDS — குடும்ப அட்டை இணையதளம்",
-    desc_en: "Apply for new ration card, update family members, check PDS allocation, link Aadhaar, and track application status online.",
-    desc_ta: "புதிய குடும்ப அட்டை விண்ணப்பம், குடும்ப உறுப்பினர்கள் புதுப்பித்தல், PDS ஒதுக்கீடு சரிபார்க்கவும்.",
-    url: "https://www.tnpds.gov.in",
-    dept_en: "Civil Supplies & Consumer Protection Dept.",
-    dept_ta: "குடிமக்கள் வழங்கல் & நுகர்வோர் பாதுகாப்பு துறை",
-  },
-  {
-    id: "police",
-    icon: ShieldAlert,
-    color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
-    category: "police",
-    name_en: "TN Police e-Services",
-    name_ta: "TN காவல்துறை இ-சேவைகள்",
-    desc_en: "File FIR, report cybercrime, apply for character certificate, procession permission, and other police services online.",
-    desc_ta: "FIR பதிவு, இணையக் குற்ற புகார், நடத்தை சான்றிதழ் விண்ணப்பம் மற்றும் பிற காவல் சேவைகள்.",
-    url: "https://eservices.tnpolice.gov.in",
-    dept_en: "Tamil Nadu Police Department",
-    dept_ta: "தமிழ்நாடு காவல்துறை",
-  },
-  {
-    id: "cmchis",
-    icon: Heart,
-    color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
-    category: "health",
-    name_en: "CMCHIS — Health Insurance",
-    name_ta: "CMCHIS — சுகாதார காப்பீடு",
-    desc_en: "Check CMCHIS eligibility, find empanelled hospitals near you, know covered treatments, and get insurance card details.",
-    desc_ta: "CMCHIS தகுதி சரிபார்க்கவும், அருகிலுள்ள அங்கீகரிக்கப்பட்ட மருத்துவமனைகள் கண்டறியுங்கள்.",
-    url: "https://www.cmchis.com",
-    dept_en: "Health & Family Welfare Dept.",
-    dept_ta: "சுகாதார & குடும்ப நலன் துறை",
-  },
-  {
-    id: "rti",
-    icon: FileText,
-    color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
-    category: "rights",
-    name_en: "RTI Online Portal",
-    name_ta: "RTI ஆன்லைன் இணையதளம்",
-    desc_en: "File Right to Information (RTI) applications online to any central government department. Track status and receive responses digitally.",
-    desc_ta: "எந்தவொரு மத்திய அரசு துறைக்கும் ஆன்லைனில் தகவல் உரிமை (RTI) விண்ணப்பம். நிலை கண்காணிப்பு.",
-    url: "https://rtionline.gov.in",
-    dept_en: "Department of Personnel & Training (Central Govt.)",
-    dept_ta: "ஊழியர் பயிற்சி துறை (மத்திய அரசு)",
-  },
-  {
-    id: "cms",
-    icon: MessageSquare,
-    color: "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300",
-    category: "grievance",
-    name_en: "CM Grievance Cell (CMS)",
-    name_ta: "முதலமைச்சர் புகார் மையம் (CMS)",
-    desc_en: "Register public grievances about government services online. Track complaint status using your reference number. Handled within 30-60 days.",
-    desc_ta: "அரசு சேவைகள் குறித்த பொது புகார்களை ஆன்லைனில் பதிவு செய்யுங்கள். Reference Number மூலம் நிலை கண்காணிக்கவும்.",
-    url: "https://cms.tn.gov.in",
-    dept_en: "Chief Minister's Secretariat, Tamil Nadu",
-    dept_ta: "முதலமைச்சர் செயலகம், தமிழ்நாடு",
-  },
-  {
-    id: "myscheme",
-    icon: BookOpen,
-    color: "bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400",
-    category: "services",
-    name_en: "myScheme — Scheme Finder",
-    name_ta: "myScheme — திட்ட தேடல்",
-    desc_en: "Discover all central and state government schemes you are eligible for. Answer a few questions about your profile to get personalised scheme recommendations.",
-    desc_ta: "உங்களுக்கு தகுதியான அனைத்து மத்திய மற்றும் மாநில அரசு திட்டங்களை கண்டறியுங்கள்.",
-    url: "https://www.myscheme.gov.in",
-    dept_en: "Ministry of Electronics & IT (MeitY)",
-    dept_ta: "மின்னணு & தகவல் தொழில்நுட்ப அமைச்சகம்",
-  },
-  {
-    id: "pgportal",
-    icon: FileText,
-    color: "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
-    category: "grievance",
-    name_en: "PG Portal — Central Grievances",
-    name_ta: "PG போர்டல் — மத்திய புகார்கள்",
-    desc_en: "Register and track grievances against any central government department or ministry. Monitored by the Prime Minister's Office.",
-    desc_ta: "எந்தவொரு மத்திய அரசு துறை அல்லது அமைச்சகத்திற்கு எதிரான புகார்களை பதிவு செய்து கண்காணிக்கவும்.",
-    url: "https://pgportal.gov.in",
-    dept_en: "Department of Administrative Reforms (DARPG)",
-    dept_ta: "நிர்வார சீர்திருத்த துறை (DARPG)",
-  },
-  {
-    id: "tnpsc",
-    icon: BookOpen,
-    color: "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400",
-    category: "services",
-    name_en: "TNPSC — Govt Job Applications",
-    name_ta: "TNPSC — அரசு வேலை விண்ணப்பங்கள்",
-    desc_en: "Apply for Tamil Nadu Public Service Commission (TNPSC) exams, check notifications, download hall tickets and view results.",
-    desc_ta: "TNPSC தேர்வுகளுக்கு விண்ணப்பிக்கவும், அறிவிப்புகள் பார்க்கவும், ஹால் டிக்கெட் பதிவிறக்கவும்.",
-    url: "https://www.tnpsc.gov.in",
-    dept_en: "Tamil Nadu Public Service Commission",
-    dept_ta: "தமிழ்நாடு அரசுப் பணி அமர்வு",
-  },
-  {
-    id: "consumer",
-    icon: ShieldAlert,
-    color: "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400",
-    category: "rights",
-    name_en: "Consumer Grievance — TN",
-    name_ta: "நுகர்வோர் புகார் — TN",
-    desc_en: "File consumer complaints against businesses, shops, service providers, and manufacturers in Tamil Nadu. Consumer Protection Act 2019.",
-    desc_ta: "Tamil Nadu இல் வணிகங்கள், கடைகள், சேவை வழங்குநர்கள் மீது நுகர்வோர் புகார்களை பதிவு செய்யுங்கள்.",
-    url: "https://consumer.tn.gov.in",
-    dept_en: "Civil Supplies & Consumer Protection Dept.",
-    dept_ta: "குடிமக்கள் வழங்கல் & நுகர்வோர் பாதுகாப்பு துறை",
-  },
-  {
-    id: "twad",
-    icon: Globe,
-    color: "bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400",
-    category: "utilities",
-    name_en: "TWAD Board — Water Services",
-    name_ta: "TWAD வாரியம் — நீர் சேவைகள்",
-    desc_en: "Apply for new water connections, file water supply complaints, track water projects, and manage water-related services.",
-    desc_ta: "புதிய நீர் இணைப்பு விண்ணப்பம், குடிநீர் வழங்கல் புகார்கள், நீர் திட்ட கண்காணிப்பு.",
-    url: "https://twad.tn.gov.in",
-    dept_en: "Tamil Nadu Water Supply & Drainage Board (TWAD)",
-    dept_ta: "தமிழ்நாடு நீர்வழங்கல் & வடிகால் வாரியம்",
-  },
+const PORTAL_ICONS = {
+  "Government Services": Globe,
+  "Utilities": Zap,
+  "Police & Public Safety": ShieldAlert,
+  "Healthcare": Heart,
+  "Rights & Transparency": FileText,
+  "Grievance Redressal": MessageSquare,
+  "Municipal Services": Building2,
+};
+
+const PORTAL_COLORS = {
+  "Government Services": "text-blue-600 bg-blue-500/10 border-blue-500/20",
+  "Utilities": "text-amber-600 bg-amber-500/10 border-amber-500/20",
+  "Police & Public Safety": "text-purple-600 bg-purple-500/10 border-purple-500/20",
+  "Healthcare": "text-red-600 bg-red-500/10 border-red-500/20",
+  "Rights & Transparency": "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+  "Grievance Redressal": "text-indigo-600 bg-indigo-500/10 border-indigo-500/20",
+  "Municipal Services": "text-teal-600 bg-teal-500/10 border-teal-500/20",
+};
+
+const PORTAL_FILTERS = [
+  { id: "all", label_en: "All Portals", label_ta: "அனைத்தும்" },
+  { id: "Government Services", label_en: "e-Sevai & Services", label_ta: "அரசு சேவைகள்" },
+  { id: "Utilities", label_en: "Electricity & Water", label_ta: "மின்சாரம் & குடிநீர்" },
+  { id: "Police & Public Safety", label_en: "Police & Safety", label_ta: "காவல்துறை" },
+  { id: "Healthcare", label_en: "Health & CMCHIS", label_ta: "சுகாதாரம்" },
+  { id: "Rights & Transparency", label_en: "RTI & Rights", label_ta: "RTI & உரிமைகள்" },
+  { id: "Grievance Redressal", label_en: "CM Helpline (CMS)", label_ta: "குறைதீர்ப்பு" },
+  { id: "Municipal Services", label_en: "Municipal & GCC", label_ta: "மாநகராட்சி" },
 ];
 
-const CATEGORY_FILTERS = [
-  { id: "all", label_en: "All Portals", label_ta: "அனைத்து இணையதளங்கள்" },
-  { id: "services", label_en: "Government Services", label_ta: "அரசு சேவைகள்" },
-  { id: "utilities", label_en: "Utilities", label_ta: "பயன்பாட்டு சேவைகள்" },
-  { id: "grievance", label_en: "Grievance / Complaint", label_ta: "புகார் மையங்கள்" },
-  { id: "police", label_en: "Police", label_ta: "காவல் துறை" },
-  { id: "health", label_en: "Health", label_ta: "சுகாதாரம்" },
-  { id: "rights", label_en: "Rights & RTI", label_ta: "உரிமைகள் & RTI" },
-];
-
-export default function AwarenessPortalsPage() {
+export default function AwarenessPortals() {
   const { lang } = useLanguage();
-  const T = (en, ta) => lang === "ta" ? ta : en;
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
+  const T = (en, ta) => (lang === "ta" ? ta : en);
+
+  const portals = useMemo(() => getAllPortals(), []);
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [copiedId, setCopiedId] = useState(null);
 
-  usePageMeta({
-    title: "Official Government Portals Tamil Nadu | VizhiTN",
-    description: "Complete list of official Tamil Nadu government portals — TN e-Sevai, TNEB, TNPDS, RTI Online, CMS Grievance, CMCHIS, myScheme and more with direct links.",
-  });
-
-  const handleCopy = (url, id) => {
+  const handleCopyUrl = (e, url, id) => {
+    e.preventDefault();
+    e.stopPropagation();
     navigator.clipboard.writeText(url).then(() => {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
     });
   };
 
-  const filtered = ALL_PORTALS.filter((p) => {
-    const matchCat = category === "all" || p.category === category;
-    const q = search.toLowerCase();
-    const matchSearch = !q ||
-      p.name_en.toLowerCase().includes(q) ||
-      p.name_ta.includes(q) ||
-      p.desc_en.toLowerCase().includes(q) ||
-      p.url.includes(q);
-    return matchCat && matchSearch;
-  });
+  const filteredPortals = useMemo(() => {
+    return portals.filter((p) => {
+      const matchesCategory =
+        activeCategory === "all" || p.category_en === activeCategory;
+      if (!matchesCategory) return false;
+
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase().trim();
+      return (
+        p.name_en?.toLowerCase().includes(q) ||
+        p.name_ta?.toLowerCase().includes(q) ||
+        p.description_en?.toLowerCase().includes(q) ||
+        p.description_ta?.toLowerCase().includes(q) ||
+        p.dept_en?.toLowerCase().includes(q) ||
+        p.url?.toLowerCase().includes(q)
+      );
+    });
+  }, [portals, activeCategory, searchQuery]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Link to="/awareness" className="inline-flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline mb-6">
-        <ArrowLeft className="w-4 h-4" /> {T("Back to Awareness", "விழிப்புணர்வுக்கு திரும்பு")}
-      </Link>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+      <AwarenessSubNav activePath="/awareness/portals" />
 
-      <div className="mb-7">
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-1">
-          {T("Official Government Portals", "அதிகாரப்பூர்வ அரசு இணையதளங்கள்")}
-        </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          {T(`${ALL_PORTALS.length} verified Tamil Nadu & Central Government portals with direct links.`,
-             `${ALL_PORTALS.length} சரிபார்க்கப்பட்ட TN & மத்திய அரசு இணையதளங்கள் — நேரடி இணைப்புகளுடன்.`)}
-        </p>
-      </div>
+      {/* Hero Header */}
+      <section className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-12 sm:py-16">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-cyan-50 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 mb-4">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              {T("100% Genuine .gov.in and .nic.in Portals", "100% சரிபார்க்கப்பட்ட அரசு இணையதளங்கள்")}
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+              {T("Official Tamil Nadu Government Portals", "அதிகாரப்பூர்வ அரசு இணையதளங்கள்")}
+            </h1>
+            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+              {T(
+                "Access verified state and central government digital portals for citizen certificates, bill payments, police e-FIRs, RTI petitions, and Chief Minister grievances.",
+                "சான்றிதழ்கள், மின்கட்டணம், ரேஷன் அட்டை, காவல்துறை புகார்கள் மற்றும் முதல்வர் தனிப்பிரிவு மனுக்களுக்கான அதிகாரப்பூர்வ இணையதளங்களின் நேரடி தொகுப்பு."
+              )}
+            </p>
+          </div>
 
-      {/* Search + Filter */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={T("Search portals...", "இணையதளங்களை தேடுங்கள்...")}
-            className="w-full pl-10 pr-9 py-2.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {search && (
-            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-              <X className="w-4 h-4" />
-            </button>
-          )}
+          {/* Quick Search & Stats */}
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 max-w-2xl">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={T(
+                  "Search portals (e.g. esevai, tnebltd, tnpds, police, rti, cms)...",
+                  "இணையதளங்களைத் தேடுங்கள் (எ.கா: இ-சேவை, மின்வாரியம், ரேஷன், காவல், rti)..."
+                )}
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                >
+                  {T("Clear", "அழி")}
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-2 px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 self-start sm:self-auto">
+              <Check className="w-4 h-4 text-emerald-500" />
+              <span>{filteredPortals.length} {T("Verified Portals", "இணையதளங்கள்")}</span>
+            </div>
+          </div>
+
+          {/* Category Filter Pills */}
+          <div className="mt-6 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <Filter className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mr-1" />
+            {PORTAL_FILTERS.map((cat) => {
+              const active = activeCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
+                    active
+                      ? "bg-cyan-600 text-white shadow-sm"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  {T(cat.label_en, cat.label_ta)}
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 flex-wrap">
-          {CATEGORY_FILTERS.map((c) => (
+      </section>
+
+      {/* Portals Grid */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {filteredPortals.length === 0 ? (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center">
+            <p className="text-base font-bold text-slate-700 dark:text-slate-300">
+              {T("No portals found matching your search.", "உங்கள் தேடலுக்கு ஏற்ற இணையதளங்கள் கிடைக்கவில்லை.")}
+            </p>
             <button
-              key={c.id}
-              onClick={() => setCategory(c.id)}
-              className={`flex-shrink-0 text-xs font-semibold px-3 py-2 rounded-xl border transition-colors ${
-                category === c.id
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:border-blue-300"
-              }`}
+              onClick={() => {
+                setActiveCategory("all");
+                setSearchQuery("");
+              }}
+              className="mt-4 px-4 py-2 bg-cyan-600 text-white text-xs font-bold rounded-lg hover:bg-cyan-700"
             >
-              {T(c.label_en, c.label_ta)}
+              {T("Reset Filters", "வடிகட்டியை மீட்டமை")}
             </button>
-          ))}
-        </div>
-      </div>
-
-      <p className="text-xs text-slate-400 mb-4">
-        {T(`Showing ${filtered.length} portals`, `${filtered.length} இணையதளங்கள் காட்டப்படுகின்றன`)}
-      </p>
-
-      {/* Portal cards grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.length === 0 ? (
-          <div className="col-span-full text-center py-16 text-slate-400">
-            <Globe className="w-10 h-10 mx-auto mb-3 opacity-30" />
-            <p>{T("No portals found", "இணையதளங்கள் எதுவும் கிடைக்கவில்லை")}</p>
           </div>
         ) : (
-          filtered.map((portal) => {
-            const Icon = portal.icon;
-            return (
-              <div
-                key={portal.id}
-                className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-5 hover:shadow-md transition-all flex flex-col"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${portal.color}`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-slate-800 dark:text-white line-clamp-1">
-                      {T(portal.name_en, portal.name_ta)}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
-                      {T(portal.dept_en, portal.dept_ta)}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPortals.map((portal) => {
+              const Icon = PORTAL_ICONS[portal.category_en] || Globe;
+              const colorClass =
+                PORTAL_COLORS[portal.category_en] || "text-blue-600 bg-blue-500/10 border-blue-500/20";
+              const name = T(portal.name_en, portal.name_ta);
+              const desc = T(portal.description_en, portal.description_ta);
+              const dept = T(portal.dept_en, portal.dept_ta);
+              const categoryBadge = T(portal.category_en, portal.category_ta);
+              const cleanUrl = portal.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
+              return (
+                <article
+                  key={portal.slug}
+                  className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-cyan-500/50 dark:hover:border-cyan-500/50 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                >
+                  <div className="p-6">
+                    {/* Top Row: Icon, Category & Department */}
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-11 h-11 rounded-xl flex items-center justify-center border ${colorClass} transition-transform group-hover:scale-105`}
+                        >
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            {categoryBadge}
+                          </span>
+                          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                            <span className="line-clamp-1 max-w-[180px]">{dept}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Portal Title */}
+                    <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors leading-snug">
+                      <Link href={`/awareness/portal/${portal.slug}`}>
+                        {name}
+                      </Link>
+                    </h2>
+
+                    {/* Description */}
+                    <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
+                      {desc}
                     </p>
+
+                    {/* Verified Domain Pill */}
+                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+                      <span className="font-mono text-xs text-slate-500 dark:text-slate-400 truncate">
+                        {cleanUrl}
+                      </span>
+                      <button
+                        onClick={(e) => handleCopyUrl(e, portal.url, portal.slug)}
+                        title="Copy official URL"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors flex-shrink-0"
+                      >
+                        {copiedId === portal.slug ? (
+                          <Check className="w-3 h-3 text-emerald-500" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                        <span>{copiedId === portal.slug ? T("Copied!", "நகல்!") : T("Copy", "நகல்")}</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4 flex-1">
-                  {T(portal.desc_en, portal.desc_ta)}
-                </p>
+                  {/* Card Footer Actions */}
+                  <div className="px-6 py-3.5 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                    <Link
+                      href={`/awareness/portal/${portal.slug}`}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
+                    >
+                      <span>{T("Services Guide", "சேவை வழிகாட்டல்")}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
 
-                {/* URL pill */}
-                <p className="text-xs text-blue-500 font-mono mb-3 truncate">
-                  {portal.url.replace("https://", "")}
-                </p>
-
-                <div className="flex gap-2 mt-auto">
-                  <a
-                    href={portal.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    {T("Open Portal", "இணையதளம் திற")}
-                  </a>
-                  <button
-                    onClick={() => handleCopy(portal.url, portal.id)}
-                    title="Copy link"
-                    className="flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 px-3 py-2 rounded-xl text-xs transition-colors"
-                  >
-                    {copiedId === portal.id ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copiedId === portal.id ? T("Copied!", "நகலெடுக்கப்பட்டது!") : T("Copy", "நகல்")}
-                  </button>
-                </div>
-              </div>
-            );
-          })
+                    <a
+                      href={portal.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold rounded-xl shadow-2xs transition-all group-hover:translate-x-0.5"
+                    >
+                      <span>{T("Launch Portal", "தளத்திற்குச் செல்")}</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         )}
-      </div>
+
+        {/* Security / Anti-Phishing Advisory */}
+        <section className="mt-14 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-2 border-amber-300 dark:border-amber-800/60 rounded-3xl p-6 sm:p-8">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-xs">
+              <Lock className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                {T("Anti-Phishing Safety: How to Identify Genuine Government Portals", "இணையதள பாதுகாப்பு: போலி தளங்களை எவ்வாறு கண்டறிவது?")}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                {T(
+                  "Scammers frequently create look-alike domains for electricity bills and ration updates. Genuine Tamil Nadu portals exclusively end with '.tn.gov.in', '.gov.in', or '.nic.in'. Never enter your bank password, debit card CVV, or Aadhaar OTP on any commercial domain (.com/.in) pretending to be a department.",
+                  "மின் கட்டணம், ரேஷன் கார்டு போன்ற பெயர்களில் போலியான இணையதளங்கள் உருவாக்கப்படுகின்றன. அதிகாரப்பூர்வ தமிழ்நாடு அரசு தளங்கள் '.tn.gov.in' அல்லது '.gov.in' என்றே முடியும். பிற வணிக தளங்களில் ஆதார் OTP அல்லது வங்கி விவரங்களை பகிர வேண்டாம்."
+                )}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link
+                  href="/awareness/guide/cyber-fraud"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors"
+                >
+                  {T("Read 1930 Cyber Fraud SOP", "1930 சைபர் க்ரைம் வழிகாட்டல்")}
+                </Link>
+                <Link
+                  href="/awareness/guides"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 border border-amber-600/40 text-amber-900 dark:text-amber-300 font-bold text-xs rounded-xl hover:bg-amber-100/50 dark:hover:bg-amber-900/30 transition-colors"
+                >
+                  {T("All Citizen Guides", "அனைத்து வழிகாட்டிகள்")}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Internal Cross Linking */}
+        <AwarenessRelatedLinks currentSection="portals" />
+      </main>
     </div>
   );
 }
