@@ -23,7 +23,7 @@ export async function generateMetadata() {
 
 export default async function TnPoliticsPage() {
   const [posts, mlaTrackers] = await Promise.all([
-    getPoliticsPosts({ limit: 20 }),
+    getPoliticsPosts({ limit: 120 }),
     getAllMLATrackers()
   ])
 

@@ -3,7 +3,8 @@ import { useState, useMemo } from 'react'
 import { Link } from '@/lib/router-compat'
 import { useLanguage } from '@/context/LanguageContext'
 import MlaPhoto from '@/components/MlaPhoto'
-import { Search, MapPin, ChevronRight, Users, Newspaper, Filter } from 'lucide-react'
+import { Search, MapPin, ChevronRight, Users } from 'lucide-react'
+import NumberedPagination from '@/components/common/NumberedPagination'
 
 const POST_TYPE_LABELS = {
   en: {
@@ -41,11 +42,14 @@ const PARTY_COLORS = {
   independent: '#64748B'
 }
 
+const POSTS_PER_PAGE = 8
+
 export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
   const { lang } = useLanguage()
   const isTa = lang === 'ta'
 
   const [activeFilter, setActiveFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
   const [mlaSearch, setMlaSearch] = useState('')
   const [mlaPartyFilter, setMlaPartyFilter] = useState('all')
 
@@ -58,9 +62,18 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
     { key: 'policy_explainer', label: isTa ? 'கொள்கைகள்' : 'Policies' }
   ]
 
-  const filteredPosts = activeFilter === 'all' 
-    ? posts 
-    : posts.filter(p => p.post_type === activeFilter)
+  const filteredPosts = useMemo(() => {
+    return activeFilter === 'all'
+      ? posts
+      : posts.filter(p => p.post_type === activeFilter)
+  }, [posts, activeFilter])
+
+  const totalPosts = filteredPosts.length
+  const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE))
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE
+  const paginatedPosts = useMemo(() => {
+    return filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE)
+  }, [filteredPosts, startIndex])
 
   // Filter MLAs by search and party on the left panel
   const filteredMlas = useMemo(() => {
@@ -140,63 +153,48 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
                 <button
                   key={party}
                   onClick={() => setMlaPartyFilter(party)}
-                  className={`px-2.5 py-1 rounded-lg font-bold transition-all shrink-0 ${
+                  className={`px-2.5 py-1 rounded-lg font-bold uppercase transition-all ${
                     mlaPartyFilter === party
-                      ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
+                      ? 'bg-blue-600 text-white shadow-xs'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                   }`}
                 >
-                  {party === 'all' ? (isTa ? 'அனைத்து' : 'All') : party.toUpperCase()}
+                  {party}
                 </button>
               ))}
             </div>
 
-            {/* Scrollable MLA List */}
-            <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[580px] overflow-y-auto pr-1 space-y-1">
+            {/* MLA List Scroll Container */}
+            <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
               {filteredMlas.length === 0 && (
-                <div className="py-8 text-center text-xs text-slate-400">
-                  {isTa ? 'பிரதிநிதிகள் கிடைக்கவில்லை' : 'No MLAs matched your search.'}
-                </div>
+                <p className="text-xs text-slate-400 text-center py-6">
+                  {isTa ? 'எந்த உறுப்பினரும் கிடைக்கவில்லை' : 'No MLAs match search'}
+                </p>
               )}
 
               {filteredMlas.map(mla => (
                 <Link
-                  key={mla.district_slug}
-                  href={`/tn-politics/mla/${mla.district_slug}`}
-                  className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-all group"
+                  key={mla.id || mla.mla_slug}
+                  href={`/tn-politics/mla/${mla.district_slug || 'tamil-nadu'}`}
+                  className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition-all group"
                 >
-                  <MlaPhoto 
-                    photoUrl={mla.photo_url} 
-                    name={mla.mla_name} 
-                    partySlug={mla.party_slug} 
-                    size="sm" 
+                  <MlaPhoto
+                    photoUrl={mla.photo_url}
+                    name={mla.mla_name}
+                    party={mla.party_slug}
+                    size="md"
                   />
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wide text-slate-400 truncate">
-                        {isTa ? (mla.district_name_ta || mla.district_name) : mla.district_name}
-                      </span>
-                      <span
-                        className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white shrink-0"
-                        style={{ background: PARTY_COLORS[mla.party_slug] || '#666' }}
-                      >
-                        {mla.party_name}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-xs truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {isTa ? (mla.mla_name_ta || mla.mla_name) : mla.mla_name}
                       </span>
                     </div>
 
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {isTa ? (mla.mla_name_ta || mla.mla_name) : mla.mla_name}
-                    </h4>
-
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 mt-0.5">
-                      <span className="truncate max-w-[140px]">
-                        {isTa ? (mla.constituency_ta || mla.constituency) : mla.constituency}
-                      </span>
-                      <span className="font-bold text-blue-600 dark:text-blue-400 shrink-0">
-                        {mla.performance_score || 85}/100
-                      </span>
-                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                      {isTa ? (mla.constituency_ta || mla.constituency) : mla.constituency} • {isTa ? (mla.district_name_ta || mla.district_name) : mla.district_name}
+                    </p>
                   </div>
 
                   <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors shrink-0" />
@@ -210,7 +208,7 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
         {/* ================================================================ */}
         {/* RIGHT COLUMN: Political News Feed, Portals & Filter Controls     */}
         {/* ================================================================ */}
-        <main className="order-1 lg:order-2 lg:col-span-7 xl:col-span-8 space-y-6">
+        <main id="tn-politics-feed-top" className="order-1 lg:order-2 lg:col-span-7 xl:col-span-8 space-y-6">
           
           {/* Header Banner */}
           <div className="politics-header bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-lg border border-slate-800">
@@ -259,7 +257,10 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
             {filters.map(f => (
               <button 
                 key={f.key}
-                onClick={() => setActiveFilter(f.key)}
+                onClick={() => {
+                  setActiveFilter(f.key)
+                  setCurrentPage(1)
+                }}
                 className={`filter-chip px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
                   activeFilter === f.key 
                     ? 'active bg-blue-600 text-white shadow-xs' 
@@ -281,7 +282,7 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
               </div>
             )}
 
-            {filteredPosts.map(post => {
+            {paginatedPosts.map(post => {
               const displayTitle = isTa ? (post.title_ta || post.title_en) : post.title_en
               const subtitle = isTa ? post.title_en : post.title_ta
               const labelMap = isTa ? POST_TYPE_LABELS.ta : POST_TYPE_LABELS.en
@@ -338,6 +339,17 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
               )
             })}
           </div>
+
+          {/* Numbered Pagination */}
+          <NumberedPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalPosts}
+            itemsPerPage={POSTS_PER_PAGE}
+            onPageChange={setCurrentPage}
+            scrollTargetId="tn-politics-feed-top"
+            itemLabel={isTa ? "செய்திகள்" : "reports"}
+          />
 
         </main>
 

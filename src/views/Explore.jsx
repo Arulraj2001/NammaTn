@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import React, { useState, useMemo, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, Link } from "@/lib/router-compat";
 import { Search, SlidersHorizontal, X, FileText, RefreshCw, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,7 @@ import { isPubliclyVisible } from "@/lib/visibility";
 import AdSlot from "@/components/ads/AdSlot";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
+import NumberedPagination from "@/components/common/NumberedPagination";
 
 const TYPES = [
   { value: "all", en: "All Types", ta: "அனைத்து வகைகளும்" },
@@ -43,12 +44,7 @@ const SORT_OPTIONS = [
   { value: "-verification_count", en: "Most Verified", ta: "அதிகம் சரிபார்க்கப்பட்டவை" },
 ];
 
-const PAGE_SIZE = 18;
-
-const getNextCursor = (lastPage) => {
-  if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;
-  return lastPage[lastPage.length - 1]?.created_date;
-};
+const PAGE_SIZE = 15;
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371; // Radius of the earth in km
@@ -82,44 +78,20 @@ export default function Explore({ initialPosts = [] }) {
   const [civicStatusFilter, setCivicStatusFilter] = useState("all");
   const [sort, setSort] = useState("-created_date");
   const [showFilters, setShowFilters] = useState(false);
-  const loadMoreRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
-    data,
+    data: posts = [],
     isLoading,
     isError,
     refetch,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["posts", "explore"],
-    queryFn: ({ pageParam = null }) => getActivePosts({ limit: PAGE_SIZE, cursor: pageParam }),
-    initialPageParam: null,
-    initialData: { pages: [initialPosts], pageParams: [null] },
-    getNextPageParam: getNextCursor,
-    staleTime: 10_000,
+  } = useQuery({
+    queryKey: ["posts", "explore-feed"],
+    queryFn: () => getActivePosts(180),
+    initialData: initialPosts && initialPosts.length > 0 ? initialPosts : undefined,
+    staleTime: 30_000,
     refetchOnMount: true,
   });
-
-  const posts = useMemo(() => data?.pages.flatMap((page) => page) || [], [data]);
-
-  useEffect(() => {
-    const el = loadMoreRef.current;
-    if (!el || !hasNextPage) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { rootMargin: "600px 0px" }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const filtered = useMemo(() => {
     const userLat = latParam ? parseFloat(latParam) : null;
@@ -172,6 +144,13 @@ export default function Explore({ initialPosts = [] }) {
     });
   }, [posts, typeFilter, districtFilter, categoryFilter, civicStatusFilter, search, sort, latParam, lngParam, nearbyParam]);
 
+  const totalPosts = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalPosts / PAGE_SIZE));
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedPosts = useMemo(() => {
+    return filtered.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [filtered, startIndex]);
+
   const activeFilterCount = [
     typeFilter !== "all",
     districtFilter !== "all",
@@ -183,13 +162,17 @@ export default function Explore({ initialPosts = [] }) {
   const clearFilters = useCallback(() => {
     setTypeFilter("all"); setDistrictFilter("all"); setCategoryFilter("all");
     setCivicStatusFilter("all"); setSort("-created_date"); setSearch("");
+    setCurrentPage(1);
     setSearchParams({});
   }, [setSearchParams]);
 
-  const handleTypeChange = (val) => { setTypeFilter(val); };
+  const handleTypeChange = (val) => {
+    setTypeFilter(val);
+    setCurrentPage(1);
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="explore-feed-top" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">
@@ -206,20 +189,31 @@ export default function Explore({ initialPosts = [] }) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder={T("Search posts, civic receipts...", "பதிவுகள், குடிமை ரசீதுகள் தேடுங்கள்...")}
             className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {search && (
-            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+            <button
+              onClick={() => {
+                setSearch("");
+                setCurrentPage(1);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
-        <button onClick={() => setShowFilters(!showFilters)}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors flex-shrink-0 ${
             showFilters || activeFilterCount > 0 ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"
-          }`}>
+          }`}
+        >
           <SlidersHorizontal className="w-4 h-4" />
           {T("Filters", "வடிகட்டிகள்")}
           {activeFilterCount > 0 && <span className="bg-white text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">{activeFilterCount}</span>}
@@ -229,10 +223,13 @@ export default function Explore({ initialPosts = [] }) {
       {/* Type chips */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
         {TYPES.map((t) => (
-          <button key={t.value} onClick={() => handleTypeChange(t.value)}
+          <button
+            key={t.value}
+            onClick={() => handleTypeChange(t.value)}
             className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
               typeFilter === t.value ? "bg-blue-600 text-white" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700"
-            }`}>
+            }`}
+          >
             {t.value === "civic" && <FileText className="w-3.5 h-3.5 inline mr-1" />}
             {T(t.en, t.ta)}
           </button>
@@ -242,19 +239,46 @@ export default function Explore({ initialPosts = [] }) {
       {/* Expanded filters */}
       <AnimatePresence>
         {showFilters && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 mb-4 overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 mb-4 overflow-hidden"
+          >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
-                { label: T("Sort by", "வரிசைப்படுத்து"), value: sort, onChange: setSort, opts: SORT_OPTIONS.map((o) => ({ value: o.value, label: T(o.en, o.ta) })) },
-                { label: T("District", "மாவட்டம்"), value: districtFilter, onChange: setDistrictFilter, opts: [{ value: "all", label: T("All Districts", "அனைத்து மாவட்டங்கள்") }, ...DISTRICTS.map((d) => ({ value: d.slug, label: T(d.name_en, d.name_ta) }))] },
-                { label: T("Category", "வகை"), value: categoryFilter, onChange: setCategoryFilter, opts: [{ value: "all", label: T("All Categories", "அனைத்து வகைகளும்") }, ...CATEGORIES.map((c) => ({ value: c.slug, label: `${c.icon} ${T(c.name_en, c.name_ta)}` }))] },
-                { label: T("Civic Status", "குடிமை நிலை"), value: civicStatusFilter, onChange: setCivicStatusFilter, opts: CIVIC_STATUS_FILTERS.map((o) => ({ value: o.value, label: T(o.en, o.ta) })) },
+                {
+                  label: T("Sort by", "வரிசைப்படுத்து"),
+                  value: sort,
+                  onChange: (v) => { setSort(v); setCurrentPage(1); },
+                  opts: SORT_OPTIONS.map((o) => ({ value: o.value, label: T(o.en, o.ta) }))
+                },
+                {
+                  label: T("District", "மாவட்டம்"),
+                  value: districtFilter,
+                  onChange: (v) => { setDistrictFilter(v); setCurrentPage(1); },
+                  opts: [{ value: "all", label: T("All Districts", "அனைத்து மாவட்டங்கள்") }, ...DISTRICTS.map((d) => ({ value: d.slug, label: T(d.name_en, d.name_ta) }))]
+                },
+                {
+                  label: T("Category", "வகை"),
+                  value: categoryFilter,
+                  onChange: (v) => { setCategoryFilter(v); setCurrentPage(1); },
+                  opts: [{ value: "all", label: T("All Categories", "அனைத்து வகைகளும்") }, ...CATEGORIES.map((c) => ({ value: c.slug, label: `${c.icon} ${T(c.name_en, c.name_ta)}` }))]
+                },
+                {
+                  label: T("Civic Status", "குடிமை நிலை"),
+                  value: civicStatusFilter,
+                  onChange: (v) => { setCivicStatusFilter(v); setCurrentPage(1); },
+                  opts: CIVIC_STATUS_FILTERS.map((o) => ({ value: o.value, label: T(o.en, o.ta) }))
+                },
               ].map((f) => (
                 <div key={f.label}>
                   <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">{f.label}</label>
-                  <select value={f.value} onChange={(e) => f.onChange(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white">
+                  <select
+                    value={f.value}
+                    onChange={(e) => f.onChange(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white"
+                  >
                     {f.opts.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                   </select>
                 </div>
@@ -276,6 +300,7 @@ export default function Explore({ initialPosts = [] }) {
               params.delete("lng");
               params.delete("nearby");
               setSearchParams(params);
+              setCurrentPage(1);
             }}
             className="ml-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-100 transition-colors"
             title={T("Clear location filter", "இருப்பிட வடிகட்டியை அழி")}
@@ -288,10 +313,11 @@ export default function Explore({ initialPosts = [] }) {
       {/* Count + clear */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          {isLoading
-            ? <span className="flex items-center gap-1.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> {T("Loading...", "ஏற்றுகிறது...")}</span>
-            : `${filtered.length} ${T("posts found", "பதிவுகள் கண்டுபிடிக்கப்பட்டன")}`
-          }
+          {isLoading ? (
+            <span className="flex items-center gap-1.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> {T("Loading...", "ஏற்றுகிறது...")}</span>
+          ) : (
+            `${filtered.length} ${T("posts found", "பதிவுகள் கண்டுபிடிக்கப்பட்டன")}`
+          )}
         </p>
         {activeFilterCount > 0 && (
           <button onClick={clearFilters} className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1">
@@ -321,17 +347,11 @@ export default function Explore({ initialPosts = [] }) {
           <Link to="/create" className="inline-flex items-center gap-1 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">
             {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு")}
           </Link>
-          <div ref={loadMoreRef} className="h-10" aria-hidden="true" />
-          {isFetchingNextPage && (
-            <div className="flex justify-center mt-4">
-              <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
-            </div>
-          )}
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((post, i) => (
+            {paginatedPosts.map((post, i) => (
               <div key={post.id} className="contents">
                 <PostCard post={post} />
                 {i === 8 && (
@@ -342,12 +362,17 @@ export default function Explore({ initialPosts = [] }) {
               </div>
             ))}
           </div>
-          <div ref={loadMoreRef} className="h-10" aria-hidden="true" />
-          {isFetchingNextPage && (
-            <div className="flex justify-center mt-6">
-              <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
-            </div>
-          )}
+
+          {/* Numbered Pagination */}
+          <NumberedPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalPosts}
+            itemsPerPage={PAGE_SIZE}
+            onPageChange={setCurrentPage}
+            scrollTargetId="explore-feed-top"
+            itemLabel={T("posts", "பதிவுகள்")}
+          />
         </>
       )}
 

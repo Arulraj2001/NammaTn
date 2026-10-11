@@ -32,6 +32,7 @@ import { getSituationsByDistrict } from "@/services/situations";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { injectFAQStructuredData, injectDistrictStructuredData } from "@/lib/seo";
 import AdSlot from "@/components/ads/AdSlot";
+import NumberedPagination from "@/components/common/NumberedPagination";
 
 const HELPLINES = [
   { name_en: "Minnalagam EB", name_ta: "மின்வாரியம் 24x7", number: "1912", desc: "Power Cuts & Live Wires", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
@@ -42,21 +43,6 @@ const HELPLINES = [
 ];
 
 const POSTS_PER_PAGE = 9;
-
-function getPageNumbers(currentPage, totalPages) {
-  if (totalPages <= 6) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
-  }
-  const pages = [];
-  if (currentPage <= 3) {
-    pages.push(1, 2, 3, 4, "...", totalPages);
-  } else if (currentPage >= totalPages - 2) {
-    pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-  } else {
-    pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
-  }
-  return pages;
-}
 
 export default function DistrictDetail({ initialSlug }) {
   const routeParams = useParams();
@@ -215,10 +201,6 @@ export default function DistrictDetail({ initialSlug }) {
   const paginatedPosts = useMemo(() => {
     return displayedPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
   }, [displayedPosts, startIndex]);
-
-  const pageNumbers = useMemo(() => {
-    return getPageNumbers(currentPage, totalPages);
-  }, [currentPage, totalPages]);
 
   if (!district) {
     return (
@@ -609,83 +591,24 @@ export default function DistrictDetail({ initialSlug }) {
               ))}
             </div>
 
-            {/* ── PAGINATION CONTROLS (Next, 1, 2, 3, 5...) ── */}
-            {totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {T(
-                    `Showing ${startIndex + 1}–${Math.min(startIndex + POSTS_PER_PAGE, totalPosts)} of ${totalPosts} ${
-                      activeTab === "alerts"
-                        ? "alerts"
-                        : activeTab === "complaints"
-                        ? "grievances"
-                        : activeTab === "fixed"
-                        ? "resolved items"
-                        : "updates"
-                    }`,
-                    `மொத்தம் ${totalPosts} பதிவுகளில் ${startIndex + 1}–${Math.min(startIndex + POSTS_PER_PAGE, totalPosts)} காட்டப்படுகிறது`
-                  )}
-                </p>
-
-                <div className="flex items-center gap-1.5 flex-wrap justify-center">
-                  {/* Previous Button */}
-                  <button
-                    onClick={() => {
-                      if (currentPage > 1) {
-                        setCurrentPage((p) => p - 1);
-                        scrollToContent();
-                      }
-                    }}
-                    disabled={currentPage === 1}
-                    aria-label="Previous Page"
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5" />
-                    <span>{T("Prev", "முந்தைய")}</span>
-                  </button>
-
-                  {/* Page Numbers */}
-                  {pageNumbers.map((page, idx) =>
-                    page === "..." ? (
-                      <span key={`dots-${idx}`} className="px-2 text-xs text-slate-400">
-                        ...
-                      </span>
-                    ) : (
-                      <button
-                        key={page}
-                        onClick={() => {
-                          setCurrentPage(page);
-                          scrollToContent();
-                        }}
-                        className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
-                          currentPage === page
-                            ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                            : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
-
-                  {/* Next Button */}
-                  <button
-                    onClick={() => {
-                      if (currentPage < totalPages) {
-                        setCurrentPage((p) => p + 1);
-                        scrollToContent();
-                      }
-                    }}
-                    disabled={currentPage === totalPages}
-                    aria-label="Next Page"
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                  >
-                    <span>{T("Next", "அடுத்தது")}</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* ── PAGINATION CONTROLS ── */}
+            <NumberedPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalPosts}
+              itemsPerPage={POSTS_PER_PAGE}
+              onPageChange={setCurrentPage}
+              scrollTargetId="district-content-hub"
+              itemLabel={
+                activeTab === "alerts"
+                  ? "alerts"
+                  : activeTab === "complaints"
+                  ? "grievances"
+                  : activeTab === "fixed"
+                  ? "resolved items"
+                  : "updates"
+              }
+            />
           </>
         )}
       </section>

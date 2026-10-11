@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Link, useParams } from "@/lib/router-compat";
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getPublishedTnToday, getFeaturedTnToday } from "@/services/tnToday";
 import { format } from "date-fns";
 import { Clock, Calendar, ArrowRight, BookOpen, Search, X, Tag } from "lucide-react";
@@ -13,6 +13,7 @@ import { TN_TODAY_CATEGORIES as CATEGORIES } from '@/lib/tnTodayCategories';
 import { useLanguage } from "@/context/LanguageContext";
 import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 import { isImagePrompt } from "@/lib/tntodayPosterGenerator";
+import NumberedPagination from "@/components/common/NumberedPagination";
 
 /**
  * Resolves clean 16:9 editorial imagery for TN Today articles.
@@ -148,6 +149,7 @@ function EmptyState({ categoryLabel }) {
 export default function TnToday({ initialArticles = [], initialFeatured = null }) {
   const { category: currentCategory } = useParams();
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const activeCategory = CATEGORIES.find(c => c.value === currentCategory);
 
@@ -165,43 +167,41 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
     gcTime: 30_000,
   });
 
-  const PAGE_SIZE = 20;
+  const PAGE_SIZE = 10;
 
   const {
-    data: articlesData = { pages: [] },
+    data: articles = [],
     isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
+  } = useQuery({
     queryKey: ["tn-today-articles", currentCategory ?? ""],
-    queryFn: ({ pageParam = 0 }) => getPublishedTnToday({
+    queryFn: () => getPublishedTnToday({
       category: currentCategory || null,
-      limit: PAGE_SIZE,
-      offset: pageParam,
+      limit: 120,
     }),
-    initialPageParam: 0,
-    initialData: !currentCategory && initialArticles.length
-      ? { pages: [initialArticles], pageParams: [0] }
-      : undefined,
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage && lastPage.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined,
-    staleTime: 0,
-    gcTime: 30_000,
+    initialData: !currentCategory && initialArticles.length ? initialArticles : undefined,
+    staleTime: 30_000,
+    gcTime: 60_000,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
 
-  const articles = articlesData.pages.flat();
+  const filtered = useMemo(() => {
+    return articles.filter(a => {
+      if (!search.trim()) return true;
+      const q = search.toLowerCase();
+      return a.title?.toLowerCase().includes(q) || a.subtitle?.toLowerCase().includes(q);
+    });
+  }, [articles, search]);
 
-  const filtered = articles.filter(a => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return a.title?.toLowerCase().includes(q) || a.subtitle?.toLowerCase().includes(q);
-  });
+  const totalArticles = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalArticles / PAGE_SIZE));
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedArticles = useMemo(() => {
+    return filtered.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [filtered, startIndex]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
+    <div id="tntoday-stories-top" className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
 
         {/* ── Page Header ────────────────────────────────────────────────────── */}
@@ -224,12 +224,21 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
             <Input
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder="Search articles..."
               className="pl-9 pr-8 py-2 rounded-xl text-sm"
             />
             {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setCurrentPage(1);
+                }}
+                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+              >
                 <X className="w-4 h-4" />
               </button>
             )}
@@ -239,6 +248,7 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
         {/* ── Category filter pills ───────────────────────────────────────────── */}
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
           <Link to="/tn-today"
+            onClick={() => setCurrentPage(1)}
             className={cn(
               "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border-2",
               !currentCategory
@@ -249,6 +259,7 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
           </Link>
           {CATEGORIES.filter(cat => cat.value).map(cat => (
             <Link key={cat.value} to={`/tn-today/category/${cat.value}`}
+              onClick={() => setCurrentPage(1)}
               className={cn(
                 "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border-2",
                 currentCategory === cat.value
@@ -276,24 +287,21 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
         ) : filtered.length > 0 ? (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filtered.map(article => (
+              {paginatedArticles.map(article => (
                 <ArticleCard key={article.id} article={article} />
               ))}
             </div>
 
-            {/* Load More Pagination — fetches the next page from the database */}
-            {hasNextPage && (
-              <div className="flex justify-center pt-4">
-                <button
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
-                  className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 text-slate-800 dark:text-slate-200 font-extrabold px-6 py-3 rounded-2xl shadow-sm hover:shadow-md transition-all text-xs flex items-center gap-2"
-                >
-                  <span>{isFetchingNextPage ? "Loading more stories…" : "Load More Stories"}</span>
-                  <ArrowRight className="w-4 h-4 text-blue-500" />
-                </button>
-              </div>
-            )}
+            {/* Numbered Pagination (replaces Load More) */}
+            <NumberedPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalArticles}
+              itemsPerPage={PAGE_SIZE}
+              onPageChange={setCurrentPage}
+              scrollTargetId="tntoday-stories-top"
+              itemLabel="stories"
+            />
           </div>
         ) : (
           <EmptyState categoryLabel={activeCategory?.label} />
