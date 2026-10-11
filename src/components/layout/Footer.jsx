@@ -15,6 +15,7 @@ const FOOTER_COLUMNS = [
     links: [
       { path: "/power-cuts-today-tamil-nadu", en: "Power Cuts Today",     ta: "இன்றைய மின்தடை" },
       { path: "/school-college-holiday-alerts", en: "Holiday Alerts",    ta: "பள்ளி விடுமுறை" },
+      { path: "/tn-politics", en: "TN Politics",          ta: "தமிழக அரசியல்" },
       { path: "/create",      en: "Create Civic Receipt", ta: "குடிமை ரசீது உருவாக்கு" },
       { path: "/bribes",      en: "Bribe Tracker",        ta: "லஞ்சக் கண்காணிப்பு" },
       { path: "/explore",     en: "Explore",              ta: "ஆராய்க" },
@@ -59,6 +60,7 @@ const FOOTER_COLUMNS = [
     ta_title: "உதவி மையம்",
     links: [
       { path: "/about",          en: "About VizhiTN",  ta: "VizhiTN பற்றி" },
+      { path: "/press",          en: "Press & Media",  ta: "செய்தி & ஊடகம்" },
       { path: "/help",           en: "Help Centre",    ta: "உதவி மையம்" },
       { path: "/how-to-use",     en: "How to Use",     ta: "பயன்படுத்துவது எப்படி" },
       { path: "/support",        en: "Support",        ta: "ஆதரவு" },
@@ -102,6 +104,20 @@ function WhatsAppIcon() {
   return (
     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
       <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.167 1.45 4.814 1.453 5.457 0 9.895-4.436 9.898-9.896.002-2.646-1.018-5.132-2.873-6.99C15.823 1.863 13.334.844 10.692.844 5.234.844.798 5.281.795 10.741c-.001 1.702.447 3.366 1.3 4.84l-.995 3.637 3.737-.98c1.477.805 3.125 1.233 4.805 1.235zm11.232-7.653c-.307-.154-1.82-.898-2.102-1.001-.282-.103-.487-.154-.691.154-.205.308-.795 1.001-.974 1.205-.179.205-.359.231-.666.077-.307-.154-1.3-.478-2.476-1.527-.914-.815-1.53-1.822-1.71-2.129-.18-.308-.019-.475.135-.629.138-.138.307-.359.461-.539.154-.179.205-.308.307-.513.103-.205.051-.385-.026-.539-.077-.154-.691-1.667-.948-2.283-.25-.6-.525-.519-.72-.529-.186-.009-.4-.01-.614-.01-.215 0-.564.081-.861.405-.297.324-1.133 1.107-1.133 2.7 0 1.593 1.159 3.13 1.318 3.344.159.214 2.28 3.482 5.522 4.883.771.333 1.373.532 1.84.68.775.246 1.48.212 2.037.129.621-.093 1.82-.744 2.076-1.462.256-.718.256-1.333.179-1.462-.076-.128-.282-.205-.589-.359z"/>
+    </svg>
+  );
+}
+function YouTubeIcon() {
+  return (
+    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+    </svg>
+  );
+}
+function LinkedInIcon() {
+  return (
+    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
     </svg>
   );
 }
@@ -166,6 +182,8 @@ export default function Footer() {
                 { icon: <InstagramIcon />, label: "Instagram", key: "social_instagram", defaultUrl: "https://www.instagram.com/vizhi_tn/" },
                 { icon: <TelegramIcon />,  label: "Telegram", key: "social_telegram", defaultUrl: "https://t.me/vizhitn" },
                 { icon: <WhatsAppIcon />,  label: "WhatsApp", key: "social_whatsapp", defaultUrl: "https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228" },
+                { icon: <YouTubeIcon />,   label: "YouTube", key: "social_youtube", defaultUrl: "https://www.youtube.com/@VizhiTN" },
+                { icon: <LinkedInIcon />,  label: "LinkedIn", key: "social_linkedin", defaultUrl: "https://www.linkedin.com/company/vizhitn" },
               ].map(({ icon, label, key, defaultUrl }) => {
                 const url = settings[key] || defaultUrl;
                 if (!url || url.trim() === "") return null;

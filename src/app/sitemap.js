@@ -370,7 +370,7 @@ export default async function sitemap() {
     '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
     '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
     '/support', '/rwa', '/csr',
-    '/about', '/contact', '/privacy-policy', '/terms', '/how-to-use',
+    '/about', '/press', '/contact', '/privacy-policy', '/terms', '/how-to-use',
   ].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,
