@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import {
   Clock, Calendar, User, ChevronRight, Share2, ExternalLink,
   MessageSquare, ArrowLeft, CheckCircle2, AlertCircle, BookOpen,
-  Clipboard, Copy, Hash, ArrowRight, MapPin, ShieldCheck, FileCheck
+  Clipboard, Copy, Hash, ArrowRight, MapPin, ShieldCheck, FileCheck, Home
 } from "lucide-react";
 import { setPageMeta } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
 import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
+import { getCivicPhoto } from "@/lib/civicPhotoCatalog";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -363,11 +364,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const { lang } = useLanguage();
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [autoTa, setAutoTa] = React.useState(null);
-  const [heroImg, setHeroImg] = React.useState(
-    (initialArticle?.featured_image && isImageUrl(initialArticle.featured_image))
-      ? initialArticle.featured_image
-      : `/images/tntoday/${(initialArticle?.category || "general").toLowerCase()}.webp`
-  );
+  const [heroPhoto, setHeroPhoto] = React.useState(() => getCivicPhoto(initialArticle || {}));
 
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ["tn-today-article", slug],
@@ -475,13 +472,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
 
   React.useEffect(() => {
     if (article) {
-      const rawImg = (article.featured_image || "").trim();
-      if (rawImg && !rawImg.includes("/api/og?") && (isImageUrl(rawImg) || !isImagePrompt(rawImg))) {
-        setHeroImg(rawImg);
-      } else {
-        const cat = (article.category || "general").toLowerCase();
-        setHeroImg(`/images/tntoday/${cat}.webp`);
-      }
+      setHeroPhoto(getCivicPhoto(article));
     }
   }, [article, displayTitle, displaySubtitle]);
 
@@ -503,15 +494,30 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
       </div>
 
       {/* ── Breadcrumb ── */}
-      <nav className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 overflow-hidden" aria-label="Breadcrumb">
-        <ol className="flex items-center gap-1 sm:gap-1.5 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
-          <li><Link to="/" className="hover:text-blue-600 transition-colors whitespace-nowrap">{T("Home", "முகப்பு")}</Link></li>
-          <ChevronRight className="w-3 h-3 flex-shrink-0 opacity-60" />
-          <li><Link to="/tn-today" className="hover:text-blue-600 transition-colors whitespace-nowrap">TN Today</Link></li>
-          <ChevronRight className="w-3 h-3 flex-shrink-0 opacity-60" />
-          <li><Link to={`/tn-today/category/${article.category}`} className="hover:text-blue-600 transition-colors capitalize whitespace-nowrap">{article.category}</Link></li>
-          <ChevronRight className="w-3 h-3 flex-shrink-0 opacity-60" />
-          <li className="text-slate-700 dark:text-slate-300 truncate max-w-[130px] sm:max-w-[260px]">{displayTitle}</li>
+      <nav className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 text-xs" aria-label="Breadcrumb">
+        <ol className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-0.5">
+          <li className="flex-shrink-0">
+            <Link to="/" className="inline-flex items-center gap-1 text-slate-500 hover:text-civic-600 dark:text-slate-400 dark:hover:text-civic-300 font-medium transition-colors">
+              <Home className="w-3.5 h-3.5 text-civic-500" />
+              <span>{T("Home", "முகப்பு")}</span>
+            </Link>
+          </li>
+          <ChevronRight className="w-3.5 h-3.5 text-civic-400 dark:text-civic-600 stroke-[2] flex-shrink-0" />
+          <li className="flex-shrink-0">
+            <Link to="/tn-today" className="text-slate-500 hover:text-civic-600 dark:text-slate-400 dark:hover:text-civic-300 font-medium transition-colors">
+              TN Today
+            </Link>
+          </li>
+          <ChevronRight className="w-3.5 h-3.5 text-civic-400 dark:text-civic-600 stroke-[2] flex-shrink-0" />
+          <li className="flex-shrink-0">
+            <Link to={`/tn-today/category/${article.category}`} className="text-slate-500 hover:text-civic-600 dark:text-slate-400 dark:hover:text-civic-300 font-medium transition-colors capitalize">
+              {article.category}
+            </Link>
+          </li>
+          <ChevronRight className="w-3.5 h-3.5 text-civic-400 dark:text-civic-600 stroke-[2] flex-shrink-0" />
+          <li className="flex-shrink-0 font-bold text-civic-900 dark:text-white truncate max-w-[200px] sm:max-w-md" title={displayTitle}>
+            {displayTitle}
+          </li>
         </ol>
       </nav>
 
@@ -564,13 +570,49 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
               </button>
             </div>
 
-            {/* Featured image — render photo URL or fallback to auto-generated TNToday Branded Poster */}
-            {heroImg ? (
-              <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 bg-slate-950">
-                <Image src={heroImg} alt={displayTitle} width={1200} height={675} unoptimized className="w-full aspect-[16/9] max-h-[440px] sm:max-h-[500px] object-cover" />
+            {/* Featured image — Newsroom Hybrid Real Photo with Editorial Lower Third */}
+            {heroPhoto?.url ? (
+              <div className="mb-6 rounded-2xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800 bg-slate-950 relative group">
+                <div className="relative aspect-[16/9] max-h-[440px] sm:max-h-[500px] overflow-hidden">
+                  <Image
+                    src={heroPhoto.url}
+                    alt={heroPhoto.alt_ta && lang === "ta" ? heroPhoto.alt_ta : (heroPhoto.alt_en || displayTitle)}
+                    width={1200}
+                    height={675}
+                    unoptimized
+                    priority
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                  {/* Subtle lower-third editorial gradient scrim */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent pointer-events-none" />
+
+                  {/* Top floating pill */}
+                  <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
+                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white border border-white/20 shadow-sm flex items-center gap-1.5 uppercase tracking-wide">
+                      <span>📰</span>
+                      <span>TN TODAY EXCLUSIVE</span>
+                    </span>
+                  </div>
+
+                  {/* Lower-third caption inside image */}
+                  <div className="absolute bottom-3 inset-x-4 flex items-end justify-between gap-3 text-white">
+                    <p className="text-xs sm:text-sm font-semibold text-slate-200 line-clamp-1 drop-shadow-md">
+                      {heroPhoto.alt_ta && lang === "ta" ? heroPhoto.alt_ta : (heroPhoto.alt_en || displayTitle)}
+                    </p>
+                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/90 backdrop-blur-md text-white shadow-sm flex-shrink-0 flex items-center gap-1">
+                      ✓ {T("Verified Story", "உண்மை சரிபார்க்கப்பட்டது")}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Bottom Source & Credit strip */}
                 <div className="px-4 py-2 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>📷 {T("Visual Archive • VizhiTN Field Desk", "படத்தொகுப்பு • VizhiTN கள ஆய்வு பிரிவு")}</span>
-                  <span className="font-semibold text-emerald-400">✓ {T("Verified Story", "உண்மை சரிபார்க்கப்பட்ட செய்தி")}</span>
+                  <span className="truncate max-w-[70%]">
+                    {heroPhoto.credit || "📷 Visual Archive • VizhiTN Field Desk"}
+                  </span>
+                  <span className="text-slate-500 font-mono text-[10px]">
+                    TN TODAY ARCHIVE
+                  </span>
                 </div>
               </div>
             ) : null}

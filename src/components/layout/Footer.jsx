@@ -127,8 +127,14 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-28 md:py-10">
+    <footer className="relative bg-gradient-to-t from-civic-100/80 via-civic-50/40 to-white dark:from-[#0B2E5C] dark:via-[#082245] dark:to-[#071E3D] border-t-2 border-civic-200 dark:border-civic-900 overflow-hidden shadow-[0_-12px_32px_-4px_rgba(33,150,243,0.08)] dark:shadow-[0_-12px_32px_-4px_rgba(13,71,161,0.25)]">
+      {/* Upward Blue Ambient Shadow & Glow Fading Bottom-to-Top */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="absolute bottom-0 left-0 right-0 h-56 bg-gradient-to-t from-civic-200/50 via-civic-100/20 to-transparent dark:from-civic-700/25 dark:via-civic-900/15 dark:to-transparent" />
+        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[750px] h-52 bg-civic-400/20 dark:bg-civic-600/20 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-28 md:py-10">
 
         {/* ── Main row: brand + link columns ── */}
         <div className="flex flex-col lg:flex-row items-start justify-between gap-10 lg:gap-16">
@@ -144,12 +150,12 @@ export default function Footer() {
                 className="rounded-lg object-contain flex-shrink-0"
                 quality={90}
               />
-              <span className="font-extrabold text-blue-600 text-base leading-none">VizhiTN</span>
+              <span className="font-extrabold text-civic-900 dark:text-civic-100 text-base leading-none">VizhiTN</span>
             </Link>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-snug">
               {T("Community Verified.", "சமூகத்தால் சரிபார்க்கப்பட்டது.")}
             </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug mb-4">
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-snug mb-4">
               {T("People Powered.", "மக்களால் இயக்கப்படுகிறது.")}
             </p>
             {/* Social icons row */}
@@ -170,7 +176,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="w-7 h-7 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="w-7 h-7 rounded-md bg-civic-50 dark:bg-civic-900/40 hover:bg-civic-100 dark:hover:bg-civic-800 border border-civic-200 dark:border-civic-800 flex items-center justify-center text-civic-900 dark:text-civic-200 hover:text-civic-500 transition-colors"
                   >
                     {icon}
                   </a>
@@ -203,7 +209,7 @@ export default function Footer() {
                       <li key={link.path + link.en}>
                         <Link
                           to={link.path}
-                          className="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-civic-600 dark:hover:text-civic-300 transition-colors"
                         >
                           {T(link.en, link.ta)}
                         </Link>
@@ -216,35 +222,35 @@ export default function Footer() {
         </div>
 
         {/* ── Bottom copyright + legal bar ── */}
-        <div className="border-t border-slate-200 dark:border-slate-800 mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-slate-500 dark:text-slate-500">
+        <div className="border-t border-civic-200/80 dark:border-civic-800/80 mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
             © 2026 VizhiTN. {T("All rights reserved.", "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.")}
           </p>
           {/* Legal links — required to be visible for AdSense approval */}
           <div className="flex items-center gap-3 flex-wrap justify-center">
-            <Link to="/privacy-policy" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <Link to="/privacy-policy" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
               {T("Privacy Policy", "தனியுரிமை")}
             </Link>
-            <span className="text-slate-300 dark:text-slate-600">|</span>
-            <button type="button" onClick={openCookiePreferences} className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <span className="text-civic-300 dark:text-civic-700 select-none">|</span>
+            <button type="button" onClick={openCookiePreferences} className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
               {T("Cookie preferences", "குக்கீ விருப்பங்கள்")}
             </button>
-            <span className="text-slate-300 dark:text-slate-600">|</span>
-            <Link to="/terms" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <span className="text-civic-300 dark:text-civic-700 select-none">|</span>
+            <Link to="/terms" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
               {T("Terms", "ழெவிடுகள்")}
             </Link>
-            <span className="text-slate-300 dark:text-slate-600">|</span>
-            <Link to="/about" className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <span className="text-civic-300 dark:text-civic-700 select-none">|</span>
+            <Link to="/about" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
               {T("About", "பற்றி")}
             </Link>
-            <span className="text-slate-300 dark:text-slate-600">|</span>
-            <a href={`mailto:${settings.contact_email || settings.support_email || "contact@vizhitn.in"}`} className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <span className="text-civic-300 dark:text-civic-700 select-none">|</span>
+            <a href={`mailto:${settings.contact_email || settings.support_email || "contact@vizhitn.in"}`} className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
               {T("Advertise", "விளம்பரம்")}
             </a>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
+          <p className="text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1">
             {T("Made with", "அன்போடு செய்யப்பட்டது")}
-            <Heart className="w-3 h-3 text-red-500 fill-red-500" />
+            <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
             {T("for Tamil Nadu", "தமிழ்நாட்டிற்காக")}
           </p>
         </div>
