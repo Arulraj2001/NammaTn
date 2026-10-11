@@ -175,7 +175,7 @@ export default function Footer() {
               {T("People Powered.", "மக்களால் இயக்கப்படுகிறது.")}
             </p>
             {/* Social icons row */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-4">
               {[
                 { icon: <FacebookIcon />,  label: "Facebook", key: "social_facebook", defaultUrl: "https://facebook.com/vizhitn" },
                 { icon: <TwitterIcon />,   label: "Twitter", key: "social_twitter", defaultUrl: "https://twitter.com/vizhitn" },
@@ -200,6 +200,24 @@ export default function Footer() {
                   </a>
                 );
               })}
+            </div>
+
+            {/* Product Hunt Featured Badge */}
+            <div className="pt-1">
+              <a
+                href="https://www.producthunt.com/products/vizhitn?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-vizhitn"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block hover:opacity-90 transition-opacity"
+              >
+                <img
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1276762&theme=light&t=1791727879788"
+                  alt="VizhiTN - Tamil Nadu's civic proof platform — 38 districts | Product Hunt"
+                  width="250"
+                  height="54"
+                  style={{ width: "210px", height: "46px" }}
+                />
+              </a>
             </div>
           </div>
 
