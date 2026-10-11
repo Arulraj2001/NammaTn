@@ -222,6 +222,18 @@ export default function Contact() {
                   </span>
                 </div>
 
+                <div className="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40">
+                  <span className="font-bold text-blue-950 dark:text-blue-200 block">
+                    {T("Official Platform Inbox (Gmail)", "அதிகாரப்பூர்வ ஜிமெயில் தொடர்பு")}
+                  </span>
+                  <a href="mailto:vizhitnin@gmail.com" className="text-blue-600 dark:text-blue-400 font-mono font-semibold hover:underline">
+                    vizhitnin@gmail.com
+                  </a>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
+                    {T("Direct administrative & media outreach", "நேரடி நிர்வாகம் & ஊடகத் தொடர்பு")}
+                  </span>
+                </div>
+
                 <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800">
                   <span className="font-bold text-slate-900 dark:text-white block">
                     {T("Editorial & Newsroom Desk", "செய்தி & தலையங்கப் பிரிவு")}

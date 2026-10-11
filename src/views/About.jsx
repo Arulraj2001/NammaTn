@@ -27,7 +27,7 @@ export default function About() {
     staleTime: 60_000,
   });
 
-  const contactEmail = settings.contact_email || settings.support_email || "support@vizhitn.in";
+  const contactEmail = settings.contact_email || "vizhitnin@gmail.com";
 
   usePageMeta({
     title: "About VizhiTN | Tamil Nadu's Civic Proof & Public Intelligence Network",

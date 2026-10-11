@@ -10,6 +10,7 @@ const orgSchema = {
   name: 'VizhiTN',
   url: 'https://www.vizhitn.in',
   logo: 'https://www.vizhitn.in/apple-touch-icon.png',
+  email: 'vizhitnin@gmail.com',
   sameAs: [
     'https://facebook.com/vizhitn',
     'https://twitter.com/vizhitn',
