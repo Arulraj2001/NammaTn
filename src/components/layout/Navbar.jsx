@@ -196,8 +196,8 @@ export default function Navbar() {
         `}</style>
       )}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur shadow-sm border-b border-slate-200 dark:border-slate-700"
-        : "bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700"
+        scrolled ? "bg-white/95 dark:bg-[#071E3D]/95 backdrop-blur shadow-sm border-b border-civic-200 dark:border-civic-900"
+        : "bg-white dark:bg-[#071E3D] border-b border-civic-200 dark:border-civic-900"
       }`}>
         {/* Ticker Row — Positioned ABOVE the Navbar */}
         {showAnnouncement && (
@@ -249,8 +249,8 @@ export default function Navbar() {
                   to={link.path}
                   className={`px-2 py-1.5 xl:px-3 xl:py-2 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap ${
                     location.pathname === link.path
-                      ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-bold"
-                      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100 font-bold border border-civic-200 dark:border-civic-700"
+                      : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
                   }`}
                 >
                   {T(link.en, link.ta)}
@@ -267,12 +267,12 @@ export default function Navbar() {
                 <button
                   onClick={() => setMegaOpen(!megaOpen)}
                   className={`flex items-center gap-1 px-2 py-1.5 xl:px-3 xl:py-2 rounded-lg text-xs xl:text-sm font-medium transition-colors ${
-                    megaOpen ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    megaOpen ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100" : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
                   }`}
                   aria-expanded={megaOpen}
                   aria-label={T("All Pages & Services", "அனைத்து பக்கங்கள் & சேவைகள்")}
                 >
-                  <Briefcase className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-slate-500" />
+                  <Briefcase className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-civic-500" />
                   {T("Directory", "சேவைகள்")}
                   <ChevronDown className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform duration-200 ${megaOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -285,7 +285,7 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 6 }}
                         transition={{ duration: 0.15 }}
-                        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 ring-1 ring-black/5 dark:ring-white/5"
+                        className="bg-white dark:bg-[#0D2B52] rounded-2xl shadow-2xl border-2 border-civic-200 dark:border-civic-800 p-4 sm:p-5 ring-1 ring-black/5 dark:ring-white/5"
                       >
                         <div className="grid grid-cols-4 gap-3 items-start">
                           {MEGA_COLUMNS.map((column, ci) => {

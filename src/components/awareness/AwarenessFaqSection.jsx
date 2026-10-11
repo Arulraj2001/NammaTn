@@ -13,26 +13,26 @@ export default function AwarenessFaqSection({ lang = "en" }) {
   const rightFaqs = faqs.filter((_, idx) => idx % 2 === 1);
 
   const FaqItem = ({ faq }) => (
-    <div className="border border-slate-200 dark:border-slate-800 rounded-2xl mb-3 overflow-hidden bg-white dark:bg-slate-900 shadow-2xs">
+    <div className="border-2 border-civic-200 dark:border-civic-800 rounded-2xl mb-3 overflow-hidden bg-white dark:bg-[#0D2B52] shadow-2xs">
       <button
         onClick={() => toggle(faq.id)}
         className="w-full flex items-center justify-between px-4 py-3.5 text-left gap-3"
         aria-expanded={openId === faq.id}
       >
-        <span className="text-sm font-bold text-slate-800 dark:text-white leading-snug">
+        <span className="text-sm font-bold text-civic-900 dark:text-white leading-snug">
           {T(faq.question_en, faq.question_ta)}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${openId === faq.id ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-civic-500 flex-shrink-0 transition-transform duration-200 ${openId === faq.id ? "rotate-180" : ""}`}
         />
       </button>
       {openId === faq.id && (
-        <div className="px-4 pb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-3">
+        <div className="px-4 pb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-civic-100 dark:border-civic-800/80 pt-3">
           <p>{T(faq.answer_en, faq.answer_ta)}</p>
-          <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex justify-end">
+          <div className="mt-3 pt-2 border-t border-civic-100 dark:border-civic-800/80 flex justify-end">
             <Link
               href={`/awareness/faq/${faq.slug}`}
-              className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-bold text-civic-600 dark:text-civic-300 hover:text-civic-800 hover:underline"
             >
               <span>{T("Read dedicated guide", "முழு விவரம்")}</span>
               <ArrowRight className="w-3 h-3" />
@@ -47,8 +47,8 @@ export default function AwarenessFaqSection({ lang = "en" }) {
     <section id="faqs" className="mb-10">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-            <HelpCircle className="w-4 h-4 text-purple-500" />
+          <h2 className="text-base sm:text-lg font-black text-civic-900 dark:text-white flex items-center gap-1.5">
+            <HelpCircle className="w-4 h-4 text-civic-500" />
             {T("Frequently Asked Questions (பொதுக் கேள்விகள்)", "அடிக்கடி கேட்கப்படும் கேள்விகள்")}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -57,7 +57,7 @@ export default function AwarenessFaqSection({ lang = "en" }) {
         </div>
         <Link
           href="/awareness/faqs"
-          className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold flex-shrink-0"
+          className="text-xs text-civic-600 dark:text-civic-300 hover:text-civic-800 dark:hover:text-white hover:underline flex items-center gap-1 font-bold flex-shrink-0"
         >
           {T("View all FAQs", "அனைத்து கேள்விகள்")} <ArrowRight className="w-3.5 h-3.5" />
         </Link>

@@ -30,7 +30,7 @@ export default function SchemesSection({ lang = "en" }) {
       {/* Section Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+          <h2 className="text-base sm:text-lg font-black text-civic-900 dark:text-white flex items-center gap-1.5">
             <span className="text-amber-500">★</span>
             {T("Key Government Schemes (திட்டங்கள்)", "முக்கிய அரசு திட்டங்கள்")}
           </h2>
@@ -40,7 +40,7 @@ export default function SchemesSection({ lang = "en" }) {
         </div>
         <Link
           href="/schemes"
-          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1 flex-shrink-0"
+          className="text-xs font-bold text-civic-600 dark:text-civic-300 hover:text-civic-800 dark:hover:text-white hover:underline inline-flex items-center gap-1 flex-shrink-0"
         >
           {T("View all schemes", "அனைத்து திட்டங்கள்")} <ArrowRight className="w-3.5 h-3.5" />
         </Link>
@@ -50,7 +50,7 @@ export default function SchemesSection({ lang = "en" }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {schemes.map((scheme) => {
           const Icon = CATEGORY_ICONS[scheme.category_en] || Award;
-          const iconBg = CATEGORY_COLORS[scheme.category_en] || "bg-indigo-500/10 text-indigo-600";
+          const iconBg = CATEGORY_COLORS[scheme.category_en] || "bg-civic-500/10 text-civic-600";
           const name = T(scheme.name_en, scheme.name_ta);
           const dept = T(scheme.department_en, scheme.department_ta);
           const benefit = T(
@@ -61,29 +61,29 @@ export default function SchemesSection({ lang = "en" }) {
           return (
             <article
               key={scheme.slug}
-              className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
+              className="bg-white dark:bg-[#0D2B52] rounded-2xl border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
             >
               <div>
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                  <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-civic-50 dark:bg-civic-900/60 text-civic-800 dark:text-civic-200 border border-civic-200/60 dark:border-civic-800">
                     {scheme.category_en}
                   </span>
                 </div>
 
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
+                <h3 className="text-sm font-bold text-civic-900 dark:text-white group-hover:text-civic-600 dark:group-hover:text-civic-300 transition-colors leading-snug">
                   <Link href={`/schemes/${scheme.slug}`}>
                     {name}
                   </Link>
                 </h3>
 
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 line-clamp-1">
+                <p className="text-[11px] text-slate-400 dark:text-slate-400 mt-1 line-clamp-1">
                   {dept}
                 </p>
 
-                <div className="mt-3 p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40 flex items-center gap-2">
+                <div className="mt-3 p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/50 flex items-center gap-2">
                   <Coins className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                   <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 line-clamp-1">
                     {benefit}
@@ -91,14 +91,14 @@ export default function SchemesSection({ lang = "en" }) {
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div className="mt-4 pt-3 border-t border-civic-100 dark:border-civic-800/80 flex items-center justify-between">
                 <span className="text-[11px] text-slate-400">
                   {scheme.documents_required_en?.length || 4} {T("docs required", "ஆவணங்கள்")}
                 </span>
 
                 <Link
                   href={`/schemes/${scheme.slug}`}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-civic-600 dark:text-civic-300 hover:text-civic-800 hover:underline"
                 >
                   <span>{T("Check Eligibility", "தகுதி விவரம்")}</span>
                   <ArrowRight className="w-3 h-3" />

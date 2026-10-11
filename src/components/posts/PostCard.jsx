@@ -307,7 +307,7 @@ const PostCard = memo(function PostCard({ post }) {
             )}
             {badge && <EngagementBadge type={badge} />}
           </div>
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-bold flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+          <span suppressHydrationWarning className="text-xs text-slate-500 dark:text-slate-400 font-bold flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
             <Clock className="w-3.5 h-3.5 text-slate-400" />
             {post.created_date ? formatDistanceToNow(new Date(post.created_date), { addSuffix: true }) : ""}
           </span>

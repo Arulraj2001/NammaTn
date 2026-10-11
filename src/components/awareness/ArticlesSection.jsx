@@ -42,20 +42,20 @@ export default function ArticlesSection({ lang = "en" }) {
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
   return (
-    <section className="py-10 border-t border-slate-100 dark:border-slate-800">
+    <section className="py-10 border-t-2 border-civic-200 dark:border-civic-800">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+          <span className="text-xs font-bold uppercase tracking-wider text-civic-600 dark:text-civic-400">
             {T("Knowledge Base", "அறிவுத் தளம்")}
           </span>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2 mt-0.5">
-            <BookOpen className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          <h2 className="text-xl sm:text-2xl font-black text-civic-900 dark:text-white flex items-center gap-2 mt-0.5">
+            <BookOpen className="w-6 h-6 text-civic-600 dark:text-civic-400" />
             <span>{T("Citizen Knowledge Articles & Guides", "குடிமக்கள் வழிகாட்டிக் கட்டுரைகள்")}</span>
           </h2>
         </div>
         <Link
           href="/awareness/articles"
-          className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition"
+          className="inline-flex items-center gap-1 text-xs font-bold text-civic-600 dark:text-civic-300 hover:text-civic-800 dark:hover:text-white transition"
         >
           <span>{T("View All Articles", "அனைத்து கட்டுரைகள்")}</span>
           <ArrowRight className="w-4 h-4" />
@@ -66,11 +66,11 @@ export default function ArticlesSection({ lang = "en" }) {
         {FEATURED_ARTICLES.map((art) => (
           <div
             key={art.id}
-            className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between"
+            className="bg-white dark:bg-[#0D2B52] rounded-2xl border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 p-5 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-civic-100 text-civic-900 dark:bg-civic-900/50 dark:text-civic-200 border border-civic-200/50">
                   {T(art.category_en, art.category_ta)}
                 </span>
                 <span className="text-[11px] text-slate-400 flex items-center gap-1">
@@ -78,7 +78,7 @@ export default function ArticlesSection({ lang = "en" }) {
                   {art.readTime}
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 transition leading-snug">
+              <h3 className="text-sm font-bold text-civic-900 dark:text-white hover:text-civic-600 dark:hover:text-civic-300 transition leading-snug">
                 <Link href={`/awareness/article/${art.slug}`}>
                   {T(art.title_en, art.title_ta)}
                 </Link>
@@ -88,10 +88,10 @@ export default function ArticlesSection({ lang = "en" }) {
               </p>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <div className="mt-4 pt-3 border-t border-civic-100 dark:border-civic-800/80">
               <Link
                 href={`/awareness/article/${art.slug}`}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+                className="inline-flex items-center gap-1 text-xs font-bold text-civic-600 dark:text-civic-300 hover:text-civic-800 hover:underline"
               >
                 <span>{T("Read Article", "கட்டுரையை படிக்க")}</span>
                 <ArrowRight className="w-3.5 h-3.5" />

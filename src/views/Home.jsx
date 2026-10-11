@@ -11,7 +11,7 @@ import CtaBanner from "@/components/home/CtaBanner";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-civic-50/50 dark:bg-[#071E3D] flex flex-col">
       {/* Zone 1: Hero with Clean Interactive Live Map */}
       <HomeTopSection />
 

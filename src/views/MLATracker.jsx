@@ -5,7 +5,7 @@ import { Link } from '@/lib/router-compat'
 import {
   MapPin, Landmark, Award, Shield, CheckCircle2, ChevronRight,
   AlertTriangle, ArrowRight, ExternalLink, Info, Phone, FileText,
-  Vote, Users, HelpCircle, ChevronDown, ChevronUp, Clock, Megaphone
+  Vote, Users, HelpCircle, ChevronDown, ChevronUp, Clock, Megaphone, Home
 } from 'lucide-react'
 import { computeMLAScore } from '@/lib/mlaScoreEngine'
 import { formatDistanceToNow } from 'date-fns'
@@ -38,14 +38,31 @@ export default function MLATrackerView({ mla, recentPosts = [], allMLAs = [], di
     <div className="mla-tracker-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-slate-900 dark:text-slate-100">
       
       {/* ── Breadcrumb ── */}
-      <nav aria-label="Breadcrumb" className="breadcrumb text-xs text-slate-500 dark:text-slate-400 mb-6 flex items-center gap-1.5 flex-wrap">
-        <Link href="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</Link>
-        <span>›</span>
-        <Link href="/tn-politics" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">TN Politics</Link>
-        <span>›</span>
-        <Link href="/tn-politics#mla" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">MLA Tracker</Link>
-        <span>›</span>
-        <span className="text-slate-900 dark:text-slate-200 font-bold">{mla.district_name}</span>
+      <nav aria-label="Breadcrumb" className="mb-6 text-xs">
+        <ol className="flex items-center gap-1.5 flex-wrap">
+          <li className="flex items-center gap-1.5">
+            <Link href="/" className="inline-flex items-center gap-1 text-slate-500 hover:text-civic-600 dark:text-slate-400 dark:hover:text-civic-300 font-medium transition-colors">
+              <Home className="w-3.5 h-3.5 text-civic-500" />
+              <span>Home</span>
+            </Link>
+          </li>
+          <li className="flex items-center gap-1.5">
+            <ChevronRight className="w-3.5 h-3.5 text-civic-400 dark:text-civic-600 stroke-[2]" aria-hidden="true" />
+            <Link href="/tn-politics" className="text-slate-500 hover:text-civic-600 dark:text-slate-400 dark:hover:text-civic-300 font-medium transition-colors">
+              TN Politics
+            </Link>
+          </li>
+          <li className="flex items-center gap-1.5">
+            <ChevronRight className="w-3.5 h-3.5 text-civic-400 dark:text-civic-600 stroke-[2]" aria-hidden="true" />
+            <Link href="/tn-politics#mla" className="text-slate-500 hover:text-civic-600 dark:text-slate-400 dark:hover:text-civic-300 font-medium transition-colors">
+              MLA Tracker
+            </Link>
+          </li>
+          <li className="flex items-center gap-1.5 font-bold text-civic-900 dark:text-white">
+            <ChevronRight className="w-3.5 h-3.5 text-civic-400 dark:text-civic-600 stroke-[2]" aria-hidden="true" />
+            <span>{mla.district_name}</span>
+          </li>
+        </ol>
       </nav>
 
       {/* ── Main 12-Column Layout ── */}

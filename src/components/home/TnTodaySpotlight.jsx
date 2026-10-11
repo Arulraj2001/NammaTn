@@ -151,7 +151,7 @@ export default function TnTodaySpotlight() {
             <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-medium mb-3">
-                  {leadTimeAgo && <span>{leadTimeAgo}</span>}
+                  {leadTimeAgo && <span suppressHydrationWarning>{leadTimeAgo}</span>}
                   {lead.reading_time && (
                     <span className="inline-flex items-center gap-1">
                       <Clock className="w-3 h-3" /> {lead.reading_time} {T("min read", "நிமி வாசிப்பு")}
@@ -232,7 +232,7 @@ export default function TnTodaySpotlight() {
                         {itemCat}
                       </span>
                       {timeAgo && (
-                        <span className="text-[11px] text-slate-400">{timeAgo}</span>
+                        <span suppressHydrationWarning className="text-[11px] text-slate-400">{timeAgo}</span>
                       )}
                     </div>
 

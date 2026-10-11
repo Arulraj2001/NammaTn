@@ -19,19 +19,19 @@ export default function QuickActions() {
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
   return (
-    <section className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 py-6">
+    <section id="quick-actions" className="bg-civic-50/50 dark:bg-[#071E3D] border-b-2 border-civic-200 dark:border-civic-900 py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-base font-extrabold text-slate-900 dark:text-white mb-4">
+        <h2 className="text-base font-black text-civic-900 dark:text-white mb-4">
           {T("Quick Actions", "விரைவு செயல்கள்")}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
           {QUICK_ACTIONS.map((action) => (
             <Link key={action.path + action.en} to={action.path}>
-              <div className="group flex flex-col items-center text-center p-4 rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full">
+              <div className="group flex flex-col items-center text-center p-4 rounded-2xl border-2 border-civic-200 dark:border-civic-800 bg-white dark:bg-[#0D2B52] hover:border-civic-500 hover:shadow-lg hover:shadow-civic-500/15 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full">
                 <div className={`w-10 h-10 rounded-xl ${action.bg} ${action.iconColor} flex items-center justify-center mb-2.5`}>
                   {action.icon}
                 </div>
-                <p className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight mb-0.5">
+                <p className="text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-civic-500 transition-colors leading-tight mb-0.5">
                   {T(action.en, action.ta)}
                 </p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">

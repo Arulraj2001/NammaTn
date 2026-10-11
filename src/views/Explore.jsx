@@ -175,10 +175,10 @@ export default function Explore({ initialPosts = [] }) {
     <div id="explore-feed-top" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">
+        <h1 className="text-2xl sm:text-3xl font-black text-civic-900 dark:text-white mb-1">
           {T("Explore VizhiTN", "VizhiTN ஆராய்க")}
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm">
+        <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">
           {T("Discover Civic Receipts, local alerts, community posts, and updates from Tamil Nadu.", "தமிழ்நாட்டிலிருந்து குடிமை ரசீதுகள், உள்ளூர் எச்சரிக்கைகள் மற்றும் சமுதாய பதிவுகளை கண்டுபிடிக்கவும்.")}
         </p>
       </div>
@@ -186,7 +186,7 @@ export default function Explore({ initialPosts = [] }) {
       {/* Search + filter toggle */}
       <div className="flex gap-3 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-civic-400" />
           <input
             value={search}
             onChange={(e) => {
@@ -194,7 +194,7 @@ export default function Explore({ initialPosts = [] }) {
               setCurrentPage(1);
             }}
             placeholder={T("Search posts, civic receipts...", "பதிவுகள், குடிமை ரசீதுகள் தேடுங்கள்...")}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border-2 border-civic-200 dark:border-civic-800 bg-white dark:bg-[#0D2B52] text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-civic-500 transition-all shadow-xs"
           />
           {search && (
             <button
@@ -202,7 +202,7 @@ export default function Explore({ initialPosts = [] }) {
                 setSearch("");
                 setCurrentPage(1);
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-civic-600 p-1"
             >
               <X className="w-4 h-4" />
             </button>
@@ -210,13 +210,15 @@ export default function Explore({ initialPosts = [] }) {
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors flex-shrink-0 ${
-            showFilters || activeFilterCount > 0 ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+          className={`flex items-center gap-2 px-4 py-2 rounded-2xl border-2 text-sm font-bold transition-all flex-shrink-0 shadow-xs ${
+            showFilters || activeFilterCount > 0
+              ? "bg-civic-500 text-white border-civic-500 shadow-md shadow-civic-500/20"
+              : "bg-white dark:bg-[#0D2B52] text-slate-700 dark:text-slate-300 border-civic-200 dark:border-civic-800 hover:border-civic-500"
           }`}
         >
           <SlidersHorizontal className="w-4 h-4" />
           {T("Filters", "வடிகட்டிகள்")}
-          {activeFilterCount > 0 && <span className="bg-white text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">{activeFilterCount}</span>}
+          {activeFilterCount > 0 && <span className="bg-white text-civic-900 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black">{activeFilterCount}</span>}
         </button>
       </div>
 
@@ -226,8 +228,10 @@ export default function Explore({ initialPosts = [] }) {
           <button
             key={t.value}
             onClick={() => handleTypeChange(t.value)}
-            className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-              typeFilter === t.value ? "bg-blue-600 text-white" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700"
+            className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              typeFilter === t.value
+                ? "bg-civic-900 text-white shadow-md shadow-civic-900/20"
+                : "bg-white dark:bg-[#0D2B52] text-slate-700 dark:text-slate-300 border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500"
             }`}
           >
             {t.value === "civic" && <FileText className="w-3.5 h-3.5 inline mr-1" />}
@@ -243,7 +247,7 @@ export default function Explore({ initialPosts = [] }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 mb-4 overflow-hidden"
+            className="bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 rounded-2xl p-4 mb-4 overflow-hidden shadow-sm"
           >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
@@ -273,11 +277,11 @@ export default function Explore({ initialPosts = [] }) {
                 },
               ].map((f) => (
                 <div key={f.label}>
-                  <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">{f.label}</label>
+                  <label className="text-xs font-bold text-civic-900 dark:text-civic-200 uppercase tracking-wider mb-2 block">{f.label}</label>
                   <select
                     value={f.value}
                     onChange={(e) => f.onChange(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white"
+                    className="w-full px-3 py-2 rounded-xl border-2 border-civic-200 dark:border-civic-700 bg-civic-50/50 dark:bg-[#071E3D] text-sm text-slate-900 dark:text-white font-medium focus:outline-none focus:border-civic-500"
                   >
                     {f.opts.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                   </select>

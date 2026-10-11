@@ -66,6 +66,19 @@ module.exports = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			civic: {
+  				50: '#E3F2FD',   /* Ice Blue (Canvas tint / soft surfaces) */
+  				100: '#BBDEFB',
+  				200: '#90CAF9',  /* Frost Sky (Card borders, outlines, dividers) */
+  				300: '#64B5F6',
+  				400: '#42A5F5',
+  				500: '#2196F3',  /* Civic Azure (Primary CTA, links, active badges) */
+  				600: '#1E88E5',
+  				700: '#1976D2',
+  				800: '#1565C0',
+  				900: '#0D47A1',  /* Sovereign Navy (Headlines, titles, dark base) */
+  				950: '#071E3D',  /* Midnight Navy (Dark mode deep background) */
   			}
   		},
   		keyframes: {

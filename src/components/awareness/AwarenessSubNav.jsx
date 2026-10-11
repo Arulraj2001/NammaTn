@@ -24,7 +24,7 @@ export default function AwarenessSubNav({ activePath }) {
   const currentPath = activePath || location.pathname;
 
   return (
-    <nav aria-label="Awareness Navigation" className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-14 z-20 shadow-sm">
+    <nav aria-label="Awareness Navigation" className="w-full bg-white dark:bg-[#071E3D] border-b-2 border-civic-200 dark:border-civic-900 sticky top-14 z-20 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-1.5 overflow-x-auto py-2.5 no-scrollbar scroll-smooth">
           {NAV_ITEMS.map((item) => {
@@ -34,10 +34,10 @@ export default function AwarenessSubNav({ activePath }) {
               <Link
                 key={item.path}
                 href={item.path}
-                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
                   isActive
-                    ? "bg-emerald-600 text-white shadow-sm"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                    ? "bg-civic-900 text-white dark:bg-white dark:text-civic-900 shadow-sm"
+                    : "bg-white dark:bg-[#0D2B52] text-slate-700 dark:text-slate-200 hover:border-civic-500 border border-civic-200 dark:border-civic-800"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />

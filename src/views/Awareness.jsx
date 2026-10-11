@@ -59,7 +59,7 @@ export default function Awareness() {
   const isSearching = searchQuery.trim().length >= 2;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
+    <div className="min-h-screen bg-civic-50/50 dark:bg-[#071E3D]">
       <AwarenessSubNav activePath="/awareness" />
 
       {/* Hero with integrated search bar & chips */}
@@ -86,7 +86,7 @@ export default function Awareness() {
           <div className="flex items-center justify-between mb-3 px-1">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
-              <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
+              <h2 className="text-sm font-extrabold uppercase tracking-wider text-civic-900 dark:text-white flex items-center gap-1.5">
                 🚨 {T("24x7 Emergency Speed-Dial (1-Tap Call)", "24x7 அவசர உடனடி அழைப்பு (1-தட்டு)")}
               </h2>
             </div>
@@ -103,7 +103,7 @@ export default function Awareness() {
               <a
                 key={sos.number}
                 href={`tel:${sos.number}`}
-                className="group relative flex flex-col justify-between p-3.5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-red-500 dark:hover:border-red-500 shadow-sm hover:shadow-md transition-all text-left"
+                className="group relative flex flex-col justify-between p-3.5 rounded-2xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-red-500 dark:hover:border-red-500 shadow-xs hover:shadow-md transition-all text-left"
               >
                 <div>
                   <div className="flex items-center justify-between mb-1.5">

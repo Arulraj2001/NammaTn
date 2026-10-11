@@ -33,7 +33,7 @@ export default function WhatToDoSection({ lang = "en" }) {
     <section id="guides" className="mb-10">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+          <h2 className="text-base sm:text-lg font-black text-civic-900 dark:text-white flex items-center gap-1.5">
             <span>❓</span>
             {T("What to Do If... (Civic Problem SOPs)", "என்ன செய்ய வேண்டும்... (தீர்வுகள்)")}
           </h2>
@@ -43,7 +43,7 @@ export default function WhatToDoSection({ lang = "en" }) {
         </div>
         <Link
           href="/awareness/guides"
-          className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold flex-shrink-0"
+          className="text-xs text-civic-600 dark:text-civic-300 hover:text-civic-800 dark:hover:text-white hover:underline flex items-center gap-1 font-bold flex-shrink-0"
         >
           {T("View all guides", "அனைத்து வழிகாட்டிகள்")} <ArrowRight className="w-3.5 h-3.5" />
         </Link>
@@ -52,22 +52,22 @@ export default function WhatToDoSection({ lang = "en" }) {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {guides.map((guide) => {
           const Icon = ICON_MAP[guide.slug] || FileText;
-          const colorClass = COLOR_MAP[guide.slug] || "bg-blue-100 text-blue-600";
+          const colorClass = COLOR_MAP[guide.slug] || "bg-civic-100 text-civic-600";
           const title = T(guide.title_en, guide.title_ta);
 
           return (
             <Link
               key={guide.slug}
               href={`/awareness/guide/${guide.slug}`}
-              className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 rounded-2xl p-4 hover:shadow-md transition-all flex flex-col items-center text-center group"
+              className="bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 rounded-2xl p-4 hover:shadow-md transition-all flex flex-col items-center text-center group"
             >
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-3 ${colorClass} group-hover:scale-105 transition-transform`}>
                 <Icon className="w-5 h-5" />
               </div>
-              <p className="text-xs font-bold text-slate-800 dark:text-white mb-2 leading-snug line-clamp-2 flex-1">
+              <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-civic-600 dark:group-hover:text-civic-300 mb-2 leading-snug line-clamp-2 flex-1">
                 {title}
               </p>
-              <span className="text-[11px] text-blue-600 dark:text-blue-400 group-hover:underline flex items-center gap-0.5 font-bold mt-auto">
+              <span className="text-[11px] text-civic-600 dark:text-civic-300 group-hover:text-civic-800 group-hover:underline flex items-center gap-0.5 font-bold mt-auto">
                 {T("View SOP", "வழிகாட்டி")} <ArrowRight className="w-3 h-3" />
               </span>
             </Link>

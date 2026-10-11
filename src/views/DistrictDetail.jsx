@@ -18,7 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Compass,
-  FileText
+  FileText,
+  Home
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getDistrictBySlug } from "@/lib/districts";
@@ -223,13 +224,25 @@ export default function DistrictDetail({ initialSlug }) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-6">
       {/* ── Breadcrumb & Back ── */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-        <Link to="/districts" className="inline-flex items-center gap-1.5 hover:text-blue-600 transition-colors">
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {T("All Districts", "அனைத்து மாவட்டங்கள்")}
-        </Link>
-        <span>/</span>
-        <span className="font-semibold text-slate-900 dark:text-white">{district.name_en}</span>
+      <nav aria-label="Breadcrumb" className="text-xs">
+        <ol className="flex items-center gap-1.5 flex-wrap">
+          <li className="flex items-center gap-1.5">
+            <Link to="/" className="inline-flex items-center gap-1 text-slate-500 hover:text-civic-600 dark:text-slate-400 dark:hover:text-civic-300 font-medium transition-colors">
+              <Home className="w-3.5 h-3.5 text-civic-500" />
+              <span>{T("Home", "முகப்பு")}</span>
+            </Link>
+          </li>
+          <li className="flex items-center gap-1.5">
+            <ChevronRight className="w-3.5 h-3.5 text-civic-400 dark:text-civic-600 stroke-[2]" aria-hidden="true" />
+            <Link to="/districts" className="text-slate-500 hover:text-civic-600 dark:text-slate-400 dark:hover:text-civic-300 font-medium transition-colors">
+              {T("All Districts", "அனைத்து மாவட்டங்கள்")}
+            </Link>
+          </li>
+          <li className="flex items-center gap-1.5 font-bold text-civic-900 dark:text-white">
+            <ChevronRight className="w-3.5 h-3.5 text-civic-400 dark:text-civic-600 stroke-[2]" aria-hidden="true" />
+            <span>{district.name_en}</span>
+          </li>
+        </ol>
       </nav>
 
       {/* ── ZONE 1: DISTRICT HERO & REAL-TIME STATUS BANNER (COMPACT SIZE) ── */}

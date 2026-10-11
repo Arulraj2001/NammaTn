@@ -27,22 +27,22 @@ export default function AwarenessHero({ onSearch, lang = "en" }) {
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-slate-100 dark:border-slate-800 bg-gradient-to-b from-blue-50/50 via-white to-white dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950">
+    <section className="relative overflow-hidden border-b-2 border-civic-200 dark:border-civic-900 bg-gradient-to-b from-civic-50/70 via-white to-white dark:from-[#071E3D] dark:via-[#071E3D]/90 dark:to-[#071E3D]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-12">
 
           {/* ── Left Content & Search ── */}
           <div className="flex-1 w-full text-left">
             <div className="flex items-center gap-3 sm:gap-4 mb-3">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 text-white">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-civic-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-civic-500/25 text-white">
                 <BookOpen className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
               <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-[11px] font-bold tracking-wide uppercase mb-1">
-                  <Sparkles className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-civic-100 text-civic-900 dark:bg-civic-900/50 dark:text-civic-200 text-[11px] font-bold tracking-wide uppercase mb-1">
+                  <Sparkles className="w-3 h-3 text-civic-500 dark:text-civic-400" />
                   {T("Tamil Nadu Citizen Directory", "தமிழ்நாடு குடிமக்கள் கையேடு")}
                 </div>
-                <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
+                <h1 className="text-2xl sm:text-4xl font-black text-civic-900 dark:text-white leading-tight tracking-tight">
                   {T("Citizen Awareness & Rights", "குடிமக்கள் விழிப்புணர்வு & உரிமைகள்")}
                 </h1>
                 <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl font-medium leading-relaxed">
@@ -56,8 +56,8 @@ export default function AwarenessHero({ onSearch, lang = "en" }) {
 
             {/* Live Search Bar */}
             <div className="mt-6 max-w-2xl">
-              <div className="relative flex items-center shadow-sm rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
-                <Search className="absolute left-4 w-5 h-5 text-slate-400 pointer-events-none" />
+              <div className="relative flex items-center shadow-sm rounded-2xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-700 focus-within:border-civic-500 focus-within:ring-2 focus-within:ring-civic-500/20 transition-all">
+                <Search className="absolute left-4 w-5 h-5 text-civic-400 pointer-events-none" />
                 <input
                   type="text"
                   value={query}
@@ -72,7 +72,7 @@ export default function AwarenessHero({ onSearch, lang = "en" }) {
                   <button
                     onClick={() => handleChange("")}
                     aria-label="Clear search"
-                    className="absolute right-3 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                    className="absolute right-3 p-1.5 rounded-lg text-slate-400 hover:text-civic-600 dark:hover:text-slate-200 hover:bg-civic-50 dark:hover:bg-civic-900/50 transition"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -88,7 +88,7 @@ export default function AwarenessHero({ onSearch, lang = "en" }) {
                   <button
                     key={i}
                     onClick={() => handleChipClick(chip.q)}
-                    className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 dark:bg-slate-800 dark:hover:bg-blue-900/30 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
+                    className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-civic-50/80 hover:bg-civic-100 hover:text-civic-900 dark:bg-[#0D2B52] dark:hover:bg-civic-900/60 text-slate-700 dark:text-civic-100 border border-civic-200 dark:border-civic-700 transition-colors"
                   >
                     {T(chip.en, chip.ta)}
                   </button>
@@ -99,32 +99,32 @@ export default function AwarenessHero({ onSearch, lang = "en" }) {
 
           {/* ── Right: Modern Quick-Stats Visual Card ── */}
           <div className="hidden lg:grid grid-cols-2 gap-3 w-80 flex-shrink-0">
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="bg-white dark:bg-[#0D2B52] p-4 rounded-2xl border-2 border-civic-200 dark:border-civic-800 shadow-sm">
               <div className="w-8 h-8 rounded-xl bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 flex items-center justify-center mb-2">
                 <Gift className="w-4 h-4" />
               </div>
-              <p className="text-xl font-extrabold text-slate-900 dark:text-white">25+ Schemes</p>
+              <p className="text-xl font-black text-civic-900 dark:text-white">25+ Schemes</p>
               <p className="text-[11px] text-slate-500 font-medium">{T("Welfare & Allowances", "அரசு நலத்திட்டங்கள்")}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-              <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-2">
+            <div className="bg-white dark:bg-[#0D2B52] p-4 rounded-2xl border-2 border-civic-200 dark:border-civic-800 shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-civic-100 dark:bg-civic-900/50 text-civic-600 dark:text-civic-300 flex items-center justify-center mb-2">
                 <Shield className="w-4 h-4" />
               </div>
-              <p className="text-xl font-extrabold text-slate-900 dark:text-white">12 Rights</p>
+              <p className="text-xl font-black text-civic-900 dark:text-white">12 Rights</p>
               <p className="text-[11px] text-slate-500 font-medium">{T("Statutory Protections", "சட்டப்பூர்வ உரிமைகள்")}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="bg-white dark:bg-[#0D2B52] p-4 rounded-2xl border-2 border-civic-200 dark:border-civic-800 shadow-sm">
               <div className="w-8 h-8 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center mb-2">
                 <Phone className="w-4 h-4" />
               </div>
-              <p className="text-xl font-extrabold text-slate-900 dark:text-white">24x7 SOS</p>
+              <p className="text-xl font-black text-civic-900 dark:text-white">24x7 SOS</p>
               <p className="text-[11px] text-slate-500 font-medium">{T("Verified Helplines", "அவசர உதவி எண்கள்")}</p>
             </div>
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="bg-white dark:bg-[#0D2B52] p-4 rounded-2xl border-2 border-civic-200 dark:border-civic-800 shadow-sm">
               <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2">
                 <FileText className="w-4 h-4" />
               </div>
-              <p className="text-xl font-extrabold text-slate-900 dark:text-white">RTI & Portals</p>
+              <p className="text-xl font-black text-civic-900 dark:text-white">RTI & Portals</p>
               <p className="text-[11px] text-slate-500 font-medium">{T("1-Click Generator", "விண்ணப்ப மாதிரி")}</p>
             </div>
           </div>

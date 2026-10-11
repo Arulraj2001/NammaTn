@@ -8,7 +8,7 @@ export default function AwarenessCTA({ lang = "en" }) {
   return (
     <section className="px-4 sm:px-6 lg:px-8 pb-12 pt-2">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-6 overflow-hidden relative">
+        <div className="bg-gradient-to-r from-civic-900 via-civic-800 to-civic-700 rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-6 overflow-hidden relative shadow-lg">
           {/* Decorative circles */}
           <div className="absolute -left-8 -top-8 w-40 h-40 bg-white/5 rounded-full" />
           <div className="absolute -right-4 -bottom-6 w-32 h-32 bg-white/5 rounded-full" />
@@ -26,13 +26,13 @@ export default function AwarenessCTA({ lang = "en" }) {
 
           {/* Text */}
           <div className="flex-1 text-center sm:text-left relative z-10">
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
+            <h2 className="text-xl sm:text-2xl font-black text-white mb-1">
               {T(
                 "Share Local Issues. Build a Better Tamil Nadu.",
                 "உள்ளூர் பிரச்சினைகளைப் பகிரவும். சிறந்த தமிழ்நாட்டைக் கட்டமைக்கவும்."
               )}
             </h2>
-            <p className="text-blue-100 text-sm">
+            <p className="text-civic-100 text-sm">
               {T(
                 "Your voice can bring change. Report and track issues in your area.",
                 "உங்கள் குரல் மாற்றத்தை கொண்டுவரும். உங்கள் பகுதியில் பிரச்சினைகளை புகாரளிக்கவும்."
@@ -43,7 +43,7 @@ export default function AwarenessCTA({ lang = "en" }) {
           {/* CTA Button */}
           <Link
             to="/create"
-            className="inline-flex items-center gap-2 bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm flex-shrink-0 relative z-10 shadow-sm"
+            className="inline-flex items-center gap-2 bg-white text-civic-900 font-bold px-6 py-3 rounded-xl hover:bg-civic-50 transition-colors text-sm flex-shrink-0 relative z-10 shadow-md hover:shadow-lg"
           >
             {T("Post Now", "இப்போது பதிவிடுங்கள்")} <ArrowRight className="w-4 h-4" />
           </Link>

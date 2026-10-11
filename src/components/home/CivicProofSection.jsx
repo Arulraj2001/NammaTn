@@ -66,16 +66,16 @@ export default function CivicProofSection() {
   const displayPosts = filtered.slice(0, 4);
 
   return (
-    <section className="py-12 bg-slate-50 dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800/80">
+    <section className="py-12 bg-civic-50/50 dark:bg-[#071E3D] border-b-2 border-civic-200 dark:border-civic-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header with Title and Create Button */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-black tracking-wider uppercase text-emerald-600 dark:text-emerald-400 mb-1.5">
+            <div className="inline-flex items-center gap-1.5 text-xs font-black tracking-wider uppercase text-civic-500 dark:text-civic-400 mb-1.5">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>{T("Civic Proof & Accountability", "குடிமை சான்றுகள் & கண்காணிப்பு")}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-civic-900 dark:text-white tracking-tight">
               {T("Real Citizen Reports Across Tamil Nadu", "தமிழ்நாடு முழுவதுமான கள புகார்கள் & ரசீதுகள்")}
             </h2>
           </div>
@@ -83,14 +83,14 @@ export default function CivicProofSection() {
           <div className="flex items-center gap-3 flex-shrink-0">
             <Link
               to="/create"
-              className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 bg-civic-500 hover:bg-civic-600 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md shadow-civic-500/20 transition-all"
             >
               <PlusCircle className="w-4 h-4" />
               <span>{T("File Civic Receipt", "புகார் ரசீது பதிவிடு")}</span>
             </Link>
             <Link
               to="/explore"
-              className="inline-flex items-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl transition-all"
+              className="inline-flex items-center gap-1.5 bg-white dark:bg-[#0D2B52] hover:bg-civic-50 dark:hover:bg-civic-900/60 border-2 border-civic-200 dark:border-civic-700 text-civic-900 dark:text-civic-100 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl transition-all"
             >
               <span>{T("View All", "அனைத்தும்")}</span>
               <ArrowRight className="w-4 h-4" />
@@ -108,8 +108,8 @@ export default function CivicProofSection() {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex-shrink-0 cursor-pointer ${
                   isActive
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
-                    : "bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60"
+                    ? "bg-civic-900 text-white dark:bg-white dark:text-civic-900 shadow-sm"
+                    : "bg-white dark:bg-[#0D2B52] text-slate-700 dark:text-slate-200 hover:border-civic-500 border-2 border-civic-200 dark:border-civic-800"
                 }`}
               >
                 <span>{cat.icon}</span>
@@ -158,12 +158,12 @@ export default function CivicProofSection() {
               return (
                 <div
                   key={post.id}
-                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 hover:border-blue-500/60 dark:hover:border-blue-500/60 p-5 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group"
+                  className="bg-white dark:bg-[#0D2B52] rounded-2xl border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 hover:shadow-lg hover:shadow-civic-500/15 p-5 shadow-xs transition-all flex flex-col justify-between group"
                 >
                   <div>
                     {/* Top Row: Receipt ID & Status Badge */}
                     <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="font-mono text-[11px] font-extrabold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                      <span className="font-mono text-[11px] font-extrabold text-civic-900 dark:text-civic-200 bg-civic-50 dark:bg-civic-900/60 border border-civic-200 dark:border-civic-700 px-2 py-0.5 rounded">
                         {receiptId}
                       </span>
                       <span
