@@ -1,183 +1,627 @@
 "use client";
-import React from "react";
+
+import React, { useState, useMemo } from "react";
+import Link from "next/link";
+import {
+  FileText, Camera, MapPin, Zap, CloudRain, Heart, Scale,
+  MessageSquare, Store, Phone, ArrowRight, HelpCircle, Sparkles,
+  Search, ShieldAlert, CheckCircle2, ChevronDown, ChevronUp,
+  AlertTriangle, Trophy, Eye, Clock, Users, ArrowUpRight,
+  ShieldCheck, Share2, Compass, Check
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { motion } from "framer-motion";
-import { 
-  Map, FileText, AlertTriangle, Users, CheckCircle, 
-  Clock, ShieldAlert, Volume2, Building2, Sparkles, HelpCircle 
-} from "lucide-react";
 import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
+
+// Core Platform Action Pillars
+const CORE_PILLARS = [
+  {
+    id: "civic_complaints",
+    icon: Camera,
+    color: "bg-red-600",
+    text_color: "text-red-600 dark:text-red-400",
+    border_color: "border-red-200 dark:border-red-900/50",
+    bg_light: "bg-red-50/60 dark:bg-red-950/20",
+    title_en: "File Civic Issues with Proof",
+    title_ta: "ஆதாரத்துடன் பொதுப் புகார்களைப் பதிவிடுங்கள்",
+    desc_en: "Document potholes, water pipe leaks, fallen trees, and garbage with exact geo-coordinates and photo evidence.",
+    desc_ta: "சாலைப் பள்ளங்கள், குடிநீர் குழாய் உடைப்பு, குப்பை தேக்கம் ஆகியவற்றை புகைப்படம் மற்றும் இருப்பிடத்துடன் பதிவிடுங்கள்.",
+    action_href: "/create",
+    action_label_en: "Log an Issue Now",
+    action_label_ta: "புகார் பதிவிட",
+    steps_en: [
+      { num: "01", title: "Capture Photo Evidence", text: "Take a clear daytime photo of the civic defect. Include street signs or landmarks in the frame whenever possible." },
+      { num: "02", title: "Select District & Department", text: "Pick your district (e.g. Chennai, Coimbatore) and assigned department (Highways, GCC, TANGEDCO, Metrowater)." },
+      { num: "03", title: "Community Verification", text: "Once published, nearby residents upvote and verify your post. High-verification posts are escalated to ward engineers." },
+      { num: "04", title: "Track to Victory Wall", text: "When authorities resolve the defect, upload a 'Fixed' photo to celebrate on the community Victory Wall." }
+    ],
+    steps_ta: [
+      { num: "01", title: "புகைப்பட ஆதாரம் எடுக்கவும்", text: "பாதிக்கப்பட்ட இடத்தின் தெளிவான புகைப்படத்தை எடுக்கவும். அடையாள பலகைகள் தெரியுமாறு எடுப்பது நல்லது." },
+      { num: "02", title: "மாவட்டம் & துறையைத் தேர்வு செய்க", text: "உங்கள் மாவட்டம் மற்றும் தொடர்புடைய அரசுத் துறையை (மாநகராட்சி, நெடுஞ்சாலை, மின்வாரியம்) தேர்வு செய்யவும்." },
+      { num: "03", title: "சமுதாய சரிபார்ப்பு", text: "பதிவிட்டவுடன் அப்பகுதி மக்கள் உறுதி செய்வார்கள். அதிக சரிபார்ப்பு பெற்ற புகார்கள் அதிகாரிகளுக்கு அனுப்பப்படும்." },
+      { num: "04", title: "தீர்வு கண்டு வெற்றிச் சுவரில்", text: "சிக்கல் சரிசெய்யப்பட்டதும் 'Fixed' புகைப்படத்தை பதிவேற்றி வெற்றிச் சுவரில் பகிருங்கள்." }
+    ],
+    pro_tip_en: "Pro Tip: Posts with exact landmark text and at least one high-contrast photo receive 4x faster community verifications.",
+    pro_tip_ta: "முக்கிய குறிப்பு: சரியான தெரு பெயர் மற்றும் தெளிவான புகைப்படத்துடன் கூடிய புகார்கள் 4 மடங்கு வேகமாக கவனிக்கப்படுகின்றன."
+  },
+  {
+    id: "power_and_rain",
+    icon: Zap,
+    color: "bg-amber-600",
+    text_color: "text-amber-600 dark:text-amber-400",
+    border_color: "border-amber-200 dark:border-amber-900/50",
+    bg_light: "bg-amber-50/60 dark:bg-amber-950/20",
+    title_en: "Track Daily Power Cuts & Rain Alerts",
+    title_ta: "மின்வெட்டு & மழை விடுமுறை அறிவிப்புகள்",
+    desc_en: "Look up TANGEDCO scheduled power shutdown timings, affected streets, and District Collector school/college rain holiday circulars.",
+    desc_ta: "மின்தடை நேரங்கள், பாதிக்கப்பட்ட பகுதிகள் மற்றும் மாவட்ட ஆட்சியர் அறிவிக்கும் மழை பள்ளி விடுமுறை செய்திகளை அறிக.",
+    action_href: "/power-cuts-today-tamil-nadu",
+    action_label_en: "Check Power Cuts Today",
+    action_label_ta: "இன்றைய மின்தடை காண்க",
+    steps_en: [
+      { num: "01", title: "Select Your District", text: "Visit Power Cuts Today or Holiday Alerts and choose from all 38 Tamil Nadu districts." },
+      { num: "02", title: "Check Substation Timings", text: "Review exact shutdown windows (e.g. 9:00 AM to 2:00 PM) and affected streets before planning battery or water usage." },
+      { num: "03", title: "Rain Holiday Verification", text: "During monsoons, read official District Collector announcements verified against Collectorate PRO dispatches." },
+      { num: "04", title: "1-Tap Minnalagam Helpline", text: "If power is not restored on time or you spot fallen live wires, tap 1912 to call Minnalagam instantly." }
+    ],
+    steps_ta: [
+      { num: "01", title: "மாவட்டத்தை தேர்வு செய்க", text: "மின்தடை அல்லது பள்ளி விடுமுறை பக்கத்திற்கு சென்று உங்கள் மாவட்டத்தை தேர்வு செய்யவும்." },
+      { num: "02", title: "துணை மின்நிலைய நேரங்கள்", text: "திட்டமிட்ட மின்தடை நேரம் (காலை 9:00 முதல் மதியம் 2:00 வரை) மற்றும் பாதிக்கப்பட்ட தெருக்களை முன்கூட்டியே அறியலாம்." },
+      { num: "03", title: "மழை விடுமுறை சரிபார்ப்பு", text: "கனமழை நாட்களில் மாவட்ட ஆட்சியர் வெளியிடும் அதிகாரப்பூர்வ பள்ளி/கல்லூரி விடுமுறை அறிவிப்புகளை உடனுக்குடன் பெறலாம்." },
+      { num: "04", title: "1912 மின்னகம் நேரடி அழைப்பு", text: "நேரத்திற்கு மின்சாரம் வராவிட்டால் அல்லது கம்பி அறுந்து விழுந்தால் 1912 எண்ணை நேரடியாக அழைக்கலாம்." }
+    ],
+    pro_tip_en: "Pro Tip: Power cut notices are updated daily at 7:30 AM based on official TANGEDCO circle notifications.",
+    pro_tip_ta: "முக்கிய குறிப்பு: மின்வாரியத்தின் அதிகாரப்பூர்வ சுற்றறிக்கையின்படி தினசரி காலை 7:30 மணிக்கு தகவல்கள் புதுப்பிக்கப்படுகின்றன."
+  },
+  {
+    id: "emergency_and_help",
+    icon: Phone,
+    color: "bg-rose-600",
+    text_color: "text-rose-600 dark:text-rose-400",
+    border_color: "border-rose-200 dark:border-rose-900/50",
+    bg_light: "bg-rose-50/60 dark:bg-rose-950/20",
+    title_en: "Emergency Helplines & Blood Support",
+    title_ta: "24x7 அவசர எண்கள் & ரத்த தான உதவி",
+    desc_en: "Access 1-tap direct dials for 112, 108 Ambulance, Minnalagam 1912, 1070 Disaster Control, or broadcast urgent blood donor requests.",
+    desc_ta: "112, 108 ஆம்புலன்ஸ், 1912 மின்வாரியம், 1070 பேரிடர் எண்களை அழைக்கலாம்; அவசர ரத்த தான கோரிக்கைகளை பகிரலாம்.",
+    action_href: "/helplines",
+    action_label_en: "Open Emergency Command",
+    action_label_ta: "அவசர கட்டுப்பாட்டு மையம்",
+    steps_en: [
+      { num: "01", title: "Instant 1-Tap Calling", text: "On the Emergency page, tap any verified button to initiate immediate cellular calling without typing." },
+      { num: "02", title: "38 District Disaster Desks", text: "Switch to the District Desks tab to dial 1077 for your specific District Collectorate crisis room." },
+      { num: "03", title: "Golden Hour SOPs", text: "Read life-saving first-aid workflows for snakebites, live wire electrocution, flood evacuation, and heart attacks." },
+      { num: "04", title: "Post Community SOS", text: "Visit /help to request urgent blood units (e.g. O+, B-) or ambulance navigation in your hospital ward." }
+    ],
+    steps_ta: [
+      { num: "01", title: "ஒரே தொடுதலில் அழைப்பு", text: "அவசர பக்கத்தில் உள்ள பொத்தானை அழுத்தி தட்டச்சு செய்யாமல் உடனடியாக நேரடியாக அழைக்கலாம்." },
+      { num: "02", title: "38 மாவட்ட பேரிடர் எண்கள்", text: "மாவட்ட மையங்கள் பிரிவில் 1077 எண்ணை அழைத்து உங்கள் மாவட்ட ஆட்சியர் அலுவலகத்தை தொடர்பு கொள்ளலாம்." },
+      { num: "03", title: "உயிர் காக்கும் முதலுதவி", text: "பாம்பு கடி, மின்கம்பி விபத்து, மழை வெள்ளம் மற்றும் மாரடைப்புக்கான அவசர முதலுதவி வழிகாட்டிகளை அறியலாம்." },
+      { num: "04", title: "சமுதாய ரத்த தான கோரிக்கை", text: "/help பக்கத்தில் அவசர ரத்த தேவை (O+, B-) அல்லது மருத்துவமனை உதவியை பதிவிடலாம்." }
+    ],
+    pro_tip_en: "Pro Tip: Helpline 112 works without SIM card balance and routes emergency GPS dispatch automatically.",
+    pro_tip_ta: "முக்கிய குறிப்பு: 112 எண் சிம் கார்டில் பேலன்ஸ் இன்றியும் இயங்கும்; தானியங்கி ஜிபிஎஸ் இருப்பிடத்தை கண்டறியும்."
+  },
+  {
+    id: "bribes_and_scams",
+    icon: Scale,
+    color: "bg-purple-600",
+    text_color: "text-purple-600 dark:text-purple-400",
+    border_color: "border-purple-200 dark:border-purple-900/50",
+    bg_light: "bg-purple-50/60 dark:bg-purple-950/20",
+    title_en: "Audit Bribes & Radar Local Scams",
+    title_ta: "லஞ்சக் கண்காணிப்பு & மோசடி எச்சரிக்கை",
+    desc_en: "Log bribery demands anonymously to build regional transparency indexes, and stay protected against fake EB bill SMS & cyber fraud.",
+    desc_ta: "அரசு அலுவலக லஞ்சக் கோரிக்கைகளை அநாமதேயமாக பதிவிடுங்கள்; போலி EB பில், பகுதிநேர வேலை மோசடிகளில் இருந்து பாதுகாப்போம்.",
+    action_href: "/bribe-tracker",
+    action_label_en: "Explore Bribe Tracker",
+    action_label_ta: "லஞ்சக் கண்காணிப்பு பார்க்க",
+    steps_en: [
+      { num: "01", title: "100% Anonymous Logging", text: "On /bribe-tracker, log the department (RTO, Revenue, TANGEDCO), amount demanded, and whether Paid or Refused." },
+      { num: "02", title: "No Personal Data Stored", text: "Your name, phone number, and IP address are never tied to bribe audit records to protect citizen safety." },
+      { num: "03", title: "DVAC Direct Line 1064", text: "If facing active extortion by government officials, dial DVAC toll-free hotline 1064 directly." },
+      { num: "04", title: "Check Scam Radar", text: "Visit /scams to learn about fake EB power cut APK downloads, police challan SMS scams, and call 1930 within 2 hours." }
+    ],
+    steps_ta: [
+      { num: "01", title: "100% ரகசிய பதிவு", text: "/bribe-tracker பக்கத்தில் துறை (RTO, வருவாய், மின்வாரியம்), லஞ்சத் தொகை மற்றும் கொடுத்ததா/மறுக்கப்பட்டதா என்பதை பதிவு செய்க." },
+      { num: "02", title: "தனிநபர் விவரங்கள் சேமிக்கப்படாது", text: "பொதுமக்கள் பாதுகாப்பிற்காக பெயர், தொலைபேசி எண் எதுவும் லஞ்ச பதிவுகளில் சேமிக்கப்படுவதில்லை." },
+      { num: "03", title: "DVAC உதவி எண் 1064", text: "அரசு ஊழியர்கள் லஞ்சம் கேட்டு வற்புறுத்தினால் லஞ்ச ஒழிப்புத் துறையின் 1064 எண்ணிற்கு புகார் செய்யலாம்." },
+      { num: "04", title: "மோசடி எச்சரிக்கை ரேடார்", text: "/scams பக்கத்தில் போலி EB பில் குறுஞ்செய்தி, வங்கி மோசடிகளை அறிந்து 1930 எண்ணிற்கு உடனே அழைக்கலாம்." }
+    ],
+    pro_tip_en: "Pro Tip: If victimized by online financial fraud, dial 1930 within the 'Golden Hour' (under 120 minutes) to freeze the scammer's bank account.",
+    pro_tip_ta: "முக்கிய குறிப்பு: ஆன்லைன் வங்கி மோசடி நடந்தால் 120 நிமிடங்களுக்குள் 1930 அழைத்தால் பணத்தை முடக்க முடியும்."
+  },
+  {
+    id: "ask_local_community",
+    icon: MessageSquare,
+    color: "bg-teal-600",
+    text_color: "text-teal-600 dark:text-teal-400",
+    border_color: "border-teal-200 dark:border-teal-900/50",
+    bg_light: "bg-teal-50/60 dark:bg-teal-950/20",
+    title_en: "Ask Local Questions & Get Area Answers",
+    title_ta: "உள்ளூரினரிடம் கேள்விகள் & பதில்கள்",
+    desc_en: "Get authentic ground advice on local water supply timings, Taluk e-Sevai centers, road repair updates, and neighbourhood facilities.",
+    desc_ta: "குடிநீர் வரும் நேரம், இ-சேவை மையம், சாலை நிலை போன்ற உள்ளூர் சந்தேகங்களை அப்பகுதி மக்களிடம் கேட்டு அறியலாம்.",
+    action_href: "/ask-local",
+    action_label_en: "Ask Local Community",
+    action_label_ta: "கேள்வி கேட்க",
+    steps_en: [
+      { num: "01", title: "Choose Your District & Area", text: "Target your question to a specific town or neighbourhood (e.g. Tambaram, Gandhipuram, Anna Nagar)." },
+      { num: "02", title: "Post a Specific Question", text: "Ask practical civic questions: 'Is the sub-registrar office open on Saturday?', 'What time does Metrowater supply come?'" },
+      { num: "03", title: "Ground Verified Answers", text: "Local residents who live on that street answer directly with operational timings and contact numbers." },
+      { num: "04", title: "Vote Best Answer", text: "Upvote helpful responses so future neighbours find verified information instantly." }
+    ],
+    steps_ta: [
+      { num: "01", title: "மாவட்டம் & பகுதியைத் தேர்வு செய்க", text: "உங்கள் கேள்வியை குறிப்பிட்ட பகுதிக்கு (எ.கா. தாம்பரம், காந்திபுரம், அண்ணா நகர்) நிர்ணயிக்கவும்." },
+      { num: "02", title: "சரியான கேள்வியை கேட்கவும்", text: "உள்ளூர் அரசு அலுவலக நேரம், குடிநீர் வரும் நேரம் போன்ற நடைமுறை கேள்விகளை கேட்கலாம்." },
+      { num: "03", title: "உள்ளூர் மக்களின் நேரடி பதில்", text: "அந்த பகுதியில் வசிக்கும் மக்கள் சரியான நேரம் மற்றும் உண்மை நிலவரத்தை பதிலளிப்பார்கள்." },
+      { num: "04", title: "சரியான பதிலுக்கு வாக்களிக்கவும்", text: "பிறருக்கும் உதவும் வகையில் சரியான பதில்களுக்கு வாக்களிக்கலாம்." }
+    ],
+    pro_tip_en: "Pro Tip: Keep questions focused on local facilities, office timings, or services rather than generic opinions.",
+    pro_tip_ta: "முக்கிய குறிப்பு: பொதுவான விவாதங்களை விட அலுவலக நேரம், குடிநீர், பேருந்து வழித்தடம் சார்ந்த கேள்விகளுக்கு உடனடி பதில் கிடைக்கும்."
+  },
+  {
+    id: "local_listings_directory",
+    icon: Store,
+    color: "bg-blue-600",
+    text_color: "text-blue-600 dark:text-blue-400",
+    border_color: "border-blue-200 dark:border-blue-900/50",
+    bg_light: "bg-blue-50/60 dark:bg-blue-950/20",
+    title_en: "Find & List Local Neighbourhood Services",
+    title_ta: "உள்ளூர் சேவைகள் & சிறுவணிகங்கள்",
+    desc_en: "Discover verified local electricians, plumbers, water tanker suppliers, AC technicians, and grocery stores across all 38 districts.",
+    desc_ta: "எலக்ட்ரீசியன், பிளம்பர், குடிநீர் லாரி விநியோகஸ்தர், ஏசி மெக்கானிக் போன்ற உள்ளூர் சேவை நபர்களை கண்டறியலாம்.",
+    action_href: "/local-listings",
+    action_label_en: "Browse Local Listings",
+    action_label_ta: "உள்ளூர் சேவைகளை பார்க்க",
+    steps_en: [
+      { num: "01", title: "Filter by Category & Area", text: "Search by skill (Electrician, Plumber, Water Supply, AC Service) and your local taluk." },
+      { num: "02", title: "Direct Phone Call", text: "Tap the phone button to connect directly with the local technician without middlemen commission." },
+      { num: "03", title: "List Your Own Business", text: "If you run a local service in Tamil Nadu, add your listing for free with phone number and address." },
+      { num: "04", title: "Community Verification", text: "High-rated listings receive community trust badges based on genuine customer feedback." }
+    ],
+    steps_ta: [
+      { num: "01", title: "வகை & பகுதியை வடிகட்டவும்", text: "பணி வகை (எலக்ட்ரீசியன், பிளம்பர், குடிநீர் விநியோகம்) மற்றும் பகுதியை தேர்வு செய்யவும்." },
+      { num: "02", title: "நேரடி தொலைபேசி அழைப்பு", text: "இடைத்தரகர் கமிஷன் இல்லாமல் உள்ளூர் தொழில்நுட்ப வல்லுநரை நேரடியாக அழைக்கலாம்." },
+      { num: "03", title: "உங்கள் சேவையை இணைக்கவும்", text: "நீங்கள் உள்ளூர் சேவை வழங்குபவராக இருந்தால் உங்கள் தொடர்பு எண்ணுடன் இலவசமாக பதிவு செய்யலாம்." },
+      { num: "04", title: "சமுதாய நம்பிக்கை பேட்ஜ்", text: "நல்ல சேவை வழங்கும் நபர்களுக்கு மக்கள் மதிப்பீட்டின்படி நம்பகத்தன்மை பேட்ஜ் வழங்கப்படும்." }
+    ],
+    pro_tip_en: "Pro Tip: Local Listings is 100% commission-free. You deal directly with your local neighbourhood service professionals.",
+    pro_tip_ta: "முக்கிய குறிப்பு: இந்த சேவையில் எந்தவித கமிஷனும் இல்லை. உங்கள் பகுதி சேவை நபருடன் நேரடியாக தொடர்பு கொள்ளலாம்."
+  }
+];
+
+// Complete Real Feature Catalog of VizhiTN
+const PLATFORM_FEATURES_MATRIX = [
+  { name_en: "Civic Complaints Feed", name_ta: "பொதுப் புகார்கள் நேரலை", route: "/explore", desc_en: "Browse live citizen issues across all 38 districts with filters", desc_ta: "38 மாவட்ட புகார்களை புகைப்படங்களுடன் நேரலையாக காண", audience: "All Citizens" },
+  { name_en: "Log Issue (Create Receipt)", name_ta: "புகார் பதிவு செய்தல்", route: "/create", desc_en: "Submit civic grievances with photo, GPS, and department routing", desc_ta: "ஆதாரத்துடன் பொதுப் புகாரை பதிவு செய்து கண்காணிக்க", audience: "Registered Citizens" },
+  { name_en: "38 District Portals", name_ta: "38 மாவட்ட இணைய முகப்புகள்", route: "/chennai", desc_en: "Hyperlocal feeds, ward stats, and grievance tallies for each district", desc_ta: "ஒவ்வொரு மாவட்டத்திற்கான பிரத்யேக செய்தி & புள்ளிவிவரங்கள்", audience: "All Citizens" },
+  { name_en: "Power Cuts Today", name_ta: "இன்றைய மின்தடை நேரம்", route: "/power-cuts-today-tamil-nadu", desc_en: "TANGEDCO planned substation shutdown timings & affected streets", desc_ta: "மின்வாரிய பராமரிப்பு பணி காரணமாக மின்தடை ஆகும் பகுதிகள்", audience: "All Citizens" },
+  { name_en: "Rain Holiday Alerts", name_ta: "மழை பள்ளி விடுமுறை செய்திகள்", route: "/holiday-alerts-tamil-nadu", desc_en: "District Collector official announcements for heavy rains", desc_ta: "மாவட்ட ஆட்சியர் அறிவிக்கும் அதிகாரப்பூர்வ பள்ளி விடுமுறைகள்", audience: "All Citizens" },
+  { name_en: "Live Situations & Diversions", name_ta: "நேரடி கள நிலவரம் & போக்குவரத்து", route: "/situations", desc_en: "Subway waterlogging, train line blocks, festival diversions", desc_ta: "வெள்ளப் பெருக்கு, சுரங்கப்பாதை அடைப்பு, ரயில் ரத்து செய்திகள்", audience: "All Citizens" },
+  { name_en: "Emergency Command Center", name_ta: "24x7 அவசர கட்டுப்பாட்டு மையம்", route: "/helplines", desc_en: "1-tap speed dials (112, 108, 1912, 1930) & District Disaster 1077", desc_ta: "அனைத்து அவசர உதவி எண்கள், பேரிடர் மற்றும் முதலுதவி நெறிமுறைகள்", audience: "24x7 Public" },
+  { name_en: "Community SOS Help", name_ta: "சமுதாய அவசர உதவி மையம்", route: "/help", desc_en: "Blood requirement requests, ambulance help, missing persons", desc_ta: "ரத்த தான தேவை மற்றும் அவசர சமுதாய உதவி கோரிக்கைகள்", audience: "Volunteers & Citizens" },
+  { name_en: "Anonymous Bribe Tracker", name_ta: "லஞ்சக் கண்காணிப்புப் பலகை", route: "/bribe-tracker", desc_en: "Log bribery demands anonymously; direct DVAC helpline 1064", desc_ta: "அரசு அலுவலக லஞ்சக் கோரிக்கைகளை ரகசியமாக பதிவிட்டு கண்காணிக்க", audience: "Anonymous Public" },
+  { name_en: "Scam Radar & Fraud Alerts", name_ta: "சைபர் மோசடி எச்சரிக்கை", route: "/scams", desc_en: "Fake EB bill SMS, part-time job fraud warnings, Cyber helpline 1930", desc_ta: "ஆன்லைன் நிதி மோசடிகள் மற்றும் சைபர் கிரைம் விழிப்புணர்வு", audience: "All Citizens" },
+  { name_en: "Ask Local Q&A", name_ta: "உள்ளூரினரிடம் கேளுங்கள்", route: "/ask-local", desc_en: "Ask neighbours questions about local timings, roads, and facilities", desc_ta: "அப்பகுதி மக்களிடம் நேரடி சந்தேகங்களை கேட்டு தீர்க்க", audience: "Local Residents" },
+  { name_en: "Local Business Listings", name_ta: "உள்ளூர் வணிகங்கள் & சேவைகள்", route: "/local-listings", desc_en: "Verified local electricians, plumbers, water suppliers & mechanics", desc_ta: "எலக்ட்ரீசியன், பிளம்பர், குடிநீர் லாரி சேவைகளின் தொடர்பு எண்கள்", audience: "Consumers & Pros" },
+  { name_en: "Civic Awareness & Rights", name_ta: "குடிமக்கள் உரிமைகள் & திட்டங்கள்", route: "/awareness", desc_en: "RTI Act 2005, police check rights, welfare schemes & portal guides", desc_ta: "RTI சட்டம், நுகர்வோர் உரிமை மற்றும் அரசு திட்ட வழிகாட்டிகள்", audience: "All Citizens" },
+  { name_en: "TN Politics & Governance", name_ta: "தமிழ்நாடு அரசியல் & கொள்கை மையம்", route: "/tn-politics", desc_en: "Assembly debates, welfare budget allocations, policy deep-dives", desc_ta: "அரசுத் திட்டங்கள், சட்டப்பேரவை விவாதங்கள் மற்றும் கொள்கை ஆய்வு", audience: "All Citizens" }
+];
+
+// Frequently Asked Questions
+const FAQS = [
+  {
+    q_en: "Is filing a civic complaint or viewing alerts free on VizhiTN?",
+    q_ta: "VizhiTN தளத்தில் புகாரளிப்பதற்கும் தகவல்களைப் பார்ப்பதற்கும் கட்டணம் உண்டா?",
+    a_en: "VizhiTN is 100% free and open to all citizens of Tamil Nadu. There are no fees to file complaints, search power cut schedules, dial helplines, or post local questions.",
+    a_ta: "VizhiTN தளம் தமிழ்நாடு பொதுமக்கள் அனைவருக்கும் 100% முற்றிலும் இலவசமானது. புகாரளிப்பது, மின்தடை அறிவது, அவசர எண்களை அழைப்பது என அனைத்திற்கும் எந்த கட்டணமும் இல்லை."
+  },
+  {
+    q_en: "Is my identity anonymous when I log a report on the Bribe Tracker?",
+    q_ta: "லஞ்சக் கண்காணிப்பில் பதிவு செய்யும்போது என் பெயர் ரகசியமாக இருக்குமா?",
+    a_en: "Yes. The Bribe Tracker is designed for statistical regional audit only. Your name, phone number, and IP address are never made public or associated with the report.",
+    a_ta: "ஆம். லஞ்சக் கண்காணிப்பு என்பது பிராந்திய புள்ளிவிவரங்களுக்காக மட்டுமே. உங்கள் பெயர், எண் அல்லது ஐபி முகவரி பொதுவெளியில் ஒருபோதும் காட்டப்படாது."
+  },
+  {
+    q_en: "How are scheduled power cuts and rain holiday alerts verified?",
+    q_ta: "மின்தடை நேரங்களும் பள்ளி விடுமுறைகளும் எவ்வாறு சரிபார்க்கப்படுகின்றன?",
+    a_en: "Power cut schedules are cross-verified daily against official TANGEDCO circle sub-station press releases. School rain holiday announcements are published strictly from official District Collectorate circulars.",
+    a_ta: "மின்தடை விவரங்கள் TANGEDCO மின்வாரிய சுற்றறிக்கையின்படியும், பள்ளி விடுமுறை செய்திகள் மாவட்ட ஆட்சியரின் அதிகாரப்பூர்வ அறிவிப்பின்படியும் மட்டுமே வெளியிடப்படுகின்றன."
+  },
+  {
+    q_en: "How does my complaint move to the 'Victory Wall' (Resolved)?",
+    q_ta: "என் புகார் எவ்வாறு 'வெற்றிச் சுவருக்கு' (தீர்வு கண்டவை) மாற்றப்படும்?",
+    a_en: "Once municipal or departmental workers repair the defect (e.g. asphalt road, replace streetlight, repair water pipe), you or a neighbour uploads an 'After' photo. Community votes verify the fix and it moves to the Victory Wall.",
+    a_ta: "அரசுத் துறை அல்லது மாநகராட்சி ஊழியர்கள் அந்தப் பணியை முடித்ததும் (சாலை போடுதல், விளக்கு மாற்றுதல்), சரிசெய்யப்பட்ட புகைப்படத்தை பதிவேற்றினால் மக்கள் சரிபார்த்து வெற்றிச் சுவருக்கு மாற்றப்படும்."
+  },
+  {
+    q_en: "Can I contact local technicians directly through Local Listings without middleman commission?",
+    q_ta: "உள்ளூர் சேவை நபர்களை இடைத்தரகர் கமிஷன் இன்றி நேரடியாக அழைக்க முடியுமா?",
+    a_en: "Yes. Local Listings connects you directly via telephone with neighbourhood electricians, plumbers, and mechanics. VizhiTN charges zero commission to either party.",
+    a_ta: "ஆம். எலக்ட்ரீசியன், பிளம்பர், குடிநீர் லாரி உரிமையாளர்களை நேரடியாக தொலைபேசி மூலம் அழைக்கலாம். VizhiTN எந்தவொரு கமிஷனும் வசூலிப்பதில்லை."
+  }
+];
 
 export default function HowToUse() {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
+  const [activePillar, setActivePillar] = useState("civic_complaints");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openFaq, setOpenFaq] = useState(0);
+
   usePageMeta({
-    title: T("How to Use VizhiTN | Feature Guides", "VizhiTN பயன்படுத்துவது எப்படி | வழிகாட்டிகள்"),
-    description: T(
-      "Learn how to navigate the interactive map, create civic receipts, log bribe statistics, and join community drives.",
-      "ஊடாடும் வரைபடத்தைப் பயன்படுத்துதல், குடிமைப் புகார்களைப் பதிவிடுதல் மற்றும் லஞ்சக் கண்காணிப்பைப் பயன்படுத்துவது எப்படி என்பதை அறிக."
-    ),
+    title: "How to Use VizhiTN | Complete Citizen User Manual & Walkthrough",
+    description: "Learn how to file civic complaints with photos, track TANGEDCO power cuts, access 24x7 emergency hotlines, audit bribes anonymously, and find neighbourhood services across Tamil Nadu.",
   });
 
-  const fadeUp = {
-    hidden: { opacity: 0, y: 15 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-  };
+  const selectedPillar = useMemo(() => {
+    return CORE_PILLARS.find((p) => p.id === activePillar) || CORE_PILLARS[0];
+  }, [activePillar]);
 
-  const containerVariants = {
-    visible: { transition: { staggerChildren: 0.08 } },
-    hidden: {}
-  };
+  // Filter catalog by search query
+  const filteredCatalog = useMemo(() => {
+    if (!searchQuery) return PLATFORM_FEATURES_MATRIX;
+    const q = searchQuery.toLowerCase().trim();
+    return PLATFORM_FEATURES_MATRIX.filter((item) =>
+      item.name_en.toLowerCase().includes(q) ||
+      item.name_ta.toLowerCase().includes(q) ||
+      item.desc_en.toLowerCase().includes(q) ||
+      item.desc_ta.toLowerCase().includes(q) ||
+      item.route.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-      {/* Header */}
-      <motion.div initial="hidden" animate="visible" variants={fadeUp} className="text-center space-y-3">
-        <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-sm">
-          <HelpCircle className="w-6 h-6" />
-        </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">
-          {T("How to Use VizhiTN", "VizhiTN பயன்படுத்துவது எப்படி")}
-        </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-          {T(
-            "Get to know our core features. Follow these step-by-step guides to report issues, track statistics, and build a better Tamil Nadu.",
-            "எங்கள் முக்கிய அம்சங்களைப் பற்றி தெரிந்து கொள்ளுங்கள். தமிழ்நாட்டை மேம்படுத்த புகாரளிப்பது, புள்ளிவிவரங்களைக் கண்காணிப்பது போன்றவற்றின் எளிய வழிகாட்டி."
-          )}
-        </p>
-      </motion.div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-6 sm:py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
 
-      {/* Feature Sections */}
-      <motion.div 
-        initial="hidden" 
-        animate="visible" 
-        variants={containerVariants} 
-        className="space-y-8"
-      >
-        {/* 1. Interactive Map */}
-        <motion.div variants={fadeUp} className="p-6 sm:p-8 rounded-2xl border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 bg-white dark:bg-slate-900 shadow-sm transition-all space-y-4">
-          <div className="flex items-center gap-3.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-              <Map className="w-5. h-5" />
+        {/* ── HERO BANNER ── */}
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 border border-slate-800 text-white p-6 sm:p-10 shadow-xl">
+          <div className="relative z-10 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-bold mb-3.5">
+              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              {T("VIZHITN CITIZEN MANUAL • ALL 38 DISTRICTS", "VIZHITN பொதுமக்கள் கையேடு • 38 மாவட்டங்கள்")}
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                {T("1. Interactive Map & Live Feed", "1. ஊடாடும் வரைபடம் & நேரடி ஊட்டம்")}
-              </h2>
-              <p className="text-xs text-slate-400">{T("Explore and track local developments", "உள்ளூர் நிகழ்வுகளை ஆராய்ந்து கண்காணிக்கவும்")}</p>
-            </div>
-          </div>
-          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2.5 leading-relaxed">
-            <p>
-              {lang === "ta" ? (
-                <>
-                  முகப்புப் பக்கத்தில் உள்ள ஊடாடும் வரைபடம் தமிழ்நாட்டில் அண்மையில் பதிவான சிக்கல்களைக் காட்டுகிறது. உங்கள் குறிப்பிட்ட மாவட்டத்தை பெரிதாக்கி, விவரங்களைக் காண குறியீடுகளை அழுத்தலாம். <strong>Live Feed</strong> மூலம் அனைத்துப் புகார்களையும் காலவரிசைப்படி படிக்கலாம்.
-                </>
-              ) : (
-                <>
-                  The Home page contains an interactive map showcasing recently reported issues across Tamil Nadu. You can zoom in to your specific district, click on issue pins to view summary cards, and filter posts by categories (potholes, garbage, lighting, etc.). Use the <strong>Live Feed</strong> to read community updates chronologically.
-                </>
+
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3">
+              {T("How to Use VizhiTN — Your Step-by-Step Guide", "VizhiTN பயன்படுத்துவது எப்படி — முழு வழிகாட்டி")}
+            </h1>
+
+            <p className="text-xs sm:text-base text-slate-300 leading-relaxed mb-6">
+              {T(
+                "Learn how to photograph and resolve civic grievances, track daily TANGEDCO power cuts, dial 24x7 emergency helplines, audit bribes anonymously, and participate in your local neighbourhood.",
+                "சாலைப் பள்ளங்களை புகைப்படத்துடன் பதிவிடுவது, மின்தடை நேரம் அறிவது, 24x7 அவசர எண்கள் மற்றும் லஞ்சக் கண்காணிப்பை எவ்வாறு பயன்படுத்துவது என்பதை இங்கே அறிந்துகொள்ளலாம்."
               )}
             </p>
-          </div>
-        </motion.div>
 
-        {/* 2. Civic Receipts */}
-        <motion.div variants={fadeUp} className="p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm space-y-4">
-          <div className="flex items-center gap-3.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 flex items-center justify-center">
-              <FileText className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                {T("2. Creating Civic Receipts", "2. குடிமை ரசீதுகள் உருவாக்குதல்")}
-              </h2>
-              <p className="text-xs text-slate-400">{T("File public complaints with proof", "ஆதாரத்துடன் பொதுப் புகார்களைப் பதிவிடவும்")}</p>
-            </div>
-          </div>
-          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-4 leading-relaxed">
-            <div className="space-y-1">
-              <p className="font-semibold text-slate-950 dark:text-white">{T("How to log a complaint:", "புகார் பதிவிடும் முறை:")}</p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>{T("Click the 'Log Issue' button in the header navbar or bottom mobile bar.", "தலைப்பில் உள்ள 'Log Issue' பட்டனையோ அல்லது மொபைல் கீழ் பட்டனையோ அழுத்தவும்.")}</li>
-                <li>{T("Select 'Complaint' as the post type, then enter the title, description, and exact location.", "பதிவு வகையாக 'Complaint'-ஐத் தேர்ந்தெடுத்து, தலைப்பு, விளக்கம் மற்றும் இருப்பிடத்தை உள்ளிடவும்.")}</li>
-                <li>{T("Upload image or video evidence (Max 2MB for images, 10MB for videos).", "புகைப்படம் அல்லது வீடியோ ஆதாரத்தைப் பதிவேற்றவும் (படங்கள் அதிகபட்சம் 2MB, வீடியோக்கள் 10MB).")}</li>
-                <li>{T("Click 'Submit'. The community can now verify your report or mark it fixed.", "சமர்ப்பிக்கவும். பிற மக்கள் உங்கள் பதிவை சரிபார்க்கலாம் அல்லது சரிசெய்யப்பட்டதாக அறிவிக்கலாம்.")}</li>
-              </ul>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* 3. Bribe Tracker */}
-        <motion.div variants={fadeUp} className="p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm space-y-4">
-          <div className="flex items-center gap-3.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="w-10 h-10 rounded-xl bg-pink-50 dark:bg-pink-950 text-pink-600 dark:text-pink-400 flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                {T("3. Bribe Tracker (Anonymous)", "3. லஞ்சக் கண்காணிப்பு (அநாமதேயம்)")}
-              </h2>
-              <p className="text-xs text-slate-400">{T("Log bribe requests for statistical audit", "புள்ளிவிவரக் கணக்காய்விற்காக லஞ்சப் பதிவுகளைப் பதிவிடவும்")}</p>
-            </div>
-          </div>
-          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2.5 leading-relaxed">
-            <p>
-              {lang === "ta" ? (
-                <>
-                  துறைகளில் லஞ்சக் கோரிக்கைகளை அநாமதேயமாகப் பதிவிடலாம். துறை, இருப்பிடம், லஞ்சத் தொகை மற்றும் அது <strong>கொடுக்கப்பட்டதா</strong> அல்லது <strong>மறுக்கப்பட்டதா</strong> என்பதைத் தேர்வு செய்ய வேண்டும். குரல் பதிவுகள் அல்லது ஆவணங்களை (அதிகபட்சம் 2MB) இணைக்கலாம்.
-                </>
-              ) : (
-                <>
-                  Built to establish regional transparency indices. You can log bribe requests anonymously: select the department, location, bribe amount, and toggle whether it was <strong>Paid</strong> or <strong>Refused</strong>. You can optionally attach voice records or document receipts (restricted strictly to 2MB).
-                </>
-              )}
-            </p>
-            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/40 rounded-xl p-3 flex gap-2.5 mt-2">
-              <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <p className="text-xs text-amber-700 dark:text-amber-400">
-                {T(
-                  "Note: The Bribe Tracker is strictly for regional statistical transparency and awareness. It is not designed to blame, harass, or defame individual officers.",
-                  "குறிப்பு: லஞ்சக் கண்காணிப்பு என்பது பிராந்திய புள்ளிவிவர விழிப்புணர்விற்காக மட்டுமே. தனிநபர் அதிகாரிகளை அவதூறு பரப்புவதற்கோ, பழிவாங்குவதற்கோ அல்ல."
+            {/* In-Hero Search Input */}
+            <div className="relative max-w-xl">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={T(
+                  "Search a feature (e.g. pothole, power cut, bribe, blood, rain holiday, ask local)...",
+                  "தேடுங்கள் (மின்வெட்டு, லஞ்சம், ரத்த தானம், மழை விடுமுறை, கேள்வி கேட்க)..."
                 )}
+                className="w-full pl-10 pr-4 py-3 text-xs sm:text-sm bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-inner"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ── INTERACTIVE 6 ACTION PILLARS SELECTOR ── */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <Compass className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                {T("Choose What You Want to Do", "நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?")}
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {T("Select a workflow below to view visual steps, citizen pro-tips, and live links.", "கீழே உள்ள பிரிவை தேர்வு செய்து வழிமுறைகள் மற்றும் நேரடி இணைப்புகளை காண்க.")}
               </p>
             </div>
           </div>
-        </motion.div>
 
-        {/* 4. Community Drives & Dashboards */}
-        <motion.div variants={fadeUp} className="p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm space-y-4">
-          <div className="flex items-center gap-3.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-              <Users className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                {T("4. Community & Resident Dashboards", "4. சமுதாய & குடியிருப்புப் பலகைகள்")}
-              </h2>
-              <p className="text-xs text-slate-400">{T("Organize collective regional fixes", "கூட்டுப் பகுதி தீர்வுகளை ஒழுங்கமைக்க")}</p>
-            </div>
+          {/* Pillar Selector Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+            {CORE_PILLARS.map((p) => {
+              const Icon = p.icon;
+              const active = activePillar === p.id;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setActivePillar(p.id)}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                    active
+                      ? `${p.bg_light} ${p.border_color} ring-2 ring-blue-500 shadow-md`
+                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-xl ${p.color} text-white flex items-center justify-center mb-2 shadow-xs`}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className={`text-xs font-bold leading-snug line-clamp-2 ${active ? p.text_color : "text-slate-900 dark:text-white"}`}>
+                      {T(p.title_en, p.title_ta)}
+                    </h3>
+                  </div>
+                </button>
+              );
+            })}
           </div>
-          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2.5 leading-relaxed">
-            <p>
-              {lang === "ta" ? (
-                <>
-                  குடியிருப்பு நலச் சங்கங்களின் (<strong>RWA</strong>) பலகை மூலம் உள்ளூர் மேம்பாடுகளைக் கண்காணிக்கலாம். நிறுவனங்கள் தங்களது சமூகப் பொறுப்பு (<strong>CSR</strong>) பங்களிப்புகளைப் புகார்களுடன் இணைக்கலாம். செயலில் உள்ளவர்களைத் தகுதிப் பட்டியல் (<strong>Leaderboard</strong>) மூலம் காணலாம்.
-                </>
-              ) : (
-                <>
-                  Access Resident Welfare Association (<strong>RWA</strong>) dashboards to track local area developments collaboratively, or use the <strong>CSR</strong> hub to link corporate sponsorships to verified public issues. Track top performers and regional contributors via the <strong>Leaderboard</strong>.
-                </>
+        </div>
+
+        {/* ── ACTIVE PILLAR DETAILED WALKTHROUGH CARD ── */}
+        <div className={`bg-white dark:bg-slate-900 border-2 ${selectedPillar.border_color} rounded-3xl p-5 sm:p-8 shadow-sm transition-all`}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5 mb-6">
+            <div className="flex items-center gap-3.5">
+              <div className={`w-12 h-12 rounded-2xl ${selectedPillar.color} text-white flex items-center justify-center font-bold shadow-md flex-shrink-0`}>
+                {React.createElement(selectedPillar.icon, { className: "w-6 h-6" })}
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  FEATURE WALKTHROUGH
+                </span>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+                  {T(selectedPillar.title_en, selectedPillar.title_ta)}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                  {T(selectedPillar.desc_en, selectedPillar.desc_ta)}
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href={selectedPillar.action_href}
+              className={`flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white ${selectedPillar.color} hover:opacity-95 shadow-md transition-all active:scale-95`}
+            >
+              {T(selectedPillar.action_label_en, selectedPillar.action_label_ta)}
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* 4 Interactive Visual Steps */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {(lang === "ta" ? selectedPillar.steps_ta : selectedPillar.steps_en).map((step, idx) => (
+              <div
+                key={idx}
+                className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between"
+              >
+                <div>
+                  <span className="text-2xl font-black font-mono text-slate-300 dark:text-slate-600 block mb-2">
+                    {step.num}
+                  </span>
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1.5">
+                    {step.title}
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {step.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pro-Tip Callout Box */}
+          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 rounded-2xl p-4 flex items-start gap-3">
+            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-blue-900 dark:text-blue-300 leading-relaxed font-medium">
+              {T(selectedPillar.pro_tip_en, selectedPillar.pro_tip_ta)}
+            </p>
+          </div>
+        </div>
+
+        {/* ── CIVIC PROOF RESOLUTION LIFECYCLE ── */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xs">
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <span className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
+              {T("HOW IT WORKS", "இயங்கும் முறை")}
+            </span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+              {T("The Civic Proof Resolution Lifecycle", "குடிமைப் புகார் தீர்வு காணும் படிநிலைகள்")}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              {T(
+                "How a citizen photo report transforms into official departmental action and reaches the community Victory Wall.",
+                "ஒரு குடிமகனின் புகைப்படம் எவ்வாறு அரசு அதிகாரிகளின் கவனத்திற்கு சென்று வெற்றிச் சுவரில் முடிகிறது."
               )}
             </p>
           </div>
-        </motion.div>
-      </motion.div>
 
-      {/* Universal SEO Cross-Links */}
-      <UniversalCrossLinks pageType="support" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+            {[
+              {
+                step: "1",
+                badge: "REPORTED",
+                badge_color: "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400",
+                title_en: "Citizen Logs Issue with Proof",
+                title_ta: "குடிமகன் ஆதாரத்துடன் பதிவிடுகிறார்",
+                desc_en: "Captured with daytime photo, exact GPS pin, category, and department assigned.",
+                desc_ta: "புகைப்படம், ஜிபிஎஸ் இருப்பிடம் மற்றும் அரசுத் துறையுடன் பதிவு செய்யப்படுகிறது."
+              },
+              {
+                step: "2",
+                badge: "VERIFIED",
+                badge_color: "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400",
+                title_en: "Community Upvotes & Validates",
+                title_ta: "சமுதாயம் சரிபார்த்து வாக்களிக்கிறது",
+                desc_en: "Neighbours living in the ward confirm 'I can verify this'. Spam posts are filtered out.",
+                desc_ta: "அப்பகுதி மக்கள் 'நான் உறுதி செய்கிறேன்' என வாக்களித்து போலியானவற்றை நீக்குகின்றனர்."
+              },
+              {
+                step: "3",
+                badge: "DEPARTMENT ACTION",
+                badge_color: "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400",
+                title_en: "Official Helplines Escalation",
+                title_ta: "துறை அதிகாரிகளுக்கு தகவல் அனுப்பப்படுகிறது",
+                desc_en: "Complaint tagged to official helplines (GCC 1913, TANGEDCO 1912, Metrowater 044-45674567).",
+                desc_ta: "சென்னை மாநகராட்சி 1913, மின்வாரியம் 1912 போன்ற உதவி மையங்களுக்கு அனுப்பப்படுகிறது."
+              },
+              {
+                step: "4",
+                badge: "RESOLVED",
+                badge_color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400",
+                title_en: "Victory Wall Celebration",
+                title_ta: "வெற்றிச் சுவரில் தீர்வு கொண்டாடப்படுகிறது",
+                desc_en: "After repair, citizen uploads 'Fixed' photo. Post moves to the Victory Wall.",
+                desc_ta: "பணி முடிந்ததும் சரிசெய்யப்பட்ட புகைப்படம் பதிவேற்றப்பட்டு வெற்றிச் சுவரில் இடம்பெறுகிறது."
+              }
+            ].map((s, idx) => (
+              <div
+                key={idx}
+                className="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-sm flex items-center justify-center">
+                      {s.step}
+                    </span>
+                    <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${s.badge_color}`}>
+                      {s.badge}
+                    </span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1.5">
+                    {T(s.title_en, s.title_ta)}
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {T(s.desc_en, s.desc_ta)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── ALL 14 ACTIVE PLATFORM FEATURES CATALOG ── */}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <Compass className="w-5 h-5 text-blue-600" />
+                {T("Complete VizhiTN Feature Catalog", "VizhiTN தளத்தின் அனைத்து அம்சங்கள்")}
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {T("Direct links to all currently available tools, dashboards, and live feeds across Tamil Nadu.", "தமிழ்நாட்டில் தற்போது பயன்பாட்டில் உள்ள அனைத்து நேரடி பக்கங்கள்.")}
+              </p>
+            </div>
+            <span className="text-xs font-bold text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-xl">
+              {filteredCatalog.length} {T("active features", "அம்சங்கள்")}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {filteredCatalog.map((feat) => (
+              <Link
+                key={feat.route}
+                href={feat.route}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 rounded-2xl p-4 shadow-xs transition-all flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {T(feat.name_en, feat.name_ta)}
+                    </h3>
+                    <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-3">
+                    {T(feat.desc_en, feat.desc_ta)}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 dark:border-slate-800 text-[11px]">
+                  <span className="font-mono text-blue-600 dark:text-blue-400 font-semibold">
+                    {feat.route}
+                  </span>
+                  <span className="text-slate-400 font-medium">
+                    {feat.audience}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* ── FREQUENTLY ASKED QUESTIONS (FAQ) ── */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xs">
+          <div className="text-center max-w-xl mx-auto mb-6">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+              {T("Frequently Asked Questions", "அடிக்கடி கேட்கப்படும் கேள்விகள்")}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              {T("Common queries answered for new citizens joining the platform.", "புதிய பயனர்களுக்கான தெளிவான விடைகள்.")}
+            </p>
+          </div>
+
+          <div className="space-y-3 max-w-3xl mx-auto">
+            {FAQS.map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div
+                  key={idx}
+                  className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition-colors"
+                >
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full p-4 text-left flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                  >
+                    <span className="font-bold text-slate-900 dark:text-white text-sm">
+                      {T(faq.q_en, faq.q_ta)}
+                    </span>
+                    <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 flex-shrink-0">
+                      {isOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <div className="p-4 pt-0 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                      <p className="mt-3">{T(faq.a_en, faq.a_ta)}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── CALL TO ACTION BANNER ── */}
+        <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-lg">
+          <div>
+            <span className="bg-white/20 text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+              {T("JOIN THE CITIZEN NETWORK", "குடிமக்கள் இயக்கத்தில் இணையுங்கள்")}
+            </span>
+            <h3 className="text-xl sm:text-2xl font-black mt-2">
+              {T("Ready to Report an Issue in Your Street?", "உங்கள் தெருவின் சிக்கலை பதிவிட தயாரா?")}
+            </h3>
+            <p className="text-xs sm:text-sm text-red-100 mt-1 max-w-xl">
+              {T(
+                "Document civic defects with photos, track departmental actions, and help create a transparent Tamil Nadu.",
+                "புகைப்படங்களுடன் பதிவிட்டு, அரசுத் துறைகளின் தீர்வை கண்காணித்து வெளிப்படையான தமிழ்நாட்டை உருவாக்குவோம்."
+              )}
+            </p>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Link
+              href="/create"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-red-600 hover:bg-red-50 font-black text-sm rounded-xl shadow-md transition-all active:scale-95"
+            >
+              <Camera className="w-4 h-4" />
+              {T("Report an Issue", "புகார் பதிவிட")}
+            </Link>
+            <Link
+              href="/explore"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 bg-red-800/60 hover:bg-red-800 text-white font-bold text-sm rounded-xl border border-white/20 transition-all"
+            >
+              {T("Explore Feed", "நேரலை பார்க்க")}
+            </Link>
+          </div>
+        </div>
+
+        {/* Universal SEO Cross-Links */}
+        <UniversalCrossLinks pageType="support" />
+      </div>
     </div>
   );
 }
