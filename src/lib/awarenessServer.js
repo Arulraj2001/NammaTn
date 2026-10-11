@@ -1077,117 +1077,535 @@ export const getEmergencyContactBySlug = (slug) => {
   return getAllEmergencyContacts().find(e => e.slug === slug || e.id === slug || e.number === slug);
 };
 
-// All citizen rights with slugs
+// All citizen rights with slugs and rich statutory SEO data
 export const getAllRights = () => [
   {
     id: "right-rti",
     slug: "right-to-information-act-2005",
     name_en: "Right to Information Act (RTI Act 2005)",
     name_ta: "தகவல் அறியும் உரிமைச் சட்டம் 2005",
-    desc_en: "Empowers Indian citizens to request information, inspect government files, and obtain certified copies within 30 days.",
-    desc_ta: "அரசுத் துறைகளின் செயல்பாடுகள் மற்றும் கோப்புகளை பார்வையிட 30 நாட்களுக்குள் தகவல் பெறும் உரிமை.",
-    content_en: "Under the RTI Act 2005, every citizen has the statutory right to file an application with a Public Information Officer (PIO) of any state or central government department. The PIO must reply within 30 calendar days.",
-    content_ta: "தகவல் அறியும் உரிமைச் சட்டத்தின்படி ஒவ்வொரு குடிமகனும் எந்தவொரு அரசுத் துறையிலும் ₹10 கட்டணத்துடன் விண்ணப்பித்து 30 நாட்களுக்குள் தகவல் பெற உரிமை உண்டு.",
-    department_en: "Personnel and Administrative Reforms Dept",
-    department_ta: "பணியாளர் மற்றும் நிர்வாக சீர்திருத்தத் துறை",
+    seo_title_en: "RTI Act 2005 Tamil Nadu: How to Apply, Rules, Fees & 30-Day Limit",
+    seo_title_ta: "தமிழ்நாடு RTI சட்டம் 2005: விண்ணப்பிக்கும் முறை, கட்டணம் & 30 நாள் காலக்கெடு",
+    seo_desc_en: "Complete citizen guide to RTI Act 2005 in Tamil Nadu: ₹10 fee, 30-day statutory response window, ₹25,000 PIO penalty, online filing portal & appeals.",
+    seo_desc_ta: "தமிழ்நாட்டில் தகவல் அறியும் உரிமைச் சட்டம் 2005 வழிகாட்டி: ₹10 கட்டணம், 30 நாள் பதில் காலக்கெடு, ₹25,000 அபராதம் மற்றும் ஆன்லைன் விண்ணப்ப முறை.",
+    statutory_section_en: "Sections 6(1), 7(1), 7(6) & 20(1) RTI Act 2005",
+    statutory_section_ta: "RTI சட்டம் 2005 பிரிவு 6(1), 7(1), 7(6) & 20(1)",
+    timeline_sla_en: "30 Calendar Days (48 Hours for Life & Liberty)",
+    timeline_sla_ta: "30 நாட்கள் பதில் (உயிர் பாதுகாப்பு எனில் 48 மணி நேரம்)",
+    penalty_en: "₹250/day up to ₹25,000 deducted directly from PIO salary + Disciplinary action",
+    penalty_ta: "தகவல் தாமதத்திற்கு அதிகாரி சம்பளத்தில் நாள் ஒன்றுக்கு ₹250 வீதம் ₹25,000 வரை அபராதம்",
+    fee_en: "₹10 Court Fee Stamp, Postal Order or Online UPI (Free for BPL)",
+    fee_ta: "₹10 நீதிமன்ற முத்திரை அல்லது போஸ்டல் ஆர்டர் (வறுமைக் கோட்டிற்கு கீழ் உள்ளவர்களுக்கு இலவசம்)",
+    helpline: "1100",
+    helpline_name_en: "CM Helpline / TNIC Cell",
+    helpline_name_ta: "முதல்வர் உதவி எண் / தகவல் ஆணையம்",
+    desc_en: "Empowers Indian citizens to request information, inspect government files, and obtain certified copies of records from any public authority within 30 days.",
+    desc_ta: "அரசுத் துறைகளின் செயல்பாடுகள், நிதிகள் மற்றும் கோப்புகளை மக்கள் பார்வையிடவும் நகல் பெறவும் 30 நாட்களுக்குள் தகவல் பெறும் உரிமை.",
+    content_en: "Under the RTI Act 2005, every citizen has the statutory right to file an application with a Public Information Officer (PIO) of any state or central department. The PIO must reply within 30 calendar days (or 48 hours if life and liberty are involved). Application fee is ₹10. If information is denied, delayed, or evasive, citizens can file a First Appeal under Section 19(1) to the Head of Department without fee, and a Second Appeal to the Tamil Nadu Information Commission (TNIC).",
+    content_ta: "தகவல் அறியும் உரிமைச் சட்டத்தின்படி ஒவ்வொரு குடிமகனும் எந்தவொரு அரசுத் துறையிலும் ₹10 கட்டணத்துடன் விண்ணப்பித்து 30 நாட்களுக்குள் தகவல் பெற உரிமை உண்டு. பதில் கிடைக்காத பட்சத்தில் 30 நாட்களுக்குள் துறைத் தலைவரிடம் முதல் மேல்முறையீடு செய்யலாம். அதிலும் தீர்வு இல்லையெனில் தமிழ்நாடு தகவல் ஆணையத்தில் (TNIC) இரண்டாவது மேல்முறையீடு செய்யலாம்.",
+    verbal_script_en: "Sir, I have submitted a statutory application under Section 6(1) of the RTI Act 2005 on [Date]. As per Section 7(1), the PIO must furnish the information within 30 days. Under Section 7(6), delayed information must be supplied free of cost, and Section 20 imposes personal penalties up to ₹25,000 on defaulting officers.",
+    verbal_script_ta: "ஐயா, தகவல் அறியும் உரிமைச் சட்டம் பிரிவு 6(1)-ன் கீழ் மனு அளித்துள்ளேன். பிரிவு 7(1)-ன் படி 30 நாட்களுக்குள் தகவல் வழங்க வேண்டும். காலதாமதம் ஏற்பட்டால் பிரிவு 7(6)-ன் படி தகவல்கள் கட்டணமின்றி இலவசமாக வழங்கப்பட வேண்டும் மற்றும் பிரிவு 20-ன் படி அதிகாரி மீது அபராதம் விதிக்கப்படும்.",
+    department_en: "Personnel and Administrative Reforms Dept / TN Information Commission",
+    department_ta: "பணியாளர் & நிர்வாக சீர்திருத்தத் துறை / தகவல் ஆணையம்",
     portal_url: "https://rtionline.tn.gov.in",
     image_url: "/images/evergreen/rti-rights.jpg",
+    key_points_en: [
+      "Mandatory 30-day response window for all Tamil Nadu government authorities",
+      "₹10 application fee; completely free for below poverty line (BPL) cardholders",
+      "Statutory right to physically inspect public works, roads, and government records",
+      "Personal penalty up to ₹25,000 deducted from the salary of defaulting officers"
+    ],
+    key_points_ta: [
+      "தமிழ்நாடு அரசுத் துறைகள் அனைத்திற்கும் 30 நாட்கள் கட்டாயப் பதில் காலக்கெடு",
+      "₹10 கட்டணம் மட்டுமே; வறுமைக் கோட்டிற்கு கீழ் உள்ளவர்களுக்கு முற்றிலும் இலவசம்",
+      "அரசு சாலைகள், கட்டுமானப் பணிகள் மற்றும் கோப்புகளை நேரில் ஆய்வு செய்யும் உரிமை",
+      "தகவலை மறைக்கும் அதிகாரிக்கு ₹25,000 வரை தனிப்பட்ட அபராதம்"
+    ],
+    steps_en: [
+      "Draft concise, factual questions (request copies of file notings, orders, and audits)",
+      "Affix ₹10 Court Fee Stamp or pay via rtionline.tn.gov.in",
+      "Submit to PIO via Registered Post with Acknowledgment Due (RPAD) or online",
+      "If no reply within 30 days, file First Appeal to the Appellate Authority within 30 days"
+    ],
+    steps_ta: [
+      "தெளிவான கேள்விகளைத் தயார் செய்யுங்கள் (கோப்புகள், உத்தரவுகளின் நகல்களைக் கோருங்கள்)",
+      "₹10 நீதிமன்ற முத்திரை ஒட்டி அல்லது rtionline.tn.gov.in மூலம் ஆன்லைனில் கட்டணம் செலுத்துங்கள்",
+      "பொதுத் தகவல் அலுவலருக்கு பதிவுத் தபால் (RPAD) அல்லது இணையதளம் மூலம் அனுப்புங்கள்",
+      "30 நாட்களில் பதில் வராவிடில் துறைத் தலைவரிடம் முதல் மேல்முறையீடு செய்யுங்கள்"
+    ],
+    faqs: [
+      {
+        q_en: "Can a government department reject an RTI application for not stating the reason?",
+        q_ta: "காரணம் சொல்லவில்லை என்பதற்காக அரசுத் துறை RTI மனுவை நிராகரிக்க முடியுமா?",
+        a_en: "No. Under Section 6(2) of the RTI Act 2005, an applicant is not required to give any reason for requesting information or any personal details other than contact address.",
+        a_ta: "முடியாது. RTI சட்டம் பிரிவு 6(2)-ன் படி தகவல் கோரும் குடிமகன் அதற்கான காரணத்தைத் தெரிவிக்க வேண்டிய அவசியமில்லை."
+      },
+      {
+        q_en: "What if the Public Information Officer does not respond within 30 days?",
+        q_ta: "30 நாட்களுக்குள் தகவல் அதிகாரி பதில் அளிக்காவிட்டால் என்ன செய்வது?",
+        a_en: "If no reply is given within 30 days, file a First Appeal to the Department Head under Section 19(1). Under Section 7(6), all requested documents must now be supplied 100% free of cost.",
+        a_ta: "பதில் வராவிடில் துறைத் தலைவரிடம் முதல் மேல்முறையீடு செய்யலாம். பிரிவு 7(6)-ன் படி அனைத்து ஆவணங்களையும் கட்டணமின்றி இலவசமாக வழங்க வேண்டும்."
+      },
+      {
+        q_en: "Can I inspect local road construction files and government tenders under RTI?",
+        q_ta: "உள்ளூர் சாலைப் பணிகள் மற்றும் டெண்டர் கோப்புகளை RTI மூலம் ஆய்வு செய்ய முடியுமா?",
+        a_en: "Yes. Section 2(j)(i) explicitly grants citizens the right to physically inspect government works, documents, records, and certified samples of materials used.",
+        a_ta: "ஆம். பிரிவு 2(j)(i)-ன் படி அரசுப் பணிகள், பதிவேடுகள் மற்றும் பயன்படுத்தப்பட்ட கட்டுமானப் பொருட்களின் மாதிரிகளை நேரில் ஆய்வு செய்ய முழு உரிமை உண்டு."
+      }
+    ]
   },
   {
     id: "right-consumer",
     slug: "consumer-protection-rights-2019",
     name_en: "Consumer Protection Rights (Act 2019)",
     name_ta: "நுகர்வோர் பாதுகாப்பு சட்ட உரிமைகள் 2019",
+    seo_title_en: "Consumer Court Rights Tamil Nadu: e-Daakhil, No Lawyer Rules & 1915 Helpline",
+    seo_title_ta: "தமிழ்நாடு நுகர்வோர் மன்ற உரிமைகள்: வழக்கறிஞர் இன்றி ஆன்லைன் வழக்கு & 1915",
+    seo_desc_en: "How to file a consumer complaint in Tamil Nadu without a lawyer: e-Daakhil filing, ₹50 Lakh District Commission limit, product liability & 1915 helpline.",
+    seo_desc_ta: "தமிழ்நாட்டில் வழக்கறிஞர் இன்றி நுகர்வோர் நீதிமன்றத்தில் வழக்கு தொடரும் முறை: இ-தாகீல் தளம், ₹50 லட்சம் வரம்பு மற்றும் நுகர்வோர் உதவி எண் 1915.",
+    statutory_section_en: "Sections 2(7), 35 & 84-86 Consumer Protection Act 2019",
+    statutory_section_ta: "நுகர்வோர் பாதுகாப்பு சட்டம் 2019 பிரிவு 2(7), 35 & 84-86",
+    timeline_sla_en: "District Commission Claims up to ₹50 Lakhs",
+    timeline_sla_ta: "மாவட்ட நுகர்வோர் மன்றம் ₹50 லட்சம் வரை இழப்பீடு வழங்க அதிகாரம்",
+    penalty_en: "Full refund, product replacement, monetary damages & business license cancellation",
+    penalty_ta: "முழு பணத்தைத் திரும்பப் பெறுதல், மாற்றுப் பொருள், இழப்பீடு மற்றும் வணிக உரிம ரத்து",
+    fee_en: "Zero advocate fee; nominal court fee on e-Daakhil",
+    fee_ta: "வழக்கறிஞர் கட்டாயம் இல்லை; இ-தாகீல் தளத்தில் மிகக் குறைந்த கட்டணம்",
+    helpline: "1915",
+    helpline_name_en: "National Consumer Helpline Toll-Free",
+    helpline_name_ta: "தேசிய நுகர்வோர் உதவி எண்",
     desc_en: "Guarantees protection against defective goods, deficient services, overcharging, misleading advertisements, and unfair trade practices.",
     desc_ta: "குறைபாடுள்ள பொருட்கள், போலி விளம்பரங்கள் மற்றும் ஏமாற்று வியாபாரத்திற்கு எதிராக ஆன்லைனில் வழக்கு பதிவு செய்து இழப்பீடு பெறும் உரிமை.",
-    content_en: "The Consumer Protection Act 2019 gives citizens 6 fundamental consumer rights. Consumers can file complaints online through e-Daakhil without hiring a lawyer for claims up to ₹50 lakh.",
-    content_ta: "நுகர்வோர் பாதுகாப்பு சட்டம் 2019 படி பொருட்களின் தரம், விலை மற்றும் சேவைகளில் குறைபாடு இருந்தால் வக்கீல் இல்லாமல் இ-தாகீல் தளம் வழியாக ஆன்லைனில் நுகர்வோர் நீதிமன்றத்தில் வழக்கு பதிவு செய்யலாம்.",
+    content_en: "The Consumer Protection Act 2019 gives citizens 6 fundamental consumer rights: Right to Safety, Right to Information, Right to Choose, Right to be Heard, Right to Redressal, and Right to Consumer Education. Consumers can file complaints online through e-Daakhil without hiring a lawyer for claims up to ₹50 lakh at the District Commission.",
+    content_ta: "நுகர்வோர் பாதுகாப்பு சட்டம் 2019 படி பொருட்களின் தரம், விலை மற்றும் சேவைகளில் குறைபாடு இருந்தால் வக்கீல் இல்லாமல் இ-தாகீல் (e-Daakhil) தளம் வழியாக ஆன்லைனில் நுகர்வோர் நீதிமன்றத்தில் வழக்கு பதிவு செய்து இழப்பீடு பெறலாம்.",
+    verbal_script_en: "Under the Consumer Protection Act 2019, refusing to replace defective goods or charging above the Maximum Retail Price (MRP) constitutes an unfair trade practice. Please process the replacement or refund within 7 days, failing which an online complaint will be filed on e-Daakhil and National Consumer Helpline 1915 claiming punitive compensation for mental harassment.",
+    verbal_script_ta: "நுகர்வோர் பாதுகாப்பு சட்டம் 2019 படி, குறைபாடுள்ள பொருளை மாற்ற மறுப்பதோ அல்லது MRP-ஐ விட கூடுதலாக விற்பதோ குற்றமாகும். 7 நாட்களுக்குள் பணத்தை திருப்பித் தராவிடில் தேசிய நுகர்வோர் உதவி எண் 1915 மற்றும் இ-தாகீல் நீதிமன்றத்தில் நஷ்டஈடு கேட்டு வழக்கு பதிவு செய்யப்படும்.",
     department_en: "Civil Supplies and Consumer Protection Dept",
     department_ta: "உணவு மற்றும் நுகர்வோர் பாதுகாப்புத் துறை",
     portal_url: "https://edaakhil.nic.in",
     image_url: "/images/evergreen/rti-rights.jpg",
+    key_points_en: [
+      "No lawyer required to file consumer court complaints in Tamil Nadu",
+      "Online complaint filing via national e-Daakhil portal (edaakhil.nic.in)",
+      "Strict Product Liability holds manufacturers directly accountable for defects",
+      "National Consumer Helpline toll-free: 1915 (multi-lingual support)"
+    ],
+    key_points_ta: [
+      "நுகர்வோர் நீதிமன்றத்தில் வழக்கு பதிவு செய்ய வழக்கறிஞர் தேவையில்லை",
+      "இ-தாகீல் தளம் மூலம் ஆன்லைன் வழக்கு பதிவு (edaakhil.nic.in)",
+      "தயாரிப்பு பொறுப்புச் சட்டம் மூலம் உற்பத்தியாளரே நேரடியாகப் பொறுப்பு",
+      "தேசிய நுகர்வோர் உதவி எண்: 1915"
+    ],
+    steps_en: [
+      "Preserve proof of purchase (bill, invoice, warranty card, defective item photos)",
+      "Send written legal notice to company giving 7 to 15 days to refund/replace",
+      "Call 1915 or lodge complaint on consumerhelpline.gov.in",
+      "If unresolved, file online complaint on edaakhil.nic.in without hiring an advocate"
+    ],
+    steps_ta: [
+      "வாங்கிய ரசீது, பில், வாரண்டி அட்டை மற்றும் சேதமடைந்த பொருட்களின் படங்களைச் சேகரியுங்கள்",
+      "நிறுவனத்திற்கு 7-15 நாட்களில் மாற்றிக் கொடுக்கக் கோரி எழுத்துப்பூர்வ நோட்டீஸ் அனுப்புங்கள்",
+      "1915 எண்ணை அழைத்து அல்லது consumerhelpline.gov.in தளத்தில் புகார் பதிவு செய்யுங்கள்",
+      "தீர்வு கிடைக்காத பட்சத்தில் edaakhil.nic.in தளத்தில் வக்கீல் இன்றி வழக்கு தொடருங்கள்"
+    ],
+    faqs: [
+      {
+        q_en: "Can a shop charge extra 'cooling charges' for water or soft drinks above MRP?",
+        q_ta: "குளிர்ந்த பானங்களுக்கு MRP-ஐ விட கூடுதலாக கடைகளில் வசூலிக்கலாமா?",
+        a_en: "No. Selling above MRP under the pretext of refrigerator chilling is strictly illegal under Section 18(2) of the Legal Metrology Act and Consumer Protection Act 2019.",
+        a_ta: "கூடாது. குளிரூட்டப்பட்டது என்ற பெயரில் MRP விலையை விட கூடுதலாக வசூலிப்பது சட்டப்படி குற்றமாகும்."
+      },
+      {
+        q_en: "Can a shopkeeper refuse returns with a 'Goods once sold cannot be returned' notice?",
+        q_ta: "'விற்ற பொருட்கள் திரும்ப பெறப்பட மாட்டாது' என்று போர்டு வைத்தால் பொருள் மாற்றிக் கேட்க முடியாதா?",
+        a_en: "No. Such notices are legally void under CPA 2019. If goods are defective, deficient, or expired, the seller is statutorily required to replace or refund.",
+        a_ta: "முடியாது. அத்தகைய பலகைகள் சட்டப்படி செல்லாது. பொருளில் குறைபாடு இருந்தால் மாற்றித் தர வேண்டியது விற்பனையாளரின் கடமை."
+      }
+    ]
   },
   {
     id: "right-police-check",
     slug: "police-vehicle-check-citizen-rights",
     name_en: "Citizen Rights During Police Checks & Detention",
     name_ta: "வாகன சோதனை மற்றும் காவல் விசாரணையில் குடிமக்கள் உரிமைகள்",
+    seo_title_en: "Traffic Police Check Rules Tamil Nadu: DigiLocker Laws, Key Seizure & Fines",
+    seo_title_ta: "தமிழ்நாடு போலீஸ் வாகன சோதனை விதிகள்: டிஜிலாக்கர் & சாவி பிடுங்கும் சட்டங்கள்",
+    seo_desc_en: "Your statutory rights when stopped by Tamil Nadu traffic police: MV Act Rule 139 DigiLocker validity, key seizure ban, Sub-Inspector fine rules & female arrest laws.",
+    seo_desc_ta: "தமிழ்நாடு போக்குவரத்து போலீஸ் சோதனையில் உங்கள் உரிமைகள்: டிஜிலாக்கர் செல்லுபடியாகும் விதிகள், சாவி பிடுங்க தடை மற்றும் பெண்கள் கைது பாதுகாப்பு.",
+    statutory_section_en: "Central Motor Vehicles Rules Rule 139 & CrPC Sec 46(4), 50, 57",
+    statutory_section_ta: "மோட்டார் வாகன விதிகள் Rule 139 & CrPC பிரிவு 46(4), 50, 57",
+    timeline_sla_en: "Immediate Document Verification / 24h Magistrate Limit",
+    timeline_sla_ta: "உடனடி ஆவண சரிபார்ப்பு / 24 மணி நேரத்திற்குள் நீதிபதி முன் ஆஜர்படுத்துதல்",
+    penalty_en: "Physical intimidation or unauthorized key seizure violates Supreme Court guidelines",
+    penalty_ta: "வாகனச் சாவியைப் பிடுங்குவது அல்லது தாக்குவது சட்டவிரோத நடவடிக்கை",
+    fee_en: "Digital e-Challan only; zero arbitrary cash penalties without receipt",
+    fee_ta: "டிஜிட்டல் இ-சலான் ரசீது மட்டுமே; ரசீது இன்றி பணம் கொடுக்கத் தேவையில்லை",
+    helpline: "103",
+    helpline_name_en: "Traffic Police Control Desk",
+    helpline_name_ta: "போக்குவரத்து காவல்துறை உதவி எண்",
     desc_en: "Know your statutory legal rights when stopped by traffic police, during vehicle document inspection, or during police questioning.",
-    desc_ta: "வாகன சோதனையின் போதும் காவல் நிலைய விசாரணையின் போதும் குடிமக்களுக்கு உள்ள சட்டப்பூர்வ உரிமைகள்.",
-    content_en: "Only Sub-Inspector (SI) rank & above can collect traffic fines. DigiLocker DL/RC copies are 100% legally valid under MV Act Rule 139. Key snatching is illegal.",
-    content_ta: "சப்-இன்ஸ்பெக்டர் (SI) மற்றும் அதற்கு மேற்பட்ட அதிகாரிகளே அபராதம் வசூலிக்க முடியும். டிஜிலாக்கர் (DigiLocker) சான்றிதழ்கள் செல்லுபடியாகும். வாகனச் சாவியை பிடுங்குவது சட்டவிரோதம்.",
-    department_en: "Home & Police Department",
-    department_ta: "உள்துறை மற்றும் காவல்துறை",
+    desc_ta: "வாகன சோதனையின் போதும் காவல் நிலைய விசாரணையின் போதும் குடிமக்களுக்கு உள்ள சட்டப்பூர்வ உரிமைகள் மற்றும் பாதுகாப்பு விதிகள்.",
+    content_en: "1. Officers below Sub-Inspector (SI) rank cannot issue fine receipts for major offences. 2. Officers cannot forcefully seize your ignition key or physically assault driver. 3. Electronic copies of Driving License and RC shown on DigiLocker or mParivahan apps are legally valid under MV Act Rule 139. 4. Women cannot be arrested after sunset (6 PM) and before sunrise (6 AM) except in extraordinary circumstances with a female officer present.",
+    content_ta: "1. சப்-இன்ஸ்பெக்டர் (SI) நிலைக்குக் கீழ் உள்ள அதிகாரிகள் அபராதம் வசூலிக்க முடியாது. 2. வாகனச் சாவியைப் பிடுங்கவோ உடலளவில் தாக்கவோ அதிகாரம் இல்லை. 3. டிஜிலாக்கர் (DigiLocker) செயலியில் உள்ள உரிமம் மற்றும் ஆர்.சி புத்தகம் சட்டப்பூர்வமாக செல்லுபடியாகும். 4. பெண்களை மாலை 6 மணி முதல் காலை 6 மணி வரை பெண் காவலர் இன்றி கைது செய்ய முடியாது.",
+    verbal_script_en: "Sir, under Rule 139 of the Central Motor Vehicles Rules and MoRTH notifications, digital documents displayed on DigiLocker and mParivahan are statutorily recognized as equivalent to original physical papers. Taking away vehicle ignition keys is not authorized under the Motor Vehicles Act. I am ready to pay any valid compounding fine via digital e-Challan to an officer of Sub-Inspector rank or above.",
+    verbal_script_ta: "ஐயா, மத்திய மோட்டார் வாகன விதிகள் Rule 139-ன் படி டிஜிலாக்கர் சான்றிதழ்கள் 100% செல்லுபடியாகும். வாகனச் சாவியை பிடுங்குவது விதிகளுக்கு எதிரானது. விதிமீறல் இருப்பின் சப்-இன்ஸ்பெக்டர் அதிகாரி மூலம் டிஜிட்டல் இ-சலான் ரசீது வழங்குங்கள்.",
+    department_en: "Home & Tamil Nadu Police Department",
+    department_ta: "உள்துறை மற்றும் தமிழ்நாடு காவல்துறை",
     portal_url: "https://eservices.tnpolice.gov.in",
     image_url: "/images/evergreen/rti-rights.jpg",
+    key_points_en: [
+      "Only Sub-Inspector (SI) rank & above can collect or adjudicate traffic fines",
+      "DigiLocker & mParivahan digital DL/RC copies are 100% legally valid",
+      "Police key snatching or verbal harassment is unlawful under Supreme Court rulings",
+      "Night arrest of women prohibited under CrPC Section 46(4)"
+    ],
+    key_points_ta: [
+      "சப்-இன்ஸ்பெக்டர் (SI) மற்றும் அதற்கு மேற்பட்ட அதிகாரிகளே அபராதம் வசூலிக்க முடியும்",
+      "டிஜிலாக்கர் (DigiLocker) டிஜிட்டல் சான்றிதழ்கள் 100% சட்டப்பூர்வமாக செல்லுபடியாகும்",
+      "வாகனச் சாவியை பிடுங்குவது சட்டவிரோத நடவடிக்கை",
+      "பெண்களை மாலை 6 மணிக்குப் பின் பெண் காவலர் இன்றி கைது செய்யத் தடை"
+    ],
+    steps_en: [
+      "Pull over calmly to the left curb and switch off the engine (keep keys in pocket)",
+      "Open verified DigiLocker or mParivahan app on your smartphone",
+      "Verify the rank of the officer (look for two stars / SI insignia)",
+      "Insist on an official digital e-Challan receipt mentioning the exact offense section"
+    ],
+    steps_ta: [
+      "வாகனத்தை இடதுபுறம் நிறுத்தி என்ஜினை அணையுங்கள் (சாவியை உங்கள் பாக்கெட்டில் வையுங்கள்)",
+      "டிஜிலாக்கர் அல்லது mParivahan செயலியில் உள்ள அசல் ஆவணங்களைக் காட்டுங்கள்",
+      "அதிகாரியின் பதவியை கவனியுங்கள் (குறைந்தது 2 நட்சத்திரம் உள்ள சப்-இன்ஸ்பெக்டராக இருக்க வேண்டும்)",
+      "எப்போதும் விதிமீறல் எண் குறிப்பிடப்பட்ட டிஜிட்டல் இ-சலான் ரசீதை மட்டுமே பெறுங்கள்"
+    ],
+    faqs: [
+      {
+        q_en: "Can a traffic constable demand original physical RC or Driving License?",
+        q_ta: "காவலர்கள் அசல் ஆர்.சி அல்லது ஓட்டுநர் உரிமத்தைக் கட்டாயம் கேட்க முடியுமா?",
+        a_en: "No. Under Central Motor Vehicles Rules Rule 139 and MoRTH notification RT-11036/64/2017, digital documents on DigiLocker and mParivahan have identical legal validity to physical documents.",
+        a_ta: "முடியாது. மத்திய மோட்டார் வாகன விதிகள் Rule 139-ன் படி டிஜிலாக்கர் மற்றும் mParivahan டிஜிட்டல் ஆவணங்கள் அசல் ஆவணங்களுக்கு சமமானவை."
+      },
+      {
+        q_en: "Can police confiscate my mobile phone during a traffic stop?",
+        q_ta: "வாகன சோதனையின் போது காவலர்கள் உங்கள் செல்போனை பறிமுதல் செய்ய முடியுமா?",
+        a_en: "No. Police cannot seize personal mobile phones or demand device passwords during a routine traffic inspection without a formal magistrate order or criminal FIR.",
+        a_ta: "முடியாது. சாதாரண வாகன சோதனையின் போது செல்போனை பறிமுதல் செய்யவோ பாஸ்வேர்டு கேட்கவோ அதிகாரம் இல்லை."
+      }
+    ]
   },
   {
     id: "right-service",
     slug: "right-to-public-services-timebound",
     name_en: "Right to Public Services (Time-Bound Delivery)",
     name_ta: "காலவரையறைக்கு உட்பட்ட அரசுச் சேவை உரிமை",
+    seo_title_en: "Tamil Nadu Citizen Charter: Certificate SLAs, Revenue Timelines & CM Cell 1100",
+    seo_title_ta: "தமிழ்நாடு குடிமக்கள் சாசனம்: சான்றிதழ் காலக்கெடு & முதல்வர் உதவி எண் 1100",
+    seo_desc_en: "Statutory deadlines for government services in Tamil Nadu: 15-day SLA for Income & Community certificates, power connection rules, jamabandi appeals & CM 1100.",
+    seo_desc_ta: "தமிழ்நாட்டில் அரசு சேவைகளுக்கான சட்டப்பூர்வ காலக்கெடு: சாதி/வருமான சான்றிதழ் 15 நாள் காலக்கெடு, புதிய மின் இணைப்பு மற்றும் முதல்வர் உதவி எண் 1100.",
+    statutory_section_en: "Tamil Nadu Citizen Service Charter Guidelines & Revenue SLAs",
+    statutory_section_ta: "தமிழ்நாடு குடிமக்கள் பட்டயம் & வருவாய்த் துறை காலக்கெடு",
+    timeline_sla_en: "Income/Community (15 Days), Nativity (7 Days), Power (7-15 Days)",
+    timeline_sla_ta: "வருமானம்/சாதி (15 நாட்கள்), இருப்பிடம் (7 நாட்கள்), மின் இணைப்பு (7-15 நாட்கள்)",
+    penalty_en: "Collectorate Jamabandi review + Departmental disciplinary record entry",
+    penalty_ta: "மாவட்ட ஆட்சியர் குறைதீர் மறுஆய்வு மற்றும் துறை ரீதியான ஒழுங்கு நடவடிக்கை",
+    fee_en: "Nominal e-Sevai fee (₹60) only",
+    fee_ta: "இ-சேவை மைய நிர்ணயிக்கப்பட்ட அரசு கட்டணம் (₹60) மட்டுமே",
+    helpline: "1100",
+    helpline_name_en: "Chief Minister's Grievance Cell",
+    helpline_name_ta: "முதல்வர் உதவி எண்",
     desc_en: "Guarantees statutory time limits for receiving civic certificates, electricity connections, water taps, and revenue documents.",
     desc_ta: "அரசுச் சான்றிதழ்கள், குடிநீர் மற்றும் மின்சார இணைப்புகளை குறிப்பிட்ட காலக்கெடுவுக்குள் பெறும் உரிமை.",
-    content_en: "Community/Income Certificate (15 days), Native Certificate (7 days), New Domestic Power Connection (7-15 days). District Collector Appeal for delay.",
-    content_ta: "சாதி/வருமான சான்றிதழ் (15 நாட்கள்), இருப்பிட சான்றிதழ் (7 நாட்கள்), புதிய மின் இணைப்பு (7-15 நாட்கள்). தாமதமானால் ஆட்சியரிடம் மேல்முறையீடு செய்யலாம்.",
+    content_en: "Under Tamil Nadu Citizen Charter guidelines, government departments must issue certificates within stipulated deadlines: Community/Income Certificate (15 days), Native Certificate (7 days), New Domestic Power Connection (7-15 days), Ration card modification (15 days). If delayed without cause, citizens can file an appeal with the District Collectorate Grievance Officer.",
+    content_ta: "அரசு குடிமக்கள் சாசனம் படி: சாதி/வருமான சான்றிதழ் (15 நாட்கள்), இருப்பிட சான்றிதழ் (7 நாட்கள்), புதிய மின் இணைப்பு (7-15 நாட்கள்) மற்றும் ரேஷன் கார்டு மாற்றம் (15 நாட்கள்) காலக்கெடுவுக்குள் வழங்கப்பட வேண்டும். தாமதமானால் ஆட்சியரிடம் மேல்முறையீடு செய்யலாம்.",
+    verbal_script_en: "Sir, under the Tamil Nadu Citizen Charter, the statutory timeline for issuing this certificate is 15 working days. My application has been pending for over the statutory limit without any deficiency notice. Please furnish the reason in writing or I will register an appeal with the District Collector and CM Helpline 1100.",
+    verbal_script_ta: "அரசு குடிமக்கள் சாசனத்தின்படி இந்த சான்றிதழுக்கான காலக்கெடு 15 நாட்கள் ஆகும். எவ்வித குறைபாடும் சுட்டிக்காட்டப்படாமல் விண்ணப்பம் தாமதப்படுத்தப்பட்டுள்ளது. காரணத்தை எழுத்துப்பூர்வமாகத் தாருங்கள் அல்லது மாவட்ட ஆட்சியர் மற்றும் முதல்வர் உதவி எண் 1100-ல் மேல்முறையீடு செய்வேன்.",
     department_en: "Revenue and Disaster Management Dept",
     department_ta: "வருவாய் மற்றும் பேரிடர் மேலாண்மைத் துறை",
     portal_url: "https://cmhelpline.tn.gov.in",
     image_url: "/images/evergreen/esevai-guide.jpg",
+    key_points_en: [
+      "Community & Income Certificate SLA: 15 Working Days",
+      "New Domestic Electricity Connection SLA: 7 to 15 Days",
+      "Smart Ration Card modification SLA: 15 Working Days",
+      "Direct weekly appeal to District Collectorate Grievance Day (every Monday)"
+    ],
+    key_points_ta: [
+      "சாதி மற்றும் வருமான சான்றிதழ் காலக்கெடு: 15 வேலை நாட்கள்",
+      "புதிய வீட்டு மின் இணைப்பு காலக்கெடு: 7 முதல் 15 நாட்கள்",
+      "ரேஷன் கார்டு திருத்தம் காலக்கெடு: 15 வேலை நாட்கள்",
+      "மாவட்ட ஆட்சியரிடம் வாராந்திர மக்கள் குறைதீர் நாளில் நேரடி மேல்முறையீடு"
+    ],
+    steps_en: [
+      "Apply through official e-Sevai portal (tnesevai.tn.gov.in) and keep Application CAN/Ack number",
+      "Track status online daily after 7 days",
+      "If application crosses SLA without objection memo, note VAO / RI / Tahsildar pending desk",
+      "Call CM Helpline 1100 or submit formal petition to District Collector"
+    ],
+    steps_ta: [
+      "tnesevai.tn.gov.in தளம் மூலம் விண்ணப்பித்து விண்ணப்ப எண் மற்றும் ஒப்புகைச் சீட்டைப் பெறுங்கள்",
+      "7 நாட்களுக்குப் பிறகு ஆன்லைனில் கோப்பு நிலையைத் தொடர்ந்து கண்காணிக்கவும்",
+      "காலக்கெடு கடந்தும் கோப்பு தேங்கினால் VAO / RI நிலையை குறித்துக் கொள்ளுங்கள்",
+      "முதல்வர் உதவி எண் 1100-ஐ அழையுங்கள் அல்லது மாவட்ட ஆட்சியரிடம் திங்கட்கிழமை மனு அளியுங்கள்"
+    ],
+    faqs: [
+      {
+        q_en: "What should I do if my VAO or Revenue Inspector keeps my file pending for months?",
+        q_ta: "விஏஓ அல்லது வருவாய் ஆய்வாளர் மாதக்கணக்கில் கோப்பை நிலுவையில் வைத்தால் என்ன செய்வது?",
+        a_en: "File a petition on CM Helpline 1100 with your application CAN number, or attend the weekly Monday Grievance Day at the District Collectorate where files must be disposed within 30 days.",
+        a_ta: "முதல்வர் உதவி எண் 1100-ல் புகார் பதிவு செய்யுங்கள் அல்லது மாவட்ட ஆட்சியர் அலுவலக திங்கட்கிழமை குறைதீர் முகாமில் நேரில் மனு அளியுங்கள்."
+      }
+    ]
   },
   {
     id: "right-senior-citizen",
     slug: "senior-citizens-maintenance-act-2007",
     name_en: "Maintenance & Rights of Senior Citizens (Act 2007)",
     name_ta: "மூத்த குடிமக்கள் பராமரிப்பு & நல உரிமைகள் 2007",
+    seo_title_en: "Senior Citizens Act 2007 Tamil Nadu: RDO Eviction, Property Rights & 14567",
+    seo_title_ta: "மூத்த குடிமக்கள் சட்டம் 2007 தமிழ்நாடு: RDO தீர்ப்பாயம் & எல்டர்லைன் 14567",
+    seo_desc_en: "Legal protections for elderly parents in Tamil Nadu: Section 23 property gift deed cancellation, 90-day RDO eviction of abusive heirs & Elderline 14567.",
+    seo_desc_ta: "தமிழ்நாட்டில் முதியோர்களுக்கான சட்டப் பாதுகாப்பு: தானப் பத்திரத்தை ரத்து செய்யும் பிரிவு 23, 90 நாள் RDO வெளியேற்ற உத்தரவு & உதவி எண் 14567.",
+    statutory_section_en: "Sections 4, 9 & 23 Maintenance of Senior Citizens Act 2007",
+    statutory_section_ta: "மூத்த குடிமக்கள் பராமரிப்பு சட்டம் பிரிவு 4, 9 & 23",
+    timeline_sla_en: "90 Days Summary Disposal by RDO Tribunal",
+    timeline_sla_ta: "RDO தீர்ப்பாயம் மூலம் 90 நாட்களில் உடனடி தீர்ப்பு",
+    penalty_en: "Cancellation of property gift deeds + Summary eviction of abusive heirs + Jail term",
+    penalty_ta: "சொத்து தானப் பத்திரம் ரத்து + ஆக்கிரமித்த பிள்ளைகளை வெளியேற்றுதல் + சிறைத் தண்டனை",
+    fee_en: "Zero court fees; free state legal aid available",
+    fee_ta: "நீதிமன்ற கட்டணம் இல்லை; இலவச அரசு சட்ட உதவி",
+    helpline: "14567",
+    helpline_name_en: "Elderline National Toll-Free",
+    helpline_name_ta: "முதியோர் தேசிய உதவி எண்",
     desc_en: "Protects elderly citizens from eviction, abandonment, or financial neglect by adult children or legal heirs.",
     desc_ta: "முதியோர்களை பிள்ளைகள் கைவிடுவதில் இருந்தும் சொத்துக்களில் இருந்து வெளியேற்றுவதில் இருந்தும் பாதுகாக்கும் சட்டம்.",
-    content_en: "Children are legally obligated to provide a monthly maintenance allowance up to ₹10,000/month. RDO Tribunal orders eviction of abusive heirs within 90 days.",
-    content_ta: "பெற்றோர்களைப் பராமரிக்காத பிள்ளைகளிடம் இருந்து மாதம் ₹10,000 வரை ஜீவனாம்சம் பெறவும், முதியோரின் சொத்தை ஆக்கிரமிக்கும் பிள்ளைகளை 90 நாளில் வெளியேற்றவும் RDO மன்றத்திற்கு அதிகாரம் உண்டு.",
+    content_en: "Under the Maintenance and Welfare of Parents and Senior Citizens Act 2007, children or legal heirs are legally obligated to provide a monthly maintenance allowance (up to ₹10,000/month) to elderly parents who cannot maintain themselves. Revenue Divisional Officers (RDO) act as Maintenance Tribunals to order swift eviction of abusive heirs from parent-owned property within 90 days.",
+    content_ta: "பெற்றோர்களைப் பராமரிக்காத பிள்ளைகளிடம் இருந்து மாதம் ₹10,000 வரை ஜீவனாம்சம் பெறவும், முதியோரின் சொத்தை ஆக்கிரமிக்கும் பிள்ளைகளை 90 நாட்களில் வெளியேற்றவும் RDO (வருவாய் கோட்டாட்சியர்) மன்றத்திற்கு முழு அதிகாரம் உண்டு.",
+    verbal_script_en: "Under Section 23 of the Senior Citizens Act 2007, any transfer of property to children carries the statutory condition of maintaining the parent. If neglected, the Revenue Divisional Officer (RDO) Tribunal has the legal jurisdiction to void the deed and order summary eviction within 90 days. Elderline 14567 coordinates police and revenue relief.",
+    verbal_script_ta: "மூத்த குடிமக்கள் நலச் சட்டம் 2007 பிரிவு 23-ன் படி, பெற்றோரை பராமரிக்காத பிள்ளைகளுக்கு வழங்கப்பட்ட சொத்து தானப் பத்திரத்தை ரத்து செய்யவும், 90 நாட்களில் அவர்களை வீட்டை விட்டு வெளியேற்றவும் RDO தீர்ப்பாயத்திற்கு அதிகாரம் உண்டு. எல்டர்லைன் 14567 மூலம் உதவி பெறலாம்.",
     department_en: "Social Welfare and Women Empowerment Dept",
     department_ta: "சமூக நலன் மற்றும் மகளிர் உரிமைத் துறை",
     portal_url: "https://tnsocialwelfare.tn.gov.in",
     image_url: "/images/evergreen/rti-rights.jpg",
+    key_points_en: [
+      "Elderline National Helpline: 14567 (Free 24x7 Support)",
+      "RDO Maintenance Tribunal orders up to ₹10,000/month allowance",
+      "Summary eviction of abusive children from senior-owned home in 90 days",
+      "Cancellation of property gift deeds under Section 23 if children fail to maintain parents"
+    ],
+    key_points_ta: [
+      "முதியோர் இலவச தேசிய உதவி எண்: 14567 (24x7)",
+      "RDO தீர்ப்பாயம் மூலம் மாதம் ₹10,000 வரை ஜீவனாம்ச உத்தரவு",
+      "பெற்றோரின் வீட்டை ஆக்கிரமிக்கும் பிள்ளைகளை 90 நாளில் வெளியேற்றும் அதிகாரம்",
+      "பராமரிக்காத பிள்ளைகளுக்கு எழுதப்பட்ட சொத்து தானப் பத்திரங்களை பிரிவு 23-ன் கீழ் ரத்து செய்யும் உரிமை"
+    ],
+    steps_en: [
+      "Dial Elderline 14567 for free counseling and field support",
+      "File simple petition before the Revenue Divisional Officer (RDO) Maintenance Tribunal",
+      "Attach proof of age (Aadhaar/Voter ID) and property ownership deed",
+      "Tribunal conducts summary hearing and passes binding eviction/maintenance order within 90 days"
+    ],
+    steps_ta: [
+      "14567 எண்ணை அழைத்து இலவச ஆலோசனையையும் கள உதவிகளையும் பெறுங்கள்",
+      "வருவாய் கோட்டாட்சியர் (RDO) தீர்ப்பாயத்தில் எளிய மனு ஒன்றைத் தாக்கல் செய்யுங்கள்",
+      "வயது சான்று (ஆதார்/வாக்காளர் அட்டை) மற்றும் சொத்து ஆவணங்களை இணையுங்கள்",
+      "RDO தீர்ப்பாயம் இரு தரப்பையும் விசாரித்து 90 நாட்களில் தீர்ப்பு வழங்கும்"
+    ],
+    faqs: [
+      {
+        q_en: "Can senior parents cancel a registered gift deed given to their children?",
+        q_ta: "பிள்ளைகளுக்கு எழுதி வைத்த சொத்து தானப் பத்திரத்தை பெற்றோர்கள் ரத்து செய்ய முடியுமா?",
+        a_en: "Yes. Under Section 23 of the Senior Citizens Act 2007, if children fail to provide basic amenities and physical care, the RDO Tribunal can declare the transfer void as fraud or coercion.",
+        a_ta: "ஆம். பிரிவு 23-ன் படி பிள்ளைகள் பராமரிக்கத் தவறினால் தானப் பத்திரத்தை ரத்து செய்து சொத்தை திரும்பப் பெறலாம்."
+      }
+    ]
   },
   {
     id: "right-pwd",
     slug: "rights-of-persons-with-disabilities-act-2016",
     name_en: "Rights of Persons with Disabilities (RPwD Act 2016)",
     name_ta: "மாற்றுத்திறனாளிகள் உரிமைகள் சட்டம் 2016",
+    seo_title_en: "Disability Rights Tamil Nadu: 4% Job Quota, Free Bus Pass & UDID Card Rules",
+    seo_title_ta: "தமிழ்நாடு மாற்றுத்திறனாளிகள் உரிமைகள்: 4% இடஒதுக்கீடு & இலவச பேருந்து பாஸ்",
+    seo_desc_en: "Comprehensive guide to RPwD Act 2016 in Tamil Nadu: 4% government job reservation, 5% higher education quota, SETC/MTC free bus travel & UDID card.",
+    seo_desc_ta: "தமிழ்நாட்டில் மாற்றுத்திறனாளிகள் உரிமைகள் வழிகாட்டி: 4% அரசு வேலை இடஒதுக்கீடு, இலவச பேருந்து பயணம் மற்றும் UDID அடையாள அட்டை.",
+    statutory_section_en: "Sections 3, 20 & 34 Rights of Persons with Disabilities Act 2016",
+    statutory_section_ta: "மாற்றுத்திறனாளிகள் சட்டம் பிரிவு 3, 20 & 34",
+    timeline_sla_en: "UDID Single Window / 4% Public Employment Quota",
+    timeline_sla_ta: "சர்வதேச UDID ஒற்றைச் சாளரம் / 4% அரசுப் பணி இடஒதுக்கீடு",
+    penalty_en: "Fines up to ₹5 Lakhs and imprisonment for discrimination or atrocities (Sec 89 & 92)",
+    penalty_ta: "பாகுபாடு காட்டுபவர்களுக்கு ₹5 லட்சம் வரை அபராதம் மற்றும் சிறை தண்டனை",
+    fee_en: "Zero fee for certificates, assistive aids, and transit concessions",
+    fee_ta: "சான்றிதழ்கள், உபகரணங்கள் மற்றும் பயண சலுகைகளுக்கு கட்டணம் இல்லை",
+    helpline: "1800-425-0111",
+    helpline_name_en: "Disability Welfare Toll-Free Helpline",
+    helpline_name_ta: "மாற்றுத்திறனாளிகள் நல உதவி எண்",
     desc_en: "Ensures non-discrimination, 4% public employment reservation, accessible public infrastructure, and monthly pension allowances.",
     desc_ta: "மாற்றுத்திறனாளிகளுக்கு 4% அரசு வேலைவாய்ப்பு இடஒதுக்கீடு, கட்டணமில்லா பேருந்து பயணம் மற்றும் சம உரிமைக்கான சட்டம்.",
-    content_en: "4% reservation in government jobs, 5% reservation in higher education, free state bus travel, UDID card single window portal.",
-    content_ta: "அரசுப் பணியிடங்களில் 4% இடஒதுக்கீடு, உயர்கல்வியில் 5% இடஒதுக்கீடு, கட்டணமில்லா அரசு பேருந்து பயணம் வழங்கப்படுகிறது.",
+    content_en: "The RPwD Act 2016 recognizes 21 disabilities and guarantees full equality, barrier-free access in public buildings/transportation, 4% reservation in government jobs, 5% reservation in higher educational institutions, and statutory monthly maintenance allowance under Tamil Nadu Differently Abled Welfare Board.",
+    content_ta: "மாற்றுத்திறனாளிகள் நலச் சட்டம் 2016 படி 21 வகையான மாற்றுத்திறன்களுக்கு அரசுப் பணியிடங்களில் 4% இடஒதுக்கீடு, உயர்கல்வியில் 5% இடஒதுக்கீடு, கட்டணமில்லா அரசு பேருந்து பயணம் மற்றும் மாதாந்திர பராமரிப்பு உதவித்தொகை வழங்கப்படுகிறது.",
+    verbal_script_en: "Under Section 3 and 20 of the RPwD Act 2016, no government or private establishment can discriminate against a person with disability. State transport corporations are statutorily bound to honor verified disability passes.",
+    verbal_script_ta: "RPwD சட்டம் 2016 பிரிவு 3 மற்றும் 20-ன் படி மாற்றுத்திறனாளிகளுக்கு எதிராக எந்த நிறுவனமும் பாகுபாடு காட்ட முடியாது. அரசுப் பேருந்துகளில் கட்டணமில்லா இலவச பயண பாஸ் சட்டப்பூர்வ உரிமையாகும்.",
     department_en: "Welfare of Differently Abled Persons Dept",
     department_ta: "மாற்றுத்திறனாளிகள் நலத் துறை",
     portal_url: "https://www.scda.tn.gov.in",
     image_url: "/images/evergreen/rti-rights.jpg",
+    key_points_en: [
+      "4% Mandatory Reservation in Tamil Nadu Public Employment",
+      "5% Reservation in Higher Educational Institutions",
+      "Free State Transport Corporation (SETC/MTC) Bus Pass",
+      "National UDID Card Single Window Portal Registration"
+    ],
+    key_points_ta: [
+      "தமிழ்நாடு அரசுப் பணியிடங்களில் 4% கட்டாய இடஒதுக்கீடு",
+      "உயர்கல்வி நிறுவனங்களில் 5% சேர்க்கை இடஒதுக்கீடு",
+      "அரசுப் பேருந்துகளில் கட்டணமில்லா இலவச பயண பாஸ்",
+      "சர்வதேச UDID அடையாள அட்டை பெற ஒற்றைச் சாளரப் பதிவு"
+    ],
+    steps_en: [
+      "Register on swavlambancard.gov.in or at District Disability Welfare Office",
+      "Undergo medical assessment at Government District Headquarters Hospital",
+      "Download certified UDID Smart Card with QR code",
+      "Apply for free transport concession and assistive devices at District Welfare Office"
+    ],
+    steps_ta: [
+      "swavlambancard.gov.in தளம் வழியாக அல்லது மாவட்ட மாற்றுத்திறனாளிகள் நல அலுவலகத்தில் பதிவு செய்யுங்கள்",
+      "அரசு மாவட்ட தலைமை மருத்துவமனையில் மருத்துவக் குழு பரிசோதனையில் பங்கேற்கவும்",
+      "டிஜிட்டல் பார்கோடு கொண்ட நிரந்தர UDID ஸ்மார்ட் அட்டையைப் பெறுங்கள்",
+      "இலவச பேருந்து பாஸ் மற்றும் உபகரணங்களுக்கு விண்ணப்பியுங்கள்"
+    ],
+    faqs: [
+      {
+        q_en: "Is the UDID Card mandatory for free bus travel in Tamil Nadu?",
+        q_ta: "தமிழ்நாட்டில் இலவச பேருந்து பயணத்திற்கு UDID அட்டை கட்டாயமா?",
+        a_en: "Yes. The UDID card or state disability pass issued by the District Differently Abled Welfare Officer entitles the holder (and an escort where certified) to free travel in ordinary town buses.",
+        a_ta: "ஆம். UDID அட்டை அல்லது மாவட்ட நல அலுவலர் வழங்கிய சான்றிதழ் மூலம் இலவச பேருந்து பயண சலுகையைப் பெறலாம்."
+      }
+    ]
   },
   {
     id: "right-domestic-violence",
     slug: "protection-of-women-from-domestic-violence-act",
     name_en: "Protection of Women from Domestic Violence Act 2005",
     name_ta: "குடும்ப வன்முறை தடுப்புச் சட்ட உரிமைகள் 2005",
+    seo_title_en: "Domestic Violence Act 2005 Tamil Nadu: 181 Helpline, Residence Orders & Rights",
+    seo_title_ta: "குடும்ப வன்முறை தடுப்புச் சட்டம் தமிழ்நாடு: 181 உதவி எண் & தங்கும் உரிமை",
+    seo_desc_en: "Women legal protections in Tamil Nadu under PWDVA 2005: 181 helpline, residence stay orders, zero court fees & free protection officers in all 38 districts.",
+    seo_desc_ta: "தமிழ்நாட்டில் பெண்களுக்கு குடும்ப வன்முறை தடுப்புச் சட்ட உரிமைகள்: 181 உதவி எண், தங்கும் உரிமை, இலவச வழக்கறிஞர் மற்றும் பாதுகாப்பு அதிகாரிகள்.",
+    statutory_section_en: "Sections 12, 17, 18, 19 & 20 PWDVA 2005",
+    statutory_section_ta: "குடும்ப வன்முறை தடுப்புச் சட்டம் பிரிவு 12, 17, 18 & 20",
+    timeline_sla_en: "3-Day First Court Hearing / 60-Day Case Disposal",
+    timeline_sla_ta: "3 நாட்களில் முதல் நீதிமன்ற விசாரணை / 60 நாட்களில் இறுதித் தீர்ப்பு",
+    penalty_en: "Non-bailable arrest and up to 1 year imprisonment for breach of protection order (Sec 31)",
+    penalty_ta: "நீதிமன்ற பாதுகாப்பு உத்தரவை மீறினால் பிணையில் வர முடியாத கைது மற்றும் 1 ஆண்டு சிறை",
+    fee_en: "Zero court fees; free legal aid advocate assigned by DLSA",
+    fee_ta: "நீதிமன்ற கட்டணம் இல்லை; இலவச அரசு சட்ட உதவி வழக்கறிஞர் நியமனம்",
+    helpline: "181",
+    helpline_name_en: "Women Crisis 24x7 Toll-Free Helpline",
+    helpline_name_ta: "பெண்கள் அவசர உதவி எண்",
     desc_en: "Protects women from physical, verbal, emotional, economic, and sexual abuse within shared domestic households.",
-    desc_ta: "பெண்களுக்கு எதிராக குடும்பத்தில் நடக்கும் வன்முறைகளுக்கு எதிரான சட்டப் பாதுகாப்பு.",
-    content_en: "Protection Orders, Residence Orders, Compensation Orders, and interim maintenance without court fees. 181 Women Crisis Helpline.",
-    content_ta: "குடும்ப வன்முறை தடுப்புச் சட்டம் 2005 படி பாதிக்கப்பட்ட பெண்கள் இலவசமாக நீதிமன்ற பாதுகாப்பு உத்தரவு, தங்குமிடம் மற்றும் பராமரிப்பு பெறலாம்.",
+    desc_ta: "பெண்களுக்கு எதிராக குடும்பத்தில் நடக்கும் உடலளவிலான, வார்த்தை மற்றும் பொருளாதார வன்முறைகளுக்கு எதிரான சட்டப் பாதுகாப்பு.",
+    content_en: "Under PWDVA 2005, any woman suffering abuse from spouse or relatives in a shared household can file for instant Protection Orders, Residence Orders, Compensation Orders, and interim maintenance without paying court fees. Protection Officers and Social Welfare Officers in every district provide free legal representation and emergency shelter.",
+    content_ta: "குடும்ப வன்முறை தடுப்புச் சட்டம் 2005 படி பாதிக்கப்பட்ட பெண்கள் பாதுகாப்பு அதிகாரி மூலம் இலவசமாக நீதிமன்ற பாதுகாப்பு உத்தரவு, தங்குமிடம் மற்றும் இடைக்கால பராமரிப்புச் செலவு பெறலாம்.",
+    verbal_script_en: "Under Section 17 of PWDVA 2005, every woman has the statutory right to reside in the shared household regardless of property title. Denying maintenance or inflicting verbal and physical abuse triggers non-bailable arrest under Section 31. Calling 181 connects to the District Protection Officer immediately.",
+    verbal_script_ta: "குடும்ப வன்முறை தடுப்புச் சட்டம் பிரிவு 17-ன் படி வீட்டின் உரிமை யாரிடம் இருந்தாலும் பெண்ணுக்கு அந்த வீட்டில் தங்கி வாழும் முழு சட்ட உரிமை உண்டு. துன்புறுத்துவது பிணையில் வர முடியாத குற்றமாகும். 181 மூலம் உடனடி பாதுகாப்பு பெறலாம்.",
     department_en: "Social Welfare and Women Empowerment Dept",
     department_ta: "சமூக நலன் மற்றும் மகளிர் உரிமைத் துறை",
     portal_url: "https://tnsocialwelfare.tn.gov.in",
+    image_url: "/images/evergreen/rti-rights.jpg",
+    key_points_en: [
+      "Women 24/7 Toll-Free Crisis Helpline: 181",
+      "District Protection Officers in all 38 Tamil Nadu Districts",
+      "Free Legal Aid Representation & Court Fee Exemption",
+      "Emergency Protection & Residence Stay Orders"
+    ],
+    key_points_ta: [
+      "பெண்கள் 24x7 இலவச அவசர உதவி எண்: 181",
+      "தமிழ்நாட்டின் 38 மாவட்டங்களிலும் அரசு பாதுகாப்பு அதிகாரிகள்",
+      "இலவச அரசு சட்ட உதவி வழக்கறிஞர் ஆதரவு",
+      "உடனடி நீதிமன்ற பாதுகாப்பு மற்றும் தங்கும் உரிமை உத்தரவு"
+    ],
+    steps_en: [
+      "Dial 181 or contact the nearest District Social Welfare Office",
+      "Protection Officer records Domestic Incident Report (DIR) without fee",
+      "Magistrate issues interim ex-parte protection order within 3 days",
+      "Police escort and shelter home provided if life is threatened"
+    ],
+    steps_ta: [
+      "181 எண்ணை அழையுங்கள் அல்லது மாவட்ட சமூக நல அலுவலகத்தை அணுகுங்கள்",
+      "பாதுகாப்பு அதிகாரி கட்டணமின்றி உள்நாட்டு சம்பவ அறிக்கையை (DIR) பதிவு செய்வார்",
+      "நீதிமன்றம் 3 நாட்களுக்குள் இடைக்கால பாதுகாப்பு உத்தரவு பிறப்பிக்கும்",
+      "உயிருக்கு அச்சுறுத்தல் இருப்பின் அரசு காப்பகம் மற்றும் காவல் பாதுகாப்பு அளிக்கப்படும்"
+    ],
+    faqs: [
+      {
+        q_en: "Can a husband or in-laws evict a woman from the matrimonial home?",
+        q_ta: "கணவர் அல்லது மாமியார் மருமகளை வீட்டை விட்டு வெளியேற்ற முடியுமா?",
+        a_en: "No. Under Section 17 of PWDVA, a woman has the statutory right to reside in the shared household and cannot be evicted except in accordance with the procedure established by law.",
+        a_ta: "முடியாது. பிரிவு 17-ன் படி பெண்ணுக்கு குடும்ப வீட்டில் வசிக்கும் உரிமை உண்டு; அவரை வீட்டை விட்டு வெளியேற்ற முடியாது."
+      }
+    ]
   },
   {
     id: "right-labor-minimum-wage",
     slug: "right-to-fair-wages-tn-shops-act",
     name_en: "Right to Fair Minimum Wages & Working Conditions",
     name_ta: "குறைந்தபட்ச கூலி & தொழிலாளர் பாதுகாப்பு உரிமைகள்",
-    desc_en: "Guarantees statutory minimum wages, mandatory weekly rest, double overtime pay, and safe working conditions.",
+    seo_title_en: "Tamil Nadu Labor Rights: 8-Hour Work Limit, Double Overtime & Shops Act",
+    seo_title_ta: "தமிழ்நாடு தொழிலாளர் உரிமைகள்: 8 மணி நேர வரம்பு & இரட்டிப்பு கூடுதல் ஊதியம்",
+    seo_desc_en: "Private sector worker protections in Tamil Nadu: 8-hour workday cap, double overtime pay under TN Shops & Establishments Act, weekly paid holiday & 155214.",
+    seo_desc_ta: "தமிழ்நாட்டில் தொழிலாளர் சட்டப் பாதுகாப்பு: நாளுக்கு 8 மணி நேர வேலை, கூடுதல் நேரத்திற்கு இரட்டிப்பு ஊதியம் மற்றும் தொழிலாளர் உதவி எண் 155214.",
+    statutory_section_en: "Sections 7, 9 & 11 Tamil Nadu Shops and Establishments Act 1947",
+    statutory_section_ta: "தமிழ்நாடு கடைகள் மற்றும் நிறுவனங்கள் சட்டம் பிரிவு 7, 9 & 11",
+    timeline_sla_en: "8 Hours/Day Work Cap / Double Overtime Pay",
+    timeline_sla_ta: "நாள் ஒன்றுக்கு 8 மணி நேர வரம்பு / கூடுதல் நேரத்திற்கு இரட்டிப்பு ஊதியம்",
+    penalty_en: "Employer prosecution, business closure notice, and recovery of unpaid dues",
+    penalty_ta: "தொழிலாளர் துறை மூலம் நிறுவனத்தின் மீது வழக்கு, அபராதம் மற்றும் நிலுவைத் தொகை மீட்பு",
+    fee_en: "Zero fee to file grievance before Assistant Commissioner of Labour",
+    fee_ta: "தொழிலாளர் உதவி ஆணையரிடம் புகார் அளிக்க கட்டணம் தேவையில்லை",
+    helpline: "155214",
+    helpline_name_en: "Labour Department Helpline",
+    helpline_name_ta: "தொழிலாளர் துறை உதவி எண்",
+    desc_en: "Guarantees statutory minimum wages, mandatory weekly rest, double overtime pay, and safe working conditions for all private sector employees.",
     desc_ta: "தனியார் துறை ஊழியர்களுக்கான குறைந்தபட்ச கூலி, வாராந்திர விடுமுறை மற்றும் கூடுதல் வேலை நேரத்திற்கான இரட்டிப்பு ஊதிய உரிமை.",
-    content_en: "Mandatory 8 hours/day limit, double overtime pay beyond 8 hours, 1 mandatory paid weekly rest day.",
-    content_ta: "நாள் ஒன்றுக்கு 8 மணி நேர வேலை, கூடுதல் நேரத்திற்கு இரட்டிப்பு ஊதியம், வாரத்தில் ஒரு நாள் கட்டாய விடுமுறை வழங்கப்பட வேண்டும்.",
+    content_en: "Under the Tamil Nadu Shops and Establishments Act and Minimum Wages Act, no employer can demand working hours beyond 8 hours/day (48 hours/week) without paying double overtime wages. Employers must grant 1 mandatory weekly paid holiday, 12 casual leaves, 12 sick leaves, and equal remuneration for men and women doing equal work.",
+    content_ta: "தமிழ்நாடு கடைகள் மற்றும் நிறுவனங்கள் சட்டத்தின்படி தொழிலாளர்களுக்கு நாள் ஒன்றுக்கு 8 மணி நேர வேலை, கூடுதல் நேரத்திற்கு இரட்டிப்பு ஊதியம், வாரத்தில் ஒரு நாள் கட்டாய ஊதியத்துடன் கூடிய விடுமுறை மற்றும் மகப்பேறு கால விடுப்பு வழங்கப்பட வேண்டும்.",
+    verbal_script_en: "Under Section 9 of the Tamil Nadu Shops and Establishments Act, any hour worked beyond 8 hours a day requires overtime wages at double the ordinary wage rate. Depriving weekly paid holidays or withholding minimum wages violates statutory labour laws enforceable by the Inspector of Labour.",
+    verbal_script_ta: "தமிழ்நாடு கடைகள் மற்றும் நிறுவனங்கள் சட்டம் பிரிவு 9-ன் படி, நாள் ஒன்றுக்கு 8 மணி நேரத்திற்கு மேல் பணிபுரிந்தால் இரட்டிப்பு கூடுதல் நேர ஊதியம் வழங்கப்பட வேண்டும். இதனை மீறுவது தொழிலாளர் நல சட்டப்படி குற்றமாகும்.",
     department_en: "Labour Welfare and Skill Development Dept",
     department_ta: "தொழிலாளர் நலன் மற்றும் திறன் மேம்பாட்டுத் துறை",
     portal_url: "https://labour.tn.gov.in",
+    image_url: "/images/evergreen/rti-rights.jpg",
+    key_points_en: [
+      "Mandatory 8 Hours/Day (48 Hours/Week) Statutory Work Limit",
+      "Double Overtime Pay for extra hours worked beyond 8 hours",
+      "1 Mandatory Paid Weekly Rest Day for all commercial employees",
+      "Labour Department Grievance Cell & Inspection Portal"
+    ],
+    key_points_ta: [
+      "நாளுக்கு 8 மணி நேரம் (வாரத்திற்கு 48 மணி நேரம்) சட்டப்பூர்வ வேலை வரம்பு",
+      "8 மணி நேரத்திற்கு மேல் பணிபுரிந்தால் இரட்டிப்பு கூடுதல் நேர ஊதியம்",
+      "அனைத்து ஊழியர்களுக்கும் வாரத்தில் ஒரு நாள் கட்டாய ஊதியத்துடன் கூடிய விடுமுறை",
+      "தொழிலாளர் துறை குறைதீர் மையம் மற்றும் ஆய்வுக் கண்காணிப்பு தளம்"
+    ],
+    steps_en: [
+      "Maintain personal attendance and punch-in/out records with payslips",
+      "Submit written request to employer calculating unpaid overtime hours",
+      "Lodge grievance on labour.tn.gov.in portal or dial 155214",
+      "File claim petition before the Assistant Commissioner of Labour (Payment of Wages)"
+    ],
+    steps_ta: [
+      "பணி நேரம், மின்னஞ்சல்கள் மற்றும் சம்பள ரசீதுகளை தனிப்பட்ட முறையில் சேகரித்து வையுங்கள்",
+      "கூடுதல் நேர ஊதியத்தைக் கணக்கிட்டு வழங்க நிர்வாகத்திற்கு எழுத்துப்பூர்வமாக மனு அளியுங்கள்",
+      "மறுக்கப்பட்டால் labour.tn.gov.in தளத்தில் தொழிலாளர் துறையிடம் புகார் அளியுங்கள்",
+      "தொழிலாளர் உதவி ஆணையரிடம் நிலுவைத் தொகையை மீட்க மனு தாக்கல் செய்யுங்கள்"
+    ],
+    faqs: [
+      {
+        q_en: "Can a private IT or retail company compel employees to work 12 hours without overtime pay?",
+        q_ta: "தனியார் ஐடி அல்லது வணிக நிறுவனங்கள் கூடுதல் ஊதியம் இன்றி 12 மணி நேரம் வேலை வாங்க முடியுமா?",
+        a_en: "No. The statutory daily maximum is 8 hours. Any additional hour worked must be paid at double the ordinary rate of wages under Section 9 of the TN Shops Act.",
+        a_ta: "முடியாது. சட்டப்பூர்வ வேலை வரம்பு 8 மணி நேரம் மட்டுமே. அதற்கு மேல் பணிபுரிந்தால் இரட்டிப்பு ஊதியம் வழங்கப்பட வேண்டும்."
+      }
+    ]
   }
 ];
 
