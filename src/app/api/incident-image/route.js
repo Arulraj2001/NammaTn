@@ -79,15 +79,11 @@ export async function GET(request) {
       html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["']/i)
     )?.[1];
 
-    if (!rawImg) {
-      return NextResponse.json({ error: "No incident image found in article" }, { status: 404 });
+    if (!rawImg || rawImg.includes("googleusercontent.com") || rawImg.includes("/logo") || rawImg.includes("favicon")) {
+      return NextResponse.json({ error: "No authentic incident image found" }, { status: 404 });
     }
 
-    // Scale Google user content to crisp high resolution (w1200)
     let finalImageUrl = rawImg;
-    if (finalImageUrl.includes("googleusercontent.com")) {
-      finalImageUrl = finalImageUrl.replace(/=s\d+.*$/, "=s0-w1200");
-    }
 
     const payload = {
       image_url: finalImageUrl,
