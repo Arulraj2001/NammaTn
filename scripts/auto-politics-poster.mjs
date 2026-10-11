@@ -17,6 +17,7 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
+import { matchIncidentPhoto } from '../src/lib/incidentPhotoMatcher.js';
 
 // Load .env.local if available locally
 try {
@@ -293,9 +294,18 @@ No conversational intro, no commentary outside the JSON array.
     const author_name = raw.author_name || 'VizhiTN Politics Desk';
     const civic_receipt_id = raw.civic_receipt_id || `VTN-POL-${yearStr}-${Math.floor(100 + Math.random() * 900)}`;
 
-    const media_urls = (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/mlas/'))
+    let media_urls = (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/mlas/') && !raw.media_urls[0].includes('/api/og'))
       ? raw.media_urls
-      : [`${siteUrl}/api/og?title=${encodeURIComponent(title_en)}&title_ta=${encodeURIComponent(title_ta || '')}&district=${encodeURIComponent(district_slug)}&category=tn-politics&urgency=medium&receipt=${encodeURIComponent(civic_receipt_id)}&helpline=TN+Legislative+Assembly`];
+      : [];
+
+    if (media_urls.length === 0) {
+      try {
+        const photo = await matchIncidentPhoto({ title: title_en || title_ta, category: 'tn-politics' });
+        if (photo?.image_url) {
+          media_urls = [photo.image_url];
+        }
+      } catch (_) {}
+    }
 
     const postObj = {
       category_slug: 'tn-politics',

@@ -44,13 +44,6 @@ export async function notifySearchEngines(urls) {
     // Suppress synchronous fetch errors
   }
 
-  // 2. Ping Google Sitemap endpoint
-  try {
-    const sitemapUrl = encodeURIComponent(`${SITE_URL}/sitemap.xml`);
-    fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`).catch(() => {
-      // Suppress network errors in non-blocking mode
-    });
-  } catch (_e) {
-    // Suppress synchronous fetch errors
-  }
+  // Note: Google officially retired the `google.com/ping?sitemap=` endpoint in December 2023.
+  // Googlebot crawls directly from /sitemap.xml and /sitemap-news.xml declared in robots.txt.
 }

@@ -124,7 +124,9 @@ const isStaticPlaceholder = (url) => {
     trimmed.startsWith("/images/categories/") ||
     trimmed.startsWith("/images/mlas/") ||
     trimmed === "/images/placeholder.webp" ||
-    trimmed === "/images/default-post.webp"
+    trimmed === "/images/default-post.webp" ||
+    trimmed.includes("/api/og") ||
+    trimmed.includes("googleusercontent.com")
   );
 };
 

@@ -117,11 +117,14 @@ export async function attachIncidentPhotosToPosts(posts) {
         });
 
         if (photo?.image_url) {
-          return {
+          const updated = {
             ...post,
             media_urls: [photo.image_url],
-            source: post.source || photo.source,
           };
+          if ('source' in post) {
+            updated.source = post.source || photo.source;
+          }
+          return updated;
         }
       } catch {
         // Fall back gracefully to original post without photos

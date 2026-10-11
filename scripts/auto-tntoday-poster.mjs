@@ -18,6 +18,7 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
+import { attachIncidentPhotoToArticle } from '../src/lib/incidentPhotoMatcher.js';
 
 // Helper to load .env.local if present locally
 try {
@@ -506,6 +507,9 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     created_date: new Date().toISOString(),
     updated_date: new Date().toISOString()
   };
+
+  // Attach authentic photojournalist image from accredited Tamil Nadu newsrooms
+  articleObj = await attachIncidentPhotoToArticle(articleObj);
 
   console.log(`\n📄 [ARTICLE] ${articleObj.title}`);
   console.log(`   Tamil:    ${articleObj.title_ta}`);

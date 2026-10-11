@@ -16,6 +16,7 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
+import { attachIncidentPhotosToPosts } from '../src/lib/incidentPhotoMatcher.js';
 
 // Helper to load .env.local if present locally
 try {
@@ -667,9 +668,9 @@ No conversational intro, no commentary outside the JSON array.
       comment_count: 0,
       verification_count,
       duplicate_count: 0,
-      media_urls: (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/categories/'))
+      media_urls: (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/categories/') && !raw.media_urls[0].includes('/api/og'))
         ? raw.media_urls
-        : [`${siteUrl}/api/og?title=${encodeURIComponent(title_en)}&title_ta=${encodeURIComponent(title_ta || '')}&district=${encodeURIComponent(district_slug)}&category=${encodeURIComponent(category_slug)}&urgency=${encodeURIComponent(urgency_level)}&receipt=${encodeURIComponent(civic_receipt_id)}&helpline=${encodeURIComponent(assigned_department)}`],
+        : [],
       civic_receipt_id,
       official_complaint_id: raw.official_complaint_id || '',
       assigned_department,
@@ -689,6 +690,10 @@ No conversational intro, no commentary outside the JSON array.
   }
 
   console.log(`[VALIDATION] ${validPosts.length} posts passed schema integrity verification.`);
+
+  // --- STEP 5.5: ATTACH AUTHENTIC NEWSROOM INCIDENT PHOTOS ---
+  console.log('[INCIDENT PHOTOS] Querying direct Tamil Nadu newsrooms for photojournalist images...');
+  validPosts = await attachIncidentPhotosToPosts(validPosts);
 
   // --- STEP 6: INSERT INTO SUPABASE ---
   if (isDryRun) {
