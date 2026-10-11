@@ -9,6 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { getActiveCivicPosts } from "@/services/posts";
 import { getActiveSituations } from "@/services/situations";
 import HeroMicroAlerts from "./HeroMicroAlerts";
+import { findNearestDistrict } from "@/lib/geoDistrict";
 
 const InteractiveHomeMap = dynamic(
   () => import("@/components/home/InteractiveHomeMap"),
@@ -102,6 +103,11 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
   const activeCount = getNearbyItems(allMapItems).length;
 
+  const detectedDistrict = useMemo(() => {
+    if (!userLocation) return null;
+    return findNearestDistrict(userLocation.latitude, userLocation.longitude);
+  }, [userLocation]);
+
   return (
     <section className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
@@ -159,9 +165,15 @@ export default function HomeHero({ userLocation, setUserLocation }) {
             </div>
 
             <div className="flex items-center gap-3 flex-wrap">
-              <button className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors">
-                <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                {userLocation
+              <button
+                onClick={handleDetectLocation}
+                className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                title={T("Click to detect or change area", "பகுதியை கண்டறிய அல்லது மாற்ற கிளிக் செய்யவும்")}
+              >
+                <MapPin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                {detectedDistrict
+                  ? `${T(detectedDistrict.name_en, detectedDistrict.name_ta)}, TN`
+                  : userLocation
                   ? `${userLocation.latitude.toFixed(2)}°N ${userLocation.longitude.toFixed(2)}°E`
                   : T("Tamil Nadu, India", "தமிழ்நாடு, இந்தியா")
                 }
@@ -174,10 +186,11 @@ export default function HomeHero({ userLocation, setUserLocation }) {
               )}
             </div>
 
-            {/* Tiny Sized Live Alerts placed below location row */}
+            {/* Hyperlocal Live Intel (Only renders when locating or userLocation is active) */}
             <HeroMicroAlerts
               userLocation={userLocation}
               locating={locating}
+              onRescan={handleDetectLocation}
               situations={situations}
               civicPosts={civicPosts}
               calculateDistance={calculateDistance}
