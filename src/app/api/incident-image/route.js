@@ -1,13 +1,80 @@
 import { NextResponse } from "next/server";
 
-// In-memory LRU cache to prevent redundant external fetches
+// In-memory cache for fast repeat lookups (24 hour TTL)
 const memoryCache = new Map();
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+// Accredited direct newsroom feeds with direct editorial photos
+const DIRECT_FEEDS = [
+  { name: "The Hindu (Chennai)", url: "https://www.thehindu.com/news/cities/chennai/feeder/default.rss" },
+  { name: "The Hindu (Tamil Nadu)", url: "https://www.thehindu.com/news/national/tamil-nadu/feeder/default.rss" },
+  { name: "The New Indian Express", url: "https://www.newindianexpress.com/states/tamil-nadu/rss" },
+  { name: "DT Next", url: "https://www.dtnext.in/rss/tamilnadu" },
+];
+
+/**
+ * Searches direct Tamil Nadu newsroom RSS feeds for real incident photos
+ */
+async function searchDirectNewsFeeds(query) {
+  const cleanWords = query
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !["today", "update", "news", "report", "with", "from", "alert"].includes(w));
+
+  if (cleanWords.length === 0) return null;
+
+  let bestCandidate = null;
+  let maxMatches = 0;
+
+  for (const feed of DIRECT_FEEDS) {
+    try {
+      const res = await fetch(feed.url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+        next: { revalidate: 1800 },
+      });
+
+      if (!res.ok) continue;
+      const xml = await res.text();
+      const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
+
+      for (const item of items) {
+        const title = ((item.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || "").replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1").trim();
+        const media = (
+          item.match(/<media:content[^>]*url=["']([^"']+)["']/i) ||
+          item.match(/<enclosure[^>]*url=["']([^"']+)["']/i)
+        )?.[1];
+
+        // Reject platform logos
+        if (!media || media.includes("googleusercontent.com") || media.includes("/logo") || media.includes("favicon")) {
+          continue;
+        }
+
+        const titleLower = title.toLowerCase();
+        const matchCount = cleanWords.filter((w) => titleLower.includes(w)).length;
+        if (matchCount > maxMatches) {
+          maxMatches = matchCount;
+          bestCandidate = {
+            image_url: media,
+            source: feed.name,
+            news_title: title,
+            credit: `📷 Photo via ${feed.name} • Fair Use Current Events`,
+            incident_verified: true,
+          };
+        }
+      }
+    } catch {
+      // Continue to next feed
+    }
+  }
+
+  return bestCandidate;
+}
 
 /**
  * GET /api/incident-image?q={query}&category={category}
- * Fetches authorized real incident photographs from indexed news feeds,
- * formats them in high resolution, and returns publisher attribution.
  */
 export async function GET(request) {
   try {
@@ -19,88 +86,24 @@ export async function GET(request) {
       return NextResponse.json({ error: "Missing query parameter 'q'" }, { status: 400 });
     }
 
-    // Clean query and prepare search terms
-    const cleanQuery = rawQuery
-      .replace(/[^\w\s-]/gi, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    const cacheKey = `${category}:${cleanQuery.toLowerCase()}`;
+    const cacheKey = `${category}:${rawQuery.trim().toLowerCase()}`;
     const cached = memoryCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
       return NextResponse.json(cached.data, {
-        headers: {
-          "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=43200",
-        },
+        headers: { "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=43200" },
       });
     }
 
-    const searchQuery = `${cleanQuery} Tamil Nadu`;
-    const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(searchQuery)}&hl=en-IN&gl=IN&ceid=IN:en`;
-
-    const rssRes = await fetch(rssUrl, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      },
-      next: { revalidate: 3600 },
-    });
-
-    if (!rssRes.ok) {
-      return NextResponse.json({ error: "Failed to query news feed" }, { status: 502 });
+    // 1. Search direct newsroom feeds first
+    const directResult = await searchDirectNewsFeeds(rawQuery);
+    if (directResult) {
+      memoryCache.set(cacheKey, { timestamp: Date.now(), data: directResult });
+      return NextResponse.json(directResult, {
+        headers: { "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=43200" },
+      });
     }
 
-    const xml = await rssRes.text();
-    const itemMatch = xml.match(/<item>([\s\S]*?)<\/item>/);
-
-    if (!itemMatch) {
-      return NextResponse.json({ error: "No news item found for incident" }, { status: 404 });
-    }
-
-    const itemContent = itemMatch[1];
-    const newsTitle = (itemContent.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || "";
-    const newsLink = (itemContent.match(/<link>([\s\S]*?)<\/link>/) || [])[1] || "";
-    const newsSource = (itemContent.match(/<source[^>]*>([\s\S]*?)<\/source>/) || [])[1] || "Accredited Media";
-
-    if (!newsLink) {
-      return NextResponse.json({ error: "No article link available" }, { status: 404 });
-    }
-
-    // Follow redirect to fetch article metadata
-    const articleRes = await fetch(newsLink, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      },
-    });
-
-    const html = await articleRes.text();
-    const rawImg = (
-      html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i) ||
-      html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i) ||
-      html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["']/i)
-    )?.[1];
-
-    if (!rawImg || rawImg.includes("googleusercontent.com") || rawImg.includes("/logo") || rawImg.includes("favicon")) {
-      return NextResponse.json({ error: "No authentic incident image found" }, { status: 404 });
-    }
-
-    let finalImageUrl = rawImg;
-
-    const payload = {
-      image_url: finalImageUrl,
-      source: newsSource,
-      news_title: newsTitle.replace(/ - [^-]+$/, ""),
-      credit: `📷 Authorized Press Media via ${newsSource} • Fair Use Incident Report`,
-      incident_verified: true,
-    };
-
-    // Save to cache
-    memoryCache.set(cacheKey, { timestamp: Date.now(), data: payload });
-
-    return NextResponse.json(payload, {
-      headers: {
-        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=43200",
-      },
-    });
+    return NextResponse.json({ error: "No direct incident photo found" }, { status: 404 });
   } catch (err) {
     console.error("Error in /api/incident-image:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
