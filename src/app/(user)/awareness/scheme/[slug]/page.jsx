@@ -1,41 +1,38 @@
-import { getSchemeBySlug } from '@/lib/awarenessServer';
+import { getSchemeBySlug, getAllSchemes } from '@/lib/awarenessServer';
 import AwarenessSchemeDetail from '@/views/AwarenessSchemeDetail';
 import { notFound } from 'next/navigation';
-import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
 export const revalidate = 3600;
 
+export async function generateStaticParams() {
+  const schemes = getAllSchemes();
+  return schemes.map((s) => ({
+    slug: s.slug,
+  }));
+}
+
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const scheme = getSchemeBySlug(resolvedParams.slug);
   if (!scheme) notFound();
 
-  const title = `${scheme.name_en} (${scheme.name_ta}) - Eligibility & How to Apply`;
-  const description = scheme.financial_benefit_en || scheme.benefits_en || `Complete guide to ${scheme.name_en} in Tamil Nadu with eligibility criteria, documents, and application steps.`;
-  const canonical = `${SITE_URL}/awareness/scheme/${scheme.slug}`;
-  const ogImage = scheme.image_url ? `${SITE_URL}${scheme.image_url}` : `${SITE_URL}/og-image.png`;
+  const title = `${scheme.name_en} (${scheme.name_ta}) — Eligibility & Online Apply`;
+  const description = `${scheme.financial_benefit_en || scheme.benefits_en || scheme.name_en}. Complete Tamil Nadu eligibility criteria, required documents, and official portal.`;
+  const canonical = `${SITE_URL}/schemes/${scheme.slug}`;
 
   return {
-    title,
+    title: `${title} | VizhiTN`,
     description,
     alternates: { canonical },
     robots: { index: true, follow: true },
     openGraph: {
-      title,
+      title: `${title} | VizhiTN`,
       description,
       url: canonical,
       type: 'article',
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: scheme.name_en,
-        }
-      ],
     },
   };
 }
@@ -45,47 +42,35 @@ export default async function Page({ params }) {
   const scheme = getSchemeBySlug(resolvedParams.slug);
   if (!scheme) notFound();
 
-  const ogImage = scheme.image_url ? `${SITE_URL}${scheme.image_url}` : null;
+  const canonicalUrl = `${SITE_URL}/schemes/${scheme.slug}`;
 
-  const newsArticleSchema = generateNewsArticleSchema({
-    headline: scheme.name_en,
-    description: scheme.financial_benefit_en || scheme.benefits_en || scheme.name_en,
-    url: `${SITE_URL}/awareness/scheme/${scheme.slug}`,
-    imageUrl: ogImage,
-    datePublished: '2026-01-01T00:00:00Z',
-    dateModified: '2026-09-27T00:00:00Z',
-    authorName: 'VizhiTN Civic Editorial',
-    section: 'Government Schemes',
-    language: 'ta-IN',
-  });
-
-  // Programmatic FAQ Schema for SERP expandable snippets
-  const faqSchema = scheme.faqs?.length ? {
+  const govtServiceSchema = {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: scheme.faqs.map(faq => ({
-      '@type': 'Question',
-      name: `${faq.q_en} / ${faq.q_ta}`,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: `${faq.a_en} — ${faq.a_ta}`,
-      },
-    })),
-  } : null;
+    '@type': 'GovernmentService',
+    name: scheme.name_en,
+    alternateName: scheme.name_ta,
+    serviceType: scheme.category_en || 'Public Welfare Scheme',
+    provider: {
+      '@type': 'GovernmentOrganization',
+      name: scheme.department_en || 'Government of Tamil Nadu',
+    },
+    url: canonicalUrl,
+  };
 
   return (
     <>
-      <Breadcrumbs items={[
-        { name: 'Awareness', href: '/awareness' },
-        { name: 'Schemes', href: '/awareness/schemes' },
-        { name: scheme.name_en, href: `/awareness/scheme/${scheme.slug}` },
-      ]} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
-      {faqSchema && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      )}
+      <Breadcrumbs
+        items={[
+          { name: 'Awareness', href: '/awareness' },
+          { name: 'Schemes', href: '/schemes' },
+          { name: scheme.name_en, href: `/schemes/${scheme.slug}` },
+        ]}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(govtServiceSchema) }}
+      />
       <AwarenessSchemeDetail scheme={scheme} />
     </>
   );
 }
-

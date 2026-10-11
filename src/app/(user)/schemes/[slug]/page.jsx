@@ -1,41 +1,65 @@
-import { getSchemeBySlug } from '@/lib/awarenessServer';
+import { getSchemeBySlug, getAllSchemes } from '@/lib/awarenessServer';
 import AwarenessSchemeDetail from '@/views/AwarenessSchemeDetail';
 import { notFound } from 'next/navigation';
-import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
 export const revalidate = 3600;
 
+export async function generateStaticParams() {
+  const schemes = getAllSchemes();
+  return schemes.map((s) => ({
+    slug: s.slug,
+  }));
+}
+
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const scheme = getSchemeBySlug(resolvedParams.slug);
   if (!scheme) notFound();
 
-  const title = `${scheme.name_en} (${scheme.name_ta}) - Eligibility & How to Apply`;
-  const description = scheme.financial_benefit_en || scheme.benefits_en || `Complete guide to ${scheme.name_en} in Tamil Nadu with eligibility criteria, documents, and application steps.`;
+  const title = `${scheme.name_en} (${scheme.name_ta}) — 2026 Eligibility, ₹ Amount & Online Apply`;
+  const description = `${scheme.financial_benefit_en || scheme.benefits_en || scheme.name_en}. Complete Tamil Nadu eligibility criteria, required documents checklist, official portal links and FAQs.`;
   const canonical = `${SITE_URL}/schemes/${scheme.slug}`;
   const ogImage = scheme.image_url ? `${SITE_URL}${scheme.image_url}` : `${SITE_URL}/og-image.png`;
 
   return {
-    title,
+    title: `${title} | VizhiTN`,
     description,
     alternates: { canonical },
     robots: { index: true, follow: true },
+    keywords: [
+      scheme.slug,
+      scheme.name_en,
+      scheme.name_ta,
+      'tamil nadu government scheme',
+      scheme.department_en,
+      'eligibility criteria',
+      'how to apply online',
+      'tnesevai',
+    ],
     openGraph: {
-      title,
+      title: `${title} | VizhiTN`,
       description,
       url: canonical,
       type: 'article',
+      locale: 'ta_IN',
+      siteName: 'VizhiTN — Tamil Nadu Civic Platform',
       images: [
         {
           url: ogImage,
           width: 1200,
           height: 630,
           alt: scheme.name_en,
-        }
+        },
       ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | VizhiTN`,
+      description,
+      images: [ogImage],
     },
   };
 }
@@ -45,44 +69,95 @@ export default async function Page({ params }) {
   const scheme = getSchemeBySlug(resolvedParams.slug);
   if (!scheme) notFound();
 
-  const ogImage = scheme.image_url ? `${SITE_URL}${scheme.image_url}` : null;
+  const canonicalUrl = `${SITE_URL}/schemes/${scheme.slug}`;
 
-  const newsArticleSchema = generateNewsArticleSchema({
-    headline: scheme.name_en,
-    description: scheme.financial_benefit_en || scheme.benefits_en || scheme.name_en,
-    url: `${SITE_URL}/schemes/${scheme.slug}`,
-    imageUrl: ogImage,
-    datePublished: '2026-01-01T00:00:00Z',
-    dateModified: '2026-09-27T00:00:00Z',
-    authorName: 'VizhiTN Civic Editorial',
-    section: 'Government Schemes',
-    language: 'ta-IN',
-  });
+  // Schema 1: GovernmentService
+  const govtServiceSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'GovernmentService',
+    name: scheme.name_en,
+    alternateName: scheme.name_ta,
+    serviceType: scheme.category_en || 'Public Welfare Scheme',
+    provider: {
+      '@type': 'GovernmentOrganization',
+      name: scheme.department_en || 'Government of Tamil Nadu',
+    },
+    areaServed: {
+      '@type': 'AdministrativeArea',
+      name: 'Tamil Nadu, India',
+    },
+    url: canonicalUrl,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'INR',
+      description: scheme.financial_benefit_en || scheme.benefits_en || 'Free Government Welfare Entitlement',
+    },
+  };
 
-  const faqSchema = scheme.faqs?.length ? {
+  // Schema 2: FAQPage
+  const faqSchema = (scheme.faqs && scheme.faqs.length > 0) ? {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: scheme.faqs.map(faq => ({
+    mainEntity: scheme.faqs.map((faq) => ({
       '@type': 'Question',
-      name: `${faq.q_en} / ${faq.q_ta}`,
+      name: faq.q_en,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: `${faq.a_en} — ${faq.a_ta}`,
+        text: `${faq.a_en} (${faq.a_ta})`,
       },
     })),
   } : null;
 
+  // Schema 3: BreadcrumbList
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'VizhiTN Home',
+        item: SITE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Government Schemes',
+        item: `${SITE_URL}/schemes`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: scheme.name_en,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
   return (
     <>
-      <Breadcrumbs items={[
-        { name: 'Home', href: '/' },
-        { name: 'Schemes', href: '/schemes' },
-        { name: scheme.name_en, href: `/schemes/${scheme.slug}` },
-      ]} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
+      <Breadcrumbs
+        items={[
+          { name: 'Home', href: '/' },
+          { name: 'Government Schemes', href: '/schemes' },
+          { name: scheme.name_en, href: `/schemes/${scheme.slug}` },
+        ]}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(govtServiceSchema) }}
+      />
       {faqSchema && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <AwarenessSchemeDetail scheme={scheme} />
     </>
   );

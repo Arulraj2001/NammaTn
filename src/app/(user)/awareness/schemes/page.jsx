@@ -1,19 +1,25 @@
 import AwarenessSchemes from '@/views/AwarenessSchemes';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
+const SITE_URL = 'https://www.vizhitn.in';
+
 export const metadata = {
-  title: 'Government Schemes & Programs in Tamil Nadu',
-  description: 'Explore government welfare schemes, subsidies, and public programs available in Tamil Nadu with eligibility and application details.',
-  alternates: { canonical: '/awareness/schemes' },
+  title: 'Tamil Nadu Government Schemes Directory 2026 | VizhiTN',
+  description: 'Explore welfare schemes, monthly allowances, health insurance, and scholarships in Tamil Nadu with official links.',
+  alternates: { canonical: `${SITE_URL}/schemes` },
   robots: { index: true, follow: true },
-  openGraph: {
-    title: 'Government Schemes in Tamil Nadu',
-    description: 'Discover welfare schemes, subsidies, and public programs available for Tamil Nadu citizens.',
-    url: '/awareness/schemes',
-    type: 'website',
-  },
 };
 
 export default function Page() {
-  return <><Breadcrumbs items={[{ name: 'Awareness', href: '/awareness' }, { name: 'Government Schemes', href: '/awareness/schemes' }]} /><AwarenessSchemes /></>;
+  return (
+    <>
+      <Breadcrumbs
+        items={[
+          { name: 'Awareness', href: '/awareness' },
+          { name: 'Government Schemes', href: '/schemes' },
+        ]}
+      />
+      <AwarenessSchemes />
+    </>
+  );
 }
