@@ -9,183 +9,385 @@ export const getAllGuides = () => [
   {
     id: "power-cut",
     slug: "power-cut",
-    title_en: "Power Cut in your area",
-    title_ta: "உங்கள் பகுதியில் மின் தடை",
-    problem_type_en: "Power Cut",
-    problem_type_ta: "மின் தடை",
-    department_en: "TANGEDCO (Minnalagam)",
-    department_ta: "TANGEDCO (மின்னகம்)",
+    title_en: "TANGEDCO Power Cut: Minnalagam 1912 & Outage SOP",
+    title_ta: "மின் தடை புகார்: மின்வாரியம் மின்னகம் 1912 & வழிகாட்டி",
+    seo_title_en: "TANGEDCO Power Cut Complaint Tamil Nadu: Minnalagam 1912 & WhatsApp",
+    seo_title_ta: "தமிழ்நாடு மின் தடை புகார்: மின்னகம் 1912 & வாட்ஸ்அப் உதவி எண்",
+    seo_desc_en: "How to register a TANGEDCO power cut complaint in Tamil Nadu: 24x7 Minnalagam 1912 helpline, 94987 94987 WhatsApp, transformer fuse fixes & outage tracking.",
+    seo_desc_ta: "தமிழ்நாட்டில் மின்தடை புகாரை விரைவாக பதிவு செய்யும் முறை: 1912 மின்னகம் உதவி எண், 94987 94987 வாட்ஸ்அப் மற்றும் மின்மாற்றி பழுது நீக்கம்.",
+    problem_type_en: "Electricity Outage",
+    problem_type_ta: "மின் தடை & பழுது",
+    category: "utilities",
+    department_en: "TANGEDCO (Tamil Nadu Generation and Distribution Corporation)",
+    department_ta: "தமிழ்நாடு மின் உற்பத்தி மற்றும் பகிர்மானக் கழகம் (TANGEDCO)",
     helpline_numbers: ["1912", "94987 94987"],
+    whatsapp_number: "94987 94987",
     portal_url: "https://www.tnebltd.org",
+    sla_time_en: "Rural: 4-6 Hours | Urban/Metro: 1-2 Hours",
+    sla_time_ta: "கிராமம்: 4-6 மணி நேரம் | நகரம்: 1-2 மணி நேரம்",
+    summary_en: "Immediate action guide when electricity is disrupted in your house, street, or commercial establishment across Tamil Nadu.",
+    summary_ta: "தமிழ்நாட்டில் உங்கள் வீடு அல்லது தெருவில் மின்சாரம் தடைபடும் போது உடனடியாக புகார் அளித்து சரிசெய்யும் வழிகாட்டி.",
+    verbal_script_en: "Sir, I am calling from [Area / Street Name, District]. Our domestic consumer service connection number is [Consumer Number]. Power has been completely out since [Time] without prior scheduled shutdown notice. Kindly dispatch the local TANGEDCO fuse-off call vehicle immediately.",
+    verbal_script_ta: "வணக்கம் ஐயா. நான் [பகுதி / தெருவின் பெயர்] இருந்து பேசுகிறேன். எனது மின் இணைப்பு எண் [Consumer Number]. [நேரம்] மணியிலிருந்து மின்சாரம் முற்றிலும் இல்லை. எவ்வித முன்னறிவிப்பும் இல்லாத மின்தடை என்பதால் உடனடியாக மின்வாரிய பழுது நீக்கும் வாகனத்தை அனுப்பி சரிசெய்யக் கோருகிறேன்.",
     steps_en: [
-      "Check if it's just your home — verify main switch / MCB has not tripped.",
-      "Check TANGEDCO's outage schedule or status at tnebltd.org to see if there is planned substation shutdown.",
-      "Call Minnalagam 24x7 Helpline at 1912 (toll-free) or Metro circle 94987 94987.",
-      "WhatsApp complaint to 94987 94987 with your Service Connection (SC) consumer number.",
-      "Raise it on VizhiTN so neighbours can upvote and escalate to ward engineers together."
+      "Check your home MCB / ELCB main switchboard to confirm it is not an internal household circuit trip.",
+      "Check if street lights or neighbours' houses are also dark to identify feeder / transformer blackout.",
+      "Dial Minnalagam 24x7 Helpline at 1912 (Toll-Free from any mobile or landline).",
+      "Send WhatsApp message to official TANGEDCO desk at 94987 94987 with your 10-digit Service Connection (SC) number and address.",
+      "If transformer sparks or snapped live wire is spotted, immediately warn public and demand emergency line isolation.",
+      "Post an alert on VizhiTN so local residents can confirm the outage and demand collective escalation."
     ],
     steps_ta: [
-      "முதலில் உங்கள் வீட்டு மின் சர்க்யூட் பிரேக்கர் (MCB) சரிபார்க்கவும்.",
-      "திட்டமிட்ட நிறுத்தம் உள்ளதா என tnebltd.org இல் சரிபார்க்கவும்.",
-      "மின்னகம் 24x7 புகார் எண் 1912 அல்லது 94987 94987 அழைக்கவும்.",
-      "WhatsApp 94987 94987 உங்கள் SC இணைப்பு எண்ணுடன் புகார் அனுப்பவும்.",
-      "VizhiTN இல் பதிவிட்டு அண்டை வீட்டினரையும் இணைத்து துறை அதிகாரிகளுக்கு தெரிவிக்கவும்."
+      "முதலில் உங்கள் வீட்டு MCB / மெயின் சுவிட்ச் ட்ரிப் ஆகிவிட்டதா என்பதை சரிபார்க்கவும்.",
+      "தெரு விளக்குகள் மற்றும் அண்டை வீடுகளிலும் மின்சாரம் இல்லையா என்பதை கவனித்து மின்மாற்றி கோளாறை உறுதி செய்யவும்.",
+      "மின்னகம் 24x7 இலவச உதவி எண் 1912-ஐ எந்தவொரு தொலைபேசியிலிருந்தும் அழைக்கவும்.",
+      "TANGEDCO வாட்ஸ்அப் எண் 94987 94987-க்கு உங்கள் 10 இலக்க மின் இணைப்பு எண் மற்றும் முகவரியை மெசேஜ் செய்யவும்.",
+      "மின் கம்பி அறுந்து விழுந்தாலோ தீப்பொறி பறந்தாலோ உடனடியாக மக்களை எச்சரித்து அவசர மின் இணைப்பை துண்டிக்கக் கோருங்கள்.",
+      "VizhiTN தளத்தில் பதிவிட்டு அண்டை வீட்டாரையும் இணைத்து மின்வாரிய பொறியாளருக்கு அழுத்தம் கொடுங்கள்."
     ],
+    faqs: [
+      {
+        q_en: "What should I do if a live electric wire snaps on the road?",
+        q_ta: "சாலையில் மின்கம்பி அறுந்து விழுந்தால் என்ன செய்ய வேண்டும்?",
+        a_en: "Immediately stay at least 10 meters away, warn bypassers, and dial 1912 stating 'Emergency Live Wire Snap'. Minnalagam isolates the feeder within 60 seconds.",
+        a_ta: "குறைந்தது 10 மீட்டர் தள்ளி இருங்கள், பொதுமக்களை எச்சரியுங்கள் மற்றும் 1912 அழைத்து 'அவசர மின்கம்பி அறுப்பு' என்று தெரிவியுங்கள். 60 வினாடிகளில் மின்சாரம் நிறுத்தப்படும்."
+      },
+      {
+        q_en: "Where can I find the TANGEDCO scheduled maintenance power shutdown list?",
+        q_ta: "திட்டமிடப்பட்ட மின்வாரிய மாதாந்திர பராமரிப்பு மின்தடை பட்டியலை எங்கு பார்க்கலாம்?",
+        a_en: "Check tnebltd.org or the VizhiTN Daily Power Cut Tracker at /power-cuts-today-tamil-nadu for district-wise substation shutdown alerts.",
+        a_ta: "tnebltd.org அல்லது VizhiTN தினசரி மின்தடை கண்காணிப்பு பக்கத்தில் (/power-cuts-today-tamil-nadu) மாவட்ட வாரியான அறிவிப்புகளைக் காணலாம்."
+      }
+    ]
   },
   {
     id: "water-supply",
     slug: "water-supply",
-    title_en: "Water Supply not available",
-    title_ta: "குடிநீர் வழங்கல் இல்லை",
-    problem_type_en: "Water Supply",
-    problem_type_ta: "குடிநீர் வழங்கல்",
-    department_en: "Metro Water / TWAD Board",
-    department_ta: "சென்னை மெட்ரோவாட்டர் / TWAD வாரியம்",
+    title_en: "Water Supply Shortage & Tanker Lorry Booking",
+    title_ta: "குடிநீர் தட்டுப்பாடு & லாரி தண்ணீர் முன்பதிவு",
+    seo_title_en: "Water Supply Shortage Tamil Nadu: Metro Water 1913 & Lorry Booking",
+    seo_title_ta: "தமிழ்நாடு குடிநீர் தட்டுப்பாடு புகார்: மெட்ரோ வாட்டர் 1913 & லாரி முன்பதிவு",
+    seo_desc_en: "Complete guide for water supply shortages in Tamil Nadu: Chennai Metro Water 1913 helpline, TWAD Board rural complaints, online paid water tanker booking & pipe burst reports.",
+    seo_desc_ta: "தமிழ்நாட்டில் குடிநீர் தட்டுப்பாடு மற்றும் குழாய் உடைப்புக்கான தீர்வு: மெட்ரோ வாட்டர் 1913, TWAD வாரியம் மற்றும் ஆன்லைன் லாரி தண்ணீர் பதிவு வழிகாட்டி.",
+    problem_type_en: "Water Supply Crisis",
+    problem_type_ta: "குடிநீர் தட்டுப்பாடு",
+    category: "water",
+    department_en: "CMWSSB (Chennai Metro Water) / TWAD Board / Municipal Administration",
+    department_ta: "சென்னை மெட்ரோ வாட்டர் / TWAD வாரியம் / நகராட்சி நிர்வாகம்",
     helpline_numbers: ["1913", "044-45674567"],
+    whatsapp_number: "044-45674567",
     portal_url: "https://chennaimetrowater.tn.gov.in",
+    sla_time_en: "Tanker: 24-48 Hours | Pipe Burst Isolation: 2 Hours",
+    sla_time_ta: "லாரி தண்ணீர்: 24-48 மணி நேரம் | குழாய் உடைப்பு: 2 மணி நேரம்",
+    summary_en: "Step-by-step procedures to resolve missing drinking water supply, sewage contamination, and emergency paid water tanker bookings.",
+    summary_ta: "குடிநீர் விநியோகம் தடைபடும் போது, கழிவுநீர் கலக்கும் போது அல்லது அவசர லாரி தண்ணீர் தேவைப்படும் போது செய்ய வேண்டிய வழிமுறைகள்.",
+    verbal_script_en: "Sir, I am reporting an acute drinking water outage from [Street Name, Ward / Area, Municipality]. Public tap and pipeline supply has been absent for [Number] days. Kindly inspect the local distribution valve and dispatch emergency supply.",
+    verbal_script_ta: "வணக்கம் ஐயா. [பகுதி / வார்டு / தெருவின் பெயர்] இருந்து பேசுகிறேன். கடந்த [நாட்கள்] நாட்களாக குடிநீர் விநியோகம் முற்றிலும் இல்லை. விநியோக வால்வை ஆய்வு செய்து அவசர குடிநீர் லாரியை அனுப்பி வைக்குமாறு கேட்டுக்கொள்கிறேன்.",
     steps_en: [
-      "Check with neighbours to verify if the whole street pipeline is affected.",
-      "For Chennai Metro Water: call 1913 or 044-45674567 to report pipeline burst or low pressure.",
-      "For TWAD / District Corporation: contact local Ward Councillor or Assistant Engineer (AE).",
-      "Book paid or subsidized water tanker via chennaimetrowater.tn.gov.in if main supply is delayed.",
-      "Post photos on VizhiTN to document community impact and press for official municipal action."
+      "Check street overhead tank and pipeline distribution schedule with your resident welfare association.",
+      "In Chennai, call CMWSSB 24x7 Control Room at 1913 or 044-45674567 to file pipeline contamination or low pressure complaints.",
+      "For rest of Tamil Nadu: lodge grievance with local Municipal Corporation Ward Assistant Engineer or TWAD Board.",
+      "If public supply is delayed, book official paid tanker (6,000L or 9,000L) at chennaimetrowater.tn.gov.in (Dial for Water).",
+      "For sewage mixing in drinking water, demand immediate super-chlorination and lab water testing from municipal health inspector."
     ],
     steps_ta: [
-      "தெரு முழுவதும் பாதிக்கப்பட்டுள்ளதா என அண்டை வீட்டாருடன் சரிபார்க்கவும்.",
-      "சென்னை மெட்ரோ வாட்டர்: 1913 அல்லது 044-45674567 அழைக்கவும்.",
-      "மாவட்ட மாநகராட்சி / TWAD: உள்ளூர் வார்டு பொறியாளரைத் தொடர்பு கொள்ளவும்.",
-      "தேவையெனில் chennaimetrowater.tn.gov.in மூலம் லாரி தண்ணீர் பதிவு செய்யுங்கள்.",
-      "VizhiTN இல் புகைப்படங்களுடன் பதிவிட்டு அதிகாரிகளுக்கு தெரிவிக்கவும்."
+      "உங்கள் தெரு மேல்நிலை நீர்த்தேக்கத் தொட்டி விநியோக அட்டவணையை சரிபார்க்கவும்.",
+      "சென்னையில் மெட்ரோ வாட்டர் கட்டுப்பாட்டு அறை 1913 அல்லது 044-45674567-ஐ அழைத்து புகார் அளியுங்கள்.",
+      "பிற மாவட்டங்களில் நகராட்சி வார்டு உதவி பொறியாளர் அல்லது TWAD வாரியத்தை அணுகவும்.",
+      "அவசர தேவைக்கு chennaimetrowater.tn.gov.in மூலம் அதிகாரப்பூர்வ கட்டண குடிநீர் லாரியை பதிவு செய்யுங்கள்.",
+      "குடிநீரில் கழிவுநீர் கலந்தால் உடனடியாக குளோரினேஷன் மற்றும் நீர் மாதிரி பரிசோதனை செய்யக் கோருங்கள்."
     ],
+    faqs: [
+      {
+        q_en: "How do I book a Metro Water tanker in Chennai online?",
+        q_ta: "சென்னையில் ஆன்லைனில் மெட்ரோ வாட்டர் லாரி பதிவு செய்வது எப்படி?",
+        a_en: "Visit chennaimetrowater.tn.gov.in, register using your mobile number and Consumer Assessment Number (CAN), select 6KL or 9KL tanker, and make online payment.",
+        a_ta: "chennaimetrowater.tn.gov.in தளம் சென்று உங்கள் மொபைல் எண் மற்றும் CAN எண்ணை உள்ளிட்டு 6,000 அல்லது 9,000 லிட்டர் லாரியை ஆன்லைனில் பதிவு செய்யலாம்."
+      }
+    ]
   },
   {
     id: "ration-card",
     slug: "ration-card",
-    title_en: "Ration Shop (PDS) & Smart Card Issues",
-    title_ta: "ரேஷன் கடை (PDS) பிரச்சினைகள் & ஸ்மார்ட் கார்டு",
-    problem_type_en: "Ration Card",
-    problem_type_ta: "ரேஷன் அட்டை",
-    department_en: "Food & Civil Supplies Department (TNPDS)",
-    department_ta: "உணவு மற்றும் நுகர்வோர் பாதுகாப்புத் துறை",
+    title_en: "Ration Shop (PDS) Missing Stock & Biometric Errors",
+    title_ta: "ரேஷன் கடை பொருட்கள் தட்டுப்பாடு & கைரேகை சிக்கல்கள்",
+    seo_title_en: "Ration Shop PDS Complaints Tamil Nadu: 1967 Toll-Free & TNPDS App",
+    seo_title_ta: "தமிழ்நாடு ரேஷன் கடை புகார்: 1967 இலவச உதவி எண் & TNPDS செயலி",
+    seo_desc_en: "How to resolve Tamil Nadu ration shop complaints: missing rice/sugar/oil stock, biometric fingerprint failures, shop overcharging & TNPDS 1967 helpline.",
+    seo_desc_ta: "ரேஷன் கடையில் பொருட்கள் இல்லை என்றாலோ அல்லது கைரேகை வைக்க முடியாவிட்டாலோ புகார் அளிக்கும் முறை: 1967 உதவி எண் & TNPDS தீர்வுகள்.",
+    problem_type_en: "Civil Supplies & Ration Card",
+    problem_type_ta: "ரேஷன் அட்டை & உணவுப் பொருள்",
+    category: "civil_supplies",
+    department_en: "Food and Civil Supplies and Consumer Protection Dept (TNPDS)",
+    department_ta: "உணவு மற்றும் நுகர்வோர் பாதுகாப்புத் துறை (TNPDS)",
     helpline_numbers: ["1967", "1800-425-5901"],
+    whatsapp_number: "99401 99401",
     portal_url: "https://www.tnpds.gov.in",
+    sla_time_en: "Grievance Resolution: 7 Working Days",
+    sla_time_ta: "குறைதீர் காலக்கெடு: 7 வேலை நாட்கள்",
+    summary_en: "How to file complaints against PDS ration shops denying monthly entitlements, closed during official hours, or overcharging.",
+    summary_ta: "ரேஷன் கடையில் பொருட்கள் மறுக்கப்படும் போது அல்லது கைரேகை பதியாத போது எடுக்க வேண்டிய சட்டப்பூர்வ நடவடிக்கைகள்.",
+    verbal_script_en: "Sir, I am calling regarding Fair Price Shop No [Shop Number, Taluk, District]. My Smart Card number is [Card Number]. The salesman has denied allocated monthly rice/sugar stock stating no stock, but the TNPDS portal shows active balance. Kindly register an enforcement inspection.",
+    verbal_script_ta: "வணக்கம் ஐயா. நியாயவிலைக் கடை எண் [Shop Number] குறித்து புகார் அளிக்கிறேன். எனது ஸ்மார்ட் கார்டு எண் [Card Number]. TNPDS தளத்தில் இருப்பு காட்டியும் கடை ஊழியர் பொருட்கள் இல்லை என மறுக்கிறார். உணவு வழங்கல் ஆய்வாளர் மூலம் ஆய்வு செய்யக் கோருகிறேன்.",
     steps_en: [
-      "For missing monthly commodities: check your TNPDS mobile app for shop stock status.",
-      "To report shop closed during working hours or biometric failure: call toll-free 1967 or 1800-425-5901.",
-      "File online grievance at tnpds.gov.in with shop number and Smart Card details.",
-      "Contact Taluk Supply Officer (TSO) or District Supply Officer (DSO) at Collectorate.",
-      "Report overcharging, underweighting, or illegal diversion of PDS items on VizhiTN."
+      "Open the TNPDS Mobile App to check live commodity stock allocated to your ration shop before visiting.",
+      "If the shop is locked during working hours (9 AM - 1 PM & 2 PM - 6 PM) or salesman demands cash bribes, note shop code.",
+      "For biometric fingerprint failure: demand OTP authentication via registered mobile number (salesman cannot deny).",
+      "Dial State Civil Supplies Toll-Free Helpline 1967 or 1800-425-5901 to lodge official complaint.",
+      "File written complaint with the Taluk Supply Officer (TSO) or District Supply Officer (DSO) at the District Collectorate."
     ],
     steps_ta: [
-      "பொருட்கள் இருப்பு விவரங்களை TNPDS செயலியில் சரிபார்க்கவும்.",
-      "கடை மூடப்பட்டிருந்தால் அல்லது கைரேகை சிக்கல் எனில்: 1967 அல்லது 1800 425 5901 அழைக்கவும்.",
-      "tnpds.gov.in இல் உங்கள் ஸ்மார்ட் கார்டு விவரங்களுடன் புகார் பதிவு செய்யுங்கள்.",
-      "வட்ட வழங்கல் அலுவலர் (TSO) அல்லது மாவட்ட வழங்கல் அலுவலரை தொடர்பு கொள்ளவும்.",
-      "கூடுதல் விலை அல்லது முறைகேடுகள் பற்றி VizhiTN இல் பதிவிடவும்."
+      "கடைக்குச் செல்லும் முன் TNPDS செயலியில் உங்கள் கடைக்கான மாதாந்திர பொருட்கள் இருப்பு நிலையை சரிபார்க்கவும்.",
+      "வேலை நேரத்தில் கடை மூடப்பட்டிருந்தாலோ அல்லது கூடுதல் விலை கேட்டாலோ கடை எண்ணைக் குறித்துக் கொள்ளுங்கள்.",
+      "கைரேகை பதியாவிட்டால் பதிவு செய்யப்பட்ட மொபைல் எண்ணிற்கு வரும் OTP மூலம் பொருட்களைப் பெறுங்கள் (மறுக்க முடியாது).",
+      "உணவுப் பொருள் இலவச உதவி எண் 1967 அல்லது 1800-425-5901 அழைத்து உடனடி புகார் பதிவு செய்யுங்கள்.",
+      "வட்டாட்சியர் அலுவலக வட்ட வழங்கல் அலுவலர் (TSO) அல்லது மாவட்ட ஆட்சியர் அலுவலகத்தில் மனு அளியுங்கள்."
     ],
+    faqs: [
+      {
+        q_en: "What if senior citizens or sick persons cannot go to the ration shop for biometric scanning?",
+        q_ta: "முதியவர்கள் ரேஷன் கடைக்கு நேரில் வர முடியாவிட்டால் மாற்று வழி என்ன?",
+        a_en: "Submit an Authorization Letter (Form Annexure-I) at the Taluk Office allowing a nominated relative or neighbour to collect commodities on their behalf.",
+        a_ta: "வட்டாட்சியர் அலுவலகத்தில் அனுமதி படிவம் (Annexure-I) சமர்ப்பித்து முதியவருக்கு பதிலாக உறவினர் அல்லது அண்டை வீட்டார் பொருட்கள் பெற அங்கீகாரம் பெறலாம்."
+      }
+    ]
   },
   {
     id: "bribery",
     slug: "bribery",
-    title_en: "Demand for Bribery at Government Office",
-    title_ta: "அரசு அலுவலகத்தில் லஞ்சக் கோரிக்கை",
-    problem_type_en: "Anti-Corruption",
-    problem_type_ta: "ஊழல் தடுப்பு",
-    department_en: "Directorate of Vigilance & Anti-Corruption (DVAC)",
-    department_ta: "ஊழல் தடுப்பு மற்றும் கண்காணிப்புப் பிரிவு (DVAC)",
-    helpline_numbers: ["1064", "044-24615929", "94981 05884"],
+    title_en: "Report Government Bribery & Official Extortion (DVAC 1064)",
+    title_ta: "அரசு அலுவலக லஞ்சம் & மிரட்டல் புகார் (DVAC 1064)",
+    seo_title_en: "Report Bribery in Tamil Nadu: DVAC 1064, WhatsApp & Trap Procedure",
+    seo_title_ta: "தமிழ்நாட்டில் லஞ்ச புகார் அளிப்பது எப்படி: DVAC 1064 & லஞ்ச ஒழிப்பு பொறி",
+    seo_desc_en: "How to safely report government corruption and bribery in Tamil Nadu: DVAC Toll-Free 1064, confidential WhatsApp 94981 05884, phenolphthalein trap procedure & whistleblower safety.",
+    seo_desc_ta: "அரசு அதிகாரிகள் லஞ்சம் கேட்டால் பாதுகாப்பாக புகார் அளிக்கும் முறை: DVAC 1064 உதவி எண், ரகசிய வாட்ஸ்அப் 94981 05884 மற்றும் லஞ்ச ஒழிப்புத் துறை பொறி நடவடிக்கை.",
+    problem_type_en: "Bribery & Anti-Corruption",
+    problem_type_ta: "ஊழல் தடுப்பு & லஞ்சம்",
+    category: "anti_corruption",
+    department_en: "Directorate of Vigilance and Anti-Corruption (DVAC Tamil Nadu)",
+    department_ta: "ஊழல் தடுப்பு மற்றும் கண்காணிப்பு இயக்ககம் (DVAC)",
+    helpline_numbers: ["1064", "044-24615929"],
+    whatsapp_number: "94981 05884",
     portal_url: "https://www.dvac.tn.gov.in",
+    sla_time_en: "Confidential Verification: 24 Hours | Trap: Planned discreetly",
+    sla_time_ta: "ரகசிய சரிபார்ப்பு: 24 மணி நேரம்",
+    summary_en: "Strict whistleblower guide to report public servants demanding speed money or kickbacks for certificates, patta, or registrations.",
+    summary_ta: "பட்டா, சான்றிதழ் அல்லது அரசு சேவைகளுக்கு லஞ்சம் கேட்கும் அரசு அதிகாரிகளை ரகசியமாக லஞ்ச ஒழிப்புத் துறையிடம் சிக்க வைக்கும் வழிகாட்டி.",
+    verbal_script_en: "Sir, I am calling DVAC Helpline 1064. A public servant, [Designation / Office Name, District], is refusing to process my legitimate application for [Service] and is demanding illegal gratification of [Amount]. I request confidential guidance to lay a vigilance trap.",
+    verbal_script_ta: "வணக்கம் ஐயா. DVAC உதவி எண் 1064-ஐ அழைக்கிறேன். [துறை மற்றும் அலுவலகத்தின் பெயர்]-ல் உள்ள அதிகாரி எனது நியாயமான பணிக்கு [தொகை] லஞ்சம் கேட்கிறார். அரசுப் பணத்தை லஞ்சம் கொடுக்காமல் அவரை சட்டப்படி நடவடிக்கை எடுக்க வழிகாட்டக் கோருகிறேன்.",
     steps_en: [
-      "Never pay bribe — it is illegal to both offer and accept bribes under Prevention of Corruption Act.",
-      "Record details: date, officer name/designation, office department, amount demanded.",
-      "Contact DVAC Toll-Free Helpline: 1064 or headquarters at 044-24615929.",
-      "DVAC WhatsApp Helpline: 94981 05884 — message secretly with proof details.",
-      "File anonymous Bribe Report on VizhiTN Public Bribe Tracker to bring transparency."
+      "Never pay the bribe. Both giving and taking bribes are punishable offenses under the Prevention of Corruption Act.",
+      "Note exact date, time, officer name, designation, room number, and the specific cash or favor demanded.",
+      "Call DVAC 24x7 Toll-Free Hotline at 1064 (Your call is encrypted and identity is kept 100% confidential).",
+      "Message DVAC confidential WhatsApp at 94981 05884 with details of the pending file or application number.",
+      "DVAC Superintendent of Police (SP) will coordinate a phenolphthalein chemical trap to catch the corrupt official red-handed.",
+      "Document the delay on VizhiTN Public Bribe Tracker to protect your civic rights."
     ],
     steps_ta: [
-      "லஞ்சம் கொடுக்காதீர்கள் — லஞ்சம் வாங்குவதும் கொடுப்பதும் சட்டப்படி குற்றம்.",
-      "அதிகாரி பெயர், பதவி, அலுவலகம், கோரப்பட்ட தொகை போன்ற விவரங்களை குறிக்கவும்.",
-      "DVAC உதவி எண் 1064 அல்லது 044-24615929 தொடர்பு கொள்ளவும்.",
-      "DVAC WhatsApp: 94981 05884 — ஆதாரம் இருந்தால் ரகசியமாக அனுப்பவும்.",
-      "VizhiTN Bribe Watch இல் பெயர் குறிப்பிடாமல் ரகசியமாக புகார் அளிக்கவும்."
+      "லஞ்சம் கொடுக்காதீர்கள். லஞ்சம் கொடுப்பதும் வாங்குவதும் ஊழல் தடுப்புச் சட்டப்படி தண்டனைக்குரிய குற்றமாகும்.",
+      "அதிகாரியின் பெயர், பதவி, அலுவலக அறை எண் மற்றும் கோரப்பட்ட லஞ்சத் தொகையை ரகசியமாக குறித்துக்கொள்ளுங்கள்.",
+      "DVAC 24x7 இலவச உதவி எண் 1064-ஐ அழையுங்கள் (உங்கள் அடையாளம் 100% பாதுகாக்கப்படும்).",
+      "DVAC ரகசிய வாட்ஸ்அப் எண் 94981 05884-க்கு நிலுவையில் உள்ள கோப்பு விவரங்களை அனுப்பவும்.",
+      "லஞ்ச ஒழிப்புத் துறை டிஎஸ்பி உங்களைத் தொடர்புகொண்டு அதிகாரியை கையும் களவுமாகப் பிடிக்க ஏற்பாடு செய்வார்.",
+      "பாதுகாப்புடன் VizhiTN லஞ்சக் கண்காணிப்புப் பக்கத்தில் விபரங்களைப் பதிவு செய்யுங்கள்."
     ],
+    faqs: [
+      {
+        q_en: "Will my identity be revealed if I file a complaint with DVAC?",
+        q_ta: "DVAC-ல் புகார் அளித்தால் எனது பெயர் அல்லது முகவரி வெளிவருமா?",
+        a_en: "No. Under the Whistle Blowers Protection Act and DVAC operational protocols, the informant's identity is strictly confidential and protected by law.",
+        a_ta: "இல்லை. தகவல் கொடுப்பவர் பாதுகாப்பு சட்டப்படி உங்கள் பெயர், தொலைபேசி எண் உள்ளிட்ட எந்தவொரு விவரமும் முற்றிலும் ரகசியமாக வைக்கப்படும்."
+      }
+    ]
   },
   {
     id: "medical-emergency",
     slug: "medical-emergency",
-    title_en: "Medical Emergency & Free Govt Healthcare",
-    title_ta: "மருத்துவ அவசரநிலை & அரசு மருத்துவமனைகள்",
-    problem_type_en: "Medical Emergency",
-    problem_type_ta: "மருத்துவ அவசரம்",
-    department_en: "Health & Family Welfare Dept",
-    department_ta: "சுகாதார மற்றும் குடும்ப நலத்துறை",
+    title_en: "Medical Emergency, 108 Ambulance & Cashless Healthcare",
+    title_ta: "மருத்துவ அவசரம், 108 ஆம்புலன்ஸ் & பணமில்லா சிகிச்சை",
+    seo_title_en: "Medical Emergency Tamil Nadu: 108 Ambulance, Innuyir Kappon 48 & CMCHIS",
+    seo_title_ta: "தமிழ்நாடு மருத்துவ அவசர உதவி: 108 ஆம்புலன்ஸ் & இன்னுயிர் காப்போம் 48",
+    seo_desc_en: "Emergency healthcare guide in Tamil Nadu: 108 free GPS ambulance dispatch, Innuyir Kappon 48 road accident cashless cover up to ₹1 Lakh & CMCHIS insurance portal.",
+    seo_desc_ta: "தமிழ்நாட்டில் மருத்துவ அவசர நிலைக்கான வழிகாட்டி: 108 இலவச ஆம்புலன்ஸ், சாலை விபத்துகளுக்கான இன்னுயிர் காப்போம் 48 மற்றும் முதலமைச்சர் காப்பீட்டுத் திட்டம்.",
+    problem_type_en: "Medical & Ambulance Emergency",
+    problem_type_ta: "மருத்துவ அவசர உதவி",
+    category: "healthcare",
+    department_en: "Health and Family Welfare Department (Tamil Nadu Health System Project)",
+    department_ta: "மக்கள் நல்வாழ்வு மற்றும் குடும்ப நலத்துறை",
     helpline_numbers: ["108", "104", "1800-425-3993"],
-    portal_url: "https://www.cmchis.com",
+    whatsapp_number: "104",
+    portal_url: "https://www.cmchistn.com",
+    sla_time_en: "108 Ambulance Dispatch: Urban 8-12 Mins | Rural 15-20 Mins",
+    sla_time_ta: "108 ஆம்புலன்ஸ் வருகை: நகரம் 8-12 நிமிடம் | கிராமம் 15-20 நிமிடம்",
+    summary_en: "How to rapidly secure free emergency ambulance dispatch, life-saving trauma care, and cashless government health insurance approval.",
+    summary_ta: "விபத்து அல்லது மாரடைப்பு போன்ற அவசர காலங்களில் 108 ஆம்புலன்ஸ் மற்றும் ₹1 லட்சம் வரையிலான இலவச அவசர சிகிச்சை பெறும் முறை.",
+    verbal_script_en: "Emergency! I am calling 108 Ambulance dispatch for [Patient Age / Gender]. Symptoms: [Chest pain / Severe road injury / Unconscious]. Location: [Exact Landmark, Street, Town]. Please dispatch the nearest Advanced Life Support (ALS) ambulance immediately.",
+    verbal_script_ta: "அவசரம்! 108 ஆம்புலன்ஸ் கட்டுப்பாட்டு அறைக்கு அழைக்கிறேன். நோயாளிக்கு [மாரடைப்பு / விபத்து காயம் / மயக்கம்]. இருக்கும் இடம்: [அடையாளக் குறி, தெரு, ஊர்]. உடனடியாக ஆம்புலன்ஸை அனுப்பி வையுங்கள்.",
     steps_en: [
-      "Call 108 immediately for free Government Ambulance service.",
-      "For road accident victims: Innuyir Kappon 48 scheme covers first 48 hours up to ₹1 Lakh in 600+ hospitals — cashless.",
-      "For CMCHIS insurance queries or hospital admission approval: call 1800-425-3993.",
-      "For hospital refusal or poor treatment at Govt Primary Health Centre (PHC): call 104 health helpline.",
-      "Share urgent blood/help requests on VizhiTN for rapid verified local volunteer response."
+      "Dial 108 immediately for free GPS-tracked Government Ambulance (Operated 24x7 by GVK EMRI).",
+      "Stay calm, state the exact GPS location, landmark, and whether the patient is breathing.",
+      "For road accident victims: Chief Minister's Innuyir Kappon 48 (NK48) scheme guarantees cashless treatment up to ₹1 Lakh for first 48 hours across 600+ private and government hospitals.",
+      "Private hospitals CANNOT demand cash deposit or refuse admission to accident victims under Supreme Court guidelines.",
+      "For medical counseling, blood bank availability, or mental health distress: dial 104 Health Helpline.",
+      "For Chief Minister's Comprehensive Health Insurance Scheme (CMCHIS) cashless approval: call 1800-425-3993."
     ],
     steps_ta: [
-      "இலவச அரசு ஆம்புலன்ஸுக்கு உடனடியாக 108 அழைக்கவும்.",
-      "சாலை விபத்து: இன்னுயிர் காப்போம் 48 திட்டம் மூலம் முதல் 48 மணிநேர சிகிச்சை ₹1 லட்சம் வரை இலவசம்.",
-      "முதல்வரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டம்: 1800 425 3993 அழைக்கவும்.",
-      "மருத்துவமனை மறுப்பு அல்லது சிகிச்சை குறைபாடு எனில் 104 நல்வாழ்வு மையத்தை தொடர்பு கொள்ளவும்.",
-      "அவசர ரத்த உதவிக்கு VizhiTN Help பகுதியில் பதிவிடுங்கள்."
+      "108 அவசர இலவச ஆம்புலன்ஸ் எண்ணை உடனே அழையுங்கள் (GVK EMRI மூலம் 24 மணி நேரமும் செயல்படுகிறது).",
+      "நோயாளியின் நிலைமை, விபத்து நடந்த இடம் மற்றும் முக்கிய அடையாளத்தை தெளிவாகக் கூறுங்கள்.",
+      "சாலை விபத்துகளுக்கு: 'இன்னுயிர் காப்போம் 48' திட்டம் மூலம் முதல் 48 மணிநேர அவசர சிகிச்சை ₹1 லட்சம் வரை 600+ தனியார் மருத்துவமனைகளிலும் முற்றிலும் இலவசம்.",
+      "விபத்தில் காயமடைந்தவர்களை சேர்க்க தனியார் மருத்துவமனைகள் பணம் கேட்கவோ அனுமதிக்க மறுக்கவோ முடியாது.",
+      "மருத்துவ ஆலோசனை மற்றும் ரத்த வங்கி விவரங்களுக்கு 104 நல்வாழ்வு உதவி எண்ணை அழையுங்கள்.",
+      "முதலமைச்சரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டத்திற்கு (CMCHIS) 1800-425-3993 எண்ணை அழைக்கவும்."
     ],
+    faqs: [
+      {
+        q_en: "Do I need money or insurance card for emergency road accident admission under Innuyir Kappon 48?",
+        q_ta: "இன்னுயிர் காப்போம் 48 திட்டத்தில் விபத்து சிகிச்சை பெற காப்பீட்டு அட்டை அல்லது பணம் தேவையா?",
+        a_en: "No. Any road accident victim in Tamil Nadu (regardless of state/country of origin or income) is entitled to cashless treatment up to ₹1,00,000 for the first 48 hours without producing any card.",
+        a_ta: "தேவையில்லை. தமிழ்நாட்டில் விபத்துக்குள்ளாகும் எந்தவொரு நபருக்கும் எவ்வித ஆவணமும் இன்றி முதல் 48 மணிநேர சிகிச்சை ₹1 லட்சம் வரை முற்றிலும் இலவசமாக வழங்கப்படும்."
+      }
+    ]
   },
   {
-    id: "govt-scheme",
-    slug: "govt-scheme",
-    title_en: "How to Apply for Tamil Nadu Government Schemes",
-    title_ta: "அரசு திட்டங்களுக்கு விண்ணப்பிக்கும் முறை",
-    problem_type_en: "Government Schemes",
-    problem_type_ta: "அரசுத் திட்டங்கள்",
-    department_en: "Dept of e-Governance & Social Welfare",
-    department_ta: "இ-ஆட்சி & சமூக நலத்துறை",
-    helpline_numbers: ["1100"],
-    portal_url: "https://www.tnesevai.tn.gov.in",
+    id: "cyber-fraud",
+    slug: "cyber-fraud",
+    title_en: "Cyber Financial Fraud: 1930 Golden Hour Bank Freeze",
+    title_ta: "சைபர் நிதி மோசடி: 1930 வங்கி கணக்கு முடக்கம் & மீட்பு",
+    seo_title_en: "Cyber Crime 1930 Helpline Tamil Nadu: Report UPI & Bank Fraud",
+    seo_title_ta: "தமிழ்நாடு சைபர் கிரைம் 1930: UPI & வங்கி மோசடி மீட்பு வழிகாட்டி",
+    seo_desc_en: "What to do during cyber financial fraud in Tamil Nadu: National Cyber Crime 1930 Golden Hour hotline, cybercrime.gov.in complaint & stopping unauthorized bank transfers.",
+    seo_desc_ta: "வங்கி அல்லது UPI மோசடியில் பணம் இழந்தால் 1 மணி நேரத்திற்குள் 1930-ஐ அழைத்து பணத்தை மீட்கும் சைபர் கிரைம் வழிகாட்டி.",
+    problem_type_en: "Cyber Crime & Financial Fraud",
+    problem_type_ta: "சைபர் கிரைம் & பண மோசடி",
+    category: "cyber_crime",
+    department_en: "Tamil Nadu Cyber Crime Wing / Indian Cyber Crime Coordination Centre (I4C)",
+    department_ta: "தமிழ்நாடு சைபர் குற்றப்பிரிவு காவல்துறை",
+    helpline_numbers: ["1930", "112"],
+    whatsapp_number: "1930",
+    portal_url: "https://cybercrime.gov.in",
+    sla_time_en: "Golden Hour Freeze: Within 2-4 Hours of Transaction",
+    sla_time_ta: "பொன்னான நேரம்: 2-4 மணி நேரத்திற்குள்",
+    summary_en: "Immediate protocol when victimized by phishing, fake APK loans, digital arrest scams, or unauthorized UPI debits.",
+    summary_ta: "வங்கி கணக்கிலிருந்து அனுமதி இன்றி பணம் எடுக்கப்பட்டாலோ அல்லது ஆன்லைன் மோசடியில் ஏமாந்தாலோ உடனடியாக செய்ய வேண்டியவை.",
+    verbal_script_en: "Sir, I am reporting an unauthorized fraudulent debit under Cyber Crime Helpline 1930. Amount: [₹Amount]. Fraudulent transaction UTR / Reference ID: [UTR Number]. Source Bank: [My Bank Name]. Beneficiary Account / UPI: [Fraudster Account Details]. Please trigger the Golden Hour freeze protocol.",
+    verbal_script_ta: "வணக்கம் ஐயா. சைபர் கிரைம் 1930 எண்ணிற்கு அவசரமாக அழைக்கிறேன். எனது வங்கி கணக்கிலிருந்து அனுமதியின்றி [தொகை] ரூபாய் மோசடி செய்யப்பட்டுள்ளது. பரிவர்த்தனை UTR எண்: [UTR Number]. பணத்தை எடுத்தவரின் கணக்கை உடனடியாக முடக்குமாறு கேட்டுக்கொள்கிறேன்.",
     steps_en: [
-      "Check eligibility and document criteria on VizhiTN Schemes Directory or myscheme.gov.in.",
-      "Most TN welfare schemes are applied at tnesevai.tn.gov.in or nearest e-Sevai / CSC centre.",
-      "Keep mandatory proofs ready: Aadhaar, Smart Ration Card, Income Certificate, Bank Passbook, Community Certificate.",
-      "For Kalaignar Magalir Urimai Thogai: apply during ward camps or track at kmut.tn.gov.in.",
-      "Always save application acknowledgment number for tracking status."
+      "Act within the 'Golden Hour' (first 1–3 hours of the transaction) to maximize chances of 100% money recovery.",
+      "Dial National Cyber Financial Fraud Helpline 1930 immediately.",
+      "Keep transaction details ready: Bank Account Number, Transaction ID / UTR, Date & Time, Fraudster's Mobile/UPI/Account.",
+      "1930 operator triggers the Citizen Financial Cyber Fraud Reporting and Management System (CFCFRMS), sending instant freeze notices to the receiver banks.",
+      "Visit cybercrime.gov.in to lodge the formal detailed e-complaint and obtain your Acknowledgement Number.",
+      "Immediately submit the Acknowledgement Number to your bank branch within 72 hours for zero-liability compensation under RBI guidelines."
     ],
     steps_ta: [
-      "VizhiTN அல்லது myscheme.gov.in தளத்தில் தகுதி விவரங்களை சரிபார்க்கவும்.",
-      "பெரும்பாலான TN திட்டங்கள் tnesevai.tn.gov.in அல்லது e-Sevai மையத்தில் விண்ணப்பிக்கலாம்.",
-      "ஆதார், குடும்ப அட்டை, வருமான சான்று, வங்கி பாஸ்புக் தயார் வைத்திருங்கள்.",
-      "கலைஞர் மகளிர் உரிமை தொகை: kmut.tn.gov.in தளத்தில் சரிபார்க்கவும்.",
-      "ஒப்புகை எண் மூலம் விண்ணப்ப நிலையை கண்காணிக்கவும்."
+      "பணம் இழந்த முதல் 1-3 மணி நேரத்திற்குள் ('பொன்னான நேரம்') செயல்பட்டால் பணத்தை 100% மீட்க முடியும்.",
+      "உடனடியாக தேசிய சைபர் கிரைம் உதவி எண் 1930-ஐ அழையுங்கள்.",
+      "பரிவர்த்தனை UTR எண், தேதி, நேரம் மற்றும் மோசடி செய்தவரின் வங்கி கணக்கு / UPI விவரங்களைத் தயார் நிலையில் வையுங்கள்.",
+      "1930 அதிகாரி சம்பந்தப்பட்ட வங்கிகளுக்கு உடனடி எச்சரிக்கை அனுப்பி பணத்தை வெளியே எடுக்க முடியாதபடி முடக்குவார்.",
+      "cybercrime.gov.in தளத்தில் முறையான புகாரைப் பதிவு செய்து ஒப்புகை எண்ணைப் பெறுங்கள்.",
+      "ஆர்பிஐ விதிகளின்படி இழப்பீடு பெற அந்த ஒப்புகை எண்ணை 72 மணி நேரத்திற்குள் உங்கள் வங்கிக் கிளையில் சமர்ப்பியுங்கள்."
     ],
+    faqs: [
+      {
+        q_en: "What should I do if someone claims to be police on video call and threatens 'Digital Arrest'?",
+        q_ta: "காவல்துறை அதிகாரி போல் வீடியோ காலில் மிரட்டி 'டிஜிட்டல் அரெஸ்ட்' செய்தால் என்ன செய்வது?",
+        a_en: "Hang up immediately. Indian Law does not have any provision for 'Digital Arrest'. Police or CBI never arrest anyone via Skype or WhatsApp video call. Report to 1930.",
+        a_ta: "உடனடியாக இணைப்பைத் துண்டியுங்கள். இந்திய சட்டத்தில் 'டிஜிட்டல் அரெஸ்ட்' என்ற ஒன்றே இல்லை. காவல்துறை வீடியோ காலில் யாரையும் விசாரிக்காது. உடனே 1930-ல் புகார் அளியுங்கள்."
+      }
+    ]
   },
   {
     id: "property-tax",
     slug: "property-tax",
-    title_en: "Property Tax Assessment & Payment",
-    title_ta: "சொத்து வரி மதிப்பீடு மற்றும் செலுத்துதல்",
-    problem_type_en: "Property Tax",
-    problem_type_ta: "சொத்து வரி",
-    department_en: "Municipal Administration & Water Supply",
-    department_ta: "நகராட்சி நிர்வாகம் & குடிநீர் வழங்கல் துறை",
+    title_en: "Property Tax Online Assessment, Bill Pay & Grievance",
+    title_ta: "சொத்து வரி மதிப்பீடு, ஆன்லைன் செலுத்துதல் & குறைதீர்வு",
+    seo_title_en: "Property Tax Tamil Nadu: Online Payment, Assessment & Penalty Rules",
+    seo_title_ta: "தமிழ்நாடு சொத்து வரி: ஆன்லைன் கட்டணம் செலுத்துதல் & மறுமதிப்பீடு",
+    seo_desc_en: "How to assess and pay municipal property tax in Tamil Nadu: GCC 1913 helpline, tnurbantree.tn.gov.in payment, title transfer name change & penalty calculation.",
+    seo_desc_ta: "தமிழ்நாட்டில் சொத்து வரி செலுத்துதல் மற்றும் மறுமதிப்பீடு செய்யும் முறை: 1913 உதவி எண், ஆன்லைன் தளம் மற்றும் பெயர் மாற்ற வழிகாட்டி.",
+    problem_type_en: "Municipal Property Tax",
+    problem_type_ta: "நகராட்சி சொத்து வரி",
+    category: "housing",
+    department_en: "Commissioner of Municipal Administration / Greater Chennai Corporation",
+    department_ta: "நகராட்சி நிர்வாக இயக்ககம் / பெருநகர சென்னை மாநகராட்சி",
     helpline_numbers: ["1913"],
-    portal_url: "https://www.chennaicorporation.gov.in",
+    whatsapp_number: "1913",
+    portal_url: "https://tnurbantree.tn.gov.in",
+    sla_time_en: "Name Transfer / Assessment: 15-30 Working Days",
+    sla_time_ta: "பெயர் மாற்றம் / புதிய மதிப்பீடு: 15-30 நாட்கள்",
+    summary_en: "Step-by-step guide to check property tax dues, dispute erroneous assessments, pay online, and update owner name on municipal records.",
+    summary_ta: "சொத்து வரி ரசீது பெறுதல், தவறான மதிப்பீட்டிற்கு மேல்முறையீடு செய்தல் மற்றும் ஆன்லைனில் அபராதமின்றி வரி செலுத்தும் வழிகாட்டி.",
+    verbal_script_en: "Sir, I am inquiring regarding Property Tax Assessment Number [Assessment Number, Ward, Zone]. The revised calculation reflects an erroneous area measurement or tariff classification. I request a physical inspection and rectification of the property tax demand.",
+    verbal_script_ta: "வணக்கம் ஐயா. சொத்து வரி மதிப்பீட்டு எண் [Assessment Number, வார்டு] குறித்து பேசுகிறேன். கணக்கிடப்பட்டுள்ள வரி அளவு தவறாக உள்ளது. நேரில் மறு அளவீடு செய்து சரியான சொத்து வரியை நிர்ணயிக்குமாறு கேட்டுக்கொள்கிறேன்.",
     steps_en: [
-      "Check current assessment number and tax dues on your municipal portal or tnurbantree.tn.gov.in.",
-      "Pay property tax online via debit card, credit card, net banking, or UPI to avoid 1% monthly penalty.",
-      "For reassessment or title transfer name change: submit registered sale deed and patta copy online.",
-      "Contact Zonal Revenue Officer at Corporation office for calculation discrepancies."
+      "Visit tnurbantree.tn.gov.in (or chennaicorporation.gov.in for Chennai) and search by Assessment Number or Old Door Number.",
+      "Pay dues online before the deadline (April 30 / October 31) to claim early-bird rebate and avoid 1% monthly penalty interest.",
+      "Download official digital QR-coded Property Tax receipt immediately after payment for legal records.",
+      "For ownership name change after purchasing property: submit registered sale deed, parent documents, and patta copy online via e-Sevai.",
+      "To dispute abnormal tax hike: file appeal with the Zonal Assistant Revenue Officer (ARO) or Municipal Commissioner within 30 days."
     ],
     steps_ta: [
-      "நகராட்சி தளம் அல்லது tnurbantree.tn.gov.in இல் வரி நிலுவையை சரிபார்க்கவும்.",
-      "அபராதத்தை தவிர்க்க ஆன்லைனில் வரி செலுத்தவும்.",
-      "பெயர் மாற்றத்திற்கு பதிவு செய்யப்பட்ட ஆவணம் மற்றும் பட்டா சமர்ப்பிக்கவும்.",
-      "வரி கணக்கீடு முரண்பாடுகளுக்கு மண்டல வருவாய் அலுவலரை அணுகவும்."
+      "tnurbantree.tn.gov.in (சென்னையெனில் chennaicorporation.gov.in) தளம் சென்று சொத்து வரி எண்ணை உள்ளிட்டு நிலுவையை சரிபார்க்கவும்.",
+      "தவணை காலத்திற்குள் (ஏப்ரல் 30 / அக்டோபர் 31) வரி செலுத்தி 1% மாதாந்திர அபராதத்தைத் தவிர்க்கவும்.",
+      "வரி செலுத்திய உடன் டிஜிட்டல் QR குறியீடு உள்ள அதிகாரப்பூர்வ ரசீதை பதிவிறக்கம் செய்து சேமிக்கவும்.",
+      "சொத்து வாங்கிய பின் பெயர் மாற்றம் செய்ய பதிவு செய்த பத்திரம் மற்றும் பட்டா நகலை e-சேவை மூலம் சமர்ப்பிக்கவும்.",
+      "வரி கணக்கீடு அதிகமாக இருந்தால் 30 நாட்களுக்குள் மண்டல வருவாய் அலுவலரிடம் (ARO) மறுமதிப்பீடு மனு அளியுங்கள்."
     ],
+    faqs: [
+      {
+        q_en: "What is the penalty for late payment of property tax in Tamil Nadu?",
+        q_ta: "தமிழ்நாட்டில் குறிப்பிட்ட தேதிக்குள் சொத்து வரி செலுத்தாவிட்டால் அபராதம் எவ்வளவு?",
+        a_en: "Municipal corporations levy simple interest at 1% per month on unpaid property tax arrears beyond the due date.",
+        a_ta: "குறிப்பிட்ட காலக்கெடுவுக்குள் வரி செலுத்தாவிட்டால் நிலுவைத் தொகைக்கு மாதம் 1% வீதம் எளிய வட்டி அபராதமாக வசூலிக்கப்படும்."
+      }
+    ]
   },
+  {
+    id: "patta-chitta",
+    slug: "patta-chitta",
+    title_en: "Patta Chitta Transfer Delay, Land Survey & Taluk SOP",
+    title_ta: "பட்டா சிட்டா மாறுதல் தாமதம், நில அளவீடு & தீர்வு",
+    seo_title_en: "Patta Transfer Delay Tamil Nadu: Online Status, Tahsildar & Jamabandi",
+    seo_title_ta: "தமிழ்நாடு பட்டா மாறுதல் தாமதம் புகார்: வட்டாட்சியர் & ஜமாபந்தி மேல்முறையீடு",
+    seo_desc_en: "How to resolve Patta Chitta transfer delays in Tamil Nadu: eservices.tn.gov.in tracking, 15-day SLA, Field Surveyor inspection & CM Helpline 1100 escalation.",
+    seo_desc_ta: "பட்டா மாறுதல் விண்ணப்பம் தாமதமானால் எடுக்க வேண்டிய சட்டப்பூர்வ நடவடிக்கைகள்: இ-சேவை நிலை, வருவாய் ஆய்வாளர் பணி மற்றும் ஜமாபந்தி மனுக்கள்.",
+    problem_type_en: "Revenue & Land Records",
+    problem_type_ta: "வருவாய்த் துறை & நிலப் பட்டா",
+    category: "revenue",
+    department_en: "Revenue and Disaster Management Department (Survey and Settlement Wing)",
+    department_ta: "வருவாய் மற்றும் பேரிடர் மேலாண்மைத் துறை (நில அளவை பிரிவு)",
+    helpline_numbers: ["1100"],
+    whatsapp_number: "1100",
+    portal_url: "https://eservices.tn.gov.in",
+    sla_time_en: "Without Sub-division: 15 Days | With Sub-division: 30 Days",
+    sla_time_ta: "உட்பிரிவு இன்றி: 15 நாட்கள் | உட்பிரிவுடன்: 30 நாட்கள்",
+    summary_en: "Guide to speed up pending Patta Chitta transfers, overcome VAO / Surveyor delays, and download verified online land records.",
+    summary_ta: "நிலம் அல்லது வீடு வாங்கிய பின் ஆன்லைனில் பட்டா மாறுதல் கோரி விண்ணப்பித்து தாமதமானால் தீர்வு காணும் வழிகாட்டி.",
+    verbal_script_en: "Sir, I am following up on my online Patta transfer application CAN / Application ID [Application ID] submitted on [Date] for Survey No [Survey Number, Village, Taluk]. The statutory SLA under Tamil Nadu Citizen Charter has elapsed. Please inform the status of the VAO / Surveyor report.",
+    verbal_script_ta: "வணக்கம் ஐயா. [கிராமம், தாலுகா], சர்வே எண் [சர்வே எண்]-க்கான எனது ஆன்லைன் பட்டா மாறுதல் விண்ணப்பம் எண் [விண்ணப்ப எண்] நாள்: [தேதி]. அரசு குடிமக்கள் சாசன காலக்கெடு முடிந்துவிட்டது. கிராம நிர்வாக அலுவலர் (VAO) மற்றும் சர்வேயர் அறிக்கை நிலையைத் தெரிவிக்குமாறு கேட்டுக்கொள்கிறேன்.",
+    steps_en: [
+      "Track your application status on eservices.tn.gov.in using your Application ID.",
+      "Check where the file is currently pending: Village Administrative Officer (VAO), Revenue Inspector (RI), Land Surveyor (Firka Surveyor), or Headquarters Deputy Tahsildar (HQDT).",
+      "Statutory SLA is strictly 15 days (if no sub-division is required) or 30 days (if field land measurement and sub-division are required).",
+      "If the surveyor delays measurement, meet the Taluk Tahsildar during Wednesday/Friday grievance hours.",
+      "Escalate unresolved delays by filing a petition on CM Helpline 1100 or presenting a petition at the District Collector's Monday Jamabandi."
+    ],
+    steps_ta: [
+      "eservices.tn.gov.in தளம் சென்று உங்கள் விண்ணப்ப எண்ணை உள்ளிட்டு கோப்பு எந்த அதிகாரியிடம் உள்ளது என்பதை சரிபார்க்கவும்.",
+      "கோப்பு VAO, வருவாய் ஆய்வாளர் (RI), நில அளவர் (Surveyor) அல்லது துணை வட்டாட்சியரிடம் உள்ளதா என்பதைக் கண்டறியவும்.",
+      "சட்டப்பூர்வ காலக்கெடு உட்பிரிவு இல்லையெனில் 15 நாட்கள்; புதிய உட்பிரிவு அளவீடு எனில் 30 நாட்கள் ஆகும்.",
+      "சர்வேயர் நில அளவீடு செய்ய தாமதித்தால் வட்டாட்சியரை நேரில் சந்தித்து முறையிடுங்கள்.",
+      "முதல்வர் உதவி எண் 1100-ல் புகார் அளியுங்கள் அல்லது மாவட்ட ஆட்சியரின் திங்கட்கிழமை மக்கள் குறைதீர் முகாமில் மனு சமர்ப்பியுங்கள்."
+    ],
+    faqs: [
+      {
+        q_en: "Can a VAO or Tahsildar demand unofficial fees for online Patta transfer?",
+        q_ta: "பட்டா மாறுதலுக்கு விஏஓ அல்லது வட்டாட்சியர் அரசு கட்டணத்தை விட கூடுதலாக பணம் கேட்க முடியுமா?",
+        a_en: "No. The official Tamil Nadu government fee is ₹60 for online application. Demanding any extra speed money is illegal under the Prevention of Corruption Act. Report to DVAC at 1064.",
+        a_ta: "முடியாது. ஆன்லைன் விண்ணப்பத்திற்கு அரசு கட்டணம் ₹60 மட்டுமே. லஞ்சம் கேட்டால் உடனே லஞ்ச ஒழிப்புத் துறை 1064 எண்ணில் புகார் அளியுங்கள்."
+      }
+    ]
+  }
 ];
 
 // Get guide by slug or id
