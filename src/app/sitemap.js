@@ -13,7 +13,7 @@ import { OFFICES } from '@/lib/offices';
 import { getActiveAreas } from '@/lib/publicHubServer';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
-import { getAllArticles, getAllRights, getAllSchemes, getAllGuides, GOVT_SCHEMES, SAFETY_GUIDES } from '@/lib/awarenessServer';
+import { getAllArticles, getAllRights, getAllSchemes, getAllGuides, getAllPortals, getAllFaqs, getAllEmergencyContacts, GOVT_SCHEMES, SAFETY_GUIDES } from '@/lib/awarenessServer';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -294,7 +294,40 @@ export default async function sitemap() {
         entries.push({
           url: `${SITE_URL}/awareness/guide/${g.slug}`,
           changeFrequency: 'weekly',
+          priority: 0.8,
+        });
+      }
+    });
+
+    const portals = typeof getAllPortals === 'function' ? getAllPortals() : [];
+    (portals || []).forEach(p => {
+      if (p.slug) {
+        entries.push({
+          url: `${SITE_URL}/awareness/portal/${p.slug}`,
+          changeFrequency: 'weekly',
           priority: 0.7,
+        });
+      }
+    });
+
+    const faqs = typeof getAllFaqs === 'function' ? getAllFaqs() : [];
+    (faqs || []).forEach(f => {
+      if (f.slug) {
+        entries.push({
+          url: `${SITE_URL}/awareness/faq/${f.slug}`,
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        });
+      }
+    });
+
+    const emergencies = typeof getAllEmergencyContacts === 'function' ? getAllEmergencyContacts() : [];
+    (emergencies || []).forEach(e => {
+      if (e.slug) {
+        entries.push({
+          url: `${SITE_URL}/awareness/emergency/${e.slug}`,
+          changeFrequency: 'weekly',
+          priority: 0.8,
         });
       }
     });
