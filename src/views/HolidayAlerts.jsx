@@ -8,6 +8,7 @@ import { Link, useNavigate } from "@/lib/router-compat";
 import AdSlot from "@/components/ads/AdSlot";
 import { DISTRICTS } from "@/lib/districts";
 import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
+import NumberedPagination from "@/components/common/NumberedPagination";
 
 const PRIORITY_DISTRICTS = [
   { slug: "all", name_en: "All Districts", name_ta: "அனைத்து மாவட்டங்கள்" },
@@ -32,6 +33,12 @@ export default function HolidayAlerts({ initialPosts = [], targetDistrict = null
 
   const [selectedDistrict, setSelectedDistrict] = useState(targetDistrict ? targetDistrict.slug : "all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 8;
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedDistrict, searchQuery]);
 
   const filteredPosts = useMemo(() => {
     return initialPosts.filter((post) => {
@@ -271,11 +278,26 @@ export default function HolidayAlerts({ initialPosts = [], targetDistrict = null
                 </Link>
               </div>
             ) : (
+              <>
+                <div id="holiday-feed-top" className="scroll-mt-6" />
               <div className="space-y-4">
-                {filteredPosts.map((post) => (
+                {filteredPosts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((post) => (
                   <PostCard key={post.id || post.slug} post={post} />
                 ))}
               </div>
+
+              {filteredPosts.length > 0 && (
+                <NumberedPagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(filteredPosts.length / PAGE_SIZE) || 1}
+                  totalItems={filteredPosts.length}
+                  itemsPerPage={PAGE_SIZE}
+                  onPageChange={setCurrentPage}
+                  scrollTargetId="holiday-feed-top"
+                  itemLabel={{ en: "holiday alerts", ta: "விடுமுறை அறிவிப்புகள்" }}
+                />
+              )}
+              </>
             )}
 
             <AdSlot placement="feed" className="w-full" />

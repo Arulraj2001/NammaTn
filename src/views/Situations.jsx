@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import dynamic from "next/dynamic";
 import { supabase } from "@/api/supabaseClient";
+import NumberedPagination from "@/components/common/NumberedPagination";
 
 const LocationPickerMap = dynamic(() => import("@/components/media/LocationPickerMap"), { ssr: false });
 
@@ -59,6 +60,8 @@ export default function Situations({ initialSituations = [] }) {
   });
   const [showForm, setShowForm] = useState(false);
   const [filterDistrict, setFilterDistrict] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 8;
   const [form, setForm] = useState({
     situation_type: "eb_shutdown", title: "", details: "",
     district_slug: "", district_name: "", area_slug: "", area_name: "",
@@ -79,8 +82,8 @@ export default function Situations({ initialSituations = [] }) {
   const { data: situations = [], isLoading } = useQuery({
     queryKey: ["situations", filterDistrict],
     queryFn: () => filterDistrict
-      ? base44.entities.SituationUpdate.filter({ district_slug: filterDistrict, status: "active" }, "-created_date", 30)
-      : getActiveSituations(30),
+      ? base44.entities.SituationUpdate.filter({ district_slug: filterDistrict, status: "active" }, "-created_date", 100)
+      : getActiveSituations(100),
     initialData: !filterDistrict ? initialSituations : undefined,
   });
 
@@ -225,17 +228,19 @@ export default function Situations({ initialSituations = [] }) {
       )}
 
       <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-        <button onClick={() => setFilterDistrict("")}
+        <button onClick={() => { setFilterDistrict(""); setCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl text-xs font-medium flex-shrink-0 transition-all ${!filterDistrict ? "bg-yellow-500 text-white" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"}`}>
           {T("All", "அனைத்தும்")}
         </button>
         {DISTRICTS.slice(0, 8).map(d => (
-          <button key={d.slug} onClick={() => setFilterDistrict(d.slug)}
+          <button key={d.slug} onClick={() => { setFilterDistrict(d.slug); setCurrentPage(1); }}
             className={`px-3 py-1.5 rounded-xl text-xs font-medium flex-shrink-0 transition-all ${filterDistrict === d.slug ? "bg-yellow-500 text-white" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"}`}>
             {T(d.name_en, d.name_ta)}
           </button>
         ))}
       </div>
+
+      <div id="situations-feed-top" className="scroll-mt-6" />
 
       {isLoading ? (
         <div className="space-y-3">{Array(4).fill(0).map((_, i) => <div key={i} className="h-24 bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse" />)}</div>
@@ -246,7 +251,23 @@ export default function Situations({ initialSituations = [] }) {
           <p className="text-xs text-slate-400 mt-1">{T("Check again soon or report an active situation.", "சீக்கிரம் மீண்டும் சரிபார்க்கவும் அல்லது ஒரு செயலில் உள்ள நிலைமையை புகாரளிக்கவும்.")}</p>
         </div>
       ) : (
-        <div className="space-y-3">{situations.map(s => <SituationCard key={s.id} item={s} />)}</div>
+        <div className="space-y-3">
+          {situations.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(s => (
+            <SituationCard key={s.id} item={s} />
+          ))}
+        </div>
+      )}
+
+      {situations.length > 0 && (
+        <NumberedPagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(situations.length / PAGE_SIZE) || 1}
+          totalItems={situations.length}
+          itemsPerPage={PAGE_SIZE}
+          onPageChange={setCurrentPage}
+          scrollTargetId="situations-feed-top"
+          itemLabel={{ en: "situations", ta: "நிலைமைகள்" }}
+        />
       )}
     </div>
     </div>

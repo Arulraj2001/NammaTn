@@ -68,7 +68,7 @@ async function fetchActiveElectricityPosts() {
       .eq('status', 'active')
       .gte('created_date', fortyEightHoursAgo)
       .order('created_date', { ascending: false })
-      .limit(40);
+      .limit(100);
 
     if (error || !data) return [];
     return data;

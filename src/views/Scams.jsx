@@ -17,6 +17,7 @@ import { useAuthModal } from "@/context/AuthModalContext";
 import dynamic from "next/dynamic";
 import { supabase } from "@/api/supabaseClient";
 import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
+import NumberedPagination from "@/components/common/NumberedPagination";
 
 const LocationPickerMap = dynamic(() => import("@/components/media/LocationPickerMap"), { ssr: false });
 
@@ -63,6 +64,8 @@ export default function Scams({ initialScams = [] }) {
 
   const [showForm, setShowForm] = useState(false);
   const [filterDistrict, setFilterDistrict] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 8;
   const [form, setForm] = useState({
     title: "", description: "", scam_type: "fake_job",
     district_slug: "", district_name: "", area_slug: "", area_name: "",
@@ -82,8 +85,8 @@ export default function Scams({ initialScams = [] }) {
   const { data: scams = [], isLoading } = useQuery({
     queryKey: ["scams", filterDistrict],
     queryFn: () => filterDistrict
-      ? base44.entities.ScamAlert.filter({ status: "active", district_slug: filterDistrict }, "-created_date", 40)
-      : getActiveScams(40),
+      ? base44.entities.ScamAlert.filter({ status: "active", district_slug: filterDistrict }, "-created_date", 100)
+      : getActiveScams(100),
     initialData: filterDistrict ? undefined : initialScams,
     staleTime: 300_000,
   });
@@ -237,17 +240,19 @@ export default function Scams({ initialScams = [] }) {
       )}
 
       <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-        <button onClick={() => setFilterDistrict("")}
+        <button onClick={() => { setFilterDistrict(""); setCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl text-xs font-medium flex-shrink-0 transition-all ${!filterDistrict ? "bg-red-600 text-white" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"}`}>
           {T("All", "அனைத்தும்")}
         </button>
         {DISTRICTS.slice(0, 7).map(d => (
-          <button key={d.slug} onClick={() => setFilterDistrict(d.slug)}
+          <button key={d.slug} onClick={() => { setFilterDistrict(d.slug); setCurrentPage(1); }}
             className={`px-3 py-1.5 rounded-xl text-xs font-medium flex-shrink-0 transition-all ${filterDistrict === d.slug ? "bg-red-600 text-white" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"}`}>
             {T(d.name_en, d.name_ta)}
           </button>
         ))}
       </div>
+
+      <div id="scams-feed-top" className="scroll-mt-6" />
 
       {isLoading ? (
         <div className="space-y-3">{Array(4).fill(0).map((_, i) => <div key={i} className="h-24 bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse" />)}</div>
@@ -258,7 +263,23 @@ export default function Scams({ initialScams = [] }) {
           <p className="text-xs text-slate-400 mt-1">{T("Report suspicious activity to warn others in your community.", "உங்கள் சமுதாயத்தில் மற்றவர்களை எச்சரிக்க சந்தேகமான நடவடிக்கையை புகாரளிக்கவும்.")}</p>
         </div>
       ) : (
-        <div className="space-y-3">{scams.map(s => <ScamCard key={s.id} item={s} />)}</div>
+        <div className="space-y-3">
+          {scams.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(s => (
+            <ScamCard key={s.id} item={s} />
+          ))}
+        </div>
+      )}
+
+      {scams.length > 0 && (
+        <NumberedPagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(scams.length / PAGE_SIZE) || 1}
+          totalItems={scams.length}
+          itemsPerPage={PAGE_SIZE}
+          onPageChange={setCurrentPage}
+          scrollTargetId="scams-feed-top"
+          itemLabel={{ en: "scam alerts", ta: "மோசடி எச்சரிக்கைகள்" }}
+        />
       )}
 
       {/* Universal SEO Cross-Links */}

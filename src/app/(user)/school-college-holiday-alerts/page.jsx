@@ -68,7 +68,7 @@ async function fetchActiveHolidayAlertPosts() {
       .eq('status', 'active')
       .gte('created_date', fortyEightHoursAgo)
       .order('created_date', { ascending: false })
-      .limit(30);
+      .limit(100);
 
     if (error || !data) return [];
     return data;
