@@ -94,6 +94,8 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="VizhiTN" />
+        <meta name="twitter:site" content="@VizhiTN" />
+        <meta name="twitter:creator" content="@VizhiTN" />
         {/* Geo targeting — Tamil Nadu, India */}
         <meta name="geo.region" content="IN-TN" />
         <meta name="geo.placename" content="Tamil Nadu, India" />
