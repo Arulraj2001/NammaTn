@@ -1,154 +1,81 @@
 import React, { useState } from "react";
-import { Globe, Zap, ShieldAlert, FileText, MessageSquare, CreditCard, Heart, BookOpen, ArrowRight, ExternalLink, Copy, Check } from "lucide-react";
-import { Link } from "@/lib/router-compat";
+import { Globe, Zap, ShieldAlert, FileText, MessageSquare, CreditCard, Heart, BookOpen, ArrowRight, ExternalLink, Copy, Check, Building2 } from "lucide-react";
+import Link from "next/link";
+import { getAllPortals } from "@/lib/awarenessServer";
 
-// Real TN government portals with verified URLs
-const PORTALS = [
-  {
-    id: "esevai",
-    icon: Globe,
-    color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
-    name_en: "TN e-Sevai Portal",
-    name_ta: "TN e-சேவை இணையதளம்",
-    desc_en: "150+ government e-services online",
-    desc_ta: "150+ அரசு இ-சேவைகள் ஆன்லைனில்",
-    url: "https://www.tnesevai.tn.gov.in",
-  },
-  {
-    id: "tneb",
-    icon: Zap,
-    color: "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400",
-    name_en: "TANGEDCO / TNEB",
-    name_ta: "TANGEDCO / மின்சார வாரியம்",
-    desc_en: "Bill payment, new connections & complaints",
-    desc_ta: "கட்டண செலுத்துதல், புதிய இணைப்பு & புகார்கள்",
-    url: "https://www.tnebltd.org",
-  },
-  {
-    id: "police",
-    icon: ShieldAlert,
-    color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
-    name_en: "TN Police e-Services",
-    name_ta: "TN காவல்துறை இ-சேவைகள்",
-    desc_en: "FIR filing, character certificate, complaints",
-    desc_ta: "FIR பதிவு, நடத்தை சான்றிதழ், புகார்கள்",
-    url: "https://eservices.tnpolice.gov.in",
-  },
-  {
-    id: "ration",
-    icon: CreditCard,
-    color: "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
-    name_en: "TN PDS — Ration Card",
-    name_ta: "TN PDS — குடும்ப அட்டை",
-    desc_en: "Ration card services, PDS status & updates",
-    desc_ta: "குடும்ப அட்டை சேவைகள், PDS நிலை",
-    url: "https://www.tnpds.gov.in",
-  },
-  {
-    id: "cmchis",
-    icon: Heart,
-    color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
-    name_en: "CMCHIS Health Portal",
-    name_ta: "CMCHIS சுகாதார இணையதளம்",
-    desc_en: "Free health insurance up to ₹5 lakh/year",
-    desc_ta: "ஆண்டுக்கு ₹5 லட்சம் வரை இலவச காப்பீடு",
-    url: "https://www.cmchis.com",
-  },
-  {
-    id: "rti",
-    icon: FileText,
-    color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
-    name_en: "RTI Online Portal",
-    name_ta: "RTI ஆன்லைன் இணையதளம்",
-    desc_en: "File Right to Information applications online",
-    desc_ta: "தகவல் உரிமை விண்ணப்பங்களை ஆன்லைனில்",
-    url: "https://rtionline.gov.in",
-  },
-  {
-    id: "grievance",
-    icon: MessageSquare,
-    color: "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
-    name_en: "CM Grievance — CMS",
-    name_ta: "முதலமைச்சர் புகார் மையம்",
-    desc_en: "Public grievances & online complaint tracking",
-    desc_ta: "பொது புகார்கள் & ஆன்லைன் கண்காணிப்பு",
-    url: "https://cms.tn.gov.in",
-  },
-  {
-    id: "myscheme",
-    icon: BookOpen,
-    color: "bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400",
-    name_en: "myScheme — Scheme Finder",
-    name_ta: "myScheme — திட்ட தேடல்",
-    desc_en: "Discover all govt schemes by eligibility",
-    desc_ta: "தகுதியின்படி அரசு திட்டங்களை கண்டறியுங்கள்",
-    url: "https://www.myscheme.gov.in",
-  },
-];
+const PORTAL_ICONS = {
+  "Government Services": Globe,
+  "Utilities": Zap,
+  "Police & Public Safety": ShieldAlert,
+  "Healthcare": Heart,
+  "Rights & Transparency": FileText,
+  "Grievance Redressal": MessageSquare,
+  "Municipal Services": Building2,
+};
+
+const COLOR_MAP = {
+  "Government Services": "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
+  "Utilities": "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
+  "Police & Public Safety": "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
+  "Healthcare": "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
+  "Rights & Transparency": "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400",
+  "Grievance Redressal": "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400",
+  "Municipal Services": "bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400",
+};
 
 export default function PortalsSection({ lang = "en" }) {
-  const T = (en, ta) => lang === "ta" ? ta : en;
-  const [copiedId, setCopiedId] = useState(null);
-
-  const handleCopy = (url, id) => {
-    navigator.clipboard.writeText(url).then(() => {
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 2000);
-    });
-  };
+  const T = (en, ta) => (lang === "ta" ? ta : en);
+  const portals = getAllPortals().slice(0, 8);
 
   return (
     <section id="portals" className="mb-10">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-          <span className="text-blue-500">🔗</span>
-          {T("Official Links", "அதிகாரப்பூர்வ இணைப்புகள்")}
-        </h2>
+        <div>
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+            <span className="text-blue-500">🔗</span>
+            {T("Official Government Portals", "அதிகாரப்பூர்வ அரசு இணையதளங்கள்")}
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            {T("Verified .gov.in e-services for certificates, electricity, police, and grievances", "சான்றிதழ்கள், மின்வாரியம், காவல் மற்றும் குறைதீர்ப்பு இணையதளங்கள்")}
+          </p>
+        </div>
         <Link
-          to="/awareness/portals"
-          className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-medium"
+          href="/awareness/portals"
+          className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold flex-shrink-0"
         >
           {T("View all portals", "அனைத்து இணையதளங்கள்")} <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-        {PORTALS.map((portal) => {
-          const Icon = portal.icon;
+        {portals.map((portal) => {
+          const Icon = PORTAL_ICONS[portal.category_en] || Globe;
+          const colorClass = COLOR_MAP[portal.category_en] || "bg-blue-100 text-blue-600";
+          const name = T(portal.name_en, portal.name_ta);
+
           return (
             <div
-              key={portal.id}
-              className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-4 hover:shadow-md transition-all flex flex-col items-center text-center"
+              key={portal.slug}
+              className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 rounded-2xl p-4 hover:shadow-md transition-all flex flex-col items-center text-center group"
             >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2.5 ${portal.color}`}>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2.5 ${colorClass} group-hover:scale-105 transition-transform`}>
                 <Icon className="w-5 h-5" />
               </div>
-              <h3 className="text-xs font-semibold text-slate-800 dark:text-white mb-1 line-clamp-2 leading-snug">
-                {T(portal.name_en, portal.name_ta)}
+              <h3 className="text-xs font-bold text-slate-800 dark:text-white mb-1 line-clamp-2 leading-snug">
+                <Link href={`/awareness/portal/${portal.slug}`}>
+                  {name}
+                </Link>
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-3 hidden sm:block">
-                {T(portal.desc_en, portal.desc_ta)}
-              </p>
-              <div className="flex gap-1.5 mt-auto w-full">
+              <div className="flex gap-1.5 mt-auto w-full pt-2">
                 <a
                   href={portal.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1 border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg py-1.5 text-xs font-medium transition-colors"
+                  className="w-full flex items-center justify-center gap-1 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg py-1.5 text-xs font-bold transition-colors"
                 >
                   <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                  <span className="hidden sm:inline">{T("Open", "திற")}</span>
+                  <span>{T("Open", "திற")}</span>
                 </a>
-                <button
-                  onClick={() => handleCopy(portal.url, portal.id)}
-                  className="flex items-center justify-center border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg px-2 py-1.5 text-xs transition-colors"
-                  title="Copy link"
-                >
-                  {copiedId === portal.id
-                    ? <Check className="w-3 h-3 text-green-500" />
-                    : <Copy className="w-3 h-3" />
-                  }
-                </button>
               </div>
             </div>
           );
@@ -157,5 +84,3 @@ export default function PortalsSection({ lang = "en" }) {
     </section>
   );
 }
-
-export { PORTALS };
