@@ -11,6 +11,6 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const initialQuestions = await getLatestQuestions(40);
+  const initialQuestions = await getLatestQuestions(100);
   return <><Breadcrumbs items={[{ name: 'Ask Local', href: '/ask' }]} /><AskLocal initialQuestions={initialQuestions} /></>;
 }
