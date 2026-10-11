@@ -19,7 +19,6 @@ const orgSchema = {
     'https://www.youtube.com/@VizhiTN',
     'https://www.linkedin.com/company/vizhitn',
     'https://medium.com/@vizhitn',
-    'https://www.koo.com/VizhiTN',
   ],
   description: 'Tamil Nadu civic proof platform — citizens report power cuts, road problems, water issues, and civic complaints across all 38 TN districts.',
   foundingDate: '2026',
