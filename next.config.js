@@ -36,12 +36,14 @@ const nextConfig = {
       { protocol: 'https', hostname: '*.thehindu.com' },
       { protocol: 'https', hostname: '*.newindianexpress.com' },
       { protocol: 'https', hostname: '*.dtnext.in' },
+      { protocol: 'https', hostname: 'api.producthunt.com' },
+      { protocol: 'https', hostname: '*.producthunt.com' },
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'localhost' },
     ],
     minimumCacheTTL: 31536000, // 1 year — immutable optimised images
-    dangerouslyAllowSVG: false,
-    contentSecurityPolicy: "default-src 'none'; img-src 'self' data: blob:;",
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'none'; img-src 'self' data: blob: https:;",
   },
 
   // ── Security + SEO HTTP headers ──────────────────────────────────────────
@@ -100,7 +102,7 @@ const nextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://news.google.com https://*.clarity.ms https://pl31335206.profitableratecpmnetwork.com https://pl31335207.profitableratecpmnetwork.com https://quge5.com https://3nbf4.com https://thedirecthor.com https://portalfluently.com https://6opo.com https://fizzyacerbitymellow.com https://auqot.com https://ekhay.com https://b3mny.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://news.google.com",
               "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https://hzgrzcablefquddisqkf.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://vizhitn.in https://www.vizhitn.in https://*.vizhitn.in https://*.bing.com https://*.bing.net https://*.clarity.ms https://c.bing.com https://unpkg.com https://*.tile.openstreetmap.org https://*.tn.gov.in https://*.gov.in https://pl31335206.profitableratecpmnetwork.com https://pl31335207.profitableratecpmnetwork.com https://3nbf4.com https://image.pollinations.ai https://quge5.com https://news.google.com https://thedirecthor.com https://portalfluently.com https://6opo.com https://fizzyacerbitymellow.com https://exemplarfederallithe.com https://workdeadlinededicate.com",
+              "img-src 'self' data: blob: https://hzgrzcablefquddisqkf.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://vizhitn.in https://www.vizhitn.in https://*.vizhitn.in https://*.bing.com https://*.bing.net https://*.clarity.ms https://c.bing.com https://unpkg.com https://*.tile.openstreetmap.org https://*.tn.gov.in https://*.gov.in https://pl31335206.profitableratecpmnetwork.com https://pl31335207.profitableratecpmnetwork.com https://3nbf4.com https://image.pollinations.ai https://quge5.com https://news.google.com https://thedirecthor.com https://portalfluently.com https://6opo.com https://fizzyacerbitymellow.com https://exemplarfederallithe.com https://workdeadlinededicate.com https://api.producthunt.com https://*.producthunt.com https://*.thgim.com https://th-i.thgim.com https://*.thehindu.com https://*.newindianexpress.com https://*.dtnext.in",
               "connect-src 'self' https://hzgrzcablefquddisqkf.supabase.co wss://hzgrzcablefquddisqkf.supabase.co https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://news.google.com https://*.clarity.ms https://c.bing.com https://translate.googleapis.com https://api.mymemory.translated.net https://api.indexnow.org https://www.google.com https://pl31335206.profitableratecpmnetwork.com https://pl31335207.profitableratecpmnetwork.com https://3nbf4.com https://quge5.com https://thedirecthor.com https://portalfluently.com https://6opo.com https://fizzyacerbitymellow.com https://exemplarfederallithe.com https://workdeadlinededicate.com https://auqot.com https://ekhay.com https://b3mny.com",
               "frame-src 'self' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://news.google.com https://pl31335206.profitableratecpmnetwork.com https://pl31335207.profitableratecpmnetwork.com https://3nbf4.com https://quge5.com https://thedirecthor.com https://6opo.com https://fizzyacerbitymellow.com https://auqot.com https://ekhay.com https://b3mny.com https://exemplarfederallithe.com https://workdeadlinededicate.com",
               "object-src 'none'",
