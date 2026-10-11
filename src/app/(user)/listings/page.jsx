@@ -10,6 +10,6 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const listings = await getPublicLocalListings();
+  const listings = await getPublicLocalListings(100);
   return <><Breadcrumbs items={[{ name: 'Local Services', href: '/listings' }]} /><LocalListings initialListings={listings} /></>;
 }
