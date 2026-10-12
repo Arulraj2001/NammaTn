@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #071224;
+      font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
+      position: relative;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 80px 60px 100px 60px;
+    }
+
+    /* Ambient Background Glows */
+    .glow-top {
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.35) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .glow-bottom {
+      position: absolute;
+      bottom: -150px;
+      right: -100px;
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Top Brand Header */
+    .header {
+      position: relative;
+      z-index: 10;
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .logo-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 900;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+    }
+    .brand-title {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .brand-sub {
+      font-size: 16px;
+      color: #94a3b8;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .live-badge {
+      background: #dc2626;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 10px 24px;
+      border-radius: 9999px;
+      letter-spacing: 2px;
+      box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .live-dot {
+      width: 12px;
+      height: 12px;
+      background: #ffffff;
+      border-radius: 50%;
+    }
+
+    /* Main Digest Title & Date */
+    .title-box {
+      margin-top: 20px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid rgba(56, 189, 248, 0.3);
+      border-radius: 28px;
+      padding: 36px 40px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    }
+    .digest-tag {
+      color: #38bdf8;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .main-headline {
+      font-size: 48px;
+      font-weight: 900;
+      line-height: 1.3;
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+    .date-row {
+      font-size: 20px;
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
+    /* Civic Highlights List */
+    .alerts-container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: 30px;
+      margin-bottom: 30px;
+    }
+    .alert-card {
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-left: 10px solid #2563eb;
+      border-radius: 20px;
+      padding: 28px 32px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+    .alert-card.warn {
+      border-left-color: #f59e0b;
+    }
+    .alert-card.danger {
+      border-left-color: #ef4444;
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .card-category {
+      font-size: 19px;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: 1px;
+    }
+    .card-district {
+      font-size: 18px;
+      font-weight: 800;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 14px;
+      border-radius: 8px;
+    }
+    .card-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.35;
+      color: #f8fafc;
+      margin-bottom: 10px;
+    }
+    .card-detail {
+      font-size: 20px;
+      font-weight: 600;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* Helpline Footer Bar */
+    .helpline-box {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2px solid rgba(245, 158, 11, 0.4);
+      border-radius: 24px;
+      padding: 28px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .helpline-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fbbf24;
+      margin-bottom: 6px;
+    }
+    .helpline-pills {
+      display: flex;
+      gap: 16px;
+    }
+    .hl-pill {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px 18px;
+      border-radius: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .hl-pill span {
+      color: #38bdf8;
+    }
+
+    /* Bottom Outro Bar */
+    .footer-bar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    .footer-url {
+      font-size: 26px;
+      font-weight: 900;
+      color: #38bdf8;
+      letter-spacing: 0.5px;
+    }
+    .footer-cta {
+      font-size: 22px;
+      font-weight: 800;
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-top"></div>
+  <div class="glow-bottom"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand-row">
+      <div class="brand-left">
+        <div class="logo-badge">✓</div>
+        <div>
+          <div class="brand-title">VizhiTN</div>
+          <div class="brand-sub">விழி தமிழ்நாடு | மக்கள் களம்</div>
+        </div>
+      </div>
+      <div class="live-badge">
+        <span class="live-dot"></span> DAILY DIGEST
+      </div>
+    </div>
+
+    <div class="title-box">
+      <div class="digest-tag">⚡ TODAY'S CIVIC ROUNDUP</div>
+      <h1 class="main-headline">{{MAIN_HEADLINE_TA}}</h1>
+      <div class="date-row">📅 {{DATE_TEXT}} | 38 மாவட்ட நேரடி அப்டேட்ஸ்</div>
+    </div>
+  </div>
+
+  <!-- 3 Key Alerts List -->
+  <div class="alerts-container">
+    {{ALERTS_CARDS_HTML}}
+  </div>
+
+  <!-- Helplines Bar -->
+  <div class="helpline-box">
+    <div>
+      <div class="helpline-title">24x7 முக்கிய அரசு உதவி எண்கள்</div>
+      <div style="font-size: 16px; color: #94a3b8;">அவசர புகார் மற்றும் தகவல் பெற</div>
+    </div>
+    <div class="helpline-pills">
+      <div class="hl-pill">மின்சாரம்: <span>1912</span></div>
+      <div class="hl-pill">மாநகராட்சி: <span>1913</span></div>
+      <div class="hl-pill">சைபர் கிரைம்: <span>1930</span></div>
+    </div>
+  </div>
+
+  <!-- Outro Footer -->
+  <div class="footer-bar">
+    <div class="footer-url">🌐 vizhitn.in</div>
+    <div class="footer-cta">முழு விவரங்களுக்கு Follow @vizhitn</div>
+  </div>
+</body>
+</html>
