@@ -1,5 +1,5 @@
 // scripts/youtube/engine/youtube-client.mjs
-// Resumable YouTube Data API v3 uploader with OAuth2 auto-refresh
+// Resumable YouTube Data API v3 uploader with OAuth2 auto-refresh & 2026 Synthetic Media disclosure
 
 import fs from 'fs';
 
@@ -36,15 +36,17 @@ async function getFreshAccessToken() {
 
 /**
  * Uploads a video to YouTube using the official Resumable Upload protocol
+ * Compliant with 2026 AI disclosure standards (containsSyntheticMedia: true)
+ *
  * @param {Object} params
- * @param {string} params.videoFilePath - Local path to MP4
- * @param {string} params.title - YouTube video title
- * @param {string} params.description - YouTube video description
- * @param {Array<string>} params.tags - SEO tags
- * @param {string} [params.categoryId='25'] - 25 = News & Politics, 27 = Education
+ * @param {string} params.videoFilePath
+ * @param {string} params.title
+ * @param {string} params.description
+ * @param {Array<string>} params.tags
+ * @param {string} [params.categoryId='25']
  * @param {'public'|'unlisted'|'private'} [params.privacyStatus='public']
  * @param {boolean} [params.isShort=false]
- * @returns {Promise<{ videoId: string, videoUrl: string }>}
+ * @returns {Promise<{ videoId: string, videoUrl: string, dryRun: boolean }>}
  */
 export async function uploadToYouTube({
   videoFilePath,
@@ -62,7 +64,6 @@ export async function uploadToYouTube({
   const stats = fs.statSync(videoFilePath);
   const fileSize = stats.size;
 
-  // Check credentials
   const hasCreds = process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET && process.env.YOUTUBE_REFRESH_TOKEN;
 
   if (!hasCreds) {
@@ -71,6 +72,7 @@ export async function uploadToYouTube({
     console.log(`Title: ${title}`);
     console.log(`Tags: ${tags.join(', ')}`);
     console.log(`Privacy: ${privacyStatus}`);
+    console.log(`AI Disclosure: Synthetic Voice & Visuals Tagged (2026 Policy Compliant)`);
     console.log('\nTo enable automated upload, set the following repository secrets:');
     console.log('- YOUTUBE_CLIENT_ID');
     console.log('- YOUTUBE_CLIENT_SECRET');
@@ -85,7 +87,7 @@ export async function uploadToYouTube({
   console.log('[YOUTUBE] Requesting fresh OAuth2 token...');
   const accessToken = await getFreshAccessToken();
 
-  // 1. Initialize Resumable Upload Session
+  // 1. Initialize Resumable Upload Session with 2026 Synthetic Media Tag
   const metadata = {
     snippet: {
       title,
@@ -97,11 +99,12 @@ export async function uploadToYouTube({
     },
     status: {
       privacyStatus,
-      selfDeclaredMadeForKids: false
+      selfDeclaredMadeForKids: false,
+      containsSyntheticMedia: true // 2026 YouTube Mandatory Disclosure for Realistic AI Media
     }
   };
 
-  console.log('[YOUTUBE] Initializing resumable session...');
+  console.log('[YOUTUBE] Initializing resumable session with 2026 AI disclosure tag...');
   const initRes = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
     method: 'POST',
     headers: {

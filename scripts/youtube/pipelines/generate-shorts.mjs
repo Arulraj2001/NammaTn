@@ -1,13 +1,15 @@
 // scripts/youtube/pipelines/generate-shorts.mjs
-// Daily Civic Shorts Generator (1080x1920, 9:16, 45-55s)
+// Autonomous Conversational Spoken Tamil Daily Shorts Engine (3 Scenes, Ken Burns motion, Micro-TTS)
 
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { YOUTUBE_CONFIG } from '../config.mjs';
+import { normalizeAcronymsToSpokenTamil } from '../engine/tamil-phonetics.mjs';
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
-import { assembleShortsVideo, getAudioDuration } from '../engine/video-composer.mjs';
+import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video-composer.mjs';
+import { generateYouTubeSceneVisual } from '../engine/cloudflare-visuals.mjs';
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
 
 // Load .env.local if running in local environment
@@ -29,7 +31,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function main() {
   console.log('====================================================');
-  console.log('VizhiTN YouTube Automation — Daily Civic Short');
+  console.log('VizhiTN YouTube Automation — Conversational Spoken Tamil Short');
   console.log('====================================================');
 
   const isDryRun = process.argv.includes('--dry-run');
@@ -50,79 +52,132 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`[INFO] Found ${posts.length} alerts for today's short.`);
+  console.log(`[INFO] Sourced ${posts.length} alerts for today's conversational short.`);
 
-  // 2. Prepare date and text
   const now = new Date();
   const dateStr = now.toLocaleDateString('ta-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   const timeStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 
-  // 3. Build HTML alert cards
-  let alertsCardsHtml = '';
+  // 2. Draft Spoken Conversational Tamil Scripts for 3 Scenes
+  const firstPost = posts[0];
+  const firstArea = firstPost.area_name || firstPost.district_slug || 'தமிழ்நாடு';
+
+  const scene1Script = [
+    `ஹலோ மக்களே! இன்னைக்கு உங்க ஏரியால கரண்ட் கட் மற்றும் முக்கிய நிர்வாக அப்டேட்ஸ் இருக்கான்னு நோட் பண்ணிக்கோங்க!`
+  ];
+
+  const scene2Script = [];
   posts.forEach((p, idx) => {
+    const area = p.area_name || p.district_slug || 'பகுதி';
+    const cleanTitle = normalizeAcronymsToSpokenTamil(p.title_ta || p.title_en);
+    if (p.category_slug === 'electricity') {
+      scene2Script.push(`${area} ஏரியால பராமரிப்பு பணிகளுக்காக மின்சாரம் நிறுத்தம் செய்யப்படுது. போனை இப்போவே சார்ஜ் பண்ணி வெச்சுக்கோங்க மக்களே!`);
+    } else if (p.category_slug === 'water-sanitation') {
+      scene2Script.push(`${area} பகுதியில குடிநீர் குழாய் பராமரிப்பு வேலை நடக்குது. தண்ணிய முன்கூட்டியே பிடிச்சு வெச்சுக்கோங்க.`);
+    } else {
+      scene2Script.push(`அடுத்த முக்கிய தகவல்: ${cleanTitle}.`);
+    }
+  });
+
+  const scene3Script = [
+    `கரண்ட் கட் புகார்களுக்கு 1912 உதவி எண்ணையும், மாநகராட்சி புகார்களுக்கு 1913 எண்ணையும் உடனே அழைக்கலாம்.`,
+    `இந்த தகவலை உங்க பிரண்ட்ஸ்க்கு மறக்காம ஷேர் பண்ணுங்க, சப்ஸ்கிரைப் பண்ணிக்கோங்க!`
+  ];
+
+  // 3. Synthesize Audio for each scene with micro-chunk engine
+  console.log('[TTS] Synthesizing Scene 1 audio (Spoken Hook)...');
+  const s1AudioPath = path.join(outDir, `short_s1_audio_${Date.now()}.mp3`);
+  await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+  const s1Dur = getAudioDuration(s1AudioPath);
+
+  console.log('[TTS] Synthesizing Scene 2 audio (Conversational Breakdown)...');
+  const s2AudioPath = path.join(outDir, `short_s2_audio_${Date.now()}.mp3`);
+  await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+  const s2Dur = getAudioDuration(s2AudioPath);
+
+  console.log('[TTS] Synthesizing Scene 3 audio (Helplines & CTA)...');
+  const s3AudioPath = path.join(outDir, `short_s3_audio_${Date.now()}.mp3`);
+  await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+  const s3Dur = getAudioDuration(s3AudioPath);
+
+  console.log(`[AUDIO STATS] S1: ${s1Dur.toFixed(1)}s, S2: ${s2Dur.toFixed(1)}s, S3: ${s3Dur.toFixed(1)}s | Total: ${(s1Dur + s2Dur + s3Dur).toFixed(1)}s`);
+
+  // 4. Generate Visuals: Scene 1 FLUX Photo
+  const fluxPrompt = `Indian electric linesman technician in safety helmet working on power lines transformer post in Tamil Nadu Chennai city street, daytime documentary shot`;
+  const heroPhotoPath = path.join(outDir, `short_flux_hero_${Date.now()}.webp`);
+  let heroPhotoUrl = await generateYouTubeSceneVisual(fluxPrompt, heroPhotoPath, '9:16');
+  if (!heroPhotoUrl) {
+    heroPhotoUrl = 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1080&q=80';
+  }
+
+  // 5. Render Scene 1 Hook Frame
+  const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
+  let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
+  tplS1 = tplS1.replace('{{SCENE_PHOTO_SRC}}', heroPhotoUrl);
+  tplS1 = tplS1.replace('{{HOOK_HEADLINE_TA}}', `உங்க ஏரியால இன்னைக்கு கரண்ட் கட் இருக்கா?`);
+  tplS1 = tplS1.replace('{{DATE_TEXT}}', dateStr);
+
+  const s1FramePath = path.join(outDir, `short_s1_frame_${Date.now()}.png`);
+  renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
+
+  // 6. Render Scene 2 Breakdown Frame
+  let cardsHtml = '';
+  posts.forEach((p) => {
     const isWarn = p.urgency_level === 'high' || p.urgency_level === 'medium';
     const isDanger = p.urgency_level === 'critical';
     const cardClass = isDanger ? 'alert-card danger' : (isWarn ? 'alert-card warn' : 'alert-card');
-    const districtText = p.district_slug ? p.district_slug.toUpperCase() : 'TAMIL NADU';
-
-    alertsCardsHtml += `
+    cardsHtml += `
       <div class="${cardClass}">
         <div class="card-top">
-          <span class="card-category">⚡ ${p.category_slug ? p.category_slug.toUpperCase() : 'ALERT'}</span>
-          <span class="card-district">📍 ${districtText}</span>
+          <span class="cat-name">⚡ ${(p.category_slug || 'ALERT').toUpperCase()}</span>
+          <span class="dist-name">📍 ${(p.district_slug || 'TN').toUpperCase()}</span>
         </div>
         <div class="card-title">${p.title_ta || p.title_en}</div>
-        <div class="card-detail">${(p.content_ta || p.content_en || '').slice(0, 110)}...</div>
+        <div class="card-timing">நேரம்: காலை 9:00 முதல் மதியம் 2:00 வரை</div>
       </div>
     `;
   });
 
-  // 4. Fill HTML Template
-  const templatePath = path.resolve('scripts/youtube/templates/shorts/daily-digest-card.html');
-  let html = fs.readFileSync(templatePath, 'utf-8');
+  const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-2-breakdown.html');
+  let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
+  tplS2 = tplS2.replace('{{DIGEST_TITLE_TA}}', `இன்றைய முக்கிய நிர்வாக அறிவிப்புகள் (${timeStr})`);
+  tplS2 = tplS2.replace('{{ALERTS_CARDS_HTML}}', cardsHtml);
 
-  html = html.replace('{{MAIN_HEADLINE_TA}}', `இன்றைய முக்கிய தமிழ்நாடு நிர்வாக அப்டேட்ஸ் (${timeStr})`);
-  html = html.replace('{{DATE_TEXT}}', dateStr);
-  html = html.replace('{{ALERTS_CARDS_HTML}}', alertsCardsHtml);
+  const s2FramePath = path.join(outDir, `short_s2_frame_${Date.now()}.png`);
+  renderHtmlToImage(tplS2, s2FramePath, { width: 1080, height: 1920 });
 
-  // 5. Render 1080x1920 Frame
-  const framePngPath = path.join(outDir, `short_frame_${Date.now()}.png`);
-  console.log('[RENDERER] Rendering 1080x1920 9:16 frame...');
-  renderHtmlToImage(html, framePngPath, { width: 1080, height: 1920 });
-  console.log(`[RENDERER] Frame rendered: ${framePngPath}`);
+  // 7. Render Scene 3 Helpline Frame
+  const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
+  const tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
+  const s3FramePath = path.join(outDir, `short_s3_frame_${Date.now()}.png`);
+  renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
 
-  // 6. Generate Neural Tamil Voiceover Script & Audio
-  let voiceScript = `வணக்கம். விழி தமிழ்நாடு தினசரி மாவட்ட செய்தி சுருக்கம். `;
-  posts.forEach((p, idx) => {
-    voiceScript += `செய்தி ${idx + 1}: ${p.title_ta || p.title_en}. ${(p.content_ta || p.content_en || '').slice(0, 100)}. `;
-  });
-  voiceScript += `அவசர மின்தடை புகார்களுக்கு 1912, மாநகராட்சி உதவிக்கு 1913 அழையுங்கள். முழு விவரங்களுக்கு விழி டிஎன் டாட் இன் வலைத்தளத்தைப் பார்வையிடுங்கள்.`;
-
-  const audioPath = path.join(outDir, `short_audio_${Date.now()}.mp3`);
-  console.log('[TTS] Synthesizing Tamil neural voiceover (ta-IN-PallaviNeural)...');
-  await synthesizeSpeech(voiceScript, audioPath, {
-    voice: YOUTUBE_CONFIG.voices.tamilFemale,
-    rate: '+3%'
-  });
-  console.log(`[TTS] Audio synthesized: ${audioPath}`);
-
-  // 7. Calculate Duration
-  const duration = getAudioDuration(audioPath);
-  console.log(`[AUDIO] Voiceover duration: ${duration.toFixed(1)} seconds`);
-
-  // 8. Assemble 9:16 Shorts Video
+  // 8. Assemble Multi-Scene Video with Ken Burns Motion
   const videoOutputPath = path.join(outDir, `vizhitn_short_${Date.now()}.mp4`);
-  console.log('[COMPOSER] Assembling MP4 video with FFmpeg...');
-  assembleShortsVideo({
-    slideImagePath: framePngPath,
-    audioPath,
+  console.log('[COMPOSER] Assembling 3-Scene Video with Ken Burns Motion...');
+
+  const scenes = [
+    { imagePath: s1FramePath, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true },
+    { imagePath: s2FramePath, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: false },
+    { imagePath: s3FramePath, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: false }
+  ];
+
+  assembleMultiSceneShortsVideo({
+    scenes,
     outputPath: videoOutputPath
   });
-  console.log(`[COMPOSER] Video ready: ${videoOutputPath}`);
 
-  // 9. Upload to YouTube
-  const ytTitle = `TN Civic Updates Today | ${timeStr} Tamil Nadu Power, Water & Road Alerts #Shorts`;
-  const ytDesc = `Daily Tamil Nadu Civic & Emergency Roundup. Verified TANGEDCO power shutdown, Metrowater, CMRL transit alerts, and official government helplines.\n\n🌐 Read full reports and file complaints at: https://vizhitn.in\n\n#TamilNadu #TANGEDCO #Chennai #Coimbatore #VizhiTN #Shorts`;
+  console.log(`[COMPOSER] Video generated successfully: ${videoOutputPath}`);
+
+  // 9. Upload with 2026 AI Disclosure Flag
+  const ytTitle = `உங்க ஏரியால இன்னைக்கு கரண்ட் கட் இருக்கா? | TN Civic Alerts ${timeStr} #Shorts`;
+  const ytDesc = `Daily Tamil Nadu Civic & Emergency Updates in conversational spoken Tamil.\n\n` +
+    `⚡ TANGEDCO Minnalagam Helpline: 1912\n` +
+    `🏛️ Corporation Helpline: 1913\n` +
+    `🛡️ Cyber Crime: 1930\n\n` +
+    `🌐 Read full reports and file complaints at: https://vizhitn.in\n\n` +
+    `#TamilNadu #TANGEDCO #Chennai #Coimbatore #VizhiTN #Shorts #SpokenTamil`;
+
   const tags = ['Tamil Nadu', 'TANGEDCO', 'Chennai', 'Civic News', 'Minnalagam', 'Power Cut Today', 'VizhiTN', 'Shorts'];
 
   const uploadResult = await uploadToYouTube({
@@ -135,15 +190,15 @@ async function main() {
   });
 
   console.log('====================================================');
-  console.log('SHORT PIPELINE COMPLETED SUCCESSFULLY!');
+  console.log('CONVERSATIONAL SHORT GENERATED & PUBLISHED SUCCESSFULLY!');
   console.log('Video URL:', uploadResult.videoUrl);
   console.log('====================================================');
 
-  // Cleanup temporary frame & audio files (keep mp4)
-  try {
-    if (fs.existsSync(framePngPath)) fs.unlinkSync(framePngPath);
-    if (fs.existsSync(audioPath)) fs.unlinkSync(audioPath);
-  } catch {}
+  // Cleanup temporary frame & audio files (keep final mp4)
+  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath];
+  for (const t of temps) {
+    try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+  }
 }
 
 main().catch(err => {

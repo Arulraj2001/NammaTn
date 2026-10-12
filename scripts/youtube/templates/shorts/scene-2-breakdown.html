@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@700;800;900&family=Plus+Jakarta+Sans:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #071224;
+      font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
+      position: relative;
+      color: #ffffff;
+      padding: 90px 70px 100px 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .brand-title {
+      font-size: 38px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+    .badge-pill {
+      background: #2563eb;
+      color: #ffffff;
+      padding: 10px 24px;
+      border-radius: 9999px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .main-heading-box {
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      border-radius: 28px;
+      padding: 32px 36px;
+      margin-bottom: 36px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+    .sub-tag {
+      font-size: 20px;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+    }
+    .heading-text {
+      font-size: 46px;
+      font-weight: 900;
+      line-height: 1.3;
+      color: #f8fafc;
+    }
+
+    .alerts-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      margin-bottom: auto;
+    }
+    .alert-card {
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-left: 12px solid #2563eb;
+      border-radius: 22px;
+      padding: 32px 36px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+    .alert-card.warn {
+      border-left-color: #f59e0b;
+    }
+    .alert-card.danger {
+      border-left-color: #ef4444;
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .cat-name {
+      font-size: 22px;
+      font-weight: 900;
+      color: #38bdf8;
+      letter-spacing: 1px;
+    }
+    .dist-name {
+      font-size: 20px;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 6px 16px;
+      border-radius: 10px;
+      color: #e2e8f0;
+    }
+    .card-title {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.35;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+    .card-timing {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fbbf24;
+      line-height: 1.4;
+    }
+
+    .footer-ticker {
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 22px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 22px;
+      font-weight: 800;
+      color: #94a3b8;
+    }
+    .footer-ticker span {
+      color: #38bdf8;
+      font-weight: 900;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-bar">
+    <div class="brand-title">✓ VizhiTN | மக்கள் களம்</div>
+    <div class="badge-pill">TODAY'S DIGEST</div>
+  </div>
+
+  <div class="main-heading-box">
+    <div class="sub-tag">⚡ நேரடி நிலவரம்</div>
+    <div class="heading-text">{{DIGEST_TITLE_TA}}</div>
+  </div>
+
+  <div class="alerts-stack">
+    {{ALERTS_CARDS_HTML}}
+  </div>
+
+  <div class="footer-ticker">
+    <div>அதிகாரப்பூர்வ தகவல் & நேரடி புகார்</div>
+    <div>இணையதளம்: <span>vizhitn.in</span></div>
+  </div>
+</body>
+</html>

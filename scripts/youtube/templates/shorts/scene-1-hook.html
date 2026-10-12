@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@700;800;900&family=Plus+Jakarta+Sans:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #071224;
+      font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
+      position: relative;
+      color: #ffffff;
+    }
+
+    .bg-photo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1080px;
+      height: 1920px;
+      object-fit: cover;
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1080px;
+      height: 1920px;
+      background: linear-gradient(180deg, rgba(7, 18, 36, 0.75) 0%, rgba(7, 18, 36, 0.4) 35%, rgba(7, 18, 36, 0.95) 75%, #071224 100%);
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      height: 1920px;
+      padding: 90px 70px 110px 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: #2563eb;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 900;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    }
+    .logo-text {
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .live-alert-pill {
+      background: #dc2626;
+      color: #ffffff;
+      padding: 12px 28px;
+      border-radius: 9999px;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      box-shadow: 0 0 30px rgba(220, 38, 38, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pulse-dot {
+      width: 14px;
+      height: 14px;
+      background: #ffffff;
+      border-radius: 50%;
+    }
+
+    .hook-center {
+      text-align: center;
+      margin-top: auto;
+      margin-bottom: 80px;
+    }
+    .hook-tag {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.15);
+      border: 2px solid #38bdf8;
+      color: #38bdf8;
+      padding: 10px 30px;
+      border-radius: 9999px;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 28px;
+      text-transform: uppercase;
+    }
+    .hook-headline {
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #ffffff;
+      text-shadow: 0 6px 30px rgba(0, 0, 0, 0.9);
+      margin-bottom: 24px;
+    }
+    .hook-sub {
+      font-size: 32px;
+      font-weight: 800;
+      color: #fbbf24;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .bottom-meta {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 24px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .date-text {
+      font-size: 24px;
+      font-weight: 800;
+      color: #cbd5e1;
+    }
+    .swipe-prompt {
+      font-size: 24px;
+      font-weight: 900;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+  <img class="bg-photo" src="{{SCENE_PHOTO_SRC}}" alt="Hero Scene" />
+  <div class="overlay"></div>
+
+  <div class="container">
+    <div class="top-bar">
+      <div class="logo-badge">
+        <div class="logo-icon">✓</div>
+        <div class="logo-text">VizhiTN</div>
+      </div>
+      <div class="live-alert-pill">
+        <div class="pulse-dot"></div> LIVE ALERT
+      </div>
+    </div>
+
+    <div class="hook-center">
+      <div class="hook-tag">⚡ இன்று உஷார் மக்களே!</div>
+      <h1 class="hook-headline">{{HOOK_HEADLINE_TA}}</h1>
+      <p class="hook-sub">38 மாவட்ட முக்கிய நிர்வாக செய்திகள்</p>
+    </div>
+
+    <div class="bottom-meta">
+      <div class="date-text">📅 {{DATE_TEXT}}</div>
+      <div class="swipe-prompt">முழு விவரங்கள் உள்ளே ➔</div>
+    </div>
+  </div>
+</body>
+</html>

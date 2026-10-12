@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@700;800;900&family=Plus+Jakarta+Sans:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #071224;
+      font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
+      position: relative;
+      color: #ffffff;
+      padding: 90px 70px 100px 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-box {
+      width: 60px;
+      height: 60px;
+      background: #2563eb;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 900;
+    }
+    .brand-name {
+      font-size: 38px;
+      font-weight: 900;
+    }
+
+    .hero-box {
+      text-align: center;
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+    .badge-alert {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      border: 2px solid #f59e0b;
+      color: #fbbf24;
+      padding: 10px 32px;
+      border-radius: 9999px;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+    .hero-title {
+      font-size: 56px;
+      font-weight: 900;
+      line-height: 1.3;
+      color: #ffffff;
+      margin-bottom: 16px;
+    }
+    .hero-desc {
+      font-size: 26px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .helpline-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .hl-card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 30px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+    .hl-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .hl-dept {
+      font-size: 26px;
+      font-weight: 900;
+      color: #f1f5f9;
+    }
+    .hl-sub {
+      font-size: 20px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .hl-number-btn {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      font-size: 36px;
+      font-weight: 900;
+      padding: 14px 34px;
+      border-radius: 18px;
+      letter-spacing: 2px;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+    }
+    .hl-card.emergency .hl-number-btn {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+    }
+
+    .cta-container {
+      background: linear-gradient(135deg, #1e3a8a, #0f172a);
+      border: 2px solid #38bdf8;
+      border-radius: 28px;
+      padding: 36px 40px;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+    .cta-url {
+      font-size: 44px;
+      font-weight: 900;
+      color: #38bdf8;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .cta-sub {
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-header">
+    <div class="brand-logo">
+      <div class="logo-box">✓</div>
+      <div class="brand-name">VizhiTN</div>
+    </div>
+    <div style="font-size: 22px; font-weight: 800; color: #fbbf24;">24x7 HELPLINES</div>
+  </div>
+
+  <div class="hero-box">
+    <div class="badge-alert">📞 அரசு உதவி எண்கள்</div>
+    <h1 class="hero-title">அவசர உதவி மற்றும் நேரடி புகார்</h1>
+    <p class="hero-desc">உடனடி நடவடிக்கை எடுக்க அதிகாரப்பூர்வ எண்கள்</p>
+  </div>
+
+  <div class="helpline-grid">
+    <div class="hl-card emergency">
+      <div class="hl-left">
+        <div class="hl-dept">மின்வாரிய புகார் (TANGEDCO)</div>
+        <div class="hl-sub">மின்னகம் 24x7 மின் தடை மையம்</div>
+      </div>
+      <div class="hl-number-btn">1912</div>
+    </div>
+
+    <div class="hl-card">
+      <div class="hl-left">
+        <div class="hl-dept">மாநகராட்சி கட்டுப்பாட்டு அறை</div>
+        <div class="hl-sub">சென்னை & மாவட்ட மாநகராட்சிகள்</div>
+      </div>
+      <div class="hl-number-btn">1913</div>
+    </div>
+
+    <div class="hl-card">
+      <div class="hl-left">
+        <div class="hl-dept">சைபர் குற்றங்கள் புகார்</div>
+        <div class="hl-sub">தேசிய சைபர் கிரைம் உதவி மையம்</div>
+      </div>
+      <div class="hl-number-btn">1930</div>
+    </div>
+  </div>
+
+  <div class="cta-container">
+    <div class="cta-url">🌐 vizhitn.in</div>
+    <div class="cta-sub">புகார் பதிவு செய்ய & முழு விவரங்களுக்கு Follow @vizhitn</div>
+  </div>
+</body>
+</html>

@@ -1,10 +1,11 @@
 // scripts/youtube/pipelines/generate-long-video.mjs
-// Weekly 3x Long-Form In-Depth Video Generator (1920x1080, 16:9, 3-5 Mins)
+// Weekly 3x Long-Form In-Depth Explainer (Spoken Tamil, 16:9, Multi-Chapter, 3-5 Mins)
 
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { YOUTUBE_CONFIG } from '../config.mjs';
+import { normalizeAcronymsToSpokenTamil } from '../engine/tamil-phonetics.mjs';
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleLongFormVideo, getAudioDuration } from '../engine/video-composer.mjs';
@@ -29,7 +30,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function main() {
   console.log('====================================================');
-  console.log('VizhiTN YouTube Automation — Weekly In-Depth Long Video');
+  console.log('VizhiTN YouTube Automation — Conversational In-Depth Long Video');
   console.log('====================================================');
 
   const isDryRun = process.argv.includes('--dry-run');
@@ -56,7 +57,7 @@ async function main() {
   const article = articles[0];
   const articleTitleEn = article.title_en || article.title || 'Tamil Nadu Development';
   const articleTitleTa = article.title_ta || article.title || articleTitleEn;
-  console.log(`[INFO] Loaded article: "${articleTitleEn}"`);
+  console.log(`[INFO] Sourced article: "${articleTitleEn}"`);
 
   // 2. Prepare visual assets & hero image
   let heroImageSrc = article.hero_image_url;
@@ -64,52 +65,69 @@ async function main() {
     heroImageSrc = 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1200&q=80';
   }
 
-  const deptName = article.department_name || 'Government of Tamil Nadu';
-  const helplineNum = article.helpline || '1100 / 1912';
+  const deptName = normalizeAcronymsToSpokenTamil(article.department_name || 'தமிழ்நாடு அரசு');
+  const helplineNum = normalizeAcronymsToSpokenTamil(article.helpline || '1100 / 1912');
   const locationText = `${article.district_focus || 'Tamil Nadu'} | தமிழ்நாடு`;
 
-  // 3. Define 4 Narrative Chapters
+  // 3. Define 4 Narrative Chapters in Conversational Spoken Tamil
   const chapterDefinitions = [
     {
       num: '01 / 04',
       titleTa: `அறிமுகம்: ${articleTitleTa}`,
       titleEn: `Overview: ${articleTitleEn}`,
-      narration: `வணக்கம். விழி தமிழ்நாடு சிறப்பு புலனாய்வு மற்றும் திட்ட பார்வை. இன்றைய முக்கிய தலைப்பு: ${articleTitleTa}. இந்த திட்டத்தின் பின்னணி மற்றும் தமிழ்நாடு அரசின் தற்போதைய நிலை குறித்த முழுமையான அலசல் இதோ.`,
+      narration: [
+        `ஹலோ மக்களே! விழி தமிழ்நாடு சிறப்பு திட்ட பார்வைக்கு உங்களை வரவேற்கிறோம்.`,
+        `இன்னைக்கு நம்ம பார்க்க போற மிக முக்கியமான தலைப்பு: ${articleTitleTa}.`,
+        `இந்த திட்டம் ஏன் தொடங்கப்பட்டுச்சு, இதனால தமிழ்நாட்டு மக்களுக்கு என்னென்ன நன்மைகள் கிடைக்க போகுதுன்னு விரிவா பார்க்கலாம்.`
+      ],
       facts: [
-        'தமிழ்நாட்டின் முன்னணி உள்கட்டமைப்பு மற்றும் நிர்வாக முன்னெடுப்பு',
-        'பொதுமக்களின் அன்றாட வாழ்க்கை மற்றும் பொருளாதாரத்தில் ஏற்படும் மாற்றங்கள்',
-        'திட்ட இலக்கு மற்றும் அதிகாரப்பூர்வ காலக்கெடு விவரங்கள்'
+        'தமிழ்நாட்டின் முன்னணி உள்கட்டமைப்பு மற்றும் வளர்ச்சி முன்னெடுப்பு',
+        'பொதுமக்களின் அன்றாட வாழ்க்கை மற்றும் பயண நேரத்தில் ஏற்படும் மாற்றம்',
+        'அரசு நிர்ணயித்துள்ள அதிகாரப்பூர்வ காலக்கெடு மற்றும் இலக்குகள்'
       ]
     },
     {
       num: '02 / 04',
-      titleTa: 'திட்ட சிறப்பம்சங்கள் & நிதி ஒதுக்கீடு',
+      titleTa: 'திட்ட சிறப்பம்சங்கள் & கள விவரங்கள்',
       titleEn: 'Key Specifications, Budget & Timeline',
-      narration: `இரண்டாவது பகுதி: திட்டத்தின் நிதி ஒதுக்கீடு மற்றும் கள விவரங்கள். ${(article.summary_ta || article.summary_en || '').slice(0, 200)}. அரசு திட்ட மதிப்பீட்டின்படி உரிய காலத்திற்குள் பணிகளை முடிக்க திட்டமிடப்பட்டுள்ளது.`,
+      narration: [
+        `இரண்டாவது பகுதி: இந்த திட்டத்தின் முக்கிய சிறப்பம்சங்கள் மற்றும் நிதி ஒதுக்கீடு.`,
+        `கள நிலவரப்படி, நவீன தொழில்நுட்ப வசதிகளோட பணிகள் தீவிரமா நடந்துட்டு வருது.`,
+        `மக்கள் வரிப்பணம் சரியா பயன்படுத்தப்பட்டு, குறித்த நேரத்துக்குள்ள பணிகள் முடிக்கப்பட வேண்டும் என்பதே அனைவரின் எதிர்பார்ப்பு.`
+      ],
       facts: [
-        `திட்ட சுருக்கம்: ${(article.summary_en || '').slice(0, 80)}...`,
-        'நவீன தொழில்நுட்ப பயன்பாடு மற்றும் தரக் கட்டுப்பாடு உறுதி',
-        'மாவட்ட நிர்வாகம் மற்றும் துறைசார் பொறியாளர்களின் நேரடி கண்காணிப்பு'
+        `திட்ட சுருக்கம்: ${(article.summary_en || article.summary_ta || '').slice(0, 90)}...`,
+        'நவீன தரக்கட்டுப்பாடு மற்றும் பாதுகாப்பு வசதிகள் உறுதி',
+        'துறைசார் பொறியாளர்களின் நேரடி கள ஆய்வு மற்றும் மேற்பார்வை'
       ]
     },
     {
       num: '03 / 04',
-      titleTa: 'கள நிலவரம் & துறைசார் பொறுப்புக்கூறல்',
+      titleTa: 'கள நிலவரம் & துறைசார் பொறுப்பு',
       titleEn: 'Ground Reality & Department Accountability',
-      narration: `மூன்றாவது பகுதி: துறைசார் பொறுப்பு மற்றும் கள ஆய்வு. இந்த திட்டத்தை செயல்படுத்தும் பொறுப்பு ${deptName} வசம் உள்ளது. ஏதேனும் குறைகள் அல்லது புகார்கள் இருந்தால் அதிகாரப்பூர்வ உதவி எண் ${helplineNum} மூலம் பொது மக்கள் தொடர்பு கொள்ளலாம்.`,
+      narration: [
+        `மூன்றாவது பகுதி: துறைசார் பொறுப்பு மற்றும் மக்கள் கண்காணிப்பு.`,
+        `இந்த திட்டத்தை முன்னெடுத்து செயல்படுத்தும் பொறுப்பு ${deptName} வசம் இருக்கு.`,
+        `திட்ட பணிகள்ல ஏதேனும் குறைபாடுகள் இருந்தா, பொதுமக்கள் அதிகாரப்பூர்வ உதவி எண் ${helplineNum} மூலம் புகார் தெரிவிக்கலாம்.`
+      ],
       facts: [
         `பொறுப்புத் துறை: ${deptName}`,
-        `அரசு உதவி எண் மற்றும் நேரடி கட்டுப்பாட்டு அறை: ${helplineNum}`,
-        'பொதுமக்கள் கண்காணிப்பு மற்றும் வெளிப்படைத்தன்மை அவசியம்'
+        `அரசு உதவி எண் மற்றும் நேரடி தொடர்பு: ${helplineNum}`,
+        'பொதுமக்கள் கண்காணிப்பு மற்றும் வெளிப்படைத்தன்மை மிக அவசியம்'
       ]
     },
     {
       num: '04 / 04',
-      titleTa: 'மக்கள் உரிமை & முடிவுரை',
-      titleEn: 'Citizen Rights & Strategic Outlook',
-      narration: `இறுதி பகுதி: மக்கள் உரிமை மற்றும் முடிவுரை. அரசு திட்டங்களின் பயன் ஒவ்வொரு குடிமகனுக்கும் முழுமையாக சென்றடைய வேண்டும். இந்த விரிவான கட்டுரையை முழுமையாக படிக்க விழி டிஎன் டாட் இன் வலைத்தளத்தைப் பாருங்கள். உங்கள் மாவட்ட பிரச்சனைகளை உடனுக்குடன் பதிவு செய்யுங்கள். நன்றி, வணக்கம்.`,
+      titleTa: 'மக்கள் உரிமைகள் & முடிவுரை',
+      titleEn: 'Citizen Rights & Next Steps',
+      narration: [
+        `இறுதி பகுதி: மக்கள் உரிமைகள் மற்றும் முடிவுரை.`,
+        `அரசு திட்டங்கள் அனைத்து தரப்பு மக்களுக்கும் முழுமையா சென்றடைவதை உறுதி செய்வோம்.`,
+        `இந்த முழுமையான அறிக்கையை படிக்க விழி டிஎன் டாட் இன் வலைத்தளத்தை பார்வையிடுங்க.`,
+        `உங்கள் பகுதி பிரச்சனைகளை எங்களிடம் பகிருங்கள். விழி தமிழ்நாடு சேனலை மறக்காம சப்ஸ்கிரைப் பண்ணுங்க மக்களே!`
+      ],
       facts: [
-        'அரசு திட்டங்களில் வெளிப்படைத்தன்மை பெற மக்கள் களம்',
+        'மக்கள் நலன் மற்றும் பொது வெளிப்படைத்தன்மை காப்போம்',
         'உங்கள் பகுதி பிரச்சனைகளை பதிவு செய்ய: vizhitn.in',
         'விழி தமிழ்நாடு சேனலை சப்ஸ்கிரைப் செய்து தொடர்ந்து இணையுங்கள்'
       ]
@@ -119,16 +137,15 @@ async function main() {
   const templatePath = path.resolve('scripts/youtube/templates/long-form/chapter-slide.html');
   const templateHtml = fs.readFileSync(templatePath, 'utf-8');
 
-  // 4. Generate Chapter Slides & Audio
+  // 4. Generate Chapter Slides & Micro-TTS Audio
   const processedChapters = [];
   let totalVideoDuration = 0;
   const chapterTimestamps = [];
 
   for (let i = 0; i < chapterDefinitions.length; i++) {
     const ch = chapterDefinitions[i];
-    console.log(`\n[CHAPTER ${i + 1}] Processing "${ch.titleEn}"...`);
+    console.log(`\n[CHAPTER ${i + 1}] Processing "${ch.titleEn}" in Spoken Tamil...`);
 
-    // Render HTML Slide to PNG
     let factsHtml = ch.facts.map(f => `
       <div class="fact-item">
         <span class="fact-icon">✦</span>
@@ -150,15 +167,14 @@ async function main() {
     const slidePngPath = path.join(outDir, `long_slide_${i}_${Date.now()}.png`);
     renderHtmlToImage(slideHtml, slidePngPath, { width: 1920, height: 1080 });
 
-    // Synthesize Audio
     const audioPath = path.join(outDir, `long_audio_${i}_${Date.now()}.mp3`);
     await synthesizeSpeech(ch.narration, audioPath, {
       voice: YOUTUBE_CONFIG.voices.tamilMale,
-      rate: '+2%'
+      rate: '+3%'
     });
 
     const dur = getAudioDuration(audioPath);
-    console.log(`[CHAPTER ${i + 1}] Slide: ${slidePngPath}, Audio duration: ${dur.toFixed(1)}s`);
+    console.log(`[CHAPTER ${i + 1}] Slide: ${slidePngPath}, Audio: ${dur.toFixed(1)}s`);
 
     const mins = Math.floor(totalVideoDuration / 60);
     const secs = Math.floor(totalVideoDuration % 60).toString().padStart(2, '0');
@@ -173,7 +189,7 @@ async function main() {
     });
   }
 
-  console.log(`\n[INFO] Total estimated video length: ${(totalVideoDuration / 60).toFixed(1)} minutes`);
+  console.log(`\n[INFO] Total estimated feature length: ${(totalVideoDuration / 60).toFixed(1)} minutes`);
 
   // 5. Assemble Final 16:9 Long-Form MP4
   const videoOutputPath = path.join(outDir, `vizhitn_feature_${article.slug || Date.now()}.mp4`);
@@ -184,14 +200,14 @@ async function main() {
   });
   console.log(`[COMPOSER] Feature video created: ${videoOutputPath}`);
 
-  // 6. YouTube Upload Metadata
-  const ytTitle = `${article.title_ta || article.title_en} | Full Explainer | VizhiTN Tamil Nadu`;
-  const ytDesc = `${article.title_ta || article.title_en}\n\n${article.summary_ta || article.summary_en || ''}\n\n` +
+  // 6. YouTube Upload Metadata with 2026 AI disclosure
+  const ytTitle = `${articleTitleTa} | Full Explainer | VizhiTN Tamil Nadu`;
+  const ytDesc = `${articleTitleTa}\n\n${article.summary_ta || article.summary_en || ''}\n\n` +
     `📌 Chapters:\n${chapterTimestamps.join('\n')}\n\n` +
     `🏛️ Responsible Department: ${deptName}\n` +
     `📞 Helpline: ${helplineNum}\n\n` +
-    `🌐 Read the complete investigative report with official documents:\nhttps://vizhitn.in/tn-today/${article.slug}\n\n` +
-    `#TamilNadu #VizhiTN #Infrastructure #Governance #TamilNaduNews`;
+    `🌐 Read the complete investigative report:\nhttps://vizhitn.in/tn-today/${article.slug}\n\n` +
+    `#TamilNadu #VizhiTN #Infrastructure #Governance #TamilNaduNews #SpokenTamil`;
 
   const tags = ['Tamil Nadu', 'VizhiTN', 'TN Today', deptName, 'Tamil Nadu Governance', 'Infra TN', 'Citizen Rights'];
 
@@ -205,11 +221,10 @@ async function main() {
   });
 
   console.log('====================================================');
-  console.log('LONG-FORM VIDEO PIPELINE COMPLETED SUCCESSFULLY!');
+  console.log('CONVERSATIONAL FEATURE VIDEO GENERATED SUCCESSFULLY!');
   console.log('Video URL:', uploadResult.videoUrl);
   console.log('====================================================');
 
-  // Cleanup temporary chapter files
   for (const ch of processedChapters) {
     try {
       if (fs.existsSync(ch.slidePath)) fs.unlinkSync(ch.slidePath);
