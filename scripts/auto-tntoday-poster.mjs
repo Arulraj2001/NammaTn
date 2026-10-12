@@ -508,8 +508,27 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     updated_date: new Date().toISOString()
   };
 
-  // Attach authentic photojournalist image from accredited Tamil Nadu newsrooms
-  articleObj = await attachIncidentPhotoToArticle(articleObj);
+  // Attach high-impact 16:9 Cloudflare FLUX image or newsroom photo
+  try {
+    const { generateEditorialHeroImage } = await import('./lib/cloudflare-image.mjs');
+    console.log('[EDITORIAL HERO] Generating 16:9 cinematic editorial image via Cloudflare FLUX...');
+    const fluxImageUrl = await generateEditorialHeroImage({
+      title: articleObj.title,
+      category: articleObj.category,
+      district: articleObj.district_name || articleObj.district_slug,
+      slug: articleObj.slug
+    });
+    if (fluxImageUrl) {
+      articleObj.featured_image = fluxImageUrl;
+      articleObj.social_image = fluxImageUrl;
+      console.log(`[EDITORIAL HERO ✓] Attached Cloudflare FLUX image: ${fluxImageUrl}`);
+    } else {
+      articleObj = await attachIncidentPhotoToArticle(articleObj);
+    }
+  } catch (imgErr) {
+    console.warn(`[EDITORIAL HERO WARN] Cloudflare generation skipped: ${imgErr.message}`);
+    articleObj = await attachIncidentPhotoToArticle(articleObj);
+  }
 
   console.log(`\n📄 [ARTICLE] ${articleObj.title}`);
   console.log(`   Tamil:    ${articleObj.title_ta}`);

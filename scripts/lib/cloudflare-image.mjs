@@ -155,3 +155,79 @@ export async function generateStoryPhoto(prompt, options = {}) {
     sizeKb
   };
 }
+
+/**
+ * Create a Discover-optimized editorial 16:9 photojournalism prompt.
+ */
+export function createEditorialPrompt({ title = '', category = 'general', district = 'Tamil Nadu' } = {}) {
+  const cat = (category || '').toLowerCase();
+  const dist = String(district || 'Tamil Nadu').replace(/-/g, ' ');
+  const t = (title || '').toLowerCase();
+
+  if (cat.includes('transport') || t.includes('metro') || t.includes('rail') || t.includes('bus')) {
+    return `Cinematic documentary photojournalism of modern public transit in ${dist}, Tamil Nadu, modern metro rail elevated viaduct or state transport bus on city road, commuters, realistic daylight editorial photography, Canon 5D, 35mm lens, high resolution`;
+  }
+  if (cat.includes('electric') || t.includes('power') || t.includes('eb') || t.includes('tangedco')) {
+    return `Photojournalistic documentary photograph of Tamil Nadu TANGEDCO electrical substation engineers and utility transformers in ${dist}, realistic South India news photography, natural sunlight, professional camera`;
+  }
+  if (cat.includes('water') || t.includes('drainage') || t.includes('drinking water')) {
+    return `Documentary photograph of municipal drinking water supply infrastructure or Metrowater pipeline project in ${dist}, Tamil Nadu, civic engineering journalism`;
+  }
+  if (cat.includes('agriculture') || cat.includes('farmer') || t.includes('paddy') || t.includes('crop')) {
+    return `Documentary news photograph of lush green paddy fields and direct agricultural procurement centre in Cauvery delta ${dist}, Tamil Nadu, local farmers, authentic South Indian countryside, bright natural sunlight`;
+  }
+  if (cat.includes('economy') || cat.includes('industry') || t.includes('sipcot') || t.includes('investment')) {
+    return `Modern high-tech industrial manufacturing park in ${dist}, Tamil Nadu, electronic or electric vehicle assembly plant exterior, clean architectural lines, sunny day editorial photography`;
+  }
+  if (cat.includes('education') || t.includes('school') || t.includes('college')) {
+    return `Editorial photograph of a government educational institution campus in ${dist}, Tamil Nadu, green trees, dignified campus exterior, crisp morning daylight`;
+  }
+  if (cat.includes('politics') || cat.includes('governance') || t.includes('assembly') || t.includes('secretariat')) {
+    return `Official documentary style photograph of the historic Tamil Nadu Secretariat Fort St. George administrative headquarters in Chennai, Indian tricolor flag fluttering, grand colonial facade, clear blue sky, journalism photography`;
+  }
+  if (cat.includes('scheme') || cat.includes('welfare') || t.includes('urimai') || t.includes('ration')) {
+    return `Documentary news photograph of Tamil Nadu citizen facilitation centre e-Sevai centre with citizens receiving government welfare cards, dignified documentary journalism`;
+  }
+
+  return `Documentary photojournalistic photograph representing urban development, public infrastructure, and community life in ${dist}, Tamil Nadu, South India, realistic daylight photography, professional news photo`;
+}
+
+/**
+ * Generate and upload a 16:9 (1200x675) WebP editorial hero image for articles.
+ * Returns public URL of the uploaded image, or null on failure.
+ */
+export async function generateEditorialHeroImage({ title = '', category = 'general', district = 'Tamil Nadu', slug = '' } = {}) {
+  try {
+    const prompt = createEditorialPrompt({ title, category, district });
+    const outputFilename = `editorial-${slug ? slug.slice(0, 35) : Date.now()}.jpg`;
+
+    const photo = await generateStoryPhoto(prompt, { outputFilename, quality: 84 });
+    if (!photo?.buffer) return null;
+
+    // Standard Google Discover 16:9 hero aspect ratio (1200x675)
+    const webpBuffer = await sharp(photo.buffer)
+      .resize(1200, 675, { fit: 'cover', position: 'center' })
+      .webp({ quality: 82, effort: 4 })
+      .toBuffer();
+
+    const cleanSlug = (slug || `editorial-${Date.now()}`).slice(0, 50).replace(/[^a-z0-9-]/gi, '-');
+    const storageFileName = `editorial/${cleanSlug}-${Date.now().toString().slice(-4)}.webp`;
+
+    try {
+      const { uploadCardToStorage } = await import('./supabase-storage.mjs');
+      const publicUrl = await uploadCardToStorage(webpBuffer, storageFileName, 'image/webp');
+      return publicUrl;
+    } catch (uploadErr) {
+      console.warn('[CloudflareAI] Storage upload warning:', uploadErr.message);
+      const localOutDir = path.resolve('public/images/tntoday');
+      if (!fs.existsSync(localOutDir)) fs.mkdirSync(localOutDir, { recursive: true });
+      const localPath = path.join(localOutDir, `${cleanSlug}.webp`);
+      fs.writeFileSync(localPath, webpBuffer);
+      return `/images/tntoday/${cleanSlug}.webp`;
+    }
+  } catch (err) {
+    console.warn('[CloudflareAI] Editorial hero image generation skipped:', err.message);
+    return null;
+  }
+}
+

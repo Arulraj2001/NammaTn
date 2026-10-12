@@ -301,11 +301,26 @@ No conversational intro, no commentary outside the JSON array.
 
     if (media_urls.length === 0) {
       try {
-        const photo = await matchIncidentPhoto({ title: title_en || title_ta, category: 'tn-politics' });
-        if (photo?.image_url) {
-          media_urls = [photo.image_url];
+        const { generateEditorialHeroImage } = await import('./lib/cloudflare-image.mjs');
+        const fluxUrl = await generateEditorialHeroImage({
+          title: title_en || title_ta,
+          category: 'tn-politics',
+          district: district_slug,
+          slug: finalSlug
+        });
+        if (fluxUrl) {
+          media_urls = [fluxUrl];
         }
       } catch (_) {}
+
+      if (media_urls.length === 0) {
+        try {
+          const photo = await matchIncidentPhoto({ title: title_en || title_ta, category: 'tn-politics' });
+          if (photo?.image_url) {
+            media_urls = [photo.image_url];
+          }
+        } catch (_) {}
+      }
     }
 
     const postObj = {

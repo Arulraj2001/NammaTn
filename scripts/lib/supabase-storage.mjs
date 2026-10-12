@@ -38,7 +38,8 @@ export async function uploadCardToStorage(buffer, fileName, contentType = 'image
     throw new Error('Supabase client not initialized. Check NEXT_PUBLIC_VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
   }
 
-  const storagePath = `social-cards/${fileName}`;
+  const cleanName = fileName.replace(/^\/+/, '');
+  const storagePath = cleanName.includes('/') ? cleanName : `social-cards/${cleanName}`;
 
   console.log(`[Storage] Uploading ${fileName} (${(buffer.length / 1024).toFixed(1)} KB) to Supabase 'media' bucket...`);
 

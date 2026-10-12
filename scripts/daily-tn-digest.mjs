@@ -279,6 +279,21 @@ Return STRICT JSON ONLY matching this format:
 
   if (supabase) {
     console.log('[DigestBot] Inserting into Supabase "post" table...');
+    let mediaUrls = [];
+    try {
+      const { generateEditorialHeroImage } = await import('./lib/cloudflare-image.mjs');
+      const fluxBanner = await generateEditorialHeroImage({
+        title: digestPayload.title_en,
+        category: 'tn-politics',
+        district: 'chennai',
+        slug: `daily-digest-${targetDate}`
+      });
+      if (fluxBanner) {
+        mediaUrls = [fluxBanner];
+        console.log(`[DigestBot ✓] Generated Cloudflare FLUX daily digest hero: ${fluxBanner}`);
+      }
+    } catch (_) {}
+
     const dbRecord = {
       title_en: digestPayload.title_en,
       title_ta: digestPayload.title_ta,
@@ -290,6 +305,7 @@ Return STRICT JSON ONLY matching this format:
       area_name: 'Secretariat, Chennai',
       author_name: 'VizhiTN Governance Desk',
       slug: `daily-digest-${targetDate}`,
+      media_urls: mediaUrls,
       status: 'active',
       is_publicly_visible: true,
       seo_title: `${digestPayload.title_en} | VizhiTN`,

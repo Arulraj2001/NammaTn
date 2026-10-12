@@ -46,6 +46,9 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_IMAGE_MODEL: ${{ vars.CLOUDFLARE_IMAGE_MODEL || '@cf/black-forest-labs/flux-1-schnell' }}
           WHATSAPP_SESSION: ${{ secrets.WHATSAPP_SESSION }}
         run: |
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
