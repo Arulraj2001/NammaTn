@@ -66,7 +66,7 @@ export async function GET() {
     try {
       const { data: recentPosts, error: e2 } = await supabase
         .from('post')
-        .select('slug, id, title, title_en, title_ta, seo_title, created_date')
+        .select('slug, id, title, title_en, title_ta, seo_title, created_date, category_slug')
         .eq('status', 'active')
         .gte('created_date', fortyEightHoursAgo)
         .order('created_date', { ascending: false })
@@ -77,7 +77,7 @@ export async function GET() {
       if (postsList.length === 0) {
         const { data: fallbackPosts } = await supabase
           .from('post')
-          .select('slug, id, title, title_en, title_ta, seo_title, created_date')
+          .select('slug, id, title, title_en, title_ta, seo_title, created_date, category_slug')
           .eq('status', 'active')
           .order('created_date', { ascending: false })
           .limit(25);
@@ -90,8 +90,9 @@ export async function GET() {
         const pubDate = p.created_date || new Date().toISOString();
         const rawTitle = p.seo_title || p.title_ta || p.title_en || p.title || 'Civic Report';
         const newsLang = p.title_ta ? 'ta' : 'en';
+        const postUrl = p.category_slug === 'tn-politics' ? `${SITE_URL}/tn-politics/${slug}` : `${SITE_URL}/post/${slug}`;
         newsItems.push({
-          url: `${SITE_URL}/post/${slug}`,
+          url: postUrl,
           title: rawTitle,
           date: pubDate,
           lang: newsLang,
