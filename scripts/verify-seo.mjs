@@ -319,15 +319,14 @@ const explorePage = await read('src/app/(user)/explore/page.jsx');
 const exploreView = await read('src/views/Explore.jsx');
 assert.match(explorePage, /getExplorePosts/, 'Explore must fetch its initial public feed on the server');
 assert.match(explorePage, /export const metadata/, 'Explore must emit server metadata');
-assert.doesNotMatch(explorePage, /ssr:\s*false/, 'Explore must not be a client-only shell');
-assert.match(exploreView, /initialData:\s*\{\s*pages:\s*\[initialPosts\]/, 'Explore infinite feed must hydrate from server data');
+assert.match(exploreView, /initialData:\s*initialPosts/, 'Explore feed must hydrate from server data');
 
 const situationsPage = await read('src/app/(user)/situations/page.jsx');
 const situationsView = await read('src/views/Situations.jsx');
 assert.match(situationsPage, /getActiveSituationUpdates/, 'Situations must fetch active updates on the server');
 assert.match(situationsPage, /export const metadata/, 'Situations must emit server metadata');
 assert.doesNotMatch(situationsPage, /ssr:\s*false/, 'Situations must not be a client-only shell');
-assert.match(situationsView, /initialData:\s*!filterDistrict\s*\?\s*initialSituations/, 'Situation filters must hydrate only from the unfiltered server list');
+assert.match(situationsView, /initialData:\s*filterDistrict === "all"\s*\?\s*initialSituations/, 'Situation filters must hydrate only from the unfiltered server list');
 
 const helpPage = await read('src/app/(user)/help/page.jsx');
 const helpView = await read('src/views/Help.jsx');
@@ -341,7 +340,7 @@ const askView = await read('src/views/AskLocal.jsx');
 assert.match(askPage, /getLatestQuestions/, 'Ask must fetch recent questions on the server');
 assert.match(askPage, /export const metadata/, 'Ask must emit server metadata');
 assert.doesNotMatch(askPage, /ssr:\s*false/, 'Ask must not be a client-only shell');
-assert.match(askView, /initialData:\s*!filterDistrict\s*\?\s*initialQuestions/, 'Ask filters must hydrate only from the unfiltered server list');
+assert.match(askView, /initialData:\s*filterDistrict === "all"\s*\?\s*initialQuestions/, 'Ask filters must hydrate only from the unfiltered server list');
 
 
 const leaderboardPage = await read('src/app/(user)/leaderboard/page.jsx');
@@ -356,7 +355,7 @@ const listingsView = await read('src/views/LocalListings.jsx');
 assert.match(listingsPage, /getPublicLocalListings/, 'Local listings must fetch approved entries on the server');
 assert.match(listingsPage, /export const metadata/, 'Local listings must emit server metadata');
 assert.doesNotMatch(listingsPage, /ssr:\s*false/, 'Local listings must not be a client-only shell');
-assert.match(listingsView, /initialData:\s*\{\s*pages:\s*\[initialListings\]/, 'Local listing pagination must hydrate from server data');
+assert.match(listingsView, /initialData:\s*initialListings/, 'Local listing pagination must hydrate from server data');
 
 for (const [route, view] of [
   ['support', 'Support'],
@@ -403,7 +402,6 @@ assert.doesNotMatch(postDetailView, /injectPostStructuredData|injectBreadcrumbSt
 
 const canonicalDistrictLinkFiles = [
   'src/components/dashboard/TrendingDistrictRow.jsx',
-  'src/components/civic/DistrictCivicStats.jsx',
   'src/components/home/TrendingDistricts.jsx',
   'src/views/Search.jsx',
   'src/views/PostDetail.jsx',

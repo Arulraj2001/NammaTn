@@ -213,7 +213,7 @@ export default function Help({ initialEmergencies = [] }) {
                 <HeartHandshake className="w-3.5 h-3.5" />
                 {T("CITIZEN EMERGENCY ASSISTANCE BOARD", "சமுதாய அவசர உதவி மையம்")}
               </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-2">
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-2 text-white">
                 {T("Emergency Help Requests & Volunteer Response", "அவசர உதவி கோரிக்கைகள் & தன்னார்வலர் உதவி")}
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">

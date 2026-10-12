@@ -211,7 +211,7 @@ export default function Situations({ initialSituations = [] }) {
                   ? `${districtNameDisplay.toUpperCase()} DESK`
                   : T("LIVE TAMIL NADU SITUATION ROOM", "நேரடி தமிழ்நாடு குடிமை அறை")}
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3 text-white">
                 {filterDistrict !== "all"
                   ? `${districtNameDisplay} ${T("Live Situations & Outages", "நேரடி நிலைமைகள் & முடக்கங்கள்")}`
                   : T("Live Situations & Civic Outages", "நேரடி நிலைமைகள் & முடக்கங்கள்")}

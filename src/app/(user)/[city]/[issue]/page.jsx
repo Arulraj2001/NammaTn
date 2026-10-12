@@ -29,6 +29,7 @@ import { generateBreadcrumbSchema } from '@/lib/seo/newsSchema';
 import { formatReportDate, getLatestReportDate } from '@/lib/reportFreshness';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import PageSchema from '@/components/seo/PageSchema';
+import { NearbyDistrictLinks } from '@/components/seo/InternalLinks';
 
 import { runAutonomousCoreAsync }  from '@/lib/seo/autonomousSeoCore';
 import { evaluateIndexBoost }      from '@/lib/seo/indexBoost';
@@ -106,14 +107,38 @@ export async function generateMetadata({ params }) {
   const canonicalUrl = `${SITE_URL}/${city}/${issue}`;
   const { reports, dataAvailable } = await fetchCityIssueData(city, issue);
   const robots = getCityIssueRobots({ dataAvailable, reportCount: reports.length });
+  const ogUrl = new URL(`${SITE_URL}/api/og`);
+  ogUrl.searchParams.set('title', `${cityData.name} ${issueData.name} Updates`);
+  ogUrl.searchParams.set('district', city);
+  ogUrl.searchParams.set('category', issue);
+  ogUrl.searchParams.set('urgency', 'medium');
+  const ogImageUrl = ogUrl.toString();
 
   return {
     title,
     description,
-    alternates: { canonical: canonicalUrl },
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en-IN': canonicalUrl,
+        'ta-IN': canonicalUrl,
+        'x-default': canonicalUrl,
+      },
+    },
     robots,
-    openGraph:  { title: socialTitle, description, url: canonicalUrl, type: 'website',
-      images: [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: title }] },
+    openGraph: {
+      title: socialTitle,
+      description,
+      url: canonicalUrl,
+      type: 'website',
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: socialTitle,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 
@@ -585,6 +610,11 @@ export default async function Page({ params }) {
             </ul>
           </section>
         )}
+
+        {/* ── Neighboring Districts Grid ─────────────────────────────── */}
+        <section className="border-t pt-6">
+          <NearbyDistrictLinks districtSlug={city} />
+        </section>
 
       </main>
     </>

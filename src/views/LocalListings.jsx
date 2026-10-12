@@ -154,7 +154,7 @@ export default function LocalListings({ initialListings = [] }) {
                   ? `${districtNameDisplay.toUpperCase()} SERVICES DESK`
                   : T("VERIFIED LOCAL SERVICES & CIVIC BUSINESS DIRECTORY", "சரிபார்க்கப்பட்ட உள்ளூர் சேவைகள் & வணிகங்கள்")}
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3 text-white">
                 {districtFilter !== "all"
                   ? `${districtNameDisplay} ${T("Local Services & Providers", "உள்ளூர் சேவைகள் & பணியாளர்கள்")}`
                   : T("Tamil Nadu Local Services Directory", "உள்ளூர் சேவை & வணிகப் பட்டியல்")}

@@ -217,7 +217,7 @@ export default function Scams({ initialScams = [] }) {
                   ? `${districtNameDisplay.toUpperCase()} CYBER DESK`
                   : T("STATEWIDE CYBER & SCAM ADVISORY", "மாநில சைபர் குற்ற & மோசடி எச்சரிக்கை")}
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3 text-white">
                 {filterDistrict !== "all"
                   ? `${districtNameDisplay} ${T("Scam Alerts & Fraud Warnings", "மோசடி எச்சரிக்கைகள்")}`
                   : T("Scam Alerts & Cyber Fraud Warnings", "மோசடி எச்சரிக்கைகள் & சைபர் விழிப்புணர்வு")}

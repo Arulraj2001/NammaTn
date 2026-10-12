@@ -224,7 +224,7 @@ export default function BribeDashboard({ initialBribePosts = [] }) {
                   ? `${districtNameDisplay.toUpperCase()} TRANSPARENCY DESK`
                   : T("DVAC VIGILANCE & CIVIC TRANSPARENCY DESK", "லஞ்ச ஒழிப்பு & வெளிப்படைத்தன்மை கண்காணிப்பு")}
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3 text-white">
                 {selectedDistrict !== "all"
                   ? `${districtNameDisplay} ${T("Bribe Reports & Transparency", "லஞ்சக் கண்காணிப்புப் பதிவுகள்")}`
                   : T("Tamil Nadu Bribe Tracker", "தமிழ்நாடு லஞ்சக் கண்காணிப்பு பலகை")}

@@ -283,13 +283,13 @@ export default function DistrictDetail({ initialSlug }) {
           {/* Middle Row: Title Left, Action CTAs Right (Horizontal Compact) */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight flex flex-wrap items-baseline gap-2.5">
-                <span>{district.name_en}</span>
-                <span className="text-lg sm:text-2xl font-medium text-blue-200/90 font-tamil">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight flex flex-wrap items-baseline gap-2.5 text-white">
+                <span className="text-white drop-shadow-sm font-black">{district.name_en}</span>
+                <span className="text-lg sm:text-2xl font-semibold text-blue-200 font-tamil">
                   {district.name_ta}
                 </span>
               </h1>
-              <p className="mt-0.5 text-xs sm:text-sm text-blue-100/80 leading-snug line-clamp-2 max-w-xl">
+              <p className="mt-1 text-xs sm:text-sm text-slate-200 leading-snug line-clamp-2 max-w-xl">
                 {T(
                   `Hyperlocal civic grievance portal, verified utility alerts, and taluk-level resolution proof for ${district.name_en}.`,
                   `${district.name_en} மாவட்டத்திற்கான மின்தடை அறிவிப்புகள், குடிமை புகார்கள் மற்றும் சரிபார்க்கப்பட்ட தீர்வுகள்.`
@@ -318,45 +318,45 @@ export default function DistrictDetail({ initialSlug }) {
           </div>
 
           {/* Compact 4-Metric Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 border-t border-white/10">
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10 flex items-center justify-between">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 border-t border-white/15">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl px-3 py-2 border border-white/15 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300/90 block">
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 block">
                   {T("Alerts", "எச்சரிக்கைகள்")}
                 </span>
                 <p className="text-lg sm:text-xl font-black leading-tight text-white">{activeAlertCount}</p>
               </div>
-              <Zap className="w-4 h-4 text-amber-400 opacity-80" />
+              <Zap className="w-4 h-4 text-amber-400" />
             </div>
 
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10 flex items-center justify-between">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl px-3 py-2 border border-white/15 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300/90 block">
+                <span className="text-[10px] font-black uppercase tracking-wider text-sky-300 block">
                   {T("Grievances", "குடிமை புகார்கள்")}
                 </span>
                 <p className="text-lg sm:text-xl font-black leading-tight text-white">{activeGrievanceCount}</p>
               </div>
-              <AlertTriangle className="w-4 h-4 text-blue-400 opacity-80" />
+              <AlertTriangle className="w-4 h-4 text-sky-400" />
             </div>
 
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10 flex items-center justify-between">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl px-3 py-2 border border-white/15 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/90 block">
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-300 block">
                   {T("Fixed Proof", "தீர்வு")}
                 </span>
                 <p className="text-lg sm:text-xl font-black leading-tight text-white">{verifiedFixedCount}</p>
               </div>
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 opacity-80" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             </div>
 
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10 flex items-center justify-between">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl px-3 py-2 border border-white/15 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-200/90 block">
+                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-200 block">
                   {T("Coverage", "வட்டாரங்கள்")}
                 </span>
                 <p className="text-lg sm:text-xl font-black leading-tight text-white">{totalTaluksCount}+</p>
               </div>
-              <Compass className="w-4 h-4 text-indigo-300 opacity-80" />
+              <Compass className="w-4 h-4 text-indigo-300" />
             </div>
           </div>
         </div>

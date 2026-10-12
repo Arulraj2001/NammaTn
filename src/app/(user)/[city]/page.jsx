@@ -46,7 +46,14 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
-    alternates: { canonical: canonicalUrl },
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en-IN': canonicalUrl,
+        'ta-IN': canonicalUrl,
+        'x-default': canonicalUrl,
+      },
+    },
     openGraph: {
       title: socialTitle,
       description,

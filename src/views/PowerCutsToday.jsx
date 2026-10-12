@@ -74,7 +74,7 @@ export default function PowerCutsToday({ initialPosts = [], targetDistrict = nul
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 {targetDistrict ? `${districtNameDisplay.toUpperCase()} TANGEDCO DESK` : T("LIVE TANGEDCO SUBSTATION FEED", "நேரடி மின்தடை அறிவிப்புகள்")}
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3 text-white">
                 {targetDistrict
                   ? `${districtNameDisplay} ${T("Power Cut Today", "இன்று மின்தடை பகுதிகள்")}`
                   : T("Tamil Nadu Power Cut Today", "தமிழ்நாடு இன்று மின்தடை பகுதிகள்")}

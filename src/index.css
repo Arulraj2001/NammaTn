@@ -148,7 +148,7 @@
     @apply bg-background text-foreground;
   }
 
-  /* Distinct Sovereign Headings */
+  /* Base Headings with clean dark/light contrast */
   h1, h2, h3, h4 {
     @apply text-slate-900 dark:text-white;
   }

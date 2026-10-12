@@ -1,25 +1,79 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Link } from "@/lib/router-compat";
 import { DISTRICT_COORDS } from "@/lib/districts";
 
-// Helper to center and adjust zoom when coordinates change and invalidate size for all screen sizes
-function ChangeMapView({ center, zoom }) {
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// Center of Tamil Nadu (Trichy coordinates) - Stable reference outside component
+const DEFAULT_CENTER = [10.8505, 78.7047];
+
+// Helper to center, fit bounds around nearby incidents when userLocation updates, without interfering with user manual zoom/pan
+function ChangeMapView({ userLocation, nearbyClusters }) {
   const map = useMap();
+  const prevLocKey = useRef(null);
+
   useEffect(() => {
-    map.setView(center, zoom);
-    // Invalidate size ensures tiles calculate correctly on mobile, tablets, and desktop
-    const timer = setTimeout(() => {
-      try {
-        map.invalidateSize();
-      } catch {}
-    }, 120);
-    return () => clearTimeout(timer);
-  }, [center, zoom, map]);
+    // Only adjust view when userLocation genuinely changes (e.g. user pressed 'Use My Location')
+    const currentLocKey = userLocation ? `${userLocation.latitude},${userLocation.longitude}` : 'none';
+    if (prevLocKey.current === currentLocKey) return;
+    prevLocKey.current = currentLocKey;
+
+    if (userLocation) {
+      if (nearbyClusters && nearbyClusters.length > 0) {
+        const userLat = parseFloat(userLocation.latitude);
+        const userLng = parseFloat(userLocation.longitude);
+        const bounds = L.latLngBounds([[userLat, userLng]]);
+        nearbyClusters.forEach((c) => bounds.extend([c.latitude, c.longitude]));
+        map.fitBounds(bounds, { padding: [55, 55], maxZoom: 11 });
+      } else {
+        map.setView([parseFloat(userLocation.latitude), parseFloat(userLocation.longitude)], 10);
+      }
+    } else {
+      map.setView(DEFAULT_CENTER, 7);
+    }
+  }, [userLocation, nearbyClusters, map]);
+
+  return null;
+}
+
+// Controller to ensure mouse wheel zoom works smoothly and prevent page scroll interception
+function MapInteractionController() {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+    map.scrollWheelZoom.enable();
+    map.touchZoom.enable();
+    map.doubleClickZoom.enable();
+
+    const container = map.getContainer();
+    const handleWheel = (e) => {
+      // Allow Leaflet to zoom, but stop page from scrolling away while zooming the map
+      e.stopPropagation();
+    };
+    container.addEventListener('wheel', handleWheel, { passive: true });
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, [map]);
+
   return null;
 }
 
@@ -258,40 +312,157 @@ function clusterMapItems(rawItems, proximityDegrees = 0.035) {
 }
 
 export default function InteractiveHomeMap({ items = [], userLocation = null, zoom = 7 }) {
-  // Center of Tamil Nadu (Trichy / Central TN coordinates)
-  const defaultCenter = [10.8505, 78.7047];
-  const center = userLocation
+  const initialCenter = userLocation
     ? [parseFloat(userLocation.latitude), parseFloat(userLocation.longitude)]
-    : defaultCenter;
-  const currentZoom = userLocation ? 12 : zoom;
+    : DEFAULT_CENTER;
+  const initialZoom = userLocation ? 10 : zoom;
 
   const clusters = useMemo(() => clusterMapItems(items), [items]);
 
+  const nearbyClusters = useMemo(() => {
+    if (!userLocation) return [];
+    const uLat = parseFloat(userLocation.latitude);
+    const uLng = parseFloat(userLocation.longitude);
+    if (isNaN(uLat) || isNaN(uLng)) return [];
+    return clusters.filter((c) => {
+      const dist = calculateDistance(uLat, uLng, c.latitude, c.longitude);
+      return dist <= 65;
+    });
+  }, [clusters, userLocation]);
+
+  const currentActiveMarkerRef = useRef(null);
+  const autoCloseTimerRef = useRef(null);
+
+  const clearTimer = () => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+  };
+
+  const closeActivePopup = () => {
+    clearTimer();
+    if (currentActiveMarkerRef.current) {
+      try {
+        currentActiveMarkerRef.current.closePopup();
+      } catch (_) {}
+      currentActiveMarkerRef.current = null;
+    }
+  };
+
+  const setAutoCloseTimeout = (ms = 3500) => {
+    clearTimer();
+    autoCloseTimerRef.current = setTimeout(() => {
+      closeActivePopup();
+    }, ms);
+  };
+
+  const getMarkerEventHandlers = () => ({
+    mouseover: (e) => {
+      const marker = e.target;
+      if (currentActiveMarkerRef.current && currentActiveMarkerRef.current !== marker) {
+        try {
+          currentActiveMarkerRef.current.closePopup();
+        } catch (_) {}
+      }
+      currentActiveMarkerRef.current = marker;
+      marker.openPopup();
+
+      // Auto close after 3.5s of no action
+      setAutoCloseTimeout(3500);
+
+      // Attach interaction listeners to the popup DOM node once rendered
+      setTimeout(() => {
+        const popupEl = marker.getPopup()?.getElement();
+        if (popupEl) {
+          // If user moves mouse over popup, refresh the 3.5s inactivity countdown so they can read/click
+          popupEl.onmousemove = () => {
+            setAutoCloseTimeout(3500);
+          };
+          // If mouse leaves popup, close after 1s
+          popupEl.onmouseleave = () => {
+            setAutoCloseTimeout(1000);
+          };
+        }
+      }, 50);
+    },
+    mouseout: () => {
+      // When cursor leaves the pin, give 1.2s to enter popup before closing
+      setAutoCloseTimeout(1200);
+    },
+  });
+
   return (
     <div className="h-full w-full relative z-10">
+      <style jsx global>{`
+        .civic-map-popup .leaflet-popup-content-wrapper {
+          border-radius: 14px;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.25);
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          padding: 0;
+          overflow: hidden;
+        }
+        .civic-map-popup .leaflet-popup-content {
+          margin: 10px 12px;
+          line-height: 1.35;
+        }
+        .civic-map-popup .leaflet-popup-tip {
+          background: #ffffff;
+        }
+      `}</style>
       <MapContainer
-        center={center}
-        zoom={currentZoom}
+        center={initialCenter}
+        zoom={initialZoom}
+        minZoom={6}
+        maxZoom={16}
+        scrollWheelZoom={true}
+        wheelDebounceTime={30}
+        wheelPxPerZoomLevel={50}
         style={{ height: '100%', width: '100%', background: '#0f172a' }}
-        scrollWheelZoom={false}
-        touchZoom={true}
         attributionControl={false}
       >
-        <ChangeMapView center={center} zoom={currentZoom} />
+        <MapInteractionController />
+        <ChangeMapView
+          userLocation={userLocation}
+          nearbyClusters={nearbyClusters}
+        />
         <TileLayer
           attribution=""
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* User Location Puck */}
+        {/* User Location Radar Radius & Puck */}
         {userLocation && (
-          <Marker position={[userLocation.latitude, userLocation.longitude]} icon={userPuckIcon}>
-            <Popup>
-              <div className="text-center font-bold text-xs p-1 text-slate-800">
-                📍 You are here / உங்கள் இடம்
-              </div>
-            </Popup>
-          </Marker>
+          <>
+            <Circle
+              center={[parseFloat(userLocation.latitude), parseFloat(userLocation.longitude)]}
+              radius={25000}
+              pathOptions={{
+                color: '#2563eb',
+                fillColor: '#3b82f6',
+                fillOpacity: 0.10,
+                weight: 1.5,
+                dashArray: '5, 5',
+              }}
+            />
+            <Marker
+              position={[parseFloat(userLocation.latitude), parseFloat(userLocation.longitude)]}
+              icon={userPuckIcon}
+              eventHandlers={getMarkerEventHandlers()}
+            >
+              <Popup
+                className="civic-map-popup"
+                autoPan={true}
+                autoPanPaddingTopLeft={[25, 85]}
+                autoPanPaddingBottomRight={[25, 45]}
+                keepInView={true}
+              >
+                <div className="text-center font-bold text-xs p-1 text-slate-800">
+                  📍 You are here / உங்கள் இடம்
+                </div>
+              </Popup>
+            </Marker>
+          </>
         )}
 
         {/* Clustered Civic Incidents */}
@@ -306,6 +477,17 @@ export default function InteractiveHomeMap({ items = [], userLocation = null, zo
 
           const position = [cluster.latitude, cluster.longitude];
 
+          const distKm = userLocation
+            ? Math.round(
+                calculateDistance(
+                  parseFloat(userLocation.latitude),
+                  parseFloat(userLocation.longitude),
+                  cluster.latitude,
+                  cluster.longitude
+                )
+              )
+            : null;
+
           if (isCluster) {
             const areaName =
               cluster.items[0]?.area_name ||
@@ -314,14 +496,32 @@ export default function InteractiveHomeMap({ items = [], userLocation = null, zo
               'Area Reports';
 
             return (
-              <Marker key={cluster.id} position={position} icon={icon}>
-                <Popup>
-                  <div style={{ minWidth: '220px', maxWidth: '280px', maxHeight: '220px', overflowY: 'auto' }} className="p-1">
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5 mb-2">
-                      <span className="font-extrabold text-xs text-slate-900 capitalize">
-                        {areaName} ({cluster.items.length})
-                      </span>
-                      <span className="text-[10px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.5 rounded">
+              <Marker
+                key={cluster.id}
+                position={position}
+                icon={icon}
+                eventHandlers={getMarkerEventHandlers()}
+              >
+                <Popup
+                  className="civic-map-popup"
+                  autoPan={true}
+                  autoPanPaddingTopLeft={[25, 85]}
+                  autoPanPaddingBottomRight={[25, 45]}
+                  keepInView={true}
+                >
+                  <div style={{ minWidth: '220px', maxWidth: '280px', maxHeight: '200px', overflowY: 'auto' }} className="p-0.5">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5 mb-2 gap-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="font-extrabold text-xs text-slate-900 capitalize truncate">
+                          {areaName} ({cluster.items.length})
+                        </span>
+                        {distKm !== null && (
+                          <span className="text-[10px] bg-blue-50 text-blue-600 font-bold px-1.5 py-0.5 rounded border border-blue-200 flex-shrink-0">
+                            ~{distKm} km
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.5 rounded flex-shrink-0">
                         Active
                       </span>
                     </div>
@@ -333,7 +533,7 @@ export default function InteractiveHomeMap({ items = [], userLocation = null, zo
                           <div key={item.id || idx} className="text-xs border-b border-slate-100 pb-1.5 last:border-0">
                             <div className="flex items-center gap-1 mb-0.5">
                               <span>{meta.icon}</span>
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate max-w-[140px]">
                                 {meta.label}
                               </span>
                             </div>
@@ -363,14 +563,32 @@ export default function InteractiveHomeMap({ items = [], userLocation = null, zo
           const details = single.content_en || single.details || single.location_text || '';
 
           return (
-            <Marker key={cluster.id} position={position} icon={icon}>
-              <Popup>
-                <div className="p-1 max-w-[220px]">
-                  <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-slate-500 mb-1">
-                    <span>{meta.icon}</span>
-                    <span>{meta.label}</span>
+            <Marker
+              key={cluster.id}
+              position={position}
+              icon={icon}
+              eventHandlers={getMarkerEventHandlers()}
+            >
+              <Popup
+                className="civic-map-popup"
+                autoPan={true}
+                autoPanPaddingTopLeft={[25, 85]}
+                autoPanPaddingBottomRight={[25, 45]}
+                keepInView={true}
+              >
+                <div style={{ minWidth: '200px', maxWidth: '260px' }} className="p-0.5">
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-slate-500">
+                      <span>{meta.icon}</span>
+                      <span className="truncate max-w-[130px]">{meta.label}</span>
+                    </div>
+                    {distKm !== null && (
+                      <span className="text-[10px] bg-blue-50 text-blue-600 font-bold px-1.5 py-0.5 rounded border border-blue-200 flex-shrink-0">
+                        ~{distKm} km
+                      </span>
+                    )}
                   </div>
-                  <p className="font-bold text-xs text-slate-900 leading-tight mb-1">
+                  <p className="font-bold text-xs text-slate-900 leading-snug line-clamp-2 mb-1">
                     {title}
                   </p>
                   {details && (

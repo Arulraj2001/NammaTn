@@ -91,14 +91,21 @@ export default function HomeHero({ userLocation, setUserLocation }) {
   const getNearbyItems = (items) => {
     if (!userLocation) return items;
     return items.filter(item => {
-      if (!item.latitude || !item.longitude) return false;
+      let lat = parseFloat(item.latitude);
+      let lng = parseFloat(item.longitude);
+      if (isNaN(lat) || isNaN(lng)) {
+        if (item.district_slug && DISTRICT_COORDS[item.district_slug]) {
+          [lat, lng] = DISTRICT_COORDS[item.district_slug];
+        }
+      }
+      if (isNaN(lat) || isNaN(lng)) return false;
       const dist = calculateDistance(
         userLocation.latitude,
         userLocation.longitude,
-        parseFloat(item.latitude),
-        parseFloat(item.longitude)
+        lat,
+        lng
       );
-      return dist <= 60;
+      return dist <= 65;
     });
   };
 

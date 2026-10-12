@@ -86,7 +86,7 @@ export default function HolidayAlerts({ initialPosts = [], targetDistrict = null
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
                 {targetDistrict ? `${districtNameDisplay.toUpperCase()} DESK` : T("OFFICIAL COLLECTORATE & WEATHER DESK", "மாவட்ட ஆட்சியர் அறிவிப்புகள்")}
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3 text-white">
                 {targetDistrict
                   ? `${districtNameDisplay} ${T("School & College Holiday Status", "பள்ளி & கல்லூரி விடுமுறை நிலை")}`
                   : T("TN School & College Holiday Alerts", "பள்ளி & கல்லூரி விடுமுறை அறிவிப்புகள்")}

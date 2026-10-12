@@ -9,6 +9,7 @@
 
 import Link from 'next/link';
 import { CATEGORIES, DISTRICT_MAP } from '@/lib/seo-data';
+import { getDistrictBySlug } from '@/lib/districts';
 
 function getAnchorText(cityName, issueName) {
   return `${issueName} in ${cityName}`;
@@ -77,28 +78,42 @@ export function NearbyDistrictLinks({ districtSlug }) {
   if (!district?.nearby?.length) return null;
 
   const nearbyDistricts = district.nearby
-    .map(slug => DISTRICT_MAP[slug])
+    .map(slug => {
+      const d = DISTRICT_MAP[slug];
+      const dMeta = getDistrictBySlug(slug);
+      return d ? { ...d, name_ta: dMeta?.name_ta || '' } : null;
+    })
     .filter(Boolean);
 
   if (!nearbyDistricts.length) return null;
 
   return (
-    <nav aria-label="Nearby cities">
-      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
-        Nearby Cities
-      </p>
-      <ul className="flex flex-wrap gap-2">
+    <nav aria-label="Nearby districts" className="pt-2">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          Neighboring Districts / அருகிலுள்ள மாவட்டங்கள்
+        </h3>
+        <span className="text-[11px] text-slate-400">Hyperlocal Network</span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {nearbyDistricts.map(d => (
-          <li key={d.slug}>
-            <Link
-              href={`/${d.slug}`}
-              className="text-sm text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 underline-offset-2 hover:underline transition-colors"
-            >
+          <Link
+            key={d.slug}
+            href={`/${d.slug}`}
+            className="flex flex-col p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-emerald-500/50 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/20 transition-all group shadow-xs"
+          >
+            <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
               {d.name}
-            </Link>
-          </li>
+            </span>
+            {d.name_ta && (
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-tamil mt-0.5">
+                {d.name_ta}
+              </span>
+            )}
+          </Link>
         ))}
-      </ul>
+      </div>
     </nav>
   );
 }
