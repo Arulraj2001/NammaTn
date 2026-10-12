@@ -10,16 +10,16 @@ export function normalizeAcronymsToSpokenTamil(text) {
   if (!text) return '';
 
   const replacements = [
-    // Helplines with natural spoken numbers
-    { regex: /\b1912\b/g, replacement: '1912 (ஒன்னு ஒன்பது ஒன்னு ரெண்டு)' },
-    { regex: /\b1913\b/g, replacement: '1913 (ஒன்னு ஒன்பது ஒன்னு மூணு)' },
-    { regex: /\b1930\b/g, replacement: '1930 (ஒன்னு ஒன்பது மூணு பூஜ்ஜியம்)' },
-    { regex: /\b1100\b/g, replacement: '1100 (ஒன்னு ஒன்னு பூஜ்ஜியம் பூஜ்ஜியம்)' },
-    { regex: /\b1070\b/g, replacement: '1070 (ஒன்னு பூஜ்ஜியம் ஏழு பூஜ்ஜியம்)' },
-    { regex: /\b1077\b/g, replacement: '1077 (ஒன்னு பூஜ்ஜியம் ஏழு ஏழு)' },
-    { regex: /\b1064\b/g, replacement: '1064 (ஒன்னு பூஜ்ஜியம் ஆறு நான்கு - லஞ்ச ஒழிப்பு)' },
-    { regex: /\b1915\b/g, replacement: '1915 (நுகர்வோர் குறைதீர்க்கும் எண்)' },
-    { regex: /\b103\b/g, replacement: '103 (போக்குவரத்து கட்டுப்பாட்டு அறை)' },
+    // Helplines: Speak digits clearly once, no repeated words or brackets
+    { regex: /\b1912\b/g, replacement: 'ஒன்று ஒன்பது ஒன்று இரண்டு' },
+    { regex: /\b1913\b/g, replacement: 'ஒன்று ஒன்பது ஒன்று மூன்று' },
+    { regex: /\b1930\b/g, replacement: 'ஒன்று ஒன்பது மூன்று பூஜ்ஜியம்' },
+    { regex: /\b1100\b/g, replacement: 'ஒன்று ஒன்று பூஜ்ஜியம் பூஜ்ஜியம்' },
+    { regex: /\b1070\b/g, replacement: 'ஒன்று பூஜ்ஜியம் ஏழு பூஜ்ஜியம்' },
+    { regex: /\b1077\b/g, replacement: 'ஒன்று பூஜ்ஜியம் ஏழு ஏழு' },
+    { regex: /\b1064\b/g, replacement: 'ஒன்று பூஜ்ஜியம் ஆறு நான்கு' },
+    { regex: /\b1915\b/g, replacement: 'ஒன்று ஒன்பது ஒன்று ஐந்து' },
+    { regex: /\b103\b/g, replacement: 'ஒன்று பூஜ்ஜியம் மூன்று' },
 
     // Government Departments & Utilities
     { regex: /\bTANGEDCO\b/gi, replacement: 'டான்ஜெட்கோ மின்வாரியம்' },
@@ -208,9 +208,8 @@ export function createConversationalShortsScript(posts, districtName = 'தம�
     }
   });
 
-  parts.push(`கரண்ட் கட் புகார்களுக்கு 1912 உதவி எண்ணையும், மாநகராட்சி புகார்களுக்கு 1913 எண்ணையும் உடனே அழைக்கலாம்.`);
-  parts.push(`இந்த தகவலை உங்க பிரண்ட்ஸ் மற்றும் குடும்பத்தினருக்கு மறக்காம ஷேர் பண்ணுங்க.`);
-  parts.push(`முழு விவரங்களை தெரிஞ்சுக்க விழி டிஎன் டாட் இன் வலைத்தளத்தை பாருங்க, சப்ஸ்கிரைப் பண்ணிக்கோங்க!`);
+  parts.push(`மின் தடை புகார்களுக்கு ஒன்று ஒன்பது ஒன்று இரண்டு எண்ணையும், மாநகராட்சி புகார்களுக்கு ஒன்று ஒன்பது ஒன்று மூன்று எண்ணையும் தொடர்பு கொள்ளலாம்.`);
+  parts.push(`உங்க ஏரியாவில நடக்கிற பிரச்சனைகளை vizhitn.in இணையதளத்தில் நீங்களே நேரடியாக பதிவு பண்ணுங்க. உங்க பக்கத்துல என்ன நடக்குதுன்னு ஒட்டுமொத்த தமிழகமும் தெரிஞ்சுக்கட்டும்! விழி தமிழ்நாடு சேனலை மறக்காம சப்ஸ்கிரைப் பண்ணிக்கோங்க மக்களே!`);
 
   return parts;
 }

@@ -87,10 +87,18 @@ export async function uploadToYouTube({
   console.log('[YOUTUBE] Requesting fresh OAuth2 token...');
   const accessToken = await getFreshAccessToken();
 
+  // Sanitize title to fit YouTube's strict 100-character and character restrictions
+  let safeTitle = (title || 'VizhiTN Tamil Nadu Special Report')
+    .replace(/[<>]/g, '')
+    .trim();
+  if (safeTitle.length > 95) {
+    safeTitle = safeTitle.slice(0, 92).trim() + '...';
+  }
+
   // 1. Initialize Resumable Upload Session with 2026 Synthetic Media Tag
   const metadata = {
     snippet: {
-      title,
+      title: safeTitle,
       description,
       tags,
       categoryId,

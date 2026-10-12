@@ -60,6 +60,7 @@ jobs:
       - name: Execute YouTube Production Pipeline
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YOUTUBE_GEMINI_API_KEY: ${{ secrets.YOUTUBE_GEMINI_API_KEY || secrets.GEMINI_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
           NEXT_PUBLIC_VITE_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_VITE_SUPABASE_URL || secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
