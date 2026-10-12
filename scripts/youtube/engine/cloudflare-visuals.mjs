@@ -41,10 +41,7 @@ export async function generateYouTubeSceneVisual(prompt, outputFilePath, aspectR
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        prompt: `${prompt}, realistic photo, Tamil Nadu India setting, authentic documentary journalism style, hyper-detailed, 8k, cinematic natural lighting, no text, no watermark`,
-        width,
-        height,
-        num_steps: 4
+        prompt: `${prompt}, realistic photo, Tamil Nadu India setting, authentic documentary journalism style, hyper-detailed, 8k, cinematic natural lighting, no text, no watermark`
       })
     });
 
