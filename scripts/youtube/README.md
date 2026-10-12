@@ -2,7 +2,7 @@
 
 An autonomous, production-grade video production and publishing engine designed specifically for **VizhiTN** (`vizhitn.in`).
 
-This engine converts live Tamil Nadu civic alerts and in-depth investigative articles into high-engagement **YouTube Shorts** and **Weekly Long-Form Explainers** with **zero recurring software or API costs**.
+This engine converts live Tamil Nadu civic alerts, practical citizen dispute solutions, and in-depth investigative articles into high-engagement **YouTube Shorts** and **Weekly Long-Form Explainers** with **zero recurring software or API costs**.
 
 ---
 
@@ -16,83 +16,100 @@ scripts/youtube/
 ├── config.mjs                         # Brand palette, aspect ratios, Edge-TTS voices
 ├── engine/
 │   ├── browser-detector.mjs           # Auto-detects Chrome/Chromium/Edge cross-platform
-│   ├── tts-engine.mjs                 # Microsoft Edge-TTS neural Tamil voice synthesis
+│   ├── tts-engine.mjs                 # Micro-chunk neural speech synthesizer with SSML breath pauses
+│   ├── tamil-phonetics.mjs            # Spoken Tamil normalizer & Citizen Dispute Knowledge Base
+│   ├── cloudflare-visuals.mjs         # Dedicated Cloudflare FLUX 9:16 & 16:9 scene generator
 │   ├── frame-renderer.mjs             # Headless browser HTML card renderer (HarfBuzz Tamil shaping)
-│   ├── video-composer.mjs             # FFmpeg stitcher, audio ducking, subtitle burn-in
-│   └── youtube-client.mjs             # Resumable YouTube Data API v3 uploader with OAuth2 auto-refresh
+│   ├── thumbnail-engine.mjs           # High-CTR 16:9 custom thumbnail generator
+│   ├── video-composer.mjs             # FFmpeg stitcher, Ken Burns zoompan motion, audio ducking
+│   └── youtube-client.mjs             # Resumable YouTube API v3 uploader (2026 AI disclosure compliant)
 ├── templates/
 │   ├── shorts/
-│   │   └── daily-digest-card.html     # 1080x1920 (9:16) high-contrast civic news ticker layout
+│   │   ├── scene-1-hook.html          # Scene 1: Photorealistic FLUX visual + Question Hook + Radar
+│   │   ├── scene-2-breakdown.html     # Scene 2: High-contrast data cards with timings & badges
+│   │   ├── scene-3-helpline.html      # Scene 3: Emergency helplines (1912, 1913, 1930) + vizhitn.in CTA
+│   │   └── daily-digest-card.html     # Single-frame fallback layout
 │   └── long-form/
 │       └── chapter-slide.html         # 1920x1080 (16:9) multi-chapter investigative slide layout
 └── pipelines/
-    ├── generate-shorts.mjs            # Daily Civic Shorts Pipeline (40-55s)
-    └── generate-long-video.mjs        # Weekly 3x Long-Form Video Pipeline (3-5 mins)
+    ├── generate-rights-shorts.mjs     # Daily 1:30 PM IST Citizen Dispute Solution Short (50s)
+    ├── generate-shorts.mjs            # Daily 7:30 PM IST Civic Lifeline Alert Short (50s)
+    └── generate-long-video.mjs        # Weekly 3x Long-Form Documentary Explainer (6–9 mins)
 ```
 
 ---
 
-## 🎬 Dual Production Formats
+## 🎬 The Tri-Slot Broadcast Schedule
 
-### 1. Daily Shorts (9:16 Vertical, 1080x1920, 40–55s)
-* **Frequency:** Daily at 7:30 PM IST (following the 7:00 PM evening digest).
-* **Source:** Supabase `post` table (latest active high-urgency alerts across 38 districts).
-* **Structure:**
-  1. **Hook (0:00 - 0:05):** *"இன்றைய முக்கிய தமிழ்நாடு நிர்வாக அப்டேட்ஸ்!"*
-  2. **Civic Alert Cards (0:05 - 0:38):** Top 3 alerts (Electricity shutdown, water supply, transport/weather) with exact timings and areas.
-  3. **Official Helpline Banner (0:38 - 0:45):** 1912 (Minnalagam), 1913 (Corporation), 1930 (Cyber Crime).
-  4. **Call-to-Action (0:45 - 0:50):** `vizhitn.in` citizen portal link.
-* **Audio Voice:** `ta-IN-PallaviNeural` (crisp neural newsreader).
+### 1. Slot 1: Citizen Rights & Dispute Guide (`yt:rights`)
+* **Schedule:** Daily at **01:30 PM IST** (Lunchtime slot).
+* **Format:** 1080×1920 (9:16 Vertical Short), 50–65s.
+* **Content:** Real-life disputes that ordinary citizens face (House owner advance, parking nuisance, traffic police rules, loan apps, bribes for Patta).
+* **3-Step Structure:**
+  1. **Step 1 (How to Behave):** De-escalate, stay calm, written notices.
+  2. **Step 2 (Evidence Gathering):** WhatsApp proof, bank transactions, video records.
+  3. **Step 3 (Legal Sections & Helplines):** Exact Act (TNRRRL Act, MV Act, Section 133, DVAC 1064, Cyber 1930, CM Cell 1100).
 
-### 2. Weekly Thrice Long-Form Explainers (16:9 Landscape, 1920x1080, 3–5 Minutes)
-* **Editorial Schedule:**
-  * **Monday (7:00 AM IST):** *Mega Infrastructure & Transit* (CMRL Metro Phase 2, Flyovers, Port-Maduravoyal Expressway).
-  * **Wednesday (7:00 AM IST):** *Welfare Schemes & Citizen Rights* (Kalaignar Magalir Urimai, Ration Card, Patta Transfers, Minnalagam EB complaints).
-  * **Friday (7:00 AM IST):** *State Economy, Agriculture & Green TN* (Canal desilting, Cauvery water, SIPCOT corridors, solar expansion).
-* **Source:** Supabase `tn_today` investigative articles (`status = 'published'`).
-* **Visuals:** Cloudflare FLUX 16:9 hero photo paired with bilingual chapter breakdown.
-* **Structure:**
-  * Chapter 1: அறிமுகம் & திட்ட பின்னணி (Overview & Origin)
-  * Chapter 2: முக்கிய திட்ட விவரங்கள் & நிதி ஒதுக்கீடு (Key Specifications, Budget & Timeline)
-  * Chapter 3: கள நிலவரம் & துறைசார் பொறுப்புக்கூறல் (Ground Impact & Department Accountability)
-  * Chapter 4: மக்கள் உரிமை & முடிவுரை (Citizen Rights & Helplines)
-* **Audio Voice:** `ta-IN-ValluvarNeural` (authoritative documentary tone).
+### 2. Slot 2: Daily Lifeline Civic Alert (`yt:shorts`)
+* **Schedule:** Daily at **07:30 PM IST** (Evening commute slot).
+* **Format:** 1080×1920 (9:16 Vertical Short), 45–55s.
+* **Content:** Live TANGEDCO power shutdowns, water supply pipelines, CMRL diversions, heavy rain alerts across all 38 districts.
+* **Audio Voice:** Conversational Spoken Tamil (*"ஹலோ மக்களே!"*).
+
+### 3. Slot 3: Weekly In-Depth Documentary (`yt:long`)
+* **Schedule:** **Mon, Wed, Fri at 07:00 AM IST**.
+* **Format:** 1920×1080 (16:9 Landscape), 6 to 9 minutes.
+* **Themes:**
+  * **Monday:** Mega Infrastructure & Transit (CMRL Phase 2, Flyovers, Expressways).
+  * **Wednesday:** Welfare Schemes & Citizen Rights (Kalaignar Magalir Urimai, Ration Card, Minnalagam).
+  * **Friday:** State Economy, Agriculture & Green TN (Mettur water, MSP, SIPCOT, green energy).
+* **Includes:** Automatically rendered custom 16:9 thumbnail attached via `youtube.thumbnails.set()`.
 
 ---
 
-## 🔑 YouTube API Setup (One-Time Setup)
+## 🔑 Required API Keys & Secrets
 
-To allow automated publishing to your YouTube channel:
+Add the following secrets to GitHub Secrets and `.env.local`:
 
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a Project named `VizhiTN Automation`.
-3. Enable **YouTube Data API v3** under APIs & Services.
-4. Go to **OAuth consent screen** -> Choose External -> Add test user (your channel Gmail).
-5. Go to **Credentials** -> Create Credentials -> **OAuth Client ID** (Application type: *Desktop App*).
-6. Obtain `Client ID` and `Client Secret`.
-7. Authorize your channel to get a `Refresh Token` with scope `https://www.googleapis.com/auth/youtube.upload`.
-8. Add the following secrets to GitHub Secrets and `.env.local`:
-   * `YOUTUBE_CLIENT_ID`
-   * `YOUTUBE_CLIENT_SECRET`
-   * `YOUTUBE_REFRESH_TOKEN`
+```env
+# 1. Dedicated Cloudflare Workers AI (10,000 Free Neurons/Day for YouTube Visuals)
+YOUTUBE_CLOUDFLARE_ACCOUNT_ID="your_dedicated_account_id"
+YOUTUBE_CLOUDFLARE_API_TOKEN="your_dedicated_api_token"
+
+# 2. YouTube Data API v3 OAuth2 Credentials
+YOUTUBE_CLIENT_ID="your_google_oauth_client_id"
+YOUTUBE_CLIENT_SECRET="your_google_oauth_client_secret"
+YOUTUBE_REFRESH_TOKEN="your_persistent_refresh_token"
+
+# 3. Existing Project Credentials (already present)
+SUPABASE_URL="https://hzgrzcablefquddisqkf.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="your_supabase_key"
+GEMINI_API_KEY="your_gemini_key"
+```
 
 > [!NOTE]
-> If credentials are not set, both pipelines automatically fall back to **DRY-RUN mode**: they render the frames, synthesize the Tamil neural audio, assemble the full MP4 video in `public/youtube_renders/`, and print the upload payload without failing!
+> When running without credentials or with `--dry-run`, all pipelines execute locally: they render all frames, synthesize the Tamil neural speech, compose the MP4 videos with Ken Burns motion, and output the final MP4 to `public/youtube_renders/` without failing.
 
 ---
 
 ## 🚀 Running Locally
 
 ```bash
-# Test Daily Shorts (Generates MP4 locally without uploading)
+# 1. Test Citizen Rights & Dispute Guide Short (Dry Run)
+npm run yt:rights:dry-run
+
+# 2. Publish Citizen Rights Short to YouTube
+npm run yt:rights
+
+# 3. Test Daily Civic Lifeline Short (Dry Run)
 npm run yt:shorts:dry-run
 
-# Run Daily Shorts (Uploads as Public video to YouTube)
+# 4. Publish Daily Civic Short to YouTube
 npm run yt:shorts
 
-# Test Long-Form Explainer (Generates 3-5 min MP4 locally)
+# 5. Test Long-Form Documentary (Dry Run)
 npm run yt:long:dry-run
 
-# Run Long-Form Explainer for a specific TN Today article
-npm run yt:long -- --slug=chennai-metro-phase-2-porur-trial
+# 6. Publish Long-Form Documentary for a specific article
+npm run yt:long -- --slug=chennai-metro-phase-2-corridor-4-poonamallee-porur-stretch-trial-runs-november-s
 ```

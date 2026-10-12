@@ -24,6 +24,8 @@
     "indexnow:all": "node scripts/push-all-indexnow.mjs",
     "yt:shorts": "node scripts/youtube/pipelines/generate-shorts.mjs",
     "yt:shorts:dry-run": "node scripts/youtube/pipelines/generate-shorts.mjs --dry-run",
+    "yt:rights": "node scripts/youtube/pipelines/generate-rights-shorts.mjs",
+    "yt:rights:dry-run": "node scripts/youtube/pipelines/generate-rights-shorts.mjs --dry-run",
     "yt:long": "node scripts/youtube/pipelines/generate-long-video.mjs",
     "yt:long:dry-run": "node scripts/youtube/pipelines/generate-long-video.mjs --dry-run",
     "lint": "eslint . --quiet",

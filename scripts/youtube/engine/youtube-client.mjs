@@ -150,3 +150,42 @@ export async function uploadToYouTube({
   console.log(`[YOUTUBE SUCCESS] Video uploaded successfully: ${videoUrl}`);
   return { videoId, videoUrl, dryRun: false };
 }
+
+/**
+ * Uploads a custom thumbnail to a published YouTube video
+ * @param {string} videoId
+ * @param {string} thumbnailFilePath
+ */
+export async function setYouTubeThumbnail(videoId, thumbnailFilePath) {
+  if (!fs.existsSync(thumbnailFilePath)) return;
+
+  const hasCreds = process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET && process.env.YOUTUBE_REFRESH_TOKEN;
+  if (!hasCreds || videoId === 'DRY_RUN_MOCK_ID') {
+    console.log(`[YOUTUBE DRY-RUN] Custom thumbnail ready for video ${videoId}: ${thumbnailFilePath}`);
+    return;
+  }
+
+  try {
+    const accessToken = await getFreshAccessToken();
+    const imageBuffer = fs.readFileSync(thumbnailFilePath);
+
+    const uploadUrl = `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${videoId}&uploadType=media`;
+    const res = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'image/png',
+        'Content-Length': imageBuffer.length.toString()
+      },
+      body: imageBuffer
+    });
+
+    if (res.ok) {
+      console.log(`[YOUTUBE THUMBNAIL] Successfully attached custom thumbnail to video ${videoId}`);
+    } else {
+      console.warn(`[YOUTUBE THUMBNAIL WARN] Could not set thumbnail: ${res.status}`);
+    }
+  } catch (err) {
+    console.warn(`[YOUTUBE THUMBNAIL ERROR] ${err.message}`);
+  }
+}

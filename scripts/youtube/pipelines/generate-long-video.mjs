@@ -9,7 +9,8 @@ import { normalizeAcronymsToSpokenTamil } from '../engine/tamil-phonetics.mjs';
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleLongFormVideo, getAudioDuration } from '../engine/video-composer.mjs';
-import { uploadToYouTube } from '../engine/youtube-client.mjs';
+import { generateLongVideoThumbnail } from '../engine/thumbnail-engine.mjs';
+import { uploadToYouTube, setYouTubeThumbnail } from '../engine/youtube-client.mjs';
 
 // Load .env.local if running in local environment
 try {
@@ -220,9 +221,25 @@ async function main() {
     isShort: false
   });
 
+  // 7. Generate & Upload Custom High-CTR 16:9 Thumbnail
+  const thumbnailPath = path.join(outDir, `vizhitn_thumb_${article.slug || Date.now()}.png`);
+  console.log('[THUMBNAIL] Rendering custom 16:9 high-CTR thumbnail...');
+  await generateLongVideoThumbnail({
+    titleTa: articleTitleTa,
+    subtitleTa: 'முழு கள ஆய்வு & அரசு ஆவணங்கள்',
+    category: (article.category_slug || 'SPECIAL REPORT').toUpperCase(),
+    heroImageUrl: heroImageSrc,
+    outputPath: thumbnailPath
+  });
+
+  if (uploadResult.videoId) {
+    await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
+  }
+
   console.log('====================================================');
   console.log('CONVERSATIONAL FEATURE VIDEO GENERATED SUCCESSFULLY!');
   console.log('Video URL:', uploadResult.videoUrl);
+  console.log('Thumbnail:', thumbnailPath);
   console.log('====================================================');
 
   for (const ch of processedChapters) {
