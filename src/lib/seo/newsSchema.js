@@ -66,7 +66,7 @@ export function generateNewsArticleSchema({
     isPartOf: {
       '@type': ['CreativeWork', 'Product'],
       name: 'VizhiTN',
-      productID: 'CAowlufHDA:openaccess',
+      productID: 'CAowlefHDA:openaccess',
     },
     copyrightHolder: {
       '@type': 'Organization',

@@ -152,10 +152,35 @@ export default async function Page({ params }) {
     { name: title, href: postUrlPath },
   ];
 
+  const isUtilityOrAlert = post.post_type === 'alert' || ['electricity', 'transport', 'government-schemes', 'education', 'water-sanitation'].includes(post.category_slug);
+  const faqSchema = isUtilityOrAlert ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: post.title_ta || post.title_en,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${post.content_ta || post.content_en || ''} Official Helpline: ${post.assigned_department || '1100'}.`
+        }
+      },
+      {
+        '@type': 'Question',
+        name: `How to register a grievance or contact authority for ${post.district_name || post.district_slug || 'Tamil Nadu'} ${post.category_slug || 'civic services'}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Contact ${post.assigned_department || 'Tamil Nadu CM Helpline 1100'} or Minnalagam 1912 for power cuts, 1913 for GCC flood/civic control, and 1930 for cyber fraud.`
+        }
+      }
+    ]
+  } : null;
+
   return (
     <>
       {postSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(postSchema) }} />}
       {specialAnnouncementSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(specialAnnouncementSchema) }} />}
+      {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }} />
       <Breadcrumbs items={breadcrumbItems} />
       <PostDetail

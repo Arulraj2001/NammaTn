@@ -381,6 +381,13 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
      * Transport/Railway Blocks: "[வழித்தடம்] ரயில்கள் ரத்து: பயணிகள் மாற்று ஏற்பாடுகள் என்ன? முழு நேர விவரம்!"
    - title_en: Search-intent and location upfront (e.g. "[Area] Power Cut Today: Full Street List & Shutdown Timings | TANGEDCO Alert").
 11. SLUG: Provide a clean, SEO-friendly English slug ending with a date code (e.g. "tambaram-power-cut-chennai-${todayStr.replace(/-/g, '')}").
+12. 2026 MULTI-INTENT TRENDING KEYWORDS ("seo_keywords"):
+    Every post MUST include 6 to 8 comma-separated search terms covering all 3 search intents:
+    a) High-Intent English: e.g. "[area] power cut today", "tangedco shutdown timings [district]", "power outage list"
+    b) Tanglish (Tamil in English letters): e.g. "naalai minthadai [area]", "inraiya eb shutdown timings", "current cut timings"
+    c) Pure Tamil Script: e.g. "[பகுதி] மின்தடை இன்று", "மின்சார நிறுத்தம் [மாவட்டம்]", "மின்னகம் 1912"
+13. HIGH-CONVERTING META DESCRIPTION ("seo_description"):
+    145 to 160 characters stating exact area, timing, affected streets, and helpline number. This snippet appears directly below the title in Google search results.
 
 OUTPUT FORMAT:
 Return ONLY a valid JSON array containing the post objects.
@@ -573,7 +580,7 @@ No conversational intro, no commentary outside the JSON array.
   console.log(`[INFO] Gemini generated ${parsedBatch.length} candidate civic posts.`);
 
   // --- STEP 5: NORMALIZE & VALIDATE EACH POST ---
-  const validPosts = [];
+  let validPosts = [];
 
   for (let i = 0; i < parsedBatch.length; i++) {
     const raw = parsedBatch[i];
@@ -850,6 +857,39 @@ No conversational intro, no commentary outside the JSON array.
       }
     } catch (waErr) {
       console.warn(`[WHATSAPP WARN] Channel broadcast warning: ${waErr.message}`);
+    }
+
+    // --- STEP 10: CURATED SOCIAL MEDIA BROADCAST (FACEBOOK & INSTAGRAM) ---
+    // Only broadcast high-impact civic alerts (or when --social flag is passed) to avoid spamming social feeds.
+    // Uses sequential rate-limit protected queue with Cloudflare AI + HarfBuzz card renderer.
+    const enableSocial = process.argv.includes('--social') || process.env.ENABLE_SOCIAL_BROADCAST === 'true';
+    if (enableSocial) {
+      try {
+        const HIGH_ENGAGEMENT_CATEGORIES = [
+          'electricity', 'transport', 'government-schemes', 'education', 'public-safety', 'road-infrastructure'
+        ];
+
+        const topSocialPosts = validPosts
+          .filter(p =>
+            p.urgency_level === 'critical' ||
+            p.urgency_level === 'high' ||
+            (HIGH_ENGAGEMENT_CATEGORIES.includes(p.category_slug) && ['alert', 'local_update'].includes(p.post_type))
+          )
+          .slice(0, 4);
+
+        if (topSocialPosts.length > 0) {
+          console.log(`[SOCIAL BROADCAST] Found ${topSocialPosts.length} priority civic alert(s) for Facebook & Instagram...`);
+          const { broadcastBatchToSocials } = await import('./lib/meta-social-poster.mjs');
+          await broadcastBatchToSocials(topSocialPosts, {
+            delayMs: 3000,
+            isDryRun: isDryRun
+          });
+        } else {
+          console.log('[SOCIAL BROADCAST] No high-priority alerts in this pulse for social broadcasting.');
+        }
+      } catch (sErr) {
+        console.warn(`[SOCIAL BROADCAST WARN] ${sErr.message}`);
+      }
     }
   }
 }

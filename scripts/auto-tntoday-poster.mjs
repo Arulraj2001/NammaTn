@@ -473,7 +473,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
   const wordCountEn = content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
   console.log(`[INFO] Article word count (English): ${wordCountEn} words`);
 
-  const articleObj = {
+  let articleObj = {
     title,
     title_ta: title_ta || title,
     slug,

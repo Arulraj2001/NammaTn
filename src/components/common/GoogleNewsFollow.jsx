@@ -11,7 +11,7 @@ export default function GoogleNewsFollow({ className = "" }) {
   const { language } = useLanguage();
   const isTa = language === "ta";
 
-  const googleNewsUrl = "https://news.google.com/publications/CAowlufHDA";
+  const googleNewsUrl = "https://news.google.com/publications/CAowlefHDA";
 
   return (
     <a

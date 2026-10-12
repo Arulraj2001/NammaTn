@@ -977,6 +977,274 @@ export const getAllSchemes = () => [
         a_ta: "இரண்டு கால்களும் பாதிக்கப்பட்ட 18 முதல் 45 வயதுடைய பணிபுரியும் அல்லது கல்லூரி பயிலும் மாற்றுத்திறனாளிகள் DDAWO அலுவலகத்தில் விண்ணப்பிக்கலாம்."
       }
     ]
+  },
+  {
+    id: "kamarajar-breakfast",
+    slug: "kamarajar-kaalai-unavu-thittam",
+    name_en: "Kamarajar Universal Morning Breakfast Scheme",
+    name_ta: "காமராஜர் காலை உணவுத் திட்டம்",
+    category_en: "Education",
+    category_ta: "கல்வி",
+    department_en: "School Education & Social Welfare Dept",
+    department_ta: "பள்ளிக் கல்வி மற்றும் சமூக நலத் துறை",
+    financial_benefit_en: "Hot, freshly prepared nutritious breakfast served every school working day from 8:15 AM to 8:45 AM across 15,454 government primary and middle schools.",
+    financial_benefit_ta: "15,454 அரசு மற்றும் அரசு உதவிபெறும் தொடக்க & நடுநிலைப் பள்ளிகளில் பயிலும் மாணவர்களுக்கு பள்ளி வேலை நாட்களில் காலை 8:15 முதல் 8:45 வரை சத்தான காலை உணவு.",
+    benefits_en: "Guarantees 100% morning nutritional security, sharply eliminates classroom hunger, boosts attendance by 24%, and improves cognitive concentration for primary students.",
+    benefits_ta: "மாணவர்களின் பசியைப் போக்கி ஊட்டச்சத்தை உறுதி செய்தல், பள்ளி வருகையை 24% அதிகரித்தல் மற்றும் கற்றல் திறனை மேம்படுத்துதல்.",
+    eligibility_en: "• Students enrolled in Classes 1 to 8 in Tamil Nadu Government and Government-aided primary/middle schools.\n• Automatically provided on all school working days without any separate individual fee or application.",
+    eligibility_ta: "• தமிழ்நாடு அரசு மற்றும் அரசு உதவிபெறும் தொடக்க, நடுநிலைப் பள்ளிகளில் 1 முதல் 8-ம் வகுப்பு வரை பயிலும் அனைத்து மாணவர்கள்.\n• எந்தவொரு கட்டணமும் விண்ணப்பமும் இன்றி நேரடியாக பள்ளியிலேயே வழங்கப்படுகிறது.",
+    documents_required_en: [
+      "School Admission Number (EMIS Student ID)",
+      "Student Smart Card / School Register record"
+    ],
+    documents_required_ta: [
+      "பள்ளி மாணவர் EMIS அடையாள எண்",
+      "பள்ளி மாணவர் பதிவு ஆவணம்"
+    ],
+    how_to_apply_en: "1. No individual citizen application needed.\n2. Enrolled students are served directly at their school dining hall before morning prayer assembly.\n3. Parents can monitor daily hygiene and menu compliance through the School Management Committee (SMC) or call the Education helpline 14417.",
+    how_to_apply_ta: "1. தனிப்பட்ட விண்ணப்பம் எதுவும் தேவையில்லை.\n2. பள்ளியில் சேர்க்கை பெற்ற அனைத்து மாணவர்களுக்கும் காலை இறைவணக்கத்திற்கு முன் சூடான உணவு பரிமாறப்படுகிறது.\n3. பெற்றோர் மற்றும் பள்ளி மேலாண்மைக் குழு (SMC) உணவின் தரம் குறித்து கண்காணிக்கலாம். புகார்களுக்கு 14417-ஐ அழைக்கலாம்.",
+    where_to_apply_en: "Administered on-campus at all 15,454 Government & Aided Schools in Tamil Nadu.",
+    where_to_apply_ta: "தமிழ்நாடு முழுவதும் உள்ள 15,454 அரசு மற்றும் உதவிபெறும் பள்ளிகள்.",
+    helpline: "14417 (Education Helpline) / 1100 (CM Helpline)",
+    apply_url: "https://emis.tnschools.gov.in",
+    website_url: "https://emis.tnschools.gov.in",
+    image_url: "/images/evergreen/kamarajar-breakfast.jpg",
+    is_featured: true,
+    faqs: [
+      {
+        q_en: "What is the weekly menu under Kamarajar Breakfast Scheme?",
+        q_ta: "காமராஜர் காலை உணவுத் திட்டத்தின் வாராந்திர உணவு பட்டியல் என்ன?",
+        a_en: "The standard rotation includes Rava/Wheat Kichadi, Pongal with Sambar, Vegetable Upma, Semiya Kichadi, and Rava Kesari/Halwa on designated days, enriched with millets and local greens.",
+        a_ta: "ரவா கிச்சடி, பொங்கல், சாம்பார், காய்கறி உப்புமா, சேமியா கிச்சடி மற்றும் சிறுதானிய உணவுகள் சத்து நிறைந்த காய்கறிகளுடன் சுழற்சி முறையில் வழங்கப்படுகின்றன."
+      },
+      {
+        q_en: "Who can be contacted if food quality is deficient?",
+        q_ta: "உணவின் தரம் குறித்து எங்கு புகார் அளிப்பது?",
+        a_en: "Parents can immediately log a complaint with the Headmaster, local Panchayat/Corporation Ward Councilor, or dial the state 14417 helpline with the school EMIS code.",
+        a_ta: "பள்ளி தலைமை ஆசிரியர் அல்லது மாநில கல்வித் துறை இலவச உதவி எண் 14417-ஐ அழைத்து பள்ளி குறியீட்டுடன் புகார் அளிக்கலாம்."
+      }
+    ]
+  },
+  {
+    id: "mudhal-thalaimurai-pattadhari",
+    slug: "mudhal-thalaimurai-pattadhari-thittam",
+    name_en: "First-Generation Graduate Degree ₹1,000 Monthly Grant",
+    name_ta: "முதல் தலைமுறை பட்டதாரி மாதந்தோறும் ₹1,000 ஊக்கத்தொகை",
+    category_en: "Higher Education",
+    category_ta: "உயர்கல்வி",
+    department_en: "Higher Education & Social Welfare Dept",
+    department_ta: "உயர்கல்வித் துறை",
+    financial_benefit_en: "Direct DBT bank transfer of ₹1,000 every month (₹10,000/year) throughout the undergraduate degree program duration.",
+    financial_benefit_ta: "கல்லூரி பட்டப்படிப்பு முடியும் வரை மாணவ/மாணவியரின் வங்கிக் கணக்கில் மாதம் ₹1,000 (ஆண்டுக்கு ₹10,000) நேரடி வரவு.",
+    benefits_en: "Eliminates economic distress for rural and low-income students who are the first in their immediate family to pursue collegiate education.",
+    benefits_ta: "குடும்பத்தில் முதல் முறையாக கல்லூரி படிக்கும் ஏழை மற்றும் கிராமப்புற மாணவர்களுக்கு புத்தக, பயண செலவுகளுக்கு நிதி உதவி.",
+    eligibility_en: "• Student must be a permanent resident of Tamil Nadu.\n• No person in the student's family (parents, elder siblings) should possess an undergraduate degree.\n• Enrolled in recognized regular Arts, Science, Commerce, Engineering, or Medical degree college.\n• Annual parental family income below ₹3.0 Lakh.",
+    eligibility_ta: "• தமிழ்நாட்டில் நிரந்தர வசிப்பவராக இருக்க வேண்டும்.\n• குடும்பத்தில் (பெற்றோர், உடன்பிறப்புகள்) இதற்கு முன் யாரும் பட்டப்படிப்பு முடித்திருக்கக் கூடாது.\n• அங்கீகரிக்கப்பட்ட கல்லூரியில் வழக்கமான பட்டப்படிப்பில் சேர்ந்திருக்க வேண்டும்.\n• குடும்ப ஆண்டு வருமானம் ₹3.0 லட்சத்திற்குள் இருக்க வேண்டும்.",
+    documents_required_en: [
+      "First Graduate Certificate issued by Revenue Tahsildar (e-Sevai)",
+      "Student Aadhaar Card & College ID",
+      "Family Smart Ration Card",
+      "Bank Passbook (Aadhaar Seeded)",
+      "10th & 12th Marks Statements"
+    ],
+    documents_required_ta: [
+      "வட்டாட்சியர் வழங்கிய முதல் தலைமுறை பட்டதாரி சான்றிதழ் (இ-சேவை)",
+      "மாணவரின் ஆதார் அட்டை & கல்லூரி அடையாள அட்டை",
+      "குடும்ப அட்டை (ஸ்மார்ட் கார்டு)",
+      "ஆதார் இணைக்கப்பட்ட வங்கி கணக்கு பாஸ்புக்",
+      "10 மற்றும் 12-ம் வகுப்பு மதிப்பெண் சான்றிதழ்கள்"
+    ],
+    how_to_apply_en: "1. Obtain First Graduate Certificate from local Taluk e-Sevai centre (requires verification that parents and elder siblings are non-graduates).\n2. Register on the Tamil Nadu Higher Education Scholarship Portal.\n3. Upload college admission receipt, bonafide certificate, and bank details.\n4. Principal verifies and approves for Direct Benefit Transfer (DBT).",
+    how_to_apply_ta: "1. இ-சேவை மையம் மூலம் முதல் பட்டதாரி சான்றிதழ் பெறவும்.\n2. கல்லூரி சேர்க்கை ரசீது மற்றும் போனாஃபைட் சான்றிதழுடன் உதவித்தொகை இணையதளத்தில் விண்ணப்பிக்கவும்.\n3. கல்லூரி முதல்வர் சரிபார்த்து ஒப்புதல் அளித்ததும் வங்கி கணக்கில் நேரடியாக வரவு வைக்கப்படும்.",
+    where_to_apply_en: "e-Sevai Centres across Tamil Nadu and College Scholarship Verification Cell.",
+    where_to_apply_ta: "தமிழ்நாடு இ-சேவை மையங்கள் மற்றும் கல்லூரி உதவித்தொகை பிரிவு.",
+    helpline: "1100 (CM Helpline) / 044-24329286",
+    apply_url: "https://www.tnesevai.tn.gov.in",
+    website_url: "https://www.tnesevai.tn.gov.in",
+    image_url: "/images/evergreen/pudhumai-penn.jpg",
+    is_featured: true,
+    faqs: [
+      {
+        q_en: "Can private self-financing college students apply?",
+        q_ta: "தனியார் சுயநிதி கல்லூரி மாணவர்கள் விண்ணப்பிக்கலாமா?",
+        a_en: "Yes, students admitted through single-window government counseling quota in government-aided and private self-financing colleges are fully eligible.",
+        a_ta: "ஆம். அரசு ஒதுக்கீட்டு இடங்களில் (Counseling Quota) சேர்ந்த மாணவர்கள் இத்திட்டத்தின் கீழ் பயன்பெறலாம்."
+      }
+    ]
+  },
+  {
+    id: "delta-nell-kolmudhal",
+    slug: "delta-nell-kolmudhal-ukkathogai",
+    name_en: "Cauvery Delta Direct Paddy Procurement Incentive (₹2,500/Q)",
+    name_ta: "காவிரி டெல்டா நேரடி நெல் கொள்முதல் ஊக்கத்தொகை (குவிண்டால் ₹2,500)",
+    category_en: "Agriculture",
+    category_ta: "விவசாயம்",
+    department_en: "Food and Civil Supplies Dept (TNSCS)",
+    department_ta: "உணவு மற்றும் நுகர்பொருள் வழங்கல் துறை",
+    financial_benefit_en: "Fixed procurement price of ₹2,500 per quintal for Grade-A fine paddy and ₹2,450 for common varieties, credited via DBT within 48 hours.",
+    financial_benefit_ta: "சன்ன ரக நெல்லுக்கு குவிண்டாலுக்கு ₹2,500 மற்றும் பொது ரகத்திற்கு ₹2,450 கொள்முதல் விலை; 48 மணி நேரத்திற்குள் வங்கிக் கணக்கில் வரவு.",
+    benefits_en: "Eliminates private exploitation by middlemen, provides transparent electronic weighing at Direct Procurement Centres (DPCs), and guarantees fair return for paddy cultivation.",
+    benefits_ta: "இடைத்தரகர் கமிஷன் சுரண்டலைத் தடுத்து, நேரடி நெல் கொள்முதல் நிலையங்களில் எலக்ட்ரானிக் எடை மூலம் வெளிப்படையான விலை உத்தரவாதம்.",
+    eligibility_en: "• Small, marginal, and tenant paddy farmers residing in Thanjavur, Tiruvarur, Nagapattinam, Mayiladuthurai, Pudukkottai, Trichy, Cuddalore, and delta zones.\n• Must cultivate registered wetland paddy and possess Chitta/Adangal extract.",
+    eligibility_ta: "• தஞ்சாவூர், திருவாரூர், நாகப்பட்டினம், மயிலாடுதுறை, கடலூர் உள்ளிட்ட டெல்டா மாவட்டங்களில் நெல் சாகுபடி செய்யும் விவசாயிகள்.\n• பட்டா, சிட்டா அல்லது அடங்கல் பதிவு வைத்திருக்கும் அனைத்து விவசாயிகள்.",
+    documents_required_en: [
+      "Farmer Aadhaar Card",
+      "Paddy Cultivation Adangal certificate issued by VAO",
+      "Land Ownership Document (Patta) or Lease Tenant Affidavit",
+      "Aadhaar-Seeded Bank Account Passbook"
+    ],
+    documents_required_ta: [
+      "விவசாயியின் ஆதார் அட்டை",
+      "கிராம நிர்வாக அலுவலர் (VAO) வழங்கிய நெல் சாகுபடி அடங்கல்",
+      "பட்டா அல்லது குத்தகை ஒப்பந்த ஆவணம்",
+      "ஆதார் இணைக்கப்பட்ட வங்கி கணக்கு பாஸ்புக் நகல்"
+    ],
+    how_to_apply_en: "1. Register mobile number and land parcel details on the TNSCS e-DPC portal (tnscs.tn.gov.in).\n2. Book an electronic time slot token to bring harvested paddy to the nearest village DPC.\n3. Moisture test (up to 17% permissible) and digital weighment.\n4. Direct bank transfer (DBT) receipt generated on spot; payment credited within 48 hours.",
+    how_to_apply_ta: "1. tnscs.tn.gov.in இணையதளம் மூலம் உங்கள் கிராம நெல் கொள்முதல் நிலைய டோக்கனை முன்பதிவு செய்யவும்.\n2. ஒதுக்கப்பட்ட நேரத்தில் நெல்லை கொண்டு வந்து ஈரப்பத பரிசோதனை (17% வரை) செய்து எடை போடவும்.\n3. எடை ரசீது பெறப்பட்டு 48 மணி நேரத்திற்குள் வங்கி கணக்கில் பணம் வரவு வைக்கப்படும்.",
+    where_to_apply_en: "Direct Procurement Centres (DPCs) in Cauvery Delta and agricultural districts.",
+    where_to_apply_ta: "தமிழ்நாடு நுகர்பொருள் வாணிபக் கழக நேரடி நெல் கொள்முதல் நிலையங்கள் (DPC).",
+    helpline: "1967 (Civil Supplies Toll-Free) / 1800-425-5901",
+    apply_url: "https://www.tnscs.tn.gov.in",
+    website_url: "https://www.tnscs.tn.gov.in",
+    image_url: "/images/evergreen/delta-paddy.jpg",
+    is_featured: true,
+    faqs: [
+      {
+        q_en: "What should a farmer do if a DPC staff demands a bribe or bag commission?",
+        q_ta: "கொள்முதல் நிலையத்தில் மூட்டைக்கு பணம் அல்லது லஞ்சம் கேட்டால் என்ன செய்வது?",
+        a_en: "Strict zero-tolerance policy applies. Immediately dial the Vigilance & Anti-Corruption helpline at 044-22342142 or lodge a direct complaint to the District Collector via 1100.",
+        a_ta: "லஞ்சம் கேட்பது குற்றமாகும். உடனடியாக லஞ்ச ஒழிப்புத் துறை (044-22342142) அல்லது மாவட்ட ஆட்சியர் / 1100 உதவி எண்ணை அழைத்து புகார் அளிக்கலாம்."
+      }
+    ]
+  },
+  {
+    id: "vidiyal-payanam-transit",
+    slug: "vidiyal-payanam-zero-fare-bus",
+    name_en: "Clean Air Electric Transit Fleet & Zero-Fare Bus Drive",
+    name_ta: "விடியல் பயணம்: கட்டணமில்லா பேருந்து & 1,000 மின்சார பேருந்துகள்",
+    category_en: "Public Transport",
+    category_ta: "போக்குவரத்து",
+    department_en: "Transport Department (MTC, SETC, TNSTC)",
+    department_ta: "போக்குவரத்துத் துறை",
+    financial_benefit_en: "Zero ticket fare for women, schoolgirls, transgenders, and senior citizens across all ordinary town bus routes statewide; addition of 1,000 pollution-free electric buses.",
+    financial_benefit_ta: "நகரப் பேருந்துகளில் பெண்கள், பள்ளி மாணவிகள் மற்றும் முதியோருக்கு கட்டணமில்லா பயணம்; 1,000 நவீன மின்சார பேருந்துகள் இயக்கம்.",
+    benefits_en: "Saves ₹1,200 to ₹1,800 monthly for working women and student families while modernizing public transit with air-conditioned zero-emission electric buses.",
+    benefits_ta: "குடும்பங்களின் மாதாந்திர பயணச் செலவில் ₹1,200 முதல் ₹1,800 வரை சேமிப்பு; நகர்ப்புற காற்று மாசைக் குறைத்தல்.",
+    eligibility_en: "• All female passengers (working women, students, homemakers).\n• Schoolgirls in uniform or carrying valid student ID.\n• Transgender persons holding TG welfare ID.\n• Senior citizens (aged 60+) on producing age proof / travel pass.",
+    eligibility_ta: "• அனைத்து பெண்கள் மற்றும் பள்ளி மாணவிகள்.\n• திருநங்கைகள் மற்றும் 60 வயது பூர்த்தியடைந்த மூத்த குடிமக்கள்.",
+    documents_required_en: [
+      "No ticket or pass needed for regular ordinary city buses (pink-board buses)",
+      "Student ID Card for out-of-uniform travel",
+      "Senior Citizen Age Proof / Special Bus Tokens (for express quotas)"
+    ],
+    documents_required_ta: [
+      "சாதாரண கட்டண நகரப் பேருந்துகளில் அடையாள அட்டை தேவையின்றி இலவச பயணம்",
+      "மாணவிகளுக்கு பள்ளி அடையாள அட்டை",
+      "மூத்த குடிமக்களுக்கு வயது சான்றிதழ்"
+    ],
+    how_to_apply_en: "1. Board any ordinary state government town bus (marked with pink branding or zero-fare signage).\n2. Collect the free zero-fare ticket from conductor for passenger audit records.\n3. For electric bus routes in Chennai, Coimbatore, and Madurai, track timings on the Chennai Bus / MTC live tracking app.",
+    how_to_apply_ta: "1. இளஞ்சிவப்பு வண்ண சாதாரண நகரப் பேருந்துகளில் ஏறி இலவச பயணச் சீட்டு பெறவும்.\n2. மின்சார பேருந்துகளின் நேரங்களை சென்னை பஸ் செயலி (Chennai Bus App) மூலம் அறியலாம்.",
+    where_to_apply_en: "Operating across all MTC and TNSTC district depots in Tamil Nadu.",
+    where_to_apply_ta: "அனைத்து தமிழ்நாடு அரசு போக்குவரத்துக் கழக பணிமனைகள்.",
+    helpline: "149 (Transport Complaint Helpline) / 1800-425-6151",
+    apply_url: "https://www.mtcbus.tn.gov.in",
+    website_url: "https://www.mtcbus.tn.gov.in",
+    image_url: "/images/evergreen/free-bus.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "Are Deluxe or Point-to-Point Express buses eligible for free travel?",
+        q_ta: "டீலக்ஸ் அல்லது விரைவுப் பேருந்துகளில் கட்டணமில்லா பயணம் செல்ல முடியுமா?",
+        a_en: "No. Zero-fare travel applies strictly to Ordinary (White board / Pink livery) town bus services operated by MTC and TNSTC.",
+        a_ta: "இல்லை. சாதாரண கட்டண (வெள்ளை மற்றும் இளஞ்சிவப்பு நிற) நகரப் பேருந்துகளுக்கு மட்டுமே இத்திட்டம் பொருந்தும்."
+      }
+    ]
+  },
+  {
+    id: "minnalagam-power-guarantee",
+    slug: "minnalagam-power-fault-guarantee",
+    name_en: "Minnalagam 2.0 Emergency Power Fault Guarantee",
+    name_ta: "மின்னலகம் 2.0: 2 மணி நேர அவசர மின்மாற்றி பழுது நீக்கும் திட்டம்",
+    category_en: "Electricity",
+    category_ta: "மின்சாரம்",
+    department_en: "TANGEDCO (Tamil Nadu Power Distribution)",
+    department_ta: "தமிழ்நாடு மின் உற்பத்தி மற்றும் பகிர்மானக் கழகம்",
+    financial_benefit_en: "Statutory SLA guaranteeing localized transformer breakdown replacement within 120 minutes in urban/corporation areas and 4 hours in rural belts, with zero cost to consumers.",
+    financial_benefit_ta: "மாநகராட்சி பகுதிகளில் 2 மணி நேரத்திற்குள்ளும், கிராமப்புறங்களில் 4 மணி நேரத்திற்குள்ளும் மாற்று மின்மாற்றி அமைத்து மின் விநியோகம் சீர் செய்யப்படும்.",
+    benefits_en: "Completely eliminates the illegal practice of collecting private money for burnt transformer repairs; fast-tracks grievance resolution through GPS-tracked mobile crane squads.",
+    benefits_ta: "மின்மாற்றி பழுதை சரிசெய்ய மக்களிடம் வசூல் செய்யும் முறையை முற்றிலுமாக தடுத்து, அரசே விரைவாக புதிய மின்மாற்றி அமைக்கும் உத்தரவாதம்.",
+    eligibility_en: "• All domestic, agricultural, and commercial electricity consumers in Tamil Nadu.",
+    eligibility_ta: "• தமிழ்நாட்டில் உள்ள அனைத்து வீட்டு மற்றும் விவசாய மின் நுகர்வோர்கள்.",
+    documents_required_en: [
+      "10-digit TANGEDCO Consumer Number",
+      "Exact location / Pole or Substation Number"
+    ],
+    documents_required_ta: [
+      "10 இலக்க மின் இணைப்பு எண் (Consumer Number)",
+      "மின்மாற்றி அமைவிடம் அல்லது மின்கம்ப எண்"
+    ],
+    how_to_apply_en: "1. Dial 24x7 Minnalagam Helpline at 1912.\n2. State the breakdown: 'Transformer burnt / Sparks / Complete local blackout'.\n3. An instant SMS docket number with assigned Assistant Engineer (AE) contact is sent to your phone.\n4. Mobile buffer squad is dispatched from the taluk reserve yard.",
+    how_to_apply_ta: "1. 1912 என்ற 24 மணி நேர மின்னகம் உதவி எண்ணை அழைக்கவும்.\n2. உங்கள் பகுதி மின் இணைப்பு எண் மற்றும் மின்மாற்றி பழுதை தெரிவிக்கவும்.\n3. உடனே SMS மூலம் புகார் எண் மற்றும் பொறுப்பு பொறியாளர் எண் வரும். மாற்று மின்மாற்றி உடனடியாக அனுப்பி வைக்கப்படும்.",
+    where_to_apply_en: "TANGEDCO Sections and Minnalagam 24x7 Central Monitoring Cell.",
+    where_to_apply_ta: "மின்வாரிய பிரிவு அலுவலகங்கள் மற்றும் 1912 உதவி மையம்.",
+    helpline: "1912 (Minnalagam 24x7) / 94987 94987 (WhatsApp)",
+    apply_url: "https://www.tnebltd.org",
+    website_url: "https://www.tnebltd.org",
+    image_url: "/images/evergreen/eb-power.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "Can TANGEDCO linesmen ask for vehicle or labor fees to change a transformer?",
+        q_ta: "மின்மாற்றி மாற்ற லைன்மேன்கள் அல்லது ஊழியர்கள் பணம் கேட்கலாமா?",
+        a_en: "Strictly illegal. Transformer replacement, crane transport, and oil maintenance are 100% funded by TANGEDCO. Demands for money should be reported to 1912 or the anti-corruption cell.",
+        a_ta: "முற்றிலும் சட்டவிரோதம். மின்மாற்றி மாற்றம் மற்றும் வாகனம் முழுவதும் மின்வாரிய செலவிலேயே செய்யப்படுகிறது. யாரிடமும் பணம் கொடுக்கக் கூடாது."
+      }
+    ]
+  },
+  {
+    id: "makkalodu-vijay-camps",
+    slug: "makkalodu-vijay-grievance-camps",
+    name_en: "Makkalodu Vijay Taluk Grievance Camps",
+    name_ta: "\"மக்களோடு விஜய்\" வட்டார மக்கள் குறைதீர்ப்பு முகாம்கள்",
+    category_en: "Governance",
+    category_ta: "நிர்வாகம்",
+    department_en: "Revenue and Disaster Management Department",
+    department_ta: "வருவாய் மற்றும் பேரிடர் மேலாண்மைத் துறை",
+    financial_benefit_en: "Free on-the-spot settlement of long-pending Patta transfers, smart ration card address mutations, senior citizen pensions, and Aadhaar corrections without visiting government offices repeatedly.",
+    financial_benefit_ta: "நீண்டகால நிலுவையில் உள்ள பட்டா மாற்றம், ரேஷன் அட்டை திருத்தம் மற்றும் முதியோர் உதவித்தொகை மனுக்களுக்கு ஒரே நாளில் தீர்வு.",
+    benefits_en: "Bypasses village brokers and revenue middlemen; brings District Collectors, RDOs, and Tahsildars directly to village panchayat centres on scheduled Saturdays.",
+    benefits_ta: "தரகர்கள் இன்றி மாவட்ட ஆட்சியர் மற்றும் வட்டாட்சியர் முன்னிலையில் ஒரே கூரையின் கீழ் அனைத்து மக்கள் பிரச்சனைகளுக்கும் உடனடி தீர்வு.",
+    eligibility_en: "• Any citizen of Tamil Nadu facing delays in revenue, municipal, or welfare department services.",
+    eligibility_ta: "• வருவாய்த் துறை மற்றும் அரசு சேவைகளில் தாமதத்தை சந்திக்கும் அனைத்து தமிழக பொதுமக்கள்.",
+    documents_required_en: [
+      "Aadhaar Card",
+      "Existing Land Documents / Deed / Patta Copy (for land issues)",
+      "Smart Ration Card copy",
+      "Written Petition stating the pending grievance"
+    ],
+    documents_required_ta: [
+      "ஆதார் அட்டை",
+      "பத்திர நகல் / நில ஆவணங்கள் (பட்டா தொடர்பான மனுக்களுக்கு)",
+      "குடும்ப அட்டை நகல்",
+      "எழுத்துப்பூர்வ மனு"
+    ],
+    how_to_apply_en: "1. Check the monthly Taluk camp schedule on vizhitn.in or District Collectorate public notice.\n2. Arrive at the Taluk camp venue on designated Saturday at 9:30 AM with your documents.\n3. Submit petition at the digital token counter and attend hearing with the Tahsildar / Collector.\n4. Certified resolution orders are handed over by 4:00 PM on the same day.",
+    how_to_apply_ta: "1. மாவட்ட ஆட்சியர் அறிவிக்கும் சனிக்கிழமை முகாம் இடத்திற்கு காலை 9:30 மணிக்கு ஆவணங்களுடன் செல்லவும்.\n2. டோக்கன் பெற்று மனுவை பதிவு செய்து அதிகாரிகள் முன் ஆஜராகவும்.\n3. ஆவணங்கள் சரியாக இருக்கும் பட்சத்தில் மாலை 4 மணிக்குள் உத்தரவு நகல் வழங்கப்படும்.",
+    where_to_apply_en: "Held rotationally across all 312 Taluk Offices and Block Development Offices in Tamil Nadu.",
+    where_to_apply_ta: "தமிழ்நாடு முழுவதும் உள்ள 312 வட்டாட்சியர் அலுவலகங்கள் மற்றும் வட்டார வளர்ச்சி அலுவலகங்கள்.",
+    helpline: "1100 (CM Helpline) / 1077 (Collectorate Control)",
+    apply_url: "https://cmcell.tn.gov.in",
+    website_url: "https://cmcell.tn.gov.in",
+    image_url: "/images/evergreen/cm-cell.jpg",
+    is_featured: false,
+    faqs: [
+      {
+        q_en: "Can disputed land ownership cases be resolved at the one-day camp?",
+        q_ta: "நீதிமன்றத்தில் உள்ள நிலப் பிரச்சனைகளுக்கு இந்த முகாமில் தீர்வு கிடைக்குமா?",
+        a_en: "No. Civil court litigations cannot be settled at revenue camps. However, undisputed legal heir Patta transfers, sub-divisions, and computer errors are resolved immediately.",
+        a_ta: "நீதிமன்ற வழக்கில் உள்ள விவகாரங்களுக்கு தீர்வு காண முடியாது. ஆனால் வாரிசுரிமை பட்டா மாற்றம், நில உட்பிரிவு போன்றவற்றுக்கு உடனடி தீர்வு உண்டு."
+      }
+    ]
   }
 ];
 
@@ -1808,6 +2076,69 @@ export const getAllRights = () => [
         a_ta: "முடியாது. சட்டப்பூர்வ வேலை வரம்பு 8 மணி நேரம் மட்டுமே. அதற்கு மேல் பணிபுரிந்தால் இரட்டிப்பு ஊதியம் வழங்கப்பட வேண்டும்."
       }
     ]
+  },
+  {
+    id: "right-cm-cell",
+    slug: "cm-cell-petition-redressal-guide",
+    name_en: "CM Special Cell (1100 Helpline) & Petition Redressal Right",
+    name_ta: "முதலமைச்சர் தனிப்பிரிவு (1100 உதவி எண்) & மக்கள் மனு உரிமை",
+    seo_title_en: "CM Cell Petition Tamil Nadu: 1100 Helpline, 30-Day Resolution SLA & Tracking",
+    seo_title_ta: "தமிழ்நாடு முதலமைச்சர் தனிப்பிரிவு மனு: 1100 உதவி எண் & 30 நாள் தீர்வு வழிகாட்டி",
+    seo_desc_en: "Complete statutory guide to filing petitions with the Chief Minister's Special Cell (CM Cell) in Tamil Nadu: Toll-Free 1100, cmcell.tn.gov.in portal, 30-day disposal SLA, and Tahsildar escalation.",
+    seo_desc_ta: "தமிழ்நாடு முதல்வர் தனிப்பிரிவில் புகார் அளிக்கும் முறை: 1100 இலவச எண், இணையதள மனு பதிவு, 30 நாள் காலக்கெடு மற்றும் மாவட்ட ஆட்சியர் தீர்வு விவரங்கள்.",
+    statutory_section_en: "Tamil Nadu Citizens Charter & CM Special Cell Procedural Code",
+    statutory_section_ta: "தமிழ்நாடு குடிமக்கள் சாசனம் & முதல்வர் தனிப்பிரிவு நடைமுறை விதிகள்",
+    timeline_sla_en: "30 Calendar Days Mandatory Disposal Window",
+    timeline_sla_ta: "30 நாட்களுக்குள் தீர்வு காணும் கட்டாய காலக்கெடு",
+    penalty_en: "Unresolved petitions escalated to District Collector review; adverse remarks entered in departmental officer ACR",
+    penalty_ta: "தீர்க்கப்படாத மனுக்கள் ஆட்சியர் ஆய்வுக்கு செல்லும்; அலட்சியம் காட்டும் அதிகாரிகள் மீது துறை நடவடிக்கை",
+    fee_en: "Completely Free (No Court Fee stamp or fee needed)",
+    fee_ta: "முற்றிலும் இலவசம் (எவ்வித கட்டணமும் தேவையில்லை)",
+    helpline: "1100",
+    helpline_name_en: "Chief Minister Special Cell (24x7 Toll-Free)",
+    helpline_name_ta: "முதலமைச்சர் தனிப்பிரிவு (24x7 இலவச உதவி எண்)",
+    desc_en: "Guarantees every resident of Tamil Nadu the statutory right to petition the Chief Minister directly for delayed civic works, administrative corruption, or pending welfare entitlements.",
+    desc_ta: "அரசு சேவைகளில் தாமதம், ஊழல் அல்லது நலத்திட்டங்கள் கிடைக்காத போது பொதுமக்கள் நேரடியாக முதல்வரிடம் மனு அளித்து தீர்வு காணும் உரிமை.",
+    content_en: "The Chief Minister's Special Cell functions at Fort St. George, Chennai, and acts as the apex citizen grievance redressal mechanism of Tamil Nadu. Every petition filed via 1100, online portal, or in person is allotted an automated Docket Tracking Number and forwarded to the concerned District Collector or Department Secretary with a strict 30-day time-bound Action Taken Report (ATR) requirement.",
+    content_ta: "சென்னை தலைமைச் செயலகத்தில் இயங்கும் முதல்வர் தனிப்பிரிவு, தமிழ்நாட்டின் உச்சபட்ச குறைதீர்ப்பு அமைப்பாகும். 1100 அல்லது இணையதளம் மூலம் பதியப்படும் ஒவ்வொரு மனுவிற்கும் SMS புகார் எண் வழங்கப்பட்டு 30 நாட்களுக்குள் தீர்வு அறிக்கை சமர்ப்பிக்கப்பட வேண்டும்.",
+    verbal_script_en: "Sir, I am registering a civic grievance under Chief Minister's Special Cell (1100). My area is [Area, District]. Despite repeated representation to local officials, [Problem: Drinking Water / Road Pothole / Ration Card delay] has not been resolved. Kindly register my docket and forward to the District Collector for 30-day timebound disposal.",
+    verbal_script_ta: "வணக்கம் ஐயா. முதல்வர் தனிப்பிரிவு 1100 மூலம் புகார் பதிவு செய்கிறேன். எனது பகுதி [பகுதி, மாவட்டம்]. உள்ளூர் அதிகாரிகளிடம் பலமுறை தெரிவித்தும் [குடிநீர் / சாலை / ரேஷன் அட்டை பிரச்சனை] தீர்க்கப்படவில்லை. உடனடியாக மாவட்ட ஆட்சியர் கவனத்திற்கு அனுப்பி 30 நாட்களுக்குள் தீர்வு காண கோருகிறேன்.",
+    department_en: "Chief Minister's Office (CMO) & Public Grievance Directorate",
+    department_ta: "முதலமைச்சர் அலுவலகம் & பொது குறைதீர்ப்பு இயக்ககம்",
+    portal_url: "https://cmcell.tn.gov.in",
+    image_url: "/images/evergreen/cm-cell.jpg",
+    key_points_en: [
+      "Direct 24x7 toll-free helpline 1100 from any mobile or landline network",
+      "Automated SMS tracking docket number generated within 3 minutes",
+      "Statutory 30-day resolution time limit binding on District Collectors",
+      "Weekly review meetings monitored directly by Secretariat monitoring officers"
+    ],
+    key_points_ta: [
+      "எந்தவொரு செல்போனிலிருந்தும் அழைக்கக்கூடிய 24 மணி நேர 1100 இலவச உதவி எண்",
+      "மனு பதிவு செய்த 3 நிமிடங்களில் மொபைல் போனுக்கு SMS புகார் எண் வரும்",
+      "மாவட்ட ஆட்சியர்கள் மற்றும் துறைத் தலைவர்களுக்கு 30 நாள் கட்டாய தீர்வு காலக்கெடு",
+      "தலைமைச் செயலக சிறப்பு கண்காணிப்பு அதிகாரிகளால் வாராந்திர ஆய்வு"
+    ],
+    steps_en: [
+      "Dial 1100 Toll-Free or visit cmcell.tn.gov.in to log your grievance with address and phone number",
+      "Receive automated SMS with 12-digit CM Cell Docket ID",
+      "The designated Taluk / Municipal officer inspects the site and uploads an Action Taken Report (ATR)",
+      "If resolution is unsatisfactory, call 1100 again to escalate to 'Re-Opened Hearing' before District Revenue Officer"
+    ],
+    steps_ta: [
+      "1100 இலவச எண்ணை அழைக்கவும் அல்லது cmcell.tn.gov.in தளத்தில் முகவரியுடன் மனு பதிவு செய்யவும்",
+      "உங்கள் மொபைல் போனுக்கு வரும் 12 இலக்க புகார் எண்ணை குறித்துக் கொள்ளவும்",
+      "துறை அதிகாரிகள் நேரில் ஆய்வு செய்து தீர்வு அறிக்கையை (ATR) பதிவேற்றம் செய்வார்கள்",
+      "தீர்வு திருப்திகரமாக இல்லை எனில் மீண்டும் 1100 அழைத்து மேல்முறையீடு செய்யலாம்"
+    ],
+    faqs: [
+      {
+        q_en: "What type of issues can be reported to CM Cell 1100?",
+        q_ta: "1100 முதல்வர் தனிப்பிரிவில் என்னென்ன பிரச்சனைகளை தெரிவிக்கலாம்?",
+        a_en: "Drinking water supply failure, road damage, prolonged TANGEDCO power outages, pending Patta transfers, smart ration card mutations, hospital negligence, and government department delay.",
+        a_ta: "குடிநீர் பிரச்சனை, சேதமடைந்த சாலைகள், மின்தடை, நிலுவையில் உள்ள பட்டா மாற்றம், ரேஷன் அட்டை திருத்தம் மற்றும் அரசு அலுவலகங்களில் நடக்கும் காலதாமதங்களை தெரிவிக்கலாம்."
+      }
+    ]
   }
 ];
 
@@ -2038,6 +2369,114 @@ EC is issued by the Sub-Registrar Office (tnreginet.gov.in). It records all regi
 2. **டிஜிலாக்கர் செல்லுபடி**: DigiLocker / mParivahan செயலியில் உள்ள ஓட்டுநர் உரிமம், RC 100% செல்லுபடியாகும்.
 3. **சாவி பிடுங்கத் தடை**: வாகனச் சாவியை பிடுங்குவது அல்லது உடலளவில் தாக்குவது சட்டவிரோதம்.
 4. **இ-சலான் ரசீது**: அபராதத்திற்கு மின்னணு e-Challan ரசீது கட்டாயம் வழங்கப்பட வேண்டும்.`
+  },
+  {
+    id: "go-ms-89-smart-labs",
+    slug: "go-ms-89-smart-laboratories-tamil-nadu-schools",
+    title_en: "G.O. Ms. No. 89: ₹420 Cr Sanction for Smart STEM Labs in 2,400 TN Govt Schools",
+    title_ta: "அரசாணை எண் 89: 2,400 அரசுப் பள்ளிகளில் ₹420 கோடியில் நவீன ஸ்மார்ட் ஆய்வகங்கள்",
+    category: "education",
+    category_en: "Education & G.O.",
+    category_ta: "பள்ளிக் கல்வி அரசாணை",
+    published_date: "2026-10-04",
+    read_time_minutes: 5,
+    summary_en: "Official Gazette breakdown of School Education G.O. Ms. No. 89 allocating ₹420 Crore for state-of-the-art computer, robotics, and biotechnology laboratories across 2,400 higher secondary schools.",
+    summary_ta: "2,400 அரசு மேல்நிலைப் பள்ளிகளில் உயர் தொழில்நுட்ப கணினி, ரோபோடிக்ஸ் ஆய்வகங்கள் அமைக்க ₹420 கோடி ஒதுக்கீடு செய்த அரசாணை எண் 89 குறித்த விரிவான ஆய்வு.",
+    content_en: `The School Education Department of Tamil Nadu has issued landmark **Government Order (G.O. Ms. No. 89)** sanctioning ₹420 Crore for the universal modernization of 2,400 Government Higher Secondary Schools across all 38 districts.
+
+### Key Provisions of G.O. Ms. No. 89:
+1. **Infrastructure Upgrade**: Every selected government school will receive 20 high-speed networked computing terminals, interactive touch displays, and dedicated high-speed optical fiber connectivity.
+2. **Robotics & AI Curriculum**: Integrated STEM modules designed in partnership with IIT Madras to train rural students in coding, electronics, and applied sciences from Class 9.
+3. **District-Wise Allocation**:
+   - Chennai & Chengalpattu: 210 schools
+   - Coimbatore & Tiruppur: 185 schools
+   - Madurai & Southern Districts: 340 schools
+   - Cauvery Delta & Central TN: 410 schools
+   - Northern & Western Belt: 1,255 schools
+4. **Maintenance Guarantee**: Includes a 3-year Comprehensive Annual Maintenance Contract (CAMC) with mandatory 48-hour hardware replacement clauses to avoid non-functional equipment.
+
+Citizens, parents, and School Management Committees (SMCs) can track laboratory rollout in their local school by referencing G.O. Ms. No. 89 with the Chief Educational Officer (CEO).`,
+    content_ta: `தமிழ்நாடு பள்ளிக் கல்வித் துறை பிறப்பித்துள்ள **அரசாணை எண் 89 (G.O. Ms. No. 89)** மூலம், 38 மாவட்டங்களில் உள்ள 2,400 அரசு மேல்நிலைப் பள்ளிகளில் ₹420 கோடி மதிப்பீட்டில் அதிநவீன ஆய்வகங்கள் அமைக்க நிதி ஒப்புதல் அளிக்கப்பட்டுள்ளது.
+
+### முக்கிய அம்சங்கள்:
+1. **நவீன கணினி வசதிகள்**: ஒவ்வொரு பள்ளிக்கும் 20 அதிவேக கணினிகள், ஸ்மார்ட் போர்டுகள் மற்றும் அதிவேக இணைய இணைப்பு.
+2. **ரோபோடிக்ஸ் & AI பயிற்சி**: ஐஐடி மெட்ராஸ் வழிகாட்டுதலுடன் 9 முதல் 12-ம் வகுப்பு வரை பயிலும் அரசுப் பள்ளி மாணவர்களுக்கு செயல்முறை பயிற்சி.
+3. **பராமரிப்பு உத்தரவாதம்**: 3 ஆண்டு கால இலவச பராமரிப்பு ஒப்பந்தம் மூலம் பழுதடையும் உபகரணங்களை 48 மணி நேரத்திற்குள் மாற்ற உத்தரவு.`
+  },
+  {
+    id: "go-ms-84-monsoon-roads",
+    slug: "go-ms-84-monsoon-road-repair-corporation-zones",
+    title_en: "G.O. Ms. No. 84: Emergency Monsoon Road Desilting & Pothole Patching Directives",
+    title_ta: "அரசாணை எண் 84: வடகிழக்கு பருவமழை அவசர சாலை சீரமைப்பு & மழைநீர் வடிகால் நிதி",
+    category: "road-infrastructure",
+    category_en: "Roads & Highways G.O.",
+    category_ta: "நெடுஞ்சாலைத் துறை அரசாணை",
+    published_date: "2026-09-28",
+    read_time_minutes: 4,
+    summary_en: "Highways & Minor Ports Department directive allocating ₹180 Cr emergency repair funds to eliminate potholes and complete storm-water desilting before Northeast Monsoon onset across 12 Municipal Corporations.",
+    summary_ta: "12 மாநகராட்சி பகுதிகளில் வடகிழக்கு பருவமழை தொடங்கும் முன் பள்ளங்களை சீரமைக்க மற்றும் கால்வாய்களை தூர்வார ₹180 கோடி அவசர நிதி ஒதுக்கீடு செய்த அரசாணை எண் 84.",
+    content_en: `Ahead of the intense Northeast Monsoon spell, the Government of Tamil Nadu issued **G.O. Ms. No. 84 (Highways & Municipal Administration)** releasing ₹180 Crore for fast-track road restoration across 12 City Municipal Corporations.
+
+### Strict Accountability Clauses in the Order:
+1. **Cold-Mix Fast Patching**: Mandates the use of rapid-setting polymer cold asphalt to repair road cuts and potholes even during intermittent rains without traffic disruption.
+2. **Storm-Water Desilting Deadlines**: Complete desilting of arterial roadside culverts and micro-canals with geotagged before-and-after photographic verification.
+3. **Contractor Defect Liability**: Contractors whose newly laid roads peel off within 12 months will face statutory forfeiture of bank guarantees and blacklisting.
+4. **Citizen Reporting Window**: GCC (1913) and municipal helpline integration for 24-hour grievance logging with automated ward engineer dispatch.`,
+    content_ta: `வடகிழக்கு பருவமழையை முன்னிட்டு சாலை பள்ளங்களை உடனடியாக சீரமைக்க மற்றும் மழைநீர் வடிகால்களை தூர்வார **அரசாணை எண் 84** பிறப்பிக்கப்பட்டுள்ளது.
+
+### முக்கிய உத்தரவுகள்:
+1. **மழைக்கால அவசர சாலை சீரமைப்பு**: நவீன பாலிமர் கலவை மூலம் மழை பெய்தாலும் 24 மணி நேரத்திற்குள் பள்ளங்கள் அடைக்கப்பட வேண்டும்.
+2. **தூர்வாரும் பணிகள்**: மழைநீர் வடிகால்கள் தூர்வாரப்பட்டு புவிக்குறியீட்டு (Geo-tag) புகைப்படங்கள் மூலம் உறுதி செய்யப்பட வேண்டும்.
+3. **ஒப்பந்ததாரர் பொறுப்பு**: 12 மாதங்களுக்குள் சேதமடையும் சாலைகளுக்கு ஒப்பந்ததாரரே முழு செலவையும் ஏற்க வேண்டும்.`
+  },
+  {
+    id: "go-ms-79-dbt-audit",
+    slug: "go-ms-79-dbt-electronic-audit-welfare-schemes",
+    title_en: "G.O. Ms. No. 79: Electronic DBT Audit Mandate for Direct Welfare Cash Transfers",
+    title_ta: "அரசாணை எண் 79: அரசு நலத்திட்ட நிதிகள் இடைத்தரகர் இன்றி சேர மின்னணு DBT தணிக்கை",
+    category: "government-schemes",
+    category_en: "Finance & Welfare G.O.",
+    category_ta: "நிதித் துறை அரசாணை",
+    published_date: "2026-09-18",
+    read_time_minutes: 4,
+    summary_en: "Finance Department mandate establishing algorithmic DBT audits and Aadhaar-NPCI mapper validation across all welfare transfer programs to prevent leakage and guarantee 48-hour bank credits.",
+    summary_ta: "அனைத்து அரசு பணப்பரிமாற்ற நலத்திட்டங்களிலும் இடைத்தரகர்களை ஒழித்து தகுதியான பயனாளிகளுக்கு 48 மணி நேரத்திற்குள் வங்கி வரவு கிடைக்க அரசாணை எண் 79 வழிகாட்டுதல்.",
+    content_en: `To guarantee transparent delivery of citizen entitlements, the Finance Department issued **G.O. Ms. No. 79** introducing mandatory automated electronic audits for all Direct Benefit Transfer (DBT) welfare allocations in Tamil Nadu.
+
+### Core Safeguards Implemented:
+1. **NPCI Bank Mapping Verification**: Eliminates manual intermediary cash handling by enforcing automatic routing through the National Payments Corporation of India (NPCI) Aadhaar Payment Bridge.
+2. **Ghost Account Pruning**: Automatic quarterly cross-verification against state Civil Supplies smart card data to weed out inactive duplicate entries.
+3. **Failed Transaction Auto-Retry**: Any transaction rejected due to IFSC or dormant account status triggers an automated SMS notification to the citizen within 6 hours and re-routes payment seamlessly.`,
+    content_ta: `அரசு நலத்திட்ட நிதிகள் முழுமையாக மக்களை சென்றடைவதை உறுதி செய்ய நிதித் துறை **அரசாணை எண் 79**-ஐ வெளியிட்டுள்ளது.
+
+### முக்கிய அம்சங்கள்:
+1. **நேரடி வங்கி வரவு**: இடைத்தரகர் இன்றி பயனாளிகளின் ஆதார் இணைக்கப்பட்ட வங்கிக் கணக்கிற்கு NPCI மூலம் நேரடி பரிமாற்றம்.
+2. **தோல்வியடைந்த பரிவர்த்தனை தீர்வு**: வங்கி கணக்கு கோளாறு காரணமாக பணம் வரவு வைக்கப்படாவிட்டால் 6 மணி நேரத்திற்குள் பயனாளியின் செல்போனுக்கு SMS மூலம் தகவல் தெரிவிக்கப்பட்டு உடனடி தீர்வு.`
+  },
+  {
+    id: "go-ms-72-cyber-police",
+    slug: "go-ms-72-cyber-crime-units-38-districts",
+    name_en: "G.O. Ms. No. 72: Expansion of Cyber Crime Rapid Response Units Across All 38 Districts",
+    title_en: "G.O. Ms. No. 72: Expansion of Cyber Crime Rapid Response Units Across All 38 Districts",
+    title_ta: "அரசாணை எண் 72: 38 மாவட்டங்களிலும் அதிநவீன இணைய குற்ற தடுப்பு பிரிவுகள் விரிவாக்கம்",
+    category: "public-safety",
+    category_en: "Police & Public Safety G.O.",
+    category_ta: "உள்துறை அரசாணை",
+    published_date: "2026-09-02",
+    read_time_minutes: 5,
+    summary_en: "Home (Police) Department order deploying dedicated technical investigators, forensic toolkits, and direct integration with 1930 National Cyber Crime Portal at all 38 District Police Offices.",
+    summary_ta: "ஆன்லைன் நிதி மோசடிகள், போலி SMS மற்றும் வங்கி மோசடிகளை தடுக்க 38 மாவட்ட எஸ்.பி அலுவலகங்களிலும் 24x7 இணைய குற்ற தடுப்பு பிரிவு அமைக்கும் அரசாணை எண் 72.",
+    content_en: `In response to surging digital financial scams and APK fake utility message frauds, the Home Department notified **G.O. Ms. No. 72** upgrading Cyber Crime Police Stations in all 38 revenue districts of Tamil Nadu.
+
+### Critical Capabilities Deployed:
+1. **Golden Hour Fund Freezing**: Direct liaison desk between District Cyber Units and Reserve Bank of India / major scheduled banks to freeze defrauded amounts if reported via 1930 within 2 hours.
+2. **Forensic Mobile Extraction**: Dedicated digital forensic units at every District Police Office (DPO) to analyze malware-infected APK links and fraudulent SMS gateways.
+3. **Public Awareness Desks**: Weekly cyber hygiene clinics conducted at Taluk police stations for senior citizens and college students.`,
+    content_ta: `ஆன்லைன் வங்கி மோசடி, போலி மின் கட்டண SMS மற்றும் கடன் ஆப் மோசடிகளை உடனடியாக தடுக்க உள்துறை **அரசாணை எண் 72**-ஐ பிறப்பித்துள்ளது.
+
+### முக்கிய அம்சங்கள்:
+1. **முக்கிய 2 மணி நேர நிதி முடக்கம் (Golden Hour)**: பணம் திருடப்பட்ட 2 மணி நேரத்திற்குள் 1930 எண்ணை அழைத்தால், வங்கி கணக்குகள் உடனடியாக முடக்கப்பட்டு பணம் மீட்கப்படும்.
+2. **38 மாவட்ட சிறப்பு பிரிவுகள்**: அனைத்து மாவட்ட காவல்துறை கண்காணிப்பாளர் (SP) அலுவலகங்களிலும் அதிநவீன கணினி தடயவியல் ஆய்வகங்கள் அமைப்பு.`
   }
 ];
 

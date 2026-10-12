@@ -129,6 +129,7 @@ export default async function sitemap() {
     // ── TN Politics hub and static pages ────────────────────────────────
     const politicsStaticUrls = [
       { url: `${SITE_URL}/tn-politics`, changeFrequency: 'daily', priority: 0.9, lastModified: new Date() },
+      { url: `${SITE_URL}/tn-politics/cm-vijay`, changeFrequency: 'daily', priority: 1.0, lastModified: new Date() },
       ...['tvk','dmk','aiadmk','bjp-tn','ntk','pmk'].map(party => ({
         url: `${SITE_URL}/tn-politics/party/${party}`,
         changeFrequency: 'daily',
@@ -338,12 +339,14 @@ export default async function sitemap() {
   [
     '/power-cuts-today-tamil-nadu', '/school-college-holiday-alerts',
     '/schemes', '/helplines', '/rights', '/rti', '/esevai',
+    '/tn-politics', '/tn-politics/today', '/tn-politics/cm-vijay',
+    '/tn-politics/weekly/2026-w41', '/tn-politics/monthly/2026-10'
   ].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
+      changeFrequency: path.includes('today') ? 'hourly' : 'daily',
+      priority: path.includes('today') || path.includes('cm-vijay') ? 1.0 : 0.9,
     });
   });
 

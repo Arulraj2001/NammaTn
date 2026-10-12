@@ -129,13 +129,14 @@ export default function RootLayout({ children }) {
             })();`,
           }}
         />
-        {/* Subscribe with Google (Google News) — loaded on-demand for editorial article routes only */}
+        {/* Subscribe with Google / Reader Revenue Manager (Google News Publication ID: CAowlefHDA) */}
         <script
           id="swg-init"
           dangerouslySetInnerHTML={{
             __html: `(function(){
   if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
-    if (window.location.pathname.startsWith('/tn-today/')) {
+    var p = window.location.pathname;
+    if (p.startsWith('/post/') || p.startsWith('/tn-today/') || p.startsWith('/tn-politics/') || p === '/') {
       window.addEventListener('load', function() {
         var s = document.createElement('script');
         s.async = true;
@@ -145,8 +146,8 @@ export default function RootLayout({ children }) {
           basicSubscriptions.init({
             type: "NewsArticle",
             isPartOfType: ["Product"],
-            isPartOfProductId: "CAowlufHDA:openaccess",
-            clientOptions: { theme: "light", lang: "en" },
+            isPartOfProductId: "CAowlefHDA:openaccess",
+            clientOptions: { theme: "light", lang: "ta" },
           });
         });
       });

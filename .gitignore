@@ -39,3 +39,12 @@ import_backup.cjs
 
 # WhatsApp Baileys Auth Session
 scripts/baileys_auth/
+
+# Generated social media assets & scratch
+public/images/posts/
+public/images/fresh-metro-*
+public/images/flawless-tamil-card.*
+public/images/render-card-template.html
+public/images/sample-live-generated.jpg
+scratch/
+

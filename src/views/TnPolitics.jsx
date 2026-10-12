@@ -215,7 +215,7 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
             <span className="inline-block px-3 py-1 mb-3 text-xs font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
               🗳️ {isTa ? 'விழிTN அரசியல் மேடை' : 'VizhiTN Political Desk'}
             </span>
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white dark:text-white leading-tight">
               {isTa ? 'தமிழ்நாடு அரசியல் — 17வது சட்டசபை (2026–2031)' : 'TN Politics — 17th Assembly (2026–2031)'}
             </h1>
             <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
@@ -224,6 +224,30 @@ export default function TnPoliticsView({ posts = [], mlaTrackers = [] }) {
                 : 'Verified Tamil Nadu political reports, TVK government 5-month scorecards, floor debates, and district MLA trackers. Updated daily.'
               }
             </p>
+
+            {/* CM Vijay Administration Tracker & Today's 7 PM Digest Feature Callouts */}
+            <div className="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs font-semibold text-slate-200">
+                  {isTa ? 'அரசு நிர்வாக கண்காணிப்பு & தினசரி அறிக்கை:' : 'Administration Tracker & Daily Digest:'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Link
+                  href="/tn-politics/today"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-xs"
+                >
+                  <span>{isTa ? 'இன்றைய அரசு அறிக்கை (7 PM) →' : "Today's Digest (7 PM) →"}</span>
+                </Link>
+                <Link
+                  href="/tn-politics/cm-vijay"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-colors shadow-xs"
+                >
+                  <span>{isTa ? 'விஜய் என்ன செய்தார்? →' : 'What Did He Do? →'}</span>
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* Party Quick Links Grid */}
