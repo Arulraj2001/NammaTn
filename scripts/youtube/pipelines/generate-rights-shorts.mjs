@@ -12,6 +12,9 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { generateYouTubeSceneVisual } from '../engine/cloudflare-visuals.mjs';
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
 
+import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
+
 // Load .env.local if running in local environment
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -27,6 +30,8 @@ async function main() {
   const isDryRun = process.argv.includes('--dry-run');
   const outDir = path.resolve('public/youtube_renders');
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+
+  const brandLogoDataUri = getBrandLogoDataUri();
 
   // 1. Pick a dispute topic based on day of year
   const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
@@ -78,9 +83,10 @@ async function main() {
     heroPhotoUrl = 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1080&q=80';
   }
 
-  // 5. Render Scene 1 Hook Frame
+  // 5. Render Scene 1 Hook Frame (with Official Brand Logo)
   const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
   let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
+  tplS1 = tplS1.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
   tplS1 = tplS1.replace('{{SCENE_PHOTO_SRC}}', heroPhotoUrl);
   tplS1 = tplS1.replace('{{HOOK_HEADLINE_TA}}', topic.titleTa);
   tplS1 = tplS1.replace('{{DATE_TEXT}}', 'விழி சட்டம் & உரிமைகள்');
@@ -88,9 +94,10 @@ async function main() {
   const s1FramePath = path.join(outDir, `rights_s1_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
 
-  // 6. Render Scene 2 Breakdown Frame
+  // 6. Render Scene 2 Breakdown Frame (with Official Brand Logo)
   const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-2-breakdown.html');
   let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
+  tplS2 = tplS2.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
   tplS2 = tplS2.replace('{{DIGEST_TITLE_TA}}', topic.titleTa);
 
   const stepsCardsHtml = `
@@ -116,9 +123,10 @@ async function main() {
   const s2FramePath = path.join(outDir, `rights_s2_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS2, s2FramePath, { width: 1080, height: 1920 });
 
-  // 7. Render Scene 3 Helpline Frame
+  // 7. Render Scene 3 Helpline Frame (with Official Brand Logo)
   const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
-  const tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
+  let tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
+  tplS3 = tplS3.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
   const s3FramePath = path.join(outDir, `rights_s3_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
 
@@ -139,33 +147,55 @@ async function main() {
 
   console.log(`[COMPOSER] Video generated: ${videoOutputPath}`);
 
-  // 9. Upload with 2026 AI Disclosure Flag
-  const ytTitle = `${topic.titleTa} | Practical Citizen Guide #Shorts`;
-  const ytDesc = `${topic.titleTa}\n\n` +
+  // 9. High-Ranking 2026 SEO Metadata (Bilingual Search Hook + First 125-Char Retention Formula)
+  const ytTitle = topic.seoTitleBilingual || `${topic.titleTa} | Practical Citizen Guide #Shorts #VizhiTN`;
+
+  const socialCaption = `📢 ${topic.titleTa} — சட்டப்படி தீர்வு என்ன? 👇\n` +
     `📌 Step 1: ${topic.step1Behave}\n` +
     `📌 Step 2: ${topic.step2Evidence}\n` +
     `📌 Step 3: ${topic.step3Legal}\n\n` +
-    `📞 Helplines: ${topic.helplineText}\n\n` +
-    `🌐 Read the complete citizen rights legal guide at:\nhttps://vizhitn.in\n\n` +
-    `#TamilNadu #CitizenRights #TamilLaw #VizhiTN #Shorts #LegalAdvice`;
+    `📞 அதிகாரப்பூர்வ உதவி: ${topic.helplineText}\n\n` +
+    `📌 உங்கள் பாதுகாப்பிற்கு சேமித்து (Save) வைத்துக் கொள்ளுங்கள்! நண்பர்களுக்கும் குடும்பத்தினருக்கும் பகிருங்கள் (Share) ↗️\n` +
+    `💬 உங்களுக்கும் இந்த மாதிரி பிரச்சனை ஏற்பட்டிருக்கா? உங்கள் அனுபவத்தை கமெண்டில் சொல்லுங்கள் 👇\n\n` +
+    `🌐 முழு சட்ட வழிகாட்டியை படிக்க: https://vizhitn.in\n\n` +
+    `${(topic.hashtags || ['#TamilShorts', '#VizhiTN', '#CitizenRightsTamil', '#TamilNadu', '#Shorts']).join(' ')}`;
 
-  const tags = ['Tamil Nadu', 'Citizen Rights', 'Tamil Law', 'Legal Advice', 'Police Rules', topic.category, 'VizhiTN', 'Shorts'];
+  const tags = Array.from(new Set([
+    ...(topic.keywords || []),
+    'VizhiTN',
+    'Tamil Nadu',
+    'Citizen Rights',
+    'Tamil Law',
+    'Legal Advice',
+    topic.category,
+    'Shorts'
+  ]));
 
+  // 10. Upload to YouTube
   const uploadResult = await uploadToYouTube({
     videoFilePath: videoOutputPath,
     title: ytTitle,
-    description: ytDesc,
+    description: socialCaption,
     tags,
     privacyStatus: isDryRun ? 'unlisted' : 'public',
     isShort: true
   });
 
   console.log('====================================================');
-  console.log('CITIZEN RIGHTS SHORT GENERATED & PUBLISHED SUCCESSFULLY!');
+  console.log('CITIZEN RIGHTS SHORT GENERATED & PUBLISHED TO YOUTUBE!');
   console.log('Video URL:', uploadResult.videoUrl);
   console.log('====================================================');
 
-  // Cleanup temporary files
+  // 11. Cross-Post to Meta Socials (Instagram Reels & Facebook Videos)
+  await crossPostVideoToMetaSocials({
+    videoFilePath: videoOutputPath,
+    title: ytTitle,
+    caption: socialCaption,
+    isReel: true,
+    isDryRun
+  });
+
+  // Cleanup temporary frames and audio
   const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath];
   for (const t of temps) {
     try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}

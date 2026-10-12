@@ -49,26 +49,31 @@
       align-items: center;
       justify-content: space-between;
     }
-    .logo-badge {
+    .brand-logo-pill {
       display: flex;
       align-items: center;
       gap: 16px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 10px 24px 10px 14px;
+      border-radius: 9999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
     }
-    .logo-icon {
-      width: 64px;
-      height: 64px;
-      background: #2563eb;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .brand-logo-img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: #ffffff;
+      padding: 3px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .brand-logo-text {
       font-size: 36px;
       font-weight: 900;
-      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
-    }
-    .logo-text {
-      font-size: 38px;
-      font-weight: 900;
+      color: #ffffff;
       letter-spacing: -0.5px;
     }
 
@@ -152,9 +157,9 @@
 
   <div class="container">
     <div class="top-bar">
-      <div class="logo-badge">
-        <div class="logo-icon">✓</div>
-        <div class="logo-text">VizhiTN</div>
+      <div class="brand-logo-pill">
+        <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
+        <span class="brand-logo-text">VizhiTN</span>
       </div>
       <div class="live-alert-pill">
         <div class="pulse-dot"></div> LIVE ALERT

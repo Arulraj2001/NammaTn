@@ -27,10 +27,31 @@
       justify-content: space-between;
       margin-bottom: 24px;
     }
-    .brand-title {
-      font-size: 38px;
+    .brand-logo-pill {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 10px 24px 10px 14px;
+      border-radius: 9999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    }
+    .brand-logo-img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 3px;
+    }
+    .brand-logo-text {
+      font-size: 34px;
       font-weight: 900;
       color: #ffffff;
+      letter-spacing: -0.5px;
     }
     .badge-pill {
       background: #2563eb;
@@ -137,7 +158,10 @@
 </head>
 <body>
   <div class="header-bar">
-    <div class="brand-title">✓ VizhiTN | மக்கள் களம்</div>
+    <div class="brand-logo-pill">
+      <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
+      <span class="brand-logo-text">VizhiTN | மக்கள் களம்</span>
+    </div>
     <div class="badge-pill">TODAY'S DIGEST</div>
   </div>
 

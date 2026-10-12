@@ -11,6 +11,8 @@ import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video-composer.mjs';
 import { generateYouTubeSceneVisual } from '../engine/cloudflare-visuals.mjs';
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
+import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 
 // Load .env.local if running in local environment
 try {
@@ -110,9 +112,12 @@ async function main() {
     heroPhotoUrl = 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1080&q=80';
   }
 
-  // 5. Render Scene 1 Hook Frame
+  const brandLogoDataUri = getBrandLogoDataUri();
+
+  // 5. Render Scene 1 Hook Frame (with Official Brand Logo)
   const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
   let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
+  tplS1 = tplS1.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
   tplS1 = tplS1.replace('{{SCENE_PHOTO_SRC}}', heroPhotoUrl);
   tplS1 = tplS1.replace('{{HOOK_HEADLINE_TA}}', `உங்க ஏரியால இன்னைக்கு கரண்ட் கட் இருக்கா?`);
   tplS1 = tplS1.replace('{{DATE_TEXT}}', dateStr);
@@ -120,7 +125,7 @@ async function main() {
   const s1FramePath = path.join(outDir, `short_s1_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
 
-  // 6. Render Scene 2 Breakdown Frame
+  // 6. Render Scene 2 Breakdown Frame (with Official Brand Logo)
   let cardsHtml = '';
   posts.forEach((p) => {
     const isWarn = p.urgency_level === 'high' || p.urgency_level === 'medium';
@@ -140,15 +145,17 @@ async function main() {
 
   const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-2-breakdown.html');
   let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
+  tplS2 = tplS2.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
   tplS2 = tplS2.replace('{{DIGEST_TITLE_TA}}', `இன்றைய முக்கிய நிர்வாக அறிவிப்புகள் (${timeStr})`);
   tplS2 = tplS2.replace('{{ALERTS_CARDS_HTML}}', cardsHtml);
 
   const s2FramePath = path.join(outDir, `short_s2_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS2, s2FramePath, { width: 1080, height: 1920 });
 
-  // 7. Render Scene 3 Helpline Frame
+  // 7. Render Scene 3 Helpline Frame (with Official Brand Logo)
   const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
-  const tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
+  let tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
+  tplS3 = tplS3.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
   const s3FramePath = path.join(outDir, `short_s3_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
 
@@ -169,30 +176,55 @@ async function main() {
 
   console.log(`[COMPOSER] Video generated successfully: ${videoOutputPath}`);
 
-  // 9. Upload with 2026 AI Disclosure Flag
-  const ytTitle = `உங்க ஏரியால இன்னைக்கு கரண்ட் கட் இருக்கா? | TN Civic Alerts ${timeStr} #Shorts`;
-  const ytDesc = `Daily Tamil Nadu Civic & Emergency Updates in conversational spoken Tamil.\n\n` +
-    `⚡ TANGEDCO Minnalagam Helpline: 1912\n` +
-    `🏛️ Corporation Helpline: 1913\n` +
-    `🛡️ Cyber Crime: 1930\n\n` +
-    `🌐 Read full reports and file complaints at: https://vizhitn.in\n\n` +
-    `#TamilNadu #TANGEDCO #Chennai #Coimbatore #VizhiTN #Shorts #SpokenTamil`;
+  // 9. High-Ranking 2026 SEO Metadata (Bilingual Search Hook + First 125-Char Retention Formula)
+  const leadAlert = posts[0] || {};
+  const districtName = (leadAlert.district_slug || 'தமிழ்நாடு').toUpperCase();
+  const ytTitle = `TN Power Cut & Civic Alerts Today | ${districtName} முக்கிய அறிவிப்புகள் #Shorts #VizhiTN`;
 
-  const tags = ['Tamil Nadu', 'TANGEDCO', 'Chennai', 'Civic News', 'Minnalagam', 'Power Cut Today', 'VizhiTN', 'Shorts'];
+  const socialCaption = `⚡ ${districtName} நேரடி நிலவரம்: இன்றைய முக்கிய மின் தடை & குடிநீர் அறிவிப்புகள்! 👇\n\n` +
+    `📌 உங்கள் பகுதி உள்ளதா என்பதைச் சரிபார்க்க சேமித்து (Save) வைத்துக் கொள்ளுங்கள்! நண்பர்களுக்கும் பகிருங்கள் ↗️\n\n` +
+    `📞 TANGEDCO மின்னகம் மின் தடை புகார்: 1912 (24x7)\n` +
+    `🏛️ மாநகராட்சி கட்டுப்பாட்டு அறை: 1913\n` +
+    `🚨 தேசிய சைபர் கிரைம் உதவி எண்: 1930\n\n` +
+    `💬 உங்கள் பகுதியில் தற்போதைய நிலவரம் என்ன? மின்சாரம் இருக்கிறதா? கமெண்டில் சொல்லுங்கள் 👇\n\n` +
+    `🌐 மாவட்ட வாரியான முழு அறிவிப்புகளுக்கு: https://vizhitn.in\n\n` +
+    `#TamilShorts #TNAlerts #TANGEDCO #PowerCut #Chennai #Coimbatore #VizhiTN #Shorts #SpokenTamil #CivicNews`;
 
+  const tags = [
+    'Tamil Nadu',
+    'TANGEDCO',
+    'Power Cut Today',
+    'Minnalagam 1912',
+    'Chennai Power Cut',
+    'Coimbatore Alerts',
+    'Civic News Tamil',
+    'VizhiTN',
+    'Shorts'
+  ];
+
+  // 10. Upload to YouTube
   const uploadResult = await uploadToYouTube({
     videoFilePath: videoOutputPath,
     title: ytTitle,
-    description: ytDesc,
+    description: socialCaption,
     tags,
     privacyStatus: isDryRun ? 'unlisted' : 'public',
     isShort: true
   });
 
   console.log('====================================================');
-  console.log('CONVERSATIONAL SHORT GENERATED & PUBLISHED SUCCESSFULLY!');
+  console.log('CONVERSATIONAL SHORT GENERATED & PUBLISHED TO YOUTUBE!');
   console.log('Video URL:', uploadResult.videoUrl);
   console.log('====================================================');
+
+  // 11. Cross-Post to Meta Socials (Instagram Reels & Facebook Videos)
+  await crossPostVideoToMetaSocials({
+    videoFilePath: videoOutputPath,
+    title: ytTitle,
+    caption: socialCaption,
+    isReel: true,
+    isDryRun
+  });
 
   // Cleanup temporary frame & audio files (keep final mp4)
   const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath];

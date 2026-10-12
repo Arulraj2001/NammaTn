@@ -1,9 +1,7 @@
-// scripts/youtube/engine/thumbnail-engine.mjs
-// Automated High-CTR 16:9 Custom Thumbnail Generator for YouTube Long-Form Videos
-
 import fs from 'fs';
 import path from 'path';
 import { renderHtmlToImage } from './frame-renderer.mjs';
+import { getBrandLogoDataUri } from './brand-assets.mjs';
 
 /**
  * Generates an ultra-high CTR 1280x720 YouTube Thumbnail PNG
@@ -22,6 +20,7 @@ export async function generateLongVideoThumbnail({
   heroImageUrl,
   outputPath
 }) {
+  const logoDataUri = getBrandLogoDataUri();
   const htmlContent = `<!DOCTYPE html>
 <html lang="ta">
 <head>
@@ -76,14 +75,30 @@ export async function generateLongVideoThumbnail({
       align-items: center;
       gap: 16px;
     }
-    .brand-pill {
-      background: #2563eb;
-      color: #ffffff;
-      font-size: 18px;
+    .brand-logo-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 6px 18px 6px 10px;
+      border-radius: 9999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+    }
+    .brand-logo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 2px;
+    }
+    .brand-logo-text {
+      font-size: 20px;
       font-weight: 900;
-      padding: 6px 18px;
-      border-radius: 10px;
-      letter-spacing: 0.5px;
+      color: #ffffff;
+      letter-spacing: -0.5px;
     }
     .cat-pill {
       background: rgba(245, 158, 11, 0.2);
@@ -145,7 +160,10 @@ export async function generateLongVideoThumbnail({
 
   <div class="content-box">
     <div class="top-badge-row">
-      <div class="brand-pill">✓ VizhiTN</div>
+      <div class="brand-logo-pill">
+        <img class="brand-logo-img" src="${logoDataUri}" alt="VizhiTN" />
+        <span class="brand-logo-text">VizhiTN</span>
+      </div>
       <div class="cat-pill">${category}</div>
     </div>
 

@@ -26,25 +26,31 @@
       align-items: center;
       justify-content: space-between;
     }
-    .brand-logo {
+    .brand-logo-pill {
       display: flex;
       align-items: center;
       gap: 16px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 10px 24px 10px 14px;
+      border-radius: 9999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
     }
-    .logo-box {
-      width: 60px;
-      height: 60px;
-      background: #2563eb;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .brand-logo-img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 3px;
+    }
+    .brand-logo-text {
       font-size: 34px;
       font-weight: 900;
-    }
-    .brand-name {
-      font-size: 38px;
-      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.5px;
     }
 
     .hero-box {
@@ -146,9 +152,9 @@
 </head>
 <body>
   <div class="top-header">
-    <div class="brand-logo">
-      <div class="logo-box">✓</div>
-      <div class="brand-name">VizhiTN</div>
+    <div class="brand-logo-pill">
+      <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
+      <span class="brand-logo-text">VizhiTN</span>
     </div>
     <div style="font-size: 22px; font-weight: 800; color: #fbbf24;">24x7 HELPLINES</div>
   </div>

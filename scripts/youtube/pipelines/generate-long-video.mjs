@@ -11,6 +11,8 @@ import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleLongFormVideo, getAudioDuration } from '../engine/video-composer.mjs';
 import { generateLongVideoThumbnail } from '../engine/thumbnail-engine.mjs';
 import { uploadToYouTube, setYouTubeThumbnail } from '../engine/youtube-client.mjs';
+import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 
 // Load .env.local if running in local environment
 try {
@@ -138,6 +140,8 @@ async function main() {
   const templatePath = path.resolve('scripts/youtube/templates/long-form/chapter-slide.html');
   const templateHtml = fs.readFileSync(templatePath, 'utf-8');
 
+  const brandLogoDataUri = getBrandLogoDataUri();
+
   // 4. Generate Chapter Slides & Micro-TTS Audio
   const processedChapters = [];
   let totalVideoDuration = 0;
@@ -155,6 +159,7 @@ async function main() {
     `).join('');
 
     let slideHtml = templateHtml
+      .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
       .replace('{{HERO_IMAGE_SRC}}', heroImageSrc)
       .replace('{{CHAPTER_NUM}}', ch.num)
       .replace('{{CATEGORY_NAME}}', (article.category_slug || 'DEVELOPMENT').toUpperCase())
@@ -201,16 +206,28 @@ async function main() {
   });
   console.log(`[COMPOSER] Feature video created: ${videoOutputPath}`);
 
-  // 6. YouTube Upload Metadata with 2026 AI disclosure
-  const ytTitle = `${articleTitleTa} | Full Explainer | VizhiTN Tamil Nadu`;
-  const ytDesc = `${articleTitleTa}\n\n${article.summary_ta || article.summary_en || ''}\n\n` +
-    `📌 Chapters:\n${chapterTimestamps.join('\n')}\n\n` +
-    `🏛️ Responsible Department: ${deptName}\n` +
-    `📞 Helpline: ${helplineNum}\n\n` +
-    `🌐 Read the complete investigative report:\nhttps://vizhitn.in/tn-today/${article.slug}\n\n` +
-    `#TamilNadu #VizhiTN #Infrastructure #Governance #TamilNaduNews #SpokenTamil`;
+  // 6. High-Ranking 2026 YouTube SEO Metadata
+  const ytTitle = `${articleTitleTa} | ${articleTitleEn} | Full Ground Reality Explainer | VizhiTN`;
+  const ytDesc = `🔍 ${articleTitleTa} — முழு கள ஆய்வு மற்றும் அரசு ஆவணங்கள் விவரம்! 👇\n\n` +
+    `${article.summary_ta || article.summary_en || ''}\n\n` +
+    `📌 அத்தியாயங்கள் / Chapters:\n${chapterTimestamps.join('\n')}\n\n` +
+    `🏛️ பொறுப்புத் துறை / Department: ${deptName}\n` +
+    `📞 அரசு உதவி எண் / Helpline: ${helplineNum}\n\n` +
+    `📌 உங்கள் பாதுகாப்பிற்கு சேமித்து (Save) வைத்துக் கொள்ளுங்கள்! நண்பர்களுக்கும் பகிருங்கள் ↗️\n` +
+    `💬 இந்த திட்டம் பற்றி உங்கள் கருத்து என்ன? கமெண்டில் சொல்லுங்கள் 👇\n\n` +
+    `🌐 முழுமையான புலனாய்வு கட்டுரையை படிக்க: https://vizhitn.in/tn-today/${article.slug}\n\n` +
+    `#TamilNadu #VizhiTN #TNToday #TamilNaduGovernance #InfrastructureTN #GroundReality #SpokenTamil #TNNews`;
 
-  const tags = ['Tamil Nadu', 'VizhiTN', 'TN Today', deptName, 'Tamil Nadu Governance', 'Infra TN', 'Citizen Rights'];
+  const tags = [
+    'Tamil Nadu',
+    'VizhiTN',
+    'TN Today',
+    deptName,
+    'Tamil Nadu Governance',
+    'Infra TN',
+    'Ground Reality Tamil',
+    'Citizen Rights'
+  ];
 
   const uploadResult = await uploadToYouTube({
     videoFilePath: videoOutputPath,
@@ -241,6 +258,15 @@ async function main() {
   console.log('Video URL:', uploadResult.videoUrl);
   console.log('Thumbnail:', thumbnailPath);
   console.log('====================================================');
+
+  // 8. Cross-Post to Meta Socials (Facebook Page Video)
+  await crossPostVideoToMetaSocials({
+    videoFilePath: videoOutputPath,
+    title: ytTitle,
+    caption: ytDesc,
+    isReel: false,
+    isDryRun
+  });
 
   for (const ch of processedChapters) {
     try {
