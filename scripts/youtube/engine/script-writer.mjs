@@ -25,9 +25,10 @@ const CANDIDATE_MODELS = [
  * @returns {Promise<Object>} Structured documentary script with 5 chapters
  */
 export async function generateDocumentaryScript(article) {
-  const apiKey = process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  // Exclusively use dedicated key for YouTube video content creation
+  const apiKey = process.env.YOUTUBE_GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error('Missing YOUTUBE_GEMINI_API_KEY in environment.');
+    throw new Error('Missing YOUTUBE_GEMINI_API_KEY in environment. Set YOUTUBE_GEMINI_API_KEY in .env.local');
   }
 
   const ai = new GoogleGenAI({ apiKey });
