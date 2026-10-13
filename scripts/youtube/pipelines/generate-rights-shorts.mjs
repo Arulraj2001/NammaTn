@@ -80,7 +80,9 @@ async function main() {
   const heroPhotoPath = path.join(outDir, `rights_flux_hero_${Date.now()}.webp`);
   let heroPhotoUrl = await generateYouTubeSceneVisual(fluxPrompt, heroPhotoPath, '9:16');
   if (!heroPhotoUrl) {
-    heroPhotoUrl = 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1080&q=80';
+    // Official VizhiTN Graphic Card fallback (zero external stock photos)
+    const localCard = path.resolve('public/images/categories/government-schemes.webp');
+    heroPhotoUrl = fs.existsSync(localCard) ? localCard : path.resolve('public/images/categories/general.webp');
   }
 
   // 5. Render Scene 1 Hook Frame (with Official Brand Logo)

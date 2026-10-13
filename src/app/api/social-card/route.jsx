@@ -52,7 +52,7 @@ export async function GET(request) {
     const bullet3 = searchParams.get('bullet3') || 'சுத்தமான வளாகம் ➔ ₹139 Crore / 10,000 Schools';
     const location = searchParams.get('location') || 'தமிழ்நாடு | Statewide';
     const ribbon = searchParams.get('ribbon') || '★ FEATURED';
-    const bgImage = searchParams.get('imageUrl') || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&auto=format&fit=crop&q=80';
+    const bgImage = searchParams.get('imageUrl') || 'https://vizhitn.in/images/categories/general.webp';
 
     const categoryTheme = CATEGORY_COLORS[categoryKey] || CATEGORY_COLORS.education;
 

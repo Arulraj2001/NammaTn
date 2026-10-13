@@ -24,8 +24,8 @@ const samplePost = {
   bullet2: 'பள்ளி நவீனமயமாக்கல் ➔ ₹300 Crore / 3,734 Schools',
   bullet3: 'சுத்தமான வளாகம் ➔ ₹139 Crore / 10,000 Schools',
   slug: 'kamarajar-kaalai-unavu-thittam',
-  image_url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&auto=format&fit=crop&q=80',
-  direct_image_url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&auto=format&fit=crop&q=80'
+  image_url: 'https://vizhitn.in/images/categories/education.webp',
+  direct_image_url: 'https://vizhitn.in/images/categories/education.webp'
 };
 
 async function main() {

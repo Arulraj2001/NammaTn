@@ -217,7 +217,7 @@ Every script MUST follow the Villain → Victim → Revelation → Tool → Powe
 STRICT SCRIPTWRITING RULES:
 ━━━━━━━━━━━━━━━━━━━━━
 1. TONE: Natural பேச்சுத் தமிழ். Phrases like "கவனிச்சுப் பாருங்க", "ஆனா கள நிலவரம் என்ன", "யோசிச்சுப் பாருங்க", "நேர்மையா சொல்லணும்னா".
-2. NUMBERS: Speak ONCE only, naturally (e.g. "ஒன்று ஒன்பது ஒன்று இரண்டு"). NEVER repeat or bracket numbers.
+2. NUMBERS & HELPLINES: Write all helpline numbers and numerical statistics as clean numeric digits (e.g. 1912, 1913, 1100, 1930, 1064, 103, 100). NEVER spell them out in Tamil words (never write "ஒன்று ஒன்பது ஒன்று இரண்டு"). The neural voice engine speaks numeric digits naturally, and video captions render crisp, high-contrast numbers on screen.
 3. SPECIFICITY: Include REAL street names, landmark junctions, budget figures in Crores, exact travel times, station names. NEVER generic vague descriptions.
 4. HOOK: Act 1 must START with the PROBLEM, not "ஹலோ மக்களே". First 2 sentences must contain the VILLAIN and VICTIM.
 5. OUTRO (Act 5): Do NOT say "share this video", "subscribe now", or "send us your problem". Instead empower:

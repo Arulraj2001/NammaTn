@@ -159,14 +159,13 @@ async function main() {
   const heroPhotoPath = path.join(outDir, `short_flux_hero_${Date.now()}.webp`);
   let heroPhotoUrl = await generateYouTubeSceneVisual(fluxPrompt, heroPhotoPath, '9:16');
   if (!heroPhotoUrl) {
-    // Category-specific fallback stock photos
-    const fallbackUrls = {
-      'electricity': 'https://images.unsplash.com/photo-1548613053-22087dd8edb8?auto=format&fit=crop&w=1080&q=80',
-      'water-sanitation': 'https://images.unsplash.com/photo-1583009993088-40671f3a6a36?auto=format&fit=crop&w=1080&q=80',
-      'road-infrastructure': 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1080&q=80',
-      'transport': 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1080&q=80'
-    };
-    heroPhotoUrl = fallbackUrls[category] || 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1080&q=80';
+    // Official VizhiTN Category Graphic Card fallback (zero external stock photos)
+    const categoryCardPath = path.resolve(`public/images/categories/${category}.webp`);
+    if (fs.existsSync(categoryCardPath)) {
+      heroPhotoUrl = categoryCardPath;
+    } else {
+      heroPhotoUrl = path.resolve('public/images/categories/general.webp');
+    }
   }
 
   const brandLogoDataUri = getBrandLogoDataUri();

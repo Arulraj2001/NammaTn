@@ -67,16 +67,17 @@ async function main() {
   const articleTitleTa = article.title_ta || article.title || articleTitleEn;
   console.log(`[INFO] Sourced article: "${articleTitleEn}"`);
 
-  // 2. Prepare visual assets & hero image
-  let heroImageSrc = article.hero_image_url;
-  if (!heroImageSrc || !heroImageSrc.startsWith('http')) {
-    heroImageSrc = 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1200&q=80';
-  }
-
   const deptName = article.department_name || 'தமிழ்நாடு அரசு';
   const helplineNum = article.helpline || '1100 / 1912';
   const locationText = `${article.district_focus || 'Tamil Nadu'} | தமிழ்நாடு`;
   const categorySlug = article.category_slug || 'general';
+
+  // 2. Prepare visual assets & hero image (zero external stock photos)
+  let heroImageSrc = article.hero_image_url;
+  if (!heroImageSrc || !heroImageSrc.startsWith('http')) {
+    const localCard = path.resolve(`public/images/tntoday/${categorySlug}.webp`);
+    heroImageSrc = fs.existsSync(localCard) ? localCard : path.resolve('public/images/tntoday/general.webp');
+  }
 
   // Pre-fetch category-specific FLUX background for chapter slides
   const categoryFluxPrompt = getCategoryFluxPrompt(categorySlug);
