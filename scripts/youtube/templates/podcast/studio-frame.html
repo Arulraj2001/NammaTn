@@ -147,14 +147,26 @@
       position: relative;
     }
 
+    .host-card.host-dimmed {
+      opacity: 0.38;
+      filter: grayscale(40%);
+      transform: scale(0.97);
+      border-color: rgba(255, 255, 255, 0.05);
+      box-shadow: none;
+    }
+
     .host-card.karthik-active {
+      opacity: 1;
+      transform: scale(1.03);
       border-color: #00ffff;
-      box-shadow: 0 0 40px rgba(0, 255, 255, 0.25);
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.35);
     }
 
     .host-card.kavitha-active {
+      opacity: 1;
+      transform: scale(1.03);
       border-color: #facc15;
-      box-shadow: 0 0 40px rgba(250, 204, 21, 0.25);
+      box-shadow: 0 0 50px rgba(250, 204, 21, 0.35);
     }
 
     .host-avatar-ring {
@@ -173,12 +185,41 @@
 
     .host-card.karthik-active .host-avatar-ring {
       border-color: #00ffff;
-      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
     }
 
     .host-card.kavitha-active .host-avatar-ring {
       border-color: #facc15;
-      box-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
+      box-shadow: 0 0 30px rgba(250, 204, 21, 0.5);
+    }
+
+    .speaking-pill {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .karthik-active .speaking-pill {
+      display: inline-flex;
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
+    }
+
+    .kavitha-active .speaking-pill {
+      display: inline-flex;
+      background: rgba(250, 204, 21, 0.2);
+      border: 1px solid #facc15;
+      color: #facc15;
+      box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
     }
 
     .mic-icon-badge {
@@ -196,6 +237,18 @@
       font-size: 18px;
     }
 
+    .karthik-active .mic-icon-badge {
+      border-color: #00ffff;
+      background: #083344;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+
+    .kavitha-active .mic-icon-badge {
+      border-color: #facc15;
+      background: #422006;
+      box-shadow: 0 0 15px rgba(250, 204, 21, 0.5);
+    }
+
     .host-name-ta {
       font-size: 26px;
       font-weight: 800;
@@ -209,7 +262,7 @@
       color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
 
     /* Soundwave Equalizer Bars */
@@ -217,24 +270,32 @@
       display: flex;
       align-items: flex-end;
       gap: 6px;
-      height: 32px;
-      padding: 0 20px;
+      height: 44px;
+      padding: 0 16px;
     }
 
     .eq-bar {
       width: 6px;
       border-radius: 3px;
-      background: #475569;
+      background: #334155;
+      height: 4px;
+      transition: height 0.2s ease;
     }
 
     .karthik-active .eq-bar {
       background: #00ffff;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
     }
 
     .kavitha-active .eq-bar {
       background: #facc15;
-      box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+      box-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+    }
+
+    .host-dimmed .eq-bar {
+      height: 4px !important;
+      background: #1e293b !important;
+      box-shadow: none !important;
     }
 
     /* Center Evidence Board */
@@ -418,6 +479,7 @@
   <main class="studio-stage">
     <!-- Left Host: Karthik -->
     <div class="host-card {{KARTHIK_ACTIVE_CLASS}}">
+      <div class="speaking-pill">● SPEAKING NOW</div>
       <div class="host-avatar-ring">
         <span>👨‍💼</span>
         <div class="mic-icon-badge">🎙️</div>
@@ -425,12 +487,14 @@
       <div class="host-name-ta">கார்த்திக்</div>
       <div class="host-role-en">Investigative Journalist</div>
       <div class="equalizer-bars">
-        <div class="eq-bar" style="height: 18px;"></div>
-        <div class="eq-bar" style="height: 28px;"></div>
-        <div class="eq-bar" style="height: 14px;"></div>
-        <div class="eq-bar" style="height: 32px;"></div>
-        <div class="eq-bar" style="height: 22px;"></div>
-        <div class="eq-bar" style="height: 16px;"></div>
+        <div class="eq-bar" style="height: {{EQ_K1}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_K2}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_K3}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_K4}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_K5}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_K6}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_K7}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_K8}}px;"></div>
       </div>
     </div>
 
@@ -453,6 +517,7 @@
 
     <!-- Right Host: Kavitha -->
     <div class="host-card {{KAVITHA_ACTIVE_CLASS}}">
+      <div class="speaking-pill">● SPEAKING NOW</div>
       <div class="host-avatar-ring">
         <span>👩‍💼</span>
         <div class="mic-icon-badge">🎙️</div>
@@ -460,12 +525,14 @@
       <div class="host-name-ta">கவிதா</div>
       <div class="host-role-en">Systems & Legal Decoder</div>
       <div class="equalizer-bars">
-        <div class="eq-bar" style="height: 24px;"></div>
-        <div class="eq-bar" style="height: 16px;"></div>
-        <div class="eq-bar" style="height: 30px;"></div>
-        <div class="eq-bar" style="height: 20px;"></div>
-        <div class="eq-bar" style="height: 32px;"></div>
-        <div class="eq-bar" style="height: 14px;"></div>
+        <div class="eq-bar" style="height: {{EQ_V1}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_V2}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_V3}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_V4}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_V5}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_V6}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_V7}}px;"></div>
+        <div class="eq-bar" style="height: {{EQ_V8}}px;"></div>
       </div>
     </div>
   </main>

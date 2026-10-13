@@ -8,7 +8,7 @@ import path from 'path';
 import { YOUTUBE_CONFIG } from '../config.mjs';
 import { getPodcastTopicForSchedule, PODCAST_CATALOG } from '../engine/podcast-topics.mjs';
 import { generatePodcastScript } from '../engine/podcast-writer.mjs';
-import { synthesizeActAudioAndSubtitles } from '../engine/podcast-tts.mjs';
+import { synthesizePodcastTurn } from '../engine/podcast-tts.mjs';
 import { assemblePodcastVideo, generatePodcastThumbnail } from '../engine/podcast-composer.mjs';
 import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
@@ -50,7 +50,7 @@ async function main() {
   console.log(`[EPISODE TOPIC] "${topic.episodeTitleEn}"`);
   console.log(`[LOCATION] ${topic.district} | Category Color: ${topic.categoryColor}`);
 
-  // 2. Synthesize 5-Act Duo Conversational Script via Gemini
+  // 2. Synthesize 5-Act Duo Conversational Script via Gemini (Target: 8–12 mins)
   console.log('\n[RESEARCH] Synthesizing 5-Act Karthik & Kavitha dialogue script via Gemini...');
   const scriptData = await generatePodcastScript(topic);
   const acts = scriptData.acts || [];
@@ -66,11 +66,11 @@ async function main() {
     heroVisualUrl = fs.existsSync(categoryCard) ? categoryCard : path.resolve('public/images/categories/general.webp');
   }
 
-  // 4. Process Each Act: Render Studio Frame + Synthesize Dual-Voice Audio & ASS Subtitles
+  // 4. Process Each Act with Turn-by-Turn Dynamic Camera & Speaker Lighting Switching
   const studioTplPath = path.resolve('scripts/youtube/templates/podcast/studio-frame.html');
   const studioTplHtml = fs.readFileSync(studioTplPath, 'utf-8');
 
-  const processedActs = [];
+  const processedSegments = [];
   let totalDurationSec = 0;
   const chapterTimestamps = [];
 
@@ -81,57 +81,78 @@ async function main() {
     const actTitleEn = act.actTitleEn || `Act ${actNum}`;
     const turns = act.turns || [];
 
-    console.log(`\n[ACT ${actNum}/5] Processing "${actTitleEn}" (${turns.length} dialogue turns)...`);
-
-    // A. Generate Act Audio & ASS Subtitles with emotional modulation
-    const actAudioResult = await synthesizeActAudioAndSubtitles(turns, outDir, actNum);
-    const actDur = actAudioResult.durationSec;
-
-    // B. Render Studio Frame for this Act
-    const actFramePng = path.join(outDir, `podcast_frame_act_${actNum}_${Date.now()}.png`);
-
-    // Alternate active host highlight based on first turn speaker
-    const firstSpeaker = (turns[0]?.speaker || 'karthik').toLowerCase();
-    const karthikActive = firstSpeaker === 'karthik' ? 'karthik-active' : '';
-    const kavithaActive = firstSpeaker === 'kavitha' ? 'kavitha-active' : '';
-
-    let frameHtml = studioTplHtml
-      .replace(/\{\{BRAND_LOGO_DATA_URI\}\}/g, brandLogoDataUri)
-      .replace(/\{\{CATEGORY_COLOR\}\}/g, topic.categoryColor || '#38bdf8')
-      .replace(/\{\{SERIES_ICON\}\}/g, topic.categoryIcon || '🎙️')
-      .replace(/\{\{SERIES_NAME_TA\}\}/g, topic.seriesNameTa)
-      .replace(/\{\{KARTHIK_ACTIVE_CLASS\}\}/g, karthikActive)
-      .replace(/\{\{KAVITHA_ACTIVE_CLASS\}\}/g, kavithaActive)
-      .replace(/\{\{ACT_BADGE_TEXT\}\}/g, `ACT 0${actNum} / 05`)
-      .replace(/\{\{ACT_TITLE_EN\}\}/g, actTitleEn)
-      .replace(/\{\{SCENE_IMAGE_SRC\}\}/g, toImageSource(heroVisualUrl))
-      .replace(/\{\{EVIDENCE_TAG_TEXT\}\}/g, `${topic.seriesNameEn.toUpperCase()} EVIDENCE`)
-      .replace(/\{\{HEADLINE_TA\}\}/g, actTitleTa)
-      .replace(/\{\{HELPLINE_TEXT\}\}/g, topic.helplineText);
-
-    renderHtmlToImage(frameHtml, actFramePng, { width: 1920, height: 1080 });
-
     const mins = Math.floor(totalDurationSec / 60);
     const secs = Math.floor(totalDurationSec % 60).toString().padStart(2, '0');
     chapterTimestamps.push(`${mins}:${secs} - ${actTitleEn}`);
 
-    totalDurationSec += actDur;
+    console.log(`\n[ACT ${actNum}/5] Processing "${actTitleEn}" (${turns.length} dialogue turns)...`);
 
-    processedActs.push({
-      actNum,
-      slidePath: actFramePng,
-      audioPath: actAudioResult.audioPath,
-      durationSec: actDur,
-      subPath: actAudioResult.subPath
-    });
+    for (let j = 0; j < turns.length; j++) {
+      const turn = turns[j];
+      const speaker = (turn.speaker || 'karthik').toLowerCase();
+      const isKarthik = speaker === 'karthik';
+
+      // A. Synthesize Turn Audio with 30ms Micro-Fade & Turn-Locked Subtitles
+      const turnResult = await synthesizePodcastTurn({
+        turn,
+        actNum,
+        turnIndex: j,
+        outputDir: outDir
+      });
+
+      // B. Render Dynamic Turn Studio Frame: Active Speaker Glowing + Inactive Dimmed
+      const karthikClass = isKarthik ? 'karthik-active' : 'host-dimmed';
+      const kavithaClass = isKarthik ? 'host-dimmed' : 'kavitha-active';
+
+      // Equalizer bars: High-energy varied heights when active, flat 4px when idle
+      const eqK = isKarthik ? [26, 38, 18, 42, 30, 22, 36, 20] : [4, 4, 4, 4, 4, 4, 4, 4];
+      const eqV = isKarthik ? [4, 4, 4, 4, 4, 4, 4, 4] : [24, 40, 20, 36, 42, 18, 30, 26];
+
+      let frameHtml = studioTplHtml
+        .replace(/\{\{BRAND_LOGO_DATA_URI\}\}/g, brandLogoDataUri)
+        .replace(/\{\{CATEGORY_COLOR\}\}/g, topic.categoryColor || '#38bdf8')
+        .replace(/\{\{SERIES_ICON\}\}/g, topic.categoryIcon || '🎙️')
+        .replace(/\{\{SERIES_NAME_TA\}\}/g, topic.seriesNameTa)
+        .replace(/\{\{KARTHIK_ACTIVE_CLASS\}\}/g, karthikClass)
+        .replace(/\{\{KAVITHA_ACTIVE_CLASS\}\}/g, kavithaClass)
+        .replace(/\{\{EQ_K1\}\}/g, eqK[0]).replace(/\{\{EQ_K2\}\}/g, eqK[1])
+        .replace(/\{\{EQ_K3\}\}/g, eqK[2]).replace(/\{\{EQ_K4\}\}/g, eqK[3])
+        .replace(/\{\{EQ_K5\}\}/g, eqK[4]).replace(/\{\{EQ_K6\}\}/g, eqK[5])
+        .replace(/\{\{EQ_K7\}\}/g, eqK[6]).replace(/\{\{EQ_K8\}\}/g, eqK[7])
+        .replace(/\{\{EQ_V1\}\}/g, eqV[0]).replace(/\{\{EQ_V2\}\}/g, eqV[1])
+        .replace(/\{\{EQ_V3\}\}/g, eqV[2]).replace(/\{\{EQ_V4\}\}/g, eqV[3])
+        .replace(/\{\{EQ_V5\}\}/g, eqV[4]).replace(/\{\{EQ_V6\}\}/g, eqV[5])
+        .replace(/\{\{EQ_V7\}\}/g, eqV[6]).replace(/\{\{EQ_V8\}\}/g, eqV[7])
+        .replace(/\{\{ACT_BADGE_TEXT\}\}/g, `ACT 0${actNum} / 05`)
+        .replace(/\{\{ACT_TITLE_EN\}\}/g, actTitleEn)
+        .replace(/\{\{SCENE_IMAGE_SRC\}\}/g, toImageSource(heroVisualUrl))
+        .replace(/\{\{EVIDENCE_TAG_TEXT\}\}/g, `${topic.seriesNameEn.toUpperCase()} EVIDENCE`)
+        .replace(/\{\{HEADLINE_TA\}\}/g, actTitleTa)
+        .replace(/\{\{HELPLINE_TEXT\}\}/g, topic.helplineText);
+
+      const turnFramePng = path.join(outDir, `podcast_frame_act_${actNum}_turn_${j}_${Date.now()}.png`);
+      renderHtmlToImage(frameHtml, turnFramePng, { width: 1920, height: 1080 });
+
+      processedSegments.push({
+        actNum,
+        turnIndex: j,
+        speaker,
+        slidePath: turnFramePng,
+        audioPath: turnResult.audioPath,
+        durationSec: turnResult.durationSec,
+        subPath: turnResult.subPath
+      });
+
+      totalDurationSec += turnResult.durationSec;
+    }
   }
 
-  console.log(`\n[PODCAST STATS] Total episode length: ${(totalDurationSec / 60).toFixed(1)} mins (${totalDurationSec.toFixed(0)} seconds)`);
+  console.log(`\n[PODCAST STATS] Total episode length: ${(totalDurationSec / 60).toFixed(1)} mins (${totalDurationSec.toFixed(0)} seconds) across ${processedSegments.length} dynamic speaker cuts`);
 
   // 5. Assemble Master 16:9 Video
   const videoOutputPath = path.join(outDir, `vizhitn_podcast_${topic.id}_${Date.now()}.mp4`);
   assemblePodcastVideo({
-    acts: processedActs,
+    segments: processedSegments,
     outputPath: videoOutputPath
   });
 
@@ -212,12 +233,12 @@ async function main() {
     isDryRun
   });
 
-  // Cleanup temporary act slides, audio, and subtitles
-  for (const act of processedActs) {
+  // Cleanup temporary turn slides, audio, and subtitles
+  for (const seg of processedSegments) {
     try {
-      if (fs.existsSync(act.slidePath)) fs.unlinkSync(act.slidePath);
-      if (fs.existsSync(act.audioPath)) fs.unlinkSync(act.audioPath);
-      if (fs.existsSync(act.subPath)) fs.unlinkSync(act.subPath);
+      if (fs.existsSync(seg.slidePath)) fs.unlinkSync(seg.slidePath);
+      if (fs.existsSync(seg.audioPath)) fs.unlinkSync(seg.audioPath);
+      if (fs.existsSync(seg.subPath)) fs.unlinkSync(seg.subPath);
     } catch {}
   }
 }

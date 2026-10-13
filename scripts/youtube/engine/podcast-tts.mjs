@@ -82,110 +82,73 @@ function formatAssTime(seconds) {
 }
 
 /**
- * Synthesizes all dialogue turns for a single Act and stitches them together
- * Returns Act audio path, total duration, ASS subtitle path, and turn timings
- *
- * @param {Array} turns - Dialogue turns for this act
- * @param {string} actOutputDir - Output directory for temporary files
- * @param {number} actNum - Act number (1 to 5)
- * @returns {Promise<Object>}
+ * Synthesizes a single dialogue turn with 30ms micro-fading and locked ASS subtitles
+ * @param {Object} params
+ * @param {Object} params.turn - { speaker, emotion, text }
+ * @param {number} params.actNum
+ * @param {number} params.turnIndex
+ * @param {string} params.outputDir
+ * @returns {Promise<Object>} { speaker, emotion, text, audioPath, durationSec, subPath }
  */
-export async function synthesizeActAudioAndSubtitles(turns, actOutputDir, actNum) {
-  if (!fs.existsSync(actOutputDir)) fs.mkdirSync(actOutputDir, { recursive: true });
-
+export async function synthesizePodcastTurn({ turn, actNum, turnIndex, outputDir }) {
   const ffmpeg = getFfmpegBinaryPath();
-  const turnFiles = [];
-  const turnTimings = [];
-  let currentTime = 0;
+  const speaker = (turn.speaker || 'karthik').toLowerCase();
+  const emotion = turn.emotion || 'default';
+  const rawText = turn.text || '';
+  const cleanText = sanitizeClauseText(normalizeAcronymsToSpokenTamil(rawText));
 
-  console.log(`[PODCAST TTS] Synthesizing Act ${actNum} (${turns.length} turns)...`);
+  const rawAudioPath = path.join(outputDir, `turn_raw_${actNum}_${turnIndex}_${Date.now()}.mp3`);
+  synthesizeTurnAudio(cleanText, rawAudioPath, speaker, emotion);
 
-  for (let i = 0; i < turns.length; i++) {
-    const turn = turns[i];
-    const speaker = (turn.speaker || 'karthik').toLowerCase();
-    const emotion = turn.emotion || 'default';
-    const rawText = turn.text || '';
-    const cleanText = sanitizeClauseText(normalizeAcronymsToSpokenTamil(rawText));
+  const rawDur = getAudioDuration(rawAudioPath);
 
-    const turnAudioPath = path.join(actOutputDir, `act_${actNum}_turn_${i}_${Date.now()}.mp3`);
-    synthesizeTurnAudio(cleanText, turnAudioPath, speaker, emotion);
-
-    const dur = getAudioDuration(turnAudioPath);
-    turnFiles.push(turnAudioPath);
-
-    turnTimings.push({
-      turnIndex: i,
-      speaker,
-      emotion,
-      text: cleanText,
-      startSec: currentTime,
-      endSec: currentTime + dur,
-      durationSec: dur,
-      audioPath: turnAudioPath
-    });
-
-    currentTime += dur;
-  }
-
-  // 1. Stitch turn audios together using FFmpeg concat
-  const actAudioPath = path.join(actOutputDir, `podcast_act_${actNum}_audio_${Date.now()}.mp3`);
-  const concatListPath = path.join(actOutputDir, `concat_act_${actNum}_${Date.now()}.txt`);
-
-  const concatContent = turnFiles
-    .map(f => `file '${f.replace(/\\/g, '/').replace(/'/g, "'\\''")}'`)
-    .join('\n');
-  fs.writeFileSync(concatListPath, concatContent, 'utf-8');
+  // Apply 30ms micro-fade-in and micro-fade-out to eliminate any click/pop tail
+  const fadedAudioPath = path.join(outputDir, `turn_faded_${actNum}_${turnIndex}_${Date.now()}.mp3`);
+  const fadeOutStart = Math.max(0, rawDur - 0.04);
+  const fadeFilter = `afade=t=in:ss=0:d=0.03,afade=t=out:st=${fadeOutStart}:d=0.03`;
 
   try {
-    execSync(`"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c copy "${actAudioPath}"`, {
+    execSync(`"${ffmpeg}" -y -i "${rawAudioPath}" -af "${fadeFilter}" -c:a libmp3lame -q:a 2 "${fadedAudioPath}"`, {
       stdio: 'pipe',
-      timeout: 60000,
+      timeout: 30000,
       windowsHide: true
     });
-  } catch (err) {
-    // Re-encode fallback if stream copy fails
-    execSync(`"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c:a libmp3lame -q:a 2 "${actAudioPath}"`, {
-      stdio: 'pipe',
-      timeout: 60000,
-      windowsHide: true
-    });
+  } catch {
+    // Fallback to raw if afade fails
+    fs.copyFileSync(rawAudioPath, fadedAudioPath);
   }
 
-  const actTotalDuration = getAudioDuration(actAudioPath);
+  const finalDur = getAudioDuration(fadedAudioPath);
 
-  // 2. Generate Dual-Color ASS Subtitles for this Act
-  const actSubPath = path.join(actOutputDir, `podcast_act_${actNum}_sub_${Date.now()}.ass`);
+  // Generate turn-locked ASS subtitle file
+  const subPath = path.join(outputDir, `turn_sub_${actNum}_${turnIndex}_${Date.now()}.ass`);
+  const isKarthik = speaker === 'karthik';
+  const speakerLabel = isKarthik ? 'கார்த்திக்' : 'கவிதா';
+  const primaryColorCode = isKarthik ? '\\c&H00FFFF00&' : '\\c&H0015CCFA&';
+
+  // Chunk turn into 4 to 5-word smooth subtitle chunks
+  const chunks = chunkSentenceForCaptions(cleanText, finalDur, 0, 4);
   let dialogEvents = '';
 
-  for (const t of turnTimings) {
-    const isKarthik = t.speaker === 'karthik';
-    const speakerLabel = isKarthik ? 'கார்த்திக்' : 'கவிதா';
-    // Style: Karthik = Electric Cyan (&H00FFFF00&), Kavitha = Golden Yellow (&H0015CCFA&)
-    const primaryColorCode = isKarthik ? '\\c&H00FFFF00&' : '\\c&H0015CCFA&';
+  for (const chunk of chunks) {
+    const startStr = formatAssTime(chunk.start);
+    const endStr = formatAssTime(chunk.end);
+    const words = chunk.text.split(/\s+/).filter(Boolean);
 
-    // Break turn into punchy kinetic sub-chunks
-    const chunks = chunkSentenceForCaptions(t.text, t.durationSec, t.startSec);
-
-    for (const chunk of chunks) {
-      const startStr = formatAssTime(chunk.start);
-      const endStr = formatAssTime(chunk.end);
-      const words = chunk.text.split(/\s+/).filter(Boolean);
-
-      let styledChunkText = '';
-      if (words.length > 1) {
-        const firstWord = words[0];
-        const rest = words.slice(1).join(' ');
-        styledChunkText = `{\\b1}${speakerLabel}: {\\b0}{${primaryColorCode}}${firstWord} {\\c&H00FFFFFF&}${rest}`;
-      } else {
-        styledChunkText = `{\\b1}${speakerLabel}: {\\b0}{${primaryColorCode}}${chunk.text}`;
-      }
-
-      dialogEvents += `Dialogue: 0,${startStr},${endStr},Default,,0,0,0,,${styledChunkText}\n`;
+    let styledChunkText = '';
+    if (words.length > 1) {
+      const firstWord = words[0];
+      const rest = words.slice(1).join(' ');
+      styledChunkText = `{\\b1}${speakerLabel}: {\\b0}{${primaryColorCode}}${firstWord} {\\c&H00FFFFFF&}${rest}`;
+    } else {
+      styledChunkText = `{\\b1}${speakerLabel}: {\\b0}{${primaryColorCode}}${chunk.text}`;
     }
+
+    dialogEvents += `Dialogue: 0,${startStr},${endStr},Default,,0,0,0,,${styledChunkText}\n`;
   }
 
   const assContent = `[Script Info]
-Title: Vizhi Uncut Podcast Subtitles
+Title: Vizhi Uncut Turn Subtitles
 ScriptType: v4.00+
 WrapStyle: 0
 ScaledBorderAndShadow: yes
@@ -195,28 +158,26 @@ PlayResY: 1080
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Nirmala UI,36,&H00FFFFFF,&H0000FFFF,&H00000000,&H90000000,-1,0,0,0,100,100,0,0,1,4.0,2.0,2,40,40,140,1
+Style: Default,Noto Sans Tamil,35,&H00FFFFFF,&H0000FFFF,&H00000000,&H90000000,-1,0,0,0,100,100,0,0,1,3.5,2.0,2,35,35,135,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 ${dialogEvents}
 `;
 
-  fs.writeFileSync(actSubPath, assContent, 'utf-8');
+  fs.writeFileSync(subPath, assContent, 'utf-8');
 
-  // Cleanup turn files and concat list
-  try {
-    fs.unlinkSync(concatListPath);
-    for (const tf of turnFiles) {
-      if (fs.existsSync(tf)) fs.unlinkSync(tf);
-    }
-  } catch {}
+  // Clean raw audio
+  try { if (fs.existsSync(rawAudioPath)) fs.unlinkSync(rawAudioPath); } catch {}
 
   return {
     actNum,
-    audioPath: actAudioPath,
-    durationSec: actTotalDuration,
-    subPath: actSubPath,
-    turnTimings
+    turnIndex,
+    speaker,
+    emotion,
+    text: cleanText,
+    audioPath: fadedAudioPath,
+    durationSec: finalDur,
+    subPath
   };
 }

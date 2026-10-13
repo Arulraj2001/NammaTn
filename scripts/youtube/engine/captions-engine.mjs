@@ -41,16 +41,20 @@ export function cleanCaptionText(text) {
 /**
  * Breaks long sentences into 3 to 5-word punchy kinetic chunks
  */
-export function chunkSentenceForCaptions(sentence, totalDurationSec, startTimeOffset = 0) {
+/**
+ * Breaks long sentences into punchy kinetic chunks
+ * Shorts: 2 to 3 words (CapCut / Hormozi pop-up)
+ * Long-form: 4 to 6 words (Vox broadcast style)
+ */
+export function chunkSentenceForCaptions(sentence, totalDurationSec, startTimeOffset = 0, wordsPerChunk = 3) {
   const cleanedSentence = cleanCaptionText(sentence);
   const words = cleanedSentence.split(/\s+/).filter(Boolean);
   if (words.length === 0) return [];
 
-  const chunks = [];
-  const wordsPerChunk = 4;
   const chunkCount = Math.ceil(words.length / wordsPerChunk);
   const durationPerChunk = totalDurationSec / chunkCount;
 
+  const chunks = [];
   for (let i = 0; i < chunkCount; i++) {
     const chunkWords = words.slice(i * wordsPerChunk, (i + 1) * wordsPerChunk);
     const start = startTimeOffset + (i * durationPerChunk);
@@ -61,7 +65,7 @@ export function chunkSentenceForCaptions(sentence, totalDurationSec, startTimeOf
       chunks.push({
         text: chunkText,
         start: Math.max(0, start),
-        end: Math.max(start + 0.4, end)
+        end: Math.max(start + 0.35, end)
       });
     }
   }
@@ -75,23 +79,24 @@ export function chunkSentenceForCaptions(sentence, totalDurationSec, startTimeOf
  *
  * @param {string[]} clauses - Array of narration sentences
  * @param {number} totalDurationSec - Total audio duration
+ * @param {'9:16'|'16:9'} [aspectRatio='9:16']
  * @returns {Array<{ text: string, start: number, end: number }>}
  */
-export function generateCaptionsFromClauses(clauses, totalDurationSec) {
+export function generateCaptionsFromClauses(clauses, totalDurationSec, aspectRatio = '9:16') {
   const validClauses = (clauses || []).map(c => cleanCaptionText(c)).filter(Boolean);
   if (validClauses.length === 0) return [];
 
   const totalWords = validClauses.reduce((sum, c) => sum + c.split(/\s+/).length, 0);
   if (totalWords === 0) return [];
 
+  const wordsPerChunk = aspectRatio === '9:16' ? 3 : 5;
   const allChunks = [];
   let currentTimeOffset = 0;
 
   for (const clause of validClauses) {
     const wordCount = clause.split(/\s+/).length;
-    // Proportional duration for this clause
     const clauseDuration = totalDurationSec * (wordCount / totalWords);
-    const chunks = chunkSentenceForCaptions(clause, clauseDuration, currentTimeOffset);
+    const chunks = chunkSentenceForCaptions(clause, clauseDuration, currentTimeOffset, wordsPerChunk);
     allChunks.push(...chunks);
     currentTimeOffset += clauseDuration;
   }
@@ -100,7 +105,9 @@ export function generateCaptionsFromClauses(clauses, totalDurationSec) {
 }
 
 /**
- * Generates an ASS subtitle file with high-contrast viral styling
+ * Generates an ASS subtitle file with Hybrid Pro viral styling
+ * - Shorts (9:16): CapCut / Hormozi 2–3 Word Pop-Up centered at 58% height with Neon Yellow Pop
+ * - 16:9 Landscape: Vox / Netflix Frosted Glass Broadcast Pill at lower-third
  *
  * @param {Array<{ text: string, start: number, end: number }>} segments
  * @param {string} outputPath
@@ -111,8 +118,13 @@ export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:1
   const isShort = aspectRatio === '9:16';
   const playResX = isShort ? 1080 : 1920;
   const playResY = isShort ? 1920 : 1080;
-  const fontSize = isShort ? 38 : 34;
-  const marginV  = isShort ? 360 : 160; // 360px safe from Shorts UI; 160px safe above 16:9 bottom bar
+
+  // Shorts: Large display font (48px) centered at Y=58% (MarginV: 760)
+  // Long-Form: 35px at lower-third (MarginV: 135)
+  const fontSize = isShort ? 48 : 35;
+  const marginV  = isShort ? 760 : 135;
+  const outlineWidth = isShort ? 5.0 : 3.5;
+  const shadowDepth = isShort ? 3.0 : 2.0;
 
   let dialogEvents = '';
   segments.forEach(seg => {
@@ -125,7 +137,7 @@ export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:1
     const words = cleanText.split(/\s+/).filter(Boolean);
     let styledText = '';
 
-    // First word in Golden Yellow (BGR: &H0015CCFA&), remaining words in crisp Pure White (&H00FFFFFF&)
+    // Active word in Vibrant Golden Yellow (&H0015CCFA& BGR), remaining words in crisp Pure White (&H00FFFFFF&)
     if (words.length > 1) {
       const firstWord = words[0];
       const rest = words.slice(1).join(' ');
@@ -138,7 +150,7 @@ export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:1
   });
 
   const assContent = `[Script Info]
-Title: VizhiTN Kinetic Captions
+Title: VizhiTN Hybrid Pro Kinetic Captions
 ScriptType: v4.00+
 WrapStyle: 0
 ScaledBorderAndShadow: yes
@@ -148,7 +160,7 @@ PlayResY: ${playResY}
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Nirmala UI,${fontSize},&H00FFFFFF,&H0000FFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4.0,2.0,2,40,40,${marginV},1
+Style: Default,Noto Sans Tamil,${fontSize},&H00FFFFFF,&H0000FFFF,&H00000000,&H95000000,-1,0,0,0,100,100,0,0,1,${outlineWidth},${shadowDepth},2,35,35,${marginV},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text

@@ -23,61 +23,65 @@ function escapeFfmpegSubFilterPath(p) {
 }
 
 /**
- * Assembles multi-act podcast segments into final 16:9 MP4
+ * Assembles multi-segment podcast video into final 16:9 master MP4
+ * Supports turn-by-turn dynamic camera & speaker lighting cuts
+ *
  * @param {Object} params
- * @param {Array} params.acts - Array of { actNum, slidePath, audioPath, durationSec, subPath }
+ * @param {Array} params.segments - Array of { segmentIndex, slidePath, audioPath, durationSec, subPath, isLastSegment }
+ * @param {Array} [params.acts] - Fallback acts array
  * @param {string} params.outputPath - Destination MP4 path
  * @returns {string} outputPath
  */
-export function assemblePodcastVideo({ acts, outputPath }) {
+export function assemblePodcastVideo({ segments, acts, outputPath }) {
+  const items = segments || acts || [];
   const ffmpeg = getFfmpegBinaryPath();
   const outDir = path.dirname(outputPath);
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
-  const actMp4s = [];
+  const segmentMp4s = [];
 
-  console.log(`[PODCAST COMPOSER] Assembling ${acts.length} acts into 16:9 master video...`);
+  console.log(`[PODCAST COMPOSER] Assembling ${items.length} dynamic speaker segments into 16:9 master video...`);
 
-  for (let i = 0; i < acts.length; i++) {
-    const act = acts[i];
-    const isLastAct = (i === acts.length - 1);
-    const actMp4Path = path.join(outDir, `_temp_act_${act.actNum}_${Date.now()}_${i}.mp4`);
+  for (let i = 0; i < items.length; i++) {
+    const seg = items[i];
+    const isLast = (i === items.length - 1);
+    const segMp4Path = path.join(outDir, `_temp_seg_${i}_${Date.now()}.mp4`);
 
-    console.log(`[PODCAST COMPOSER] Rendering Act ${act.actNum}/${acts.length} (${act.durationSec.toFixed(1)}s)...`);
+    console.log(`[PODCAST COMPOSER] Encoding Segment ${i + 1}/${items.length} (${seg.durationSec.toFixed(1)}s)...`);
 
-    // Mix voice audio with sound design (studio room hum, transition whoosh, outro beat)
-    const mixedAudioPath = path.join(outDir, `_temp_mixed_act_${act.actNum}_${Date.now()}.mp3`);
-    mixAudioWithSoundDesign(act.audioPath, mixedAudioPath, { isLastScene: isLastAct });
+    // Mix turn audio with sound design (studio room hum, transition whoosh, outro beat)
+    const mixedAudioPath = path.join(outDir, `_temp_mixed_seg_${i}_${Date.now()}.mp3`);
+    mixAudioWithSoundDesign(seg.audioPath, mixedAudioPath, { isLastScene: isLast });
 
     // Build FFmpeg command with ASS subtitle burn-in
     let vfFilter = 'fps=30,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,format=yuv420p';
 
-    if (act.subPath && fs.existsSync(act.subPath)) {
-      const escapedSub = escapeFfmpegSubFilterPath(act.subPath);
+    if (seg.subPath && fs.existsSync(seg.subPath)) {
+      const escapedSub = escapeFfmpegSubFilterPath(seg.subPath);
       vfFilter += `,ass='${escapedSub}'`;
     }
 
-    const cmd = `"${ffmpeg}" -y -loop 1 -framerate 30 -i "${act.slidePath}" -i "${mixedAudioPath}" -vf "${vfFilter}" -c:v libx264 -preset fast -crf 22 -c:a aac -b:a 192k -shortest "${actMp4Path}"`;
+    const cmd = `"${ffmpeg}" -y -loop 1 -framerate 30 -i "${seg.slidePath}" -i "${mixedAudioPath}" -vf "${vfFilter}" -c:v libx264 -preset fast -crf 22 -c:a aac -b:a 192k -shortest "${segMp4Path}"`;
 
     try {
-      execSync(cmd, { stdio: 'pipe', timeout: 300000, windowsHide: true });
-      actMp4s.push(actMp4Path);
+      execSync(cmd, { stdio: 'pipe', timeout: 180000, windowsHide: true });
+      segmentMp4s.push(segMp4Path);
     } catch (err) {
-      console.warn(`[PODCAST COMPOSER WARN] Subtitle burn-in failed for Act ${act.actNum}: ${err.message}. Retrying without subtitle filter...`);
+      console.warn(`[PODCAST COMPOSER WARN] Subtitle burn-in failed for segment ${i + 1}: ${err.message}. Retrying without subtitle filter...`);
       const fallbackVf = 'fps=30,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,format=yuv420p';
-      const fallbackCmd = `"${ffmpeg}" -y -loop 1 -framerate 30 -i "${act.slidePath}" -i "${mixedAudioPath}" -vf "${fallbackVf}" -c:v libx264 -preset fast -crf 22 -c:a aac -b:a 192k -shortest "${actMp4Path}"`;
-      execSync(fallbackCmd, { stdio: 'pipe', timeout: 300000, windowsHide: true });
-      actMp4s.push(actMp4Path);
+      const fallbackCmd = `"${ffmpeg}" -y -loop 1 -framerate 30 -i "${seg.slidePath}" -i "${mixedAudioPath}" -vf "${fallbackVf}" -c:v libx264 -preset fast -crf 22 -c:a aac -b:a 192k -shortest "${segMp4Path}"`;
+      execSync(fallbackCmd, { stdio: 'pipe', timeout: 180000, windowsHide: true });
+      segmentMp4s.push(segMp4Path);
     }
 
     // Cleanup mixed audio
     try { if (fs.existsSync(mixedAudioPath)) fs.unlinkSync(mixedAudioPath); } catch {}
   }
 
-  // Concatenate Act MP4s
-  console.log('[PODCAST COMPOSER] Merging acts into master podcast video...');
-  const concatListPath = path.join(outDir, `concat_acts_${Date.now()}.txt`);
-  const concatContent = actMp4s
+  // Concatenate Segment MP4s
+  console.log('[PODCAST COMPOSER] Merging dynamic speaker segments into master podcast video...');
+  const concatListPath = path.join(outDir, `concat_segs_${Date.now()}.txt`);
+  const concatContent = segmentMp4s
     .map(p => `file '${p.replace(/\\/g, '/').replace(/'/g, "'\\''")}'`)
     .join('\n');
   fs.writeFileSync(concatListPath, concatContent, 'utf-8');
@@ -96,10 +100,10 @@ export function assemblePodcastVideo({ acts, outputPath }) {
     });
   }
 
-  // Cleanup temporary Act MP4s and concat file
+  // Cleanup temporary Segment MP4s and concat file
   try {
     if (fs.existsSync(concatListPath)) fs.unlinkSync(concatListPath);
-    for (const p of actMp4s) {
+    for (const p of segmentMp4s) {
       if (fs.existsSync(p)) fs.unlinkSync(p);
     }
   } catch {}
