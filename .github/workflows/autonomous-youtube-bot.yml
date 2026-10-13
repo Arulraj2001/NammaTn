@@ -8,6 +8,8 @@ on:
     - cron: '0 8 * * *'
     # 3. Daily 07:30 PM IST (14:00 UTC): Daily Civic Lifeline Alert Short
     - cron: '0 14 * * *'
+    # 4. Tue, Thu, Sat 08:30 PM IST (15:00 UTC): Vizhi Uncut Duo Investigative Podcast
+    - cron: '0 15 * * 2,4,6'
 
   workflow_dispatch:
     inputs:
@@ -18,6 +20,7 @@ on:
           - rights-shorts
           - civic-shorts
           - long-form
+          - podcast
           - all
         default: 'rights-shorts'
       target_slug:
@@ -111,9 +114,13 @@ jobs:
             else
               node scripts/youtube/pipelines/generate-long-video.mjs $EXTRA_FLAGS
             fi
+          elif [ "$PIPELINE" = "podcast" ]; then
+            echo "[DISPATCH] Executing Vizhi Uncut Duo Investigative Podcast..."
+            node scripts/youtube/pipelines/generate-podcast.mjs $EXTRA_FLAGS
           elif [ "$PIPELINE" = "all" ]; then
             echo "[DISPATCH] Executing All Video Broadcast Pipelines..."
             node scripts/youtube/pipelines/generate-rights-shorts.mjs $EXTRA_FLAGS
             node scripts/youtube/pipelines/generate-shorts.mjs $EXTRA_FLAGS
             node scripts/youtube/pipelines/generate-long-video.mjs $EXTRA_FLAGS
+            node scripts/youtube/pipelines/generate-podcast.mjs $EXTRA_FLAGS
           fi
