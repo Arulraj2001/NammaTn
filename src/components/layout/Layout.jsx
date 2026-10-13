@@ -6,6 +6,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import MobileNav from "./MobileNav";
 import CookieConsent from "@/components/common/CookieConsent";
+import WelcomeCivicModal from "@/components/common/WelcomeCivicModal";
 
 export default function Layout() {
   return (
@@ -30,6 +31,8 @@ export default function Layout() {
       </Suspense>
       {/* Cookie consent — GDPR/India DPDP compliant, required for AdSense */}
       <CookieConsent />
+      {/* Welcome Civic Guide & Grievance Prompt Modal */}
+      <WelcomeCivicModal />
     </div>
   );
 }
