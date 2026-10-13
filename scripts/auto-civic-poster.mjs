@@ -697,31 +697,36 @@ No conversational intro, no commentary outside the JSON array.
 
   console.log(`[VALIDATION] ${validPosts.length} posts passed schema integrity verification.`);
 
-  // --- STEP 5.5: GENERATE CLOUDFLARE FLUX IMAGES FOR TOP ALERTS ---
+  // --- STEP 5.5: GENERATE CLOUDFLARE FLUX IMAGES FOR ALL CIVIC POSTS ---
   try {
     const { generateCivicHeroImage } = await import('./lib/cloudflare-image.mjs');
-    console.log('[CIVIC IMAGES] Generating Cloudflare FLUX images for critical/high civic alerts...');
-    
-    // Pick top 2 high-priority alerts to generate FLUX images (leaves others as clean graphic cards)
-    const priorityPosts = validPosts.filter(p => p.urgency_level === 'critical' || (p.post_type === 'alert' && p.urgency_level === 'high')).slice(0, 2);
-    for (const post of priorityPosts) {
-      try {
-        const fluxUrl = await generateCivicHeroImage({
-          title: post.title_en,
-          category: post.category_slug,
-          district: post.district_slug,
-          slug: post.slug
-        });
-        if (fluxUrl) {
-          post.media_urls = [fluxUrl];
-          console.log(`[CIVIC IMAGE ✓] Attached Cloudflare FLUX image for: "${post.title_en.slice(0, 45)}..."`);
-        }
-      } catch (err) {
-        console.warn(`[CIVIC IMAGE WARN] Cloudflare generation skipped for "${post.title_en}": ${err.message}`);
-      }
+    console.log(`[CIVIC IMAGES] Generating dynamic Cloudflare FLUX images for all ${validPosts.length} civic posts...`);
+
+    // Process all posts in parallel chunks of 3 for fast, non-blocking generation
+    const CHUNK_SIZE = 3;
+    for (let i = 0; i < validPosts.length; i += CHUNK_SIZE) {
+      const chunk = validPosts.slice(i, i + CHUNK_SIZE);
+      await Promise.all(
+        chunk.map(async (post) => {
+          try {
+            const fluxUrl = await generateCivicHeroImage({
+              title: post.title_en || post.title_ta,
+              category: post.category_slug,
+              district: post.district_slug,
+              slug: post.slug
+            });
+            if (fluxUrl) {
+              post.media_urls = [fluxUrl];
+              console.log(`[CIVIC IMAGE ✓] Attached Cloudflare FLUX image for: "${post.title_en.slice(0, 45)}..."`);
+            }
+          } catch (err) {
+            console.warn(`[CIVIC IMAGE WARN] Cloudflare generation skipped for "${post.title_en}": ${err.message}`);
+          }
+        })
+      );
     }
   } catch (modErr) {
-    console.warn(`[CIVIC IMAGES WARN] Cloudflare image module skipped (${modErr.message}). Using graphic cards.`);
+    console.warn(`[CIVIC IMAGES WARN] Cloudflare image module skipped (${modErr.message}). Using category graphic cards.`);
   }
   // --- STEP 6: INSERT INTO SUPABASE ---
   if (isDryRun) {
@@ -871,7 +876,8 @@ No conversational intro, no commentary outside the JSON array.
           category: topAlert.category_slug,
           urgency: topAlert.urgency_level,
           district: topAlert.district_slug,
-          helpline: topAlert.assigned_department
+          helpline: topAlert.assigned_department,
+          image: topAlert.media_urls?.[0] || null
         });
       } else {
         console.log(`[WHATSAPP] ℹ️ Smart Filter: No critical emergencies in this batch of ${validPosts.length} posts. All routine reports remain on the website feed (zero channel spam).`);
@@ -881,9 +887,9 @@ No conversational intro, no commentary outside the JSON array.
     }
 
     // --- STEP 10: CURATED SOCIAL MEDIA BROADCAST (FACEBOOK & INSTAGRAM) ---
-    // Only broadcast high-impact civic alerts (or when --social flag is passed) to avoid spamming social feeds.
-    // Uses sequential rate-limit protected queue with Cloudflare AI + HarfBuzz card renderer.
-    const enableSocial = process.argv.includes('--social') || process.env.ENABLE_SOCIAL_BROADCAST === 'true';
+    // Broadcasts the top civic alert(s) as high-contrast editorial cards to Facebook & Instagram
+    const hasMetaCreds = Boolean(process.env.META_PAGE_ID && process.env.META_PAGE_ACCESS_TOKEN);
+    const enableSocial = hasMetaCreds || process.argv.includes('--social') || process.env.ENABLE_SOCIAL_BROADCAST === 'true';
     if (enableSocial) {
       try {
         const HIGH_ENGAGEMENT_CATEGORIES = [
@@ -896,10 +902,10 @@ No conversational intro, no commentary outside the JSON array.
             p.urgency_level === 'high' ||
             (HIGH_ENGAGEMENT_CATEGORIES.includes(p.category_slug) && ['alert', 'local_update'].includes(p.post_type))
           )
-          .slice(0, 4);
+          .slice(0, 2);
 
         if (topSocialPosts.length > 0) {
-          console.log(`[SOCIAL BROADCAST] Found ${topSocialPosts.length} priority civic alert(s) for Facebook & Instagram...`);
+          console.log(`[SOCIAL BROADCAST] Broadcasting top ${topSocialPosts.length} priority civic alert(s) to Facebook & Instagram...`);
           const { broadcastBatchToSocials } = await import('./lib/meta-social-poster.mjs');
           await broadcastBatchToSocials(topSocialPosts, {
             delayMs: 3000,

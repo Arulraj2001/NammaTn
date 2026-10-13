@@ -6,10 +6,10 @@ name: VizhiTN Publishing Watchdog
 
 on:
   schedule:
-    # 04:30 UTC = 10:00 AM IST — catches any morning batch (civic 6:45 AM, TN Today 7:45 AM) that missed
-    - cron: '30 4 * * *'
-    # 14:30 UTC = 08:00 PM IST — catches any midday/evening batch that missed
-    - cron: '30 14 * * *'
+    # 04:37 UTC = 10:07 AM IST — catches any morning batch that missed
+    - cron: '37 4 * * *'
+    # 14:37 UTC = 08:07 PM IST — catches any midday/evening batch that missed
+    - cron: '37 14 * * *'
 
   workflow_dispatch:
     inputs:

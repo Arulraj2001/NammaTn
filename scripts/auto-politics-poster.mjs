@@ -403,7 +403,6 @@ No conversational intro, no commentary outside the JSON array.
     } catch (_) {}
 
     // --- STEP 6: SMART HIGHLIGHT BROADCAST TO VIZHITN WHATSAPP CHANNEL ---
-    // Broadcast at most 1 top breakthrough policy/legislative highlight per day (never spam routine updates)
     if (insertedArticles.length > 0) {
       try {
         const topArticle = insertedArticles[0];
@@ -415,10 +414,39 @@ No conversational intro, no commentary outside the JSON array.
           url: `${siteUrl}/post/${topArticle.slug}`,
           category: 'tn-politics',
           urgency: 'normal',
-          district: topArticle.district_slug
+          district: topArticle.district_slug,
+          image: topArticle.media_urls?.[0] || null
         });
       } catch (waErr) {
         console.warn(`[WHATSAPP WARN] Politics channel broadcast warning: ${waErr.message}`);
+      }
+
+      // --- STEP 7: BROADCAST TO META SOCIALS (FACEBOOK & INSTAGRAM) ---
+      const hasMetaCreds = Boolean(process.env.META_PAGE_ID && process.env.META_PAGE_ACCESS_TOKEN);
+      if (hasMetaCreds) {
+        try {
+          const topArticle = insertedArticles[0];
+          console.log('[SOCIAL BROADCAST] Cross-posting political highlight to Facebook and Instagram...');
+          const { broadcastToSocials } = await import('./lib/meta-social-poster.mjs');
+          await broadcastToSocials({
+            title_ta: topArticle.title_ta || topArticle.title_en,
+            title_en: topArticle.title_en,
+            subtitle: topArticle.area_name || 'Tamil Nadu',
+            content_ta: topArticle.content_ta || topArticle.content_en,
+            category_slug: 'tn-politics',
+            district_slug: topArticle.district_slug || 'chennai',
+            bullet1: topArticle.title_en || '',
+            bullet2: topArticle.assigned_department || 'Tamil Nadu Legislative Assembly',
+            bullet3: 'VizhiTN Ground Intelligence',
+            slug: topArticle.slug,
+            image_url: topArticle.media_urls?.[0] || null
+          }, {
+            isDryRun: isDryRun,
+            siteOrigin: siteUrl
+          });
+        } catch (sErr) {
+          console.warn(`[SOCIAL BROADCAST WARN] ${sErr.message}`);
+        }
       }
     }
   }

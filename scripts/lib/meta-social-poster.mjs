@@ -15,7 +15,6 @@
 import path from 'path';
 import fs from 'fs';
 import { renderEditorialCard } from './card-renderer.mjs';
-import { generateStoryPhoto, createCivicPhotoPrompt } from './cloudflare-image.mjs';
 import { uploadCardToStorage } from './supabase-storage.mjs';
 
 try {
@@ -239,24 +238,33 @@ export async function broadcastToSocials(post = {}, options = {}) {
   const slug = post.slug || `post-${Date.now()}`;
   const timestamp = Date.now();
 
-  // 1. Photo resolution: Cloudflare AI or provided photo
+  // 1. Photo resolution: provided image or local fallback
   let photoPath = customPhotoPath;
-  if (!photoPath && !skipAiPhoto) {
-    try {
-      const prompt = post.photo_prompt || createCivicPhotoPrompt(post);
-      const photoResult = await generateStoryPhoto(prompt, {
-        outputFilename: `cf-photo-${slug}-${timestamp}.jpg`
-      });
-      photoPath = photoResult.filePath;
-    } catch (pErr) {
-      console.warn('[MetaPoster] Cloudflare photo generation fallback:', pErr.message);
-      photoPath = path.resolve('public/images/test-cf-flux.jpg');
+  const providedImg = post.image_url || post.direct_image_url || post.media_urls?.[0];
+  if (!photoPath && providedImg) {
+    if (providedImg.startsWith('http://') || providedImg.startsWith('https://')) {
+      try {
+        const imgRes = await fetch(providedImg);
+        if (imgRes.ok) {
+          const arrBuf = await imgRes.arrayBuffer();
+          const postsDir = path.resolve('public/images/posts');
+          if (!fs.existsSync(postsDir)) fs.mkdirSync(postsDir, { recursive: true });
+          const tempPath = path.join(postsDir, `temp-bg-${slug}-${timestamp}.webp`);
+          fs.writeFileSync(tempPath, Buffer.from(arrBuf));
+          photoPath = tempPath;
+        }
+      } catch (fErr) {
+        console.warn('[MetaPoster] Remote image fetch warning:', fErr.message);
+      }
+    } else if (fs.existsSync(providedImg)) {
+      photoPath = providedImg;
     }
   }
 
   // Fallback to local default if still not set
   if (!photoPath || !fs.existsSync(photoPath)) {
-    photoPath = path.resolve('public/images/test-cf-flux.jpg');
+    const defaultJpg = path.resolve('public/images/test-cf-flux.jpg');
+    photoPath = fs.existsSync(defaultJpg) ? defaultJpg : path.resolve('public/images/categories/general.webp');
   }
 
   // 2. Render Flawless 1080x1080 Editorial Card (HarfBuzz + Sharp 58 KB WebP)

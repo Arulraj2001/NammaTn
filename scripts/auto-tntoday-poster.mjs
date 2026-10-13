@@ -624,10 +624,39 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
       summary: broadcastSummary,
       url: publishedUrl,
       category: articleObj.category,
-      urgency: 'normal'
+      urgency: 'normal',
+      district: articleObj.district_name || articleObj.district_slug,
+      image: articleObj.featured_image || null
     });
   } catch (waErr) {
     console.warn(`[WHATSAPP WARN] Channel broadcast warning: ${waErr.message}`);
+  }
+
+  // --- STEP 10: BROADCAST TO META SOCIALS (FACEBOOK & INSTAGRAM) ---
+  const hasMetaCreds = Boolean(process.env.META_PAGE_ID && process.env.META_PAGE_ACCESS_TOKEN);
+  if (hasMetaCreds && !isDryRun) {
+    try {
+      console.log('[SOCIAL BROADCAST] Cross-posting TN Today article to Facebook and Instagram...');
+      const { broadcastToSocials } = await import('./lib/meta-social-poster.mjs');
+      await broadcastToSocials({
+        title_ta: articleObj.title_ta || articleObj.title,
+        title_en: articleObj.title,
+        subtitle: articleObj.subtitle_ta || articleObj.subtitle,
+        content_ta: articleObj.summary_ta || articleObj.summary,
+        category_slug: articleObj.category,
+        district_slug: articleObj.district_slug || 'tamil-nadu',
+        bullet1: articleObj.key_takeaways_ta?.[0] || articleObj.key_takeaways?.[0] || '',
+        bullet2: articleObj.key_takeaways_ta?.[1] || articleObj.key_takeaways?.[1] || '',
+        bullet3: articleObj.key_takeaways_ta?.[2] || articleObj.key_takeaways?.[2] || '',
+        slug: articleObj.slug,
+        image_url: articleObj.featured_image
+      }, {
+        isDryRun: isDryRun,
+        siteOrigin: siteUrl
+      });
+    } catch (sErr) {
+      console.warn(`[SOCIAL BROADCAST WARN] ${sErr.message}`);
+    }
   }
 
   console.log('\n====================================================');

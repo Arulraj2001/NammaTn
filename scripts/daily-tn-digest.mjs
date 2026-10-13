@@ -365,6 +365,23 @@ Return STRICT JSON ONLY matching this format:
     } catch (sErr) {
       console.warn('[DigestBot] Social broadcast warning:', sErr.message);
     }
+
+    // Broadcast to Official WhatsApp Channel
+    try {
+      console.log('[DigestBot] Broadcasting 7:00 PM Digest to WhatsApp Channel...');
+      const { postToWhatsAppChannel } = await import('./lib/whatsappChannel.mjs');
+      await postToWhatsAppChannel({
+        title: digestPayload.title_ta || digestPayload.title_en,
+        summary: digestPayload.headline_ta || digestPayload.headline_en,
+        url: `${siteUrl}/tn-politics/today`,
+        category: 'tn-politics',
+        urgency: 'normal',
+        district: 'Tamil Nadu',
+        image: digestPayload.featured_image || null
+      });
+    } catch (waErr) {
+      console.warn('[DigestBot] WhatsApp broadcast warning:', waErr.message);
+    }
   }
 
   console.log('===========================================================');

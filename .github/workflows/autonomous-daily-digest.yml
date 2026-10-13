@@ -2,8 +2,8 @@ name: VizhiTN Autonomous Daily Digest Bot
 
 on:
   schedule:
-    # 13:30 UTC = 07:00 PM IST (Daily Evening Governance & Development Roundup)
-    - cron: '30 13 * * *'
+    # 13:37 UTC = 07:07 PM IST (Daily Evening Governance & Development Roundup)
+    - cron: '37 13 * * *'
 
   workflow_dispatch:
     inputs:
