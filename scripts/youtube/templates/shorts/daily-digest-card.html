@@ -15,236 +15,279 @@
       font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
       position: relative;
       color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 80px 60px 100px 60px;
     }
 
-    /* Ambient Background Glows */
+    /* ── Ambient Depth Glows ─────────────────────────────── */
     .glow-top {
       position: absolute;
-      top: -150px;
-      left: 50%;
+      top: -80px; left: 50%;
       transform: translateX(-50%);
-      width: 800px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(37, 99, 235, 0.35) 0%, transparent 70%);
+      width: 900px; height: 500px;
+      background: radial-gradient(ellipse at center, rgba(37,99,235,0.28) 0%, transparent 70%);
       pointer-events: none;
     }
     .glow-bottom {
       position: absolute;
-      bottom: -150px;
-      right: -100px;
-      width: 600px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, transparent 70%);
+      bottom: -100px; right: -60px;
+      width: 650px; height: 450px;
+      background: radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%);
       pointer-events: none;
     }
 
-    /* Top Brand Header */
-    .header {
-      position: relative;
-      z-index: 10;
-    }
-    .brand-row {
+    /* ── Broadcast Top Bar ───────────────────────────────── */
+    .broadcast-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 88px;
+      background: rgba(7,18,36,0.97);
+      border-bottom: 2px solid rgba(255,255,255,0.09);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
+      padding: 0 44px;
+      z-index: 30;
     }
-    .brand-left {
+    .brand-pill {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
     }
-    .logo-badge {
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 34px;
-      font-weight: 900;
-      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+    .brand-logo-img {
+      width: 54px; height: 54px;
+      border-radius: 13px;
+      background: #fff;
+      padding: 3px;
+      object-fit: contain;
     }
-    .brand-title {
-      font-size: 40px;
+    .brand-name {
+      font-size: 32px;
       font-weight: 900;
       letter-spacing: -0.5px;
-      line-height: 1.1;
     }
     .brand-sub {
       font-size: 16px;
-      color: #94a3b8;
+      color: #64748b;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      margin-top: 2px;
     }
-    .live-badge {
-      background: #dc2626;
-      color: #ffffff;
-      font-size: 18px;
-      font-weight: 900;
-      padding: 10px 24px;
-      border-radius: 9999px;
-      letter-spacing: 2px;
-      box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+    .daily-badge {
       display: flex;
       align-items: center;
       gap: 8px;
+      background: #dc2626;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      letter-spacing: 1.5px;
+      box-shadow: 0 0 20px rgba(220,38,38,0.55);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(220,38,38,0.55); }
+      50% { box-shadow: 0 0 36px rgba(220,38,38,0.9); }
     }
     .live-dot {
-      width: 12px;
-      height: 12px;
-      background: #ffffff;
+      width: 11px; height: 11px;
+      background: #fff;
       border-radius: 50%;
+      animation: blink 1.3s step-start infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
 
-    /* Main Digest Title & Date */
-    .title-box {
-      margin-top: 20px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 2px solid rgba(56, 189, 248, 0.3);
-      border-radius: 28px;
-      padding: 36px 40px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    /* ── Date + District Strip ───────────────────────────── */
+    .date-strip {
+      position: absolute;
+      top: 88px; left: 0; right: 0;
+      height: 56px;
+      background: linear-gradient(90deg, #1e3a8a 0%, rgba(30,58,138,0.4) 100%);
+      border-bottom: 1.5px solid rgba(56,189,248,0.25);
+      display: flex;
+      align-items: center;
+      padding: 0 44px;
+      gap: 20px;
+      z-index: 25;
     }
-    .digest-tag {
-      color: #38bdf8;
+    .date-tag {
       font-size: 20px;
       font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
+      color: #93c5fd;
     }
-    .main-headline {
-      font-size: 48px;
-      font-weight: 900;
-      line-height: 1.3;
-      color: #ffffff;
-      margin-bottom: 14px;
-    }
-    .date-row {
-      font-size: 20px;
-      color: #cbd5e1;
-      font-weight: 700;
+    .district-count {
+      margin-left: auto;
+      font-size: 19px;
+      font-weight: 800;
+      color: #38bdf8;
     }
 
-    /* Civic Highlights List */
+    /* ── Main Headline Box ───────────────────────────────── */
+    .headline-box {
+      position: absolute;
+      top: 164px;
+      left: 36px; right: 36px;
+      background: rgba(15,23,42,0.9);
+      border: 1.5px solid rgba(56,189,248,0.3);
+      border-top: 4px solid #38bdf8;
+      border-radius: 24px;
+      padding: 32px 36px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+      z-index: 20;
+    }
+    .roundup-tag {
+      font-size: 19px;
+      font-weight: 900;
+      color: #38bdf8;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .main-headline {
+      font-size: 46px;
+      font-weight: 900;
+      line-height: 1.28;
+      color: #ffffff;
+    }
+
+    /* ── Alert Cards Stack ───────────────────────────────── */
     .alerts-container {
-      position: relative;
-      z-index: 10;
+      position: absolute;
+      top: 420px;
+      left: 36px; right: 36px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-      margin-top: 30px;
-      margin-bottom: 30px;
+      gap: 22px;
+      z-index: 20;
     }
     .alert-card {
-      background: rgba(15, 23, 42, 0.92);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-left: 10px solid #2563eb;
+      background: rgba(15,23,42,0.94);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-left: 7px solid #2563eb;
       border-radius: 20px;
-      padding: 28px 32px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+      padding: 26px 30px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.4);
     }
-    .alert-card.warn {
-      border-left-color: #f59e0b;
-    }
-    .alert-card.danger {
-      border-left-color: #ef4444;
-    }
+    .alert-card.warn  { border-left-color: #f59e0b; }
+    .alert-card.danger { border-left-color: #ef4444; }
     .card-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .card-category {
-      font-size: 19px;
-      font-weight: 800;
-      color: #38bdf8;
-      letter-spacing: 1px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
     }
     .card-district {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
-      color: #cbd5e1;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 4px 14px;
+      color: #94a3b8;
+      background: rgba(255,255,255,0.08);
+      padding: 4px 12px;
       border-radius: 8px;
     }
     .card-title {
-      font-size: 28px;
+      font-size: 27px;
       font-weight: 800;
       line-height: 1.35;
       color: #f8fafc;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .card-detail {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 600;
-      color: #94a3b8;
+      color: #64748b;
       line-height: 1.4;
     }
 
-    /* Helpline Footer Bar */
+    /* ── Helpline Bar ────────────────────────────────────── */
     .helpline-box {
-      position: relative;
-      z-index: 10;
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: 2px solid rgba(245, 158, 11, 0.4);
-      border-radius: 24px;
-      padding: 28px 36px;
+      position: absolute;
+      bottom: 130px;
+      left: 36px; right: 36px;
+      background: linear-gradient(135deg, rgba(30,41,59,0.97), rgba(15,23,42,0.97));
+      border: 1.5px solid rgba(245,158,11,0.35);
+      border-left: 6px solid #f59e0b;
+      border-radius: 20px;
+      padding: 24px 30px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
+      z-index: 20;
     }
-    .helpline-title {
-      font-size: 20px;
+    .helpline-label {
+      font-size: 19px;
       font-weight: 800;
       color: #fbbf24;
       margin-bottom: 6px;
     }
+    .helpline-sub {
+      font-size: 16px;
+      font-weight: 600;
+      color: #64748b;
+    }
     .helpline-pills {
       display: flex;
-      gap: 16px;
+      gap: 12px;
     }
     .hl-pill {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 8px 18px;
-      border-radius: 12px;
-      font-size: 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 19px;
       font-weight: 800;
-      color: #ffffff;
+      color: #e2e8f0;
+      text-align: center;
     }
     .hl-pill span {
+      display: block;
+      font-size: 24px;
+      font-weight: 900;
       color: #38bdf8;
     }
 
-    /* Bottom Outro Bar */
-    .footer-bar {
-      position: relative;
-      z-index: 10;
+    /* ── Bottom Civic CTA Bar ────────────────────────────── */
+    .bottom-cta {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 110px;
+      background: rgba(7,18,36,0.97);
+      border-top: 2px solid rgba(255,255,255,0.08);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding-top: 10px;
-      border-top: 2px solid rgba(255, 255, 255, 0.1);
+      padding: 0 44px;
+      gap: 20px;
+      z-index: 30;
     }
-    .footer-url {
-      font-size: 26px;
+    .cta-text-col {
+      flex: 1;
+    }
+    .cta-url {
+      font-size: 30px;
       font-weight: 900;
       color: #38bdf8;
-      letter-spacing: 0.5px;
     }
-    .footer-cta {
-      font-size: 22px;
-      font-weight: 800;
-      color: #e2e8f0;
+    .cta-tagline {
+      font-size: 19px;
+      font-weight: 700;
+      color: #475569;
+      margin-top: 3px;
+    }
+    .cta-action-btn {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      font-size: 21px;
+      font-weight: 900;
+      padding: 14px 26px;
+      border-radius: 14px;
+      white-space: nowrap;
+      box-shadow: 0 6px 18px rgba(37,99,235,0.4);
     }
   </style>
 </head>
@@ -252,50 +295,58 @@
   <div class="glow-top"></div>
   <div class="glow-bottom"></div>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="brand-row">
-      <div class="brand-left">
-        <div class="logo-badge">✓</div>
-        <div>
-          <div class="brand-title">VizhiTN</div>
-          <div class="brand-sub">விழி தமிழ்நாடு | மக்கள் களம்</div>
-        </div>
-      </div>
-      <div class="live-badge">
-        <span class="live-dot"></span> DAILY DIGEST
+  <!-- Broadcast Top Bar -->
+  <div class="broadcast-bar">
+    <div class="brand-pill">
+      <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
+      <div>
+        <div class="brand-name">VizhiTN</div>
+        <div class="brand-sub">விழி தமிழ்நாடு | மக்கள் களம்</div>
       </div>
     </div>
-
-    <div class="title-box">
-      <div class="digest-tag">⚡ TODAY'S CIVIC ROUNDUP</div>
-      <h1 class="main-headline">{{MAIN_HEADLINE_TA}}</h1>
-      <div class="date-row">📅 {{DATE_TEXT}} | 38 மாவட்ட நேரடி அப்டேட்ஸ்</div>
+    <div class="daily-badge">
+      <div class="live-dot"></div>
+      DAILY DIGEST
     </div>
   </div>
 
-  <!-- 3 Key Alerts List -->
+  <!-- Date + District Strip -->
+  <div class="date-strip">
+    <span class="date-tag">📅 {{DATE_TEXT}}</span>
+    <span class="district-count">38 மாவட்டங்கள் | நேரடி அறிவிப்பு</span>
+  </div>
+
+  <!-- Main Headline -->
+  <div class="headline-box">
+    <div class="roundup-tag">⚡ TODAY'S CIVIC ROUNDUP</div>
+    <h1 class="main-headline">{{MAIN_HEADLINE_TA}}</h1>
+  </div>
+
+  <!-- 3 Civic Alert Cards -->
   <div class="alerts-container">
     {{ALERTS_CARDS_HTML}}
   </div>
 
-  <!-- Helplines Bar -->
+  <!-- Helpline Reference Bar -->
   <div class="helpline-box">
     <div>
-      <div class="helpline-title">24x7 முக்கிய அரசு உதவி எண்கள்</div>
-      <div style="font-size: 16px; color: #94a3b8;">அவசர புகார் மற்றும் தகவல் பெற</div>
+      <div class="helpline-label">📞 24x7 அரசு உதவி எண்கள்</div>
+      <div class="helpline-sub">உடனடி புகார் மற்றும் அவசர நடவடிக்கைக்கு</div>
     </div>
     <div class="helpline-pills">
-      <div class="hl-pill">மின்சாரம்: <span>1912</span></div>
-      <div class="hl-pill">மாநகராட்சி: <span>1913</span></div>
-      <div class="hl-pill">சைபர் கிரைம்: <span>1930</span></div>
+      <div class="hl-pill">மின்சாரம்<span>1912</span></div>
+      <div class="hl-pill">மாநகராட்சி<span>1913</span></div>
+      <div class="hl-pill">சைபர்<span>1930</span></div>
     </div>
   </div>
 
-  <!-- Outro Footer -->
-  <div class="footer-bar">
-    <div class="footer-url">🌐 vizhitn.in</div>
-    <div class="footer-cta">முழு விவரங்களுக்கு Follow @vizhitn</div>
+  <!-- Bottom Civic CTA -->
+  <div class="bottom-cta">
+    <div class="cta-text-col">
+      <div class="cta-url">🌐 vizhitn.in</div>
+      <div class="cta-tagline">உங்க பிரச்சனையை நீங்களே பதிவு பண்ணுங்க</div>
+    </div>
+    <div class="cta-action-btn">புகார் பதிவு ➔</div>
   </div>
 </body>
 </html>

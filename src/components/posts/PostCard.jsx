@@ -13,7 +13,6 @@ import ShareBar from "@/components/sharing/ShareBar";
 import { isCivicPost, getDaysOpen, getUrgency } from "@/lib/civicReceipt";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
 import { getPostUrl } from "@/lib/postUrl";
-import { fetchIncidentImage } from "@/lib/incidentImageService";
 
 const CATEGORY_BULLETINS = {
   'public-safety': {
@@ -134,21 +133,19 @@ function CivicBulletinCard({ post, title, postUrl }) {
   const category = (post.category_slug || "general").toLowerCase();
   const theme = CATEGORY_BULLETINS[category] || CATEGORY_BULLETINS.general;
   const CategoryIcon = theme.icon;
-  const [incidentImg, setIncidentImg] = React.useState(null);
-  const [imgSource, setImgSource] = React.useState("");
 
-  React.useEffect(() => {
-    let isMounted = true;
-    if (title && (post.post_type === "alert" || post.post_type === "local_update")) {
-      fetchIncidentImage(title, post.category_slug).then((data) => {
-        if (isMounted && data?.image_url) {
-          setIncidentImg(data.image_url);
-          setImgSource(data.source || "");
-        }
-      });
-    }
-    return () => { isMounted = false; };
-  }, [title, post.category_slug, post.post_type]);
+  // Authentic photo check (Cloudflare FLUX / user uploaded) — strictly reject scraped newsroom stock
+  const candidateImg = Array.isArray(post.media_urls) && post.media_urls.length > 0 ? post.media_urls[0] : null;
+  const isAuthenticPhoto = Boolean(
+    candidateImg &&
+    typeof candidateImg === "string" &&
+    !candidateImg.includes("thgim.com") &&
+    !candidateImg.includes("newindianexpress") &&
+    !candidateImg.includes("dtnext") &&
+    !candidateImg.includes("unsplash") &&
+    !candidateImg.includes("pexels") &&
+    (candidateImg.startsWith("https://") || candidateImg.startsWith("http://"))
+  );
 
   return (
     <Link
@@ -156,14 +153,15 @@ function CivicBulletinCard({ post, title, postUrl }) {
       prefetch={true}
       className={`block mb-3 rounded-2xl overflow-hidden relative border ${theme.border} p-3.5 sm:p-4 shadow-md hover:shadow-xl group/bulletin transition-all duration-300 min-h-[160px] sm:min-h-[175px] flex flex-col justify-between bg-slate-950`}
     >
-      {/* Real Incident Photo with subtle zoom on hover */}
-      {incidentImg ? (
+      {/* Authentic Cloudflare FLUX / User Photo or Clean Graphic Card Fallback */}
+      {isAuthenticPhoto ? (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <img
-            src={incidentImg}
+            src={candidateImg}
             alt={title}
             className="w-full h-full object-cover group-hover/bulletin:scale-105 transition-transform duration-700 opacity-40 group-hover/bulletin:opacity-50"
             loading="lazy"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           {/* Deep gradient scrim ensuring 100% text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/45" />
@@ -200,7 +198,7 @@ function CivicBulletinCard({ post, title, postUrl }) {
           <span className="truncate">{post.assigned_department || theme.dept}</span>
         </span>
         <span className="text-[10px] text-slate-400 font-medium truncate max-w-[28%] text-right font-mono">
-          {imgSource ? `📷 ${imgSource}` : (post.civic_receipt_id || "VERIFIED")}
+          {post.civic_receipt_id || "VERIFIED"}
         </span>
       </div>
     </Link>

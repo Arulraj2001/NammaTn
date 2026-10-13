@@ -9,8 +9,9 @@ import { CITIZEN_DISPUTE_TOPICS } from '../engine/tamil-phonetics.mjs';
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video-composer.mjs';
-import { generateYouTubeSceneVisual } from '../engine/cloudflare-visuals.mjs';
-import { uploadToYouTube } from '../engine/youtube-client.mjs';
+import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
+import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
+import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
 
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
@@ -40,21 +41,20 @@ async function main() {
 
   console.log(`[TOPIC] Selected dispute guide: "${topic.titleEn}"`);
 
-  // 2. Draft Spoken Conversational 3-Scene Script
+  // 2. Draft Spoken Conversational 3-Scene Script — PROBLEM FIRST, never "ஹலோ மக்களே"
   const scene1Script = [
-    `ஹலோ மக்களே! இன்னைக்கு நீங்க தெரிஞ்சுக்க வேண்டிய ஒரு மிக முக்கியமான நடைமுறை சட்ட தீர்வு!`,
-    topic.hookTa
+    topic.hookTa   // opens with the problem in the viewer's face
   ];
 
   const scene2Script = [
-    `ஸ்டெப் 1: ${topic.step1Behave}`,
-    `ஸ்டெப் 2: ${topic.step2Evidence}`
+    `Step 1: ${topic.step1Behave}`,
+    `Step 2: ${topic.step2Evidence}`
   ];
 
   const scene3Script = [
-    `ஸ்டெப் 3: ${topic.step3Legal}`,
-    `அதிகாரப்பூர்வ உதவிக்கு ${topic.helplineText}.`,
-    `உங்க ஏரியாவில நடக்கிற பிரச்சனைகளை vizhitn.in இணையதளத்தில் நீங்களே நேரடியாக பதிவு பண்ணுங்க. உங்க பக்கத்துல என்ன நடக்குதுன்னு எல்லாரும் தெரிஞ்சுக்கட்டும்! விழி தமிழ்நாடு சேனலை மறக்காம சப்ஸ்கிரைப் பண்ணிக்கோங்க!`
+    `Step 3: ${topic.step3Legal}`,
+    `Official உதவிக்கு ${topic.helplineText}-ஐ call பண்ணுங்க.`,
+    `இதே மாதிரி பிரச்சனை உங்க ஏரியாவிலயும் இருந்தா — vizhitn.in-ல நேரடியா report பண்ணுங்க. உங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும்.`
   ];
 
   // 3. Synthesize Audio for each scene with micro-chunk engine
@@ -87,9 +87,14 @@ async function main() {
   const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
   let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
   tplS1 = tplS1.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
-  tplS1 = tplS1.replace('{{SCENE_PHOTO_SRC}}', heroPhotoUrl);
+  tplS1 = tplS1.replace('{{SCENE_PHOTO_SRC}}', toImageSource(heroPhotoUrl));
   tplS1 = tplS1.replace('{{HOOK_HEADLINE_TA}}', topic.titleTa);
   tplS1 = tplS1.replace('{{DATE_TEXT}}', 'விழி சட்டம் & உரிமைகள்');
+  tplS1 = tplS1.replace('{{CATEGORY_COLOR}}', '#8B5CF6');
+  tplS1 = tplS1.replace('{{CATEGORY_ICON}}', '⚖️');
+  tplS1 = tplS1.replace('{{CATEGORY_LABEL}}', topic.category || 'சட்ட உரிமைகள்');
+  tplS1 = tplS1.replace('{{DISTRICT_NAME}}', 'TN | CITIZEN LAW');
+  tplS1 = tplS1.replace(/\{\{URGENCY_CLASS\}\}/g, 'pill-high');
 
   const s1FramePath = path.join(outDir, `rights_s1_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
@@ -130,14 +135,27 @@ async function main() {
   const s3FramePath = path.join(outDir, `rights_s3_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
 
-  // 8. Assemble Multi-Scene Video with Ken Burns Motion
+  // 8. Generate Kinetic Subtitles for Mobile Retention (Hormozi / Vox style)
+  const s1SubPath = path.join(outDir, `rights_s1_sub_${Date.now()}.ass`);
+  const s2SubPath = path.join(outDir, `rights_s2_sub_${Date.now()}.ass`);
+  const s3SubPath = path.join(outDir, `rights_s3_sub_${Date.now()}.ass`);
+
+  try {
+    generateAssSubtitleFile(generateCaptionsFromClauses(scene1Script, s1Dur), s1SubPath, '9:16');
+    generateAssSubtitleFile(generateCaptionsFromClauses(scene2Script, s2Dur), s2SubPath, '9:16');
+    generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
+  } catch (subErr) {
+    console.log('[CAPTIONS WARN] Could not generate subtitles:', subErr.message);
+  }
+
+  // 9. Assemble Multi-Scene Video with Ken Burns Motion + Kinetic Subtitles
   const videoOutputPath = path.join(outDir, `vizhitn_rights_${topic.id}_${Date.now()}.mp4`);
-  console.log('[COMPOSER] Assembling 3-Scene Citizen Rights Video...');
+  console.log('[COMPOSER] Assembling 3-Scene Citizen Rights Video with dynamic motion & captions...');
 
   const scenes = [
-    { imagePath: s1FramePath, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true },
-    { imagePath: s2FramePath, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: false },
-    { imagePath: s3FramePath, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: false }
+    { imagePath: s1FramePath, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, subtitlePath: s1SubPath },
+    { imagePath: s2FramePath, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, subtitlePath: s2SubPath },
+    { imagePath: s3FramePath, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, subtitlePath: s3SubPath }
   ];
 
   assembleMultiSceneShortsVideo({
@@ -171,7 +189,6 @@ async function main() {
     'Shorts'
   ]));
 
-  // 10. Upload to YouTube
   const uploadResult = await uploadToYouTube({
     videoFilePath: videoOutputPath,
     title: ytTitle,
@@ -180,6 +197,13 @@ async function main() {
     privacyStatus: isDryRun ? 'unlisted' : 'public',
     isShort: true
   });
+
+  if (uploadResult.videoId && !uploadResult.dryRun) {
+    await postPinnedComment(
+      uploadResult.videoId,
+      `⚖️ இதே மாதிரி பிரச்சனை உங்களுக்கும் வந்தா — vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
+    );
+  }
 
   console.log('====================================================');
   console.log('CITIZEN RIGHTS SHORT GENERATED & PUBLISHED TO YOUTUBE!');
@@ -195,8 +219,8 @@ async function main() {
     isDryRun
   });
 
-  // Cleanup temporary frames and audio
-  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath];
+  // Cleanup temporary frames, audio, and subtitles
+  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, s1SubPath, s2SubPath, s3SubPath];
   for (const t of temps) {
     try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
   }

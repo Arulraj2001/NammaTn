@@ -16,7 +16,6 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
-import { attachIncidentPhotosToPosts } from '../src/lib/incidentPhotoMatcher.js';
 
 // Helper to load .env.local if present locally
 try {
@@ -698,10 +697,32 @@ No conversational intro, no commentary outside the JSON array.
 
   console.log(`[VALIDATION] ${validPosts.length} posts passed schema integrity verification.`);
 
-  // --- STEP 5.5: ATTACH AUTHENTIC NEWSROOM INCIDENT PHOTOS ---
-  console.log('[INCIDENT PHOTOS] Querying direct Tamil Nadu newsrooms for photojournalist images...');
-  validPosts = await attachIncidentPhotosToPosts(validPosts);
-
+  // --- STEP 5.5: GENERATE CLOUDFLARE FLUX IMAGES FOR TOP ALERTS ---
+  try {
+    const { generateCivicHeroImage } = await import('./lib/cloudflare-image.mjs');
+    console.log('[CIVIC IMAGES] Generating Cloudflare FLUX images for critical/high civic alerts...');
+    
+    // Pick top 2 high-priority alerts to generate FLUX images (leaves others as clean graphic cards)
+    const priorityPosts = validPosts.filter(p => p.urgency_level === 'critical' || (p.post_type === 'alert' && p.urgency_level === 'high')).slice(0, 2);
+    for (const post of priorityPosts) {
+      try {
+        const fluxUrl = await generateCivicHeroImage({
+          title: post.title_en,
+          category: post.category_slug,
+          district: post.district_slug,
+          slug: post.slug
+        });
+        if (fluxUrl) {
+          post.media_urls = [fluxUrl];
+          console.log(`[CIVIC IMAGE ✓] Attached Cloudflare FLUX image for: "${post.title_en.slice(0, 45)}..."`);
+        }
+      } catch (err) {
+        console.warn(`[CIVIC IMAGE WARN] Cloudflare generation skipped for "${post.title_en}": ${err.message}`);
+      }
+    }
+  } catch (modErr) {
+    console.warn(`[CIVIC IMAGES WARN] Cloudflare image module skipped (${modErr.message}). Using graphic cards.`);
+  }
   // --- STEP 6: INSERT INTO SUPABASE ---
   if (isDryRun) {
     console.log('\n--- DRY RUN PREVIEW (NO DATABASE CHANGES) ---');

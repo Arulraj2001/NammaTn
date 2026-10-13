@@ -21,8 +21,6 @@ import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
 import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
-import { fetchIncidentImage } from "@/lib/incidentImageService";
-import PatchedIncidentCard from "@/components/media/PatchedIncidentCard";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -479,20 +477,27 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   React.useEffect(() => {
     if (article) {
       const rawImg = (article.featured_image || "").trim();
-      if (rawImg && !rawImg.includes("/api/og?") && !rawImg.includes("/images/tntoday/") && (isImageUrl(rawImg) || !isImagePrompt(rawImg))) {
+      const cat = (article.category || "general").toLowerCase();
+
+      // Accept authentic Cloudflare FLUX / Supabase Storage image, strictly reject stock/scrapers
+      const isValidRemote = Boolean(
+        rawImg &&
+        (rawImg.startsWith("https://") || rawImg.startsWith("http://")) &&
+        !rawImg.includes("thgim.com") &&
+        !rawImg.includes("newindianexpress") &&
+        !rawImg.includes("dtnext") &&
+        !rawImg.includes("unsplash") &&
+        !rawImg.includes("pexels") &&
+        !rawImg.includes("/api/og?") &&
+        !isImagePrompt(rawImg)
+      );
+
+      if (isValidRemote) {
         setHeroImg(rawImg);
       } else {
-        // Automatically fetch real authorized incident photo
-        fetchIncidentImage(article.title, article.category).then((data) => {
-          if (data && data.image_url) {
-            setHeroImg(data.image_url);
-            setHeroIncident(data);
-          } else {
-            const cat = (article.category || "general").toLowerCase();
-            setHeroImg(`/images/tntoday/${cat}.webp`);
-          }
-        });
+        setHeroImg(`/images/tntoday/${cat}.webp`);
       }
+      setHeroIncident(null);
     }
   }, [article, displayTitle, displaySubtitle]);
 
@@ -575,20 +580,23 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
               </button>
             </div>
 
-            {/* Featured image — Patched Real Incident Photo or custom image */}
-            {heroIncident?.image_url ? (
-              <PatchedIncidentCard
-                imageUrl={heroIncident.image_url}
-                credit={heroIncident.credit}
-                source={heroIncident.source}
-                title={displayTitle}
-                category={cat.label}
-                className="mb-6"
-                priority={true}
-              />
-            ) : heroImg ? (
+            {/* Featured image — Cloudflare FLUX Editorial Image or Category Graphic Card Fallback */}
+            {heroImg ? (
               <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 bg-slate-950">
-                <Image src={heroImg} alt={displayTitle} width={1200} height={675} unoptimized className="w-full aspect-[16/9] max-h-[440px] sm:max-h-[500px] object-cover" />
+                <Image
+                  src={heroImg}
+                  alt={displayTitle}
+                  width={1200}
+                  height={675}
+                  unoptimized
+                  onError={(e) => {
+                    const fallback = `/images/tntoday/${(article.category || 'general').toLowerCase()}.webp`;
+                    if (e.currentTarget.src !== fallback) {
+                      e.currentTarget.src = fallback;
+                    }
+                  }}
+                  className="w-full aspect-[16/9] max-h-[440px] sm:max-h-[500px] object-cover"
+                />
                 <div className="px-4 py-2 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
                   <span>📷 {T("Visual Archive • VizhiTN Field Desk", "படத்தொகுப்பு • VizhiTN கள ஆய்வு பிரிவு")}</span>
                   <span className="font-semibold text-emerald-400">✓ {T("Verified Story", "உண்மை சரிபார்க்கப்பட்ட செய்தி")}</span>

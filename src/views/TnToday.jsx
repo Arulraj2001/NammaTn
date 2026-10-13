@@ -15,18 +15,54 @@ import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 import { isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import NumberedPagination from "@/components/common/NumberedPagination";
 
+const VALID_EDITORIAL_GRAPHICS = new Set([
+  'agriculture', 'economy', 'education', 'environment', 'general',
+  'governance', 'healthcare', 'india', 'infrastructure', 'social',
+  'technology', 'transport', 'world'
+]);
+
 /**
  * Resolves clean 16:9 editorial imagery for TN Today articles.
- * Replaces legacy broken /api/og? civic images and prompt text with Discover-ready category banners.
+ * Strictly guarantees zero broken images:
+ * 1. Valid Cloudflare FLUX images on Supabase Storage CDN
+ * 2. Valid static category graphic cards (/images/tntoday/{cat}.webp)
+ * Replaces broken local paths, stock news scrapers, and prompts with crisp category graphic cards.
  */
 export function resolveEditorialImage(article) {
   if (!article) return "/images/tntoday/general.webp";
+  const cat = (article.category || "general").toLowerCase();
   const raw = (article.featured_image || "").trim();
+
   if (!raw || isImagePrompt(raw) || raw.includes("/api/og?")) {
-    const cat = (article.category || "general").toLowerCase();
     return `/images/tntoday/${cat}.webp`;
   }
-  return raw;
+
+  // Reject scraped stock newsroom feeds
+  if (
+    raw.includes("thgim.com") ||
+    raw.includes("newindianexpress") ||
+    raw.includes("dtnext") ||
+    raw.includes("unsplash") ||
+    raw.includes("pexels")
+  ) {
+    return `/images/tntoday/${cat}.webp`;
+  }
+
+  // If local /images/tntoday/ path, ensure it exists in static assets
+  if (raw.startsWith("/images/tntoday/")) {
+    const slug = raw.replace("/images/tntoday/", "").replace(".webp", "").toLowerCase();
+    if (VALID_EDITORIAL_GRAPHICS.has(slug)) {
+      return raw;
+    }
+    return `/images/tntoday/${cat}.webp`;
+  }
+
+  // If remote CDN URL (Supabase storage)
+  if (raw.startsWith("http://") || raw.startsWith("https://")) {
+    return raw;
+  }
+
+  return `/images/tntoday/${cat}.webp`;
 }
 
 // ─── Featured article hero card ───────────────────────────────────────────────
@@ -42,8 +78,20 @@ function FeaturedCard({ article }) {
     <Link to={`/tn-today/${article.slug}`}
       className="block relative overflow-hidden rounded-2xl group shadow-lg hover:shadow-2xl transition-all border-2 border-slate-300 dark:border-slate-700 bg-slate-900">
       <div className="w-full aspect-[16/9] max-h-[380px] sm:max-h-[440px] overflow-hidden relative">
-        <Image src={imgSrc} alt={displayTitle} width={1200} height={675} unoptimized
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+        <Image
+          src={imgSrc}
+          alt={displayTitle}
+          width={1200}
+          height={675}
+          unoptimized
+          onError={(e) => {
+            const fallback = `/images/tntoday/${(article.category || 'general').toLowerCase()}.webp`;
+            if (e.currentTarget.src !== fallback) {
+              e.currentTarget.src = fallback;
+            }
+          }}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
 
         {/* Top Floating Badge */}
@@ -99,8 +147,20 @@ function ArticleCard({ article }) {
     <Link to={`/tn-today/${article.slug}`}
       className="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl p-4 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all duration-300 group">
       <div className="w-full sm:w-44 h-36 sm:h-28 rounded-xl overflow-hidden flex-shrink-0 relative bg-slate-950">
-        <Image src={imgSrc} alt={displayTitle} width={400} height={225} unoptimized
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <Image
+          src={imgSrc}
+          alt={displayTitle}
+          width={400}
+          height={225}
+          unoptimized
+          onError={(e) => {
+            const fallback = `/images/tntoday/${(article.category || 'general').toLowerCase()}.webp`;
+            if (e.currentTarget.src !== fallback) {
+              e.currentTarget.src = fallback;
+            }
+          }}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
         <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-black/70 text-white backdrop-blur-xs">
           {cat?.emoji} {categoryLabel}
         </span>

@@ -33,7 +33,7 @@ export const YOUTUBE_CONFIG = {
   voices: {
     tamilFemale: 'ta-IN-PallaviNeural',   // Standard crisp newsreader female voice
     tamilMale: 'ta-IN-ValluvarNeural',    // Authoritative documentary male voice
-    defaultRate: '+2%',                  // Subtle pacing boost for engaging delivery
+    defaultRate: '+1%',                  // Calibrated pacing for smooth bilingual Tanglish delivery
     defaultPitch: '+0Hz'
   },
 

@@ -183,3 +183,117 @@ export async function generateLongVideoThumbnail({
   renderHtmlToImage(htmlContent, outputPath, { width: 1280, height: 720 });
   return outputPath;
 }
+
+/**
+ * Generates a 1080×1920 9:16 YouTube Shorts / Instagram Reels thumbnail PNG
+ * @param {Object} params
+ * @param {string} params.titleTa          - Main Tamil headline (2–5 words, bold hook)
+ * @param {string} params.heroImageUrl     - Background photo URL or local data URI
+ * @param {string} [params.categoryLabel]  - Category name (e.g., "மின்சாரம்")
+ * @param {string} [params.categoryColor]  - Hex accent color (e.g., "#f59e0b")
+ * @param {string} [params.categoryIcon]   - Emoji icon (e.g., "⚡")
+ * @param {string} [params.districtName]   - District badge text
+ * @param {string} [params.urgencyClass]   - pill-critical | pill-high | pill-medium | pill-low
+ * @param {string} params.outputPath       - Destination PNG file
+ * @returns {string} output path
+ */
+export function generateShortsThumbnail({
+  titleTa,
+  heroImageUrl,
+  categoryLabel = 'அரசு செய்தி',
+  categoryColor = '#2563eb',
+  categoryIcon = '📢',
+  districtName = 'Tamil Nadu',
+  urgencyClass = 'pill-medium',
+  outputPath
+}) {
+  const logoDataUri = getBrandLogoDataUri();
+
+  const urgencyLabels = {
+    'pill-critical': { text: '🚨 URGENT', bg: '#ef4444', border: '#dc2626' },
+    'pill-high':     { text: '⚠️ ALERT',  bg: '#f59e0b', border: '#d97706' },
+    'pill-medium':   { text: '📌 UPDATE', bg: '#2563eb', border: '#1d4ed8' },
+    'pill-low':      { text: 'ℹ️ INFO',   bg: '#0f172a', border: '#334155' }
+  };
+  const urgency = urgencyLabels[urgencyClass] || urgencyLabels['pill-medium'];
+
+  const htmlContent = `<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@800;900&family=Plus+Jakarta+Sans:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1920px; overflow: hidden; background: #071224;
+           font-family: 'Noto Sans Tamil','Plus Jakarta Sans',system-ui,sans-serif;
+           position: relative; color: #fff; }
+    .bg-photo { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; z-index: 1; }
+    .gradient { position: absolute; inset: 0;
+      background: linear-gradient(180deg,
+        rgba(7,18,36,0.82) 0%,
+        rgba(7,18,36,0.25) 38%,
+        rgba(7,18,36,0.25) 55%,
+        rgba(7,18,36,0.92) 78%,
+        #071224 100%);
+      z-index: 2; }
+    .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 88px;
+               background: rgba(7,18,36,0.96); border-bottom: 1.5px solid rgba(255,255,255,0.1);
+               display: flex; align-items: center; justify-content: space-between;
+               padding: 0 40px; z-index: 20; }
+    .brand-pill { display: flex; align-items: center; gap: 14px; }
+    .logo-img { width: 52px; height: 52px; border-radius: 12px; background: #fff; padding: 3px; object-fit: contain; }
+    .brand-name { font-size: 28px; font-weight: 900; }
+    .cat-badge { display: flex; align-items: center; gap: 8px;
+                 background: ${categoryColor}22; border: 1.5px solid ${categoryColor};
+                 color: #fff; font-size: 20px; font-weight: 900;
+                 padding: 8px 18px; border-radius: 9999px; }
+    .bottom-content { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20;
+                      padding: 0 44px 56px 44px; }
+    .district-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .district-pill { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+                     font-size: 20px; font-weight: 800; color: #cbd5e1;
+                     padding: 6px 18px; border-radius: 10px; }
+    .urgency-pill { background: ${urgency.bg}; border: 1.5px solid ${urgency.border};
+                    font-size: 18px; font-weight: 900;
+                    padding: 6px 18px; border-radius: 10px; color: #fff; }
+    .main-title { font-size: 68px; font-weight: 900; line-height: 1.2;
+                  text-shadow: 0 4px 20px rgba(0,0,0,0.8); margin-bottom: 28px; }
+    .bottom-strip { background: rgba(7,18,36,0.9); border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 16px; padding: 18px 24px;
+                    display: flex; align-items: center; justify-content: space-between; }
+    .site-url { font-size: 26px; font-weight: 900; color: #38bdf8; }
+    .cta-btn { background: linear-gradient(135deg,#2563eb,#1d4ed8);
+               font-size: 22px; font-weight: 900; color: #fff;
+               padding: 10px 24px; border-radius: 12px;
+               box-shadow: 0 4px 16px rgba(37,99,235,0.5); }
+  </style>
+</head>
+<body>
+  <img class="bg-photo" src="${heroImageUrl}" alt="" />
+  <div class="gradient"></div>
+  <div class="top-bar">
+    <div class="brand-pill">
+      <img class="logo-img" src="${logoDataUri}" alt="VizhiTN" />
+      <span class="brand-name">VizhiTN</span>
+    </div>
+    <div class="cat-badge">${categoryIcon} ${categoryLabel}</div>
+  </div>
+  <div class="bottom-content">
+    <div class="district-row">
+      <div class="district-pill">📍 ${districtName}</div>
+      <div class="urgency-pill">${urgency.text}</div>
+    </div>
+    <h1 class="main-title">${titleTa}</h1>
+    <div class="bottom-strip">
+      <div class="site-url">🌐 vizhitn.in</div>
+      <div class="cta-btn">WATCH NOW ▶</div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  renderHtmlToImage(htmlContent, outputPath, { width: 1080, height: 1920 });
+  return outputPath;
+}

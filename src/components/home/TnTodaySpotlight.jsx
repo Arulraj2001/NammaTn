@@ -7,7 +7,6 @@ import { Clock, ArrowRight, Sparkles, BookOpen } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getPublishedTnToday, getFeaturedTnToday } from "@/services/tnToday";
 import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
-import { fetchIncidentImage } from "@/lib/incidentImageService";
 import { formatDistanceToNow } from "date-fns";
 
 const CATEGORY_TAG_COLORS = {
@@ -21,17 +20,42 @@ const CATEGORY_TAG_COLORS = {
   general:        "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700",
 };
 
+const VALID_COVER_GRAPHICS = new Set([
+  'agriculture', 'economy', 'education', 'environment', 'general',
+  'governance', 'healthcare', 'india', 'infrastructure', 'social',
+  'technology', 'transport', 'world'
+]);
+
 function resolveCoverImage(article) {
-  if (!article) return "";
+  if (!article) return "/images/tntoday/general.webp";
+  const cat = (article.category || "general").toLowerCase();
   const rawImg = (article.featured_image || "").trim();
-  if (!rawImg || isImagePrompt(rawImg)) {
-    return generateTnTodayPoster({
-      title: article.title,
-      category: article.category,
-      subtitle: article.subtitle || article.summary || "",
-    });
+
+  // Reject scraped newsroom stock
+  if (
+    rawImg.includes("thgim.com") ||
+    rawImg.includes("newindianexpress") ||
+    rawImg.includes("dtnext") ||
+    rawImg.includes("unsplash") ||
+    rawImg.includes("pexels") ||
+    rawImg.includes("/api/og?") ||
+    isImagePrompt(rawImg)
+  ) {
+    return `/images/tntoday/${cat}.webp`;
   }
-  return rawImg;
+
+  // Reject broken local relative paths (not one of the 13 static categories)
+  if (rawImg.startsWith("/images/tntoday/")) {
+    const slug = rawImg.replace("/images/tntoday/", "").replace(".webp", "").toLowerCase();
+    if (VALID_COVER_GRAPHICS.has(slug)) return rawImg;
+    return `/images/tntoday/${cat}.webp`;
+  }
+
+  if (rawImg && (rawImg.startsWith("https://") || rawImg.startsWith("http://"))) {
+    return rawImg;
+  }
+
+  return `/images/tntoday/${cat}.webp`;
 }
 
 export default function TnTodaySpotlight() {
@@ -46,7 +70,7 @@ export default function TnTodaySpotlight() {
 
   const { data: recentArticles = [], isLoading } = useQuery({
     queryKey: ["home-tntoday-recent"],
-    queryFn: () => getPublishedTnToday({ limit: 5 }),
+    queryFn: () => getPublishedTnToday({ limit: 4 }),
     staleTime: 300_000,
   });
 
@@ -55,15 +79,6 @@ export default function TnTodaySpotlight() {
   // Pick remaining 3 stories for the side list
   const sideStories = recentArticles.filter((a) => !lead || a.id !== lead.id).slice(0, 3);
 
-  const [incidentCover, setIncidentCover] = React.useState(null);
-
-  React.useEffect(() => {
-    if (lead && (!lead.featured_image || isImagePrompt(lead.featured_image))) {
-      fetchIncidentImage(lead.title, lead.category).then((data) => {
-        if (data?.image_url) setIncidentCover(data.image_url);
-      });
-    }
-  }, [lead]);
 
   if (isLoading && recentArticles.length === 0) {
     return (
@@ -85,7 +100,7 @@ export default function TnTodaySpotlight() {
 
   if (!lead) return null;
 
-  const leadImage = incidentCover || resolveCoverImage(lead);
+  const leadImage = resolveCoverImage(lead);
   const leadTitle = T(lead.title, lead.title_ta);
   const leadSummary = T(lead.summary || lead.subtitle, lead.summary_ta || lead.subtitle_ta);
   const leadCategory = lead.category || "governance";

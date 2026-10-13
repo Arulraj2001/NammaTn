@@ -73,3 +73,26 @@ export async function generateYouTubeSceneVisual(prompt, outputFilePath, aspectR
     return null;
   }
 }
+
+/**
+ * Converts a local image path or remote URL to a safe browser-renderable image source.
+ * If local, converts to base64 Data URI to prevent headless browser CORS/file origin blocking.
+ * @param {string} imgOrUrl
+ * @returns {string}
+ */
+export function toImageSource(imgOrUrl) {
+  if (!imgOrUrl) return '';
+  if (imgOrUrl.startsWith('data:') || imgOrUrl.startsWith('http://') || imgOrUrl.startsWith('https://')) {
+    return imgOrUrl;
+  }
+  if (fs.existsSync(imgOrUrl)) {
+    try {
+      const ext = path.extname(imgOrUrl).toLowerCase().replace('.', '') || 'png';
+      const mime = ext === 'webp' ? 'image/webp' : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : 'image/png';
+      const b64 = fs.readFileSync(imgOrUrl).toString('base64');
+      return `data:${mime};base64,${b64}`;
+    } catch {}
+  }
+  return imgOrUrl;
+}
+

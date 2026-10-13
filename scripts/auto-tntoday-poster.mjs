@@ -18,7 +18,6 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
-import { attachIncidentPhotoToArticle } from '../src/lib/incidentPhotoMatcher.js';
 
 // Helper to load .env.local if present locally
 try {
@@ -508,7 +507,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     updated_date: new Date().toISOString()
   };
 
-  // Attach high-impact 16:9 Cloudflare FLUX image or newsroom photo
+  // Attach high-impact 16:9 Cloudflare FLUX image (or clean category graphic card fallback)
   try {
     const { generateEditorialHeroImage } = await import('./lib/cloudflare-image.mjs');
     console.log('[EDITORIAL HERO] Generating 16:9 cinematic editorial image via Cloudflare FLUX...');
@@ -523,11 +522,10 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
       articleObj.social_image = fluxImageUrl;
       console.log(`[EDITORIAL HERO ✓] Attached Cloudflare FLUX image: ${fluxImageUrl}`);
     } else {
-      articleObj = await attachIncidentPhotoToArticle(articleObj);
+      console.log(`[EDITORIAL HERO] Using clean category graphic card fallback: ${articleObj.featured_image}`);
     }
   } catch (imgErr) {
-    console.warn(`[EDITORIAL HERO WARN] Cloudflare generation skipped: ${imgErr.message}`);
-    articleObj = await attachIncidentPhotoToArticle(articleObj);
+    console.warn(`[EDITORIAL HERO WARN] Cloudflare generation skipped (${imgErr.message}). Using graphic card fallback: ${articleObj.featured_image}`);
   }
 
   console.log(`\n📄 [ARTICLE] ${articleObj.title}`);

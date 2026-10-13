@@ -17,7 +17,6 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
-import { matchIncidentPhoto } from '../src/lib/incidentPhotoMatcher.js';
 
 // Load .env.local if available locally
 try {
@@ -310,16 +309,10 @@ No conversational intro, no commentary outside the JSON array.
         });
         if (fluxUrl) {
           media_urls = [fluxUrl];
+          console.log(`     [CLOUDFLARE FLUX ✓] Generated politics hero: ${fluxUrl}`);
         }
-      } catch (_) {}
-
-      if (media_urls.length === 0) {
-        try {
-          const photo = await matchIncidentPhoto({ title: title_en || title_ta, category: 'tn-politics' });
-          if (photo?.image_url) {
-            media_urls = [photo.image_url];
-          }
-        } catch (_) {}
+      } catch (err) {
+        console.warn(`     [CLOUDFLARE WARN] Image generation skipped: ${err.message}. Using graphic card fallback.`);
       }
     }
 

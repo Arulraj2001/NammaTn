@@ -10,55 +10,93 @@ export function normalizeAcronymsToSpokenTamil(text) {
   if (!text) return '';
 
   const replacements = [
-    // Helplines: Speak digits clearly once, no repeated words or brackets
-    { regex: /\b1912\b/g, replacement: 'ஒன்று ஒன்பது ஒன்று இரண்டு' },
-    { regex: /\b1913\b/g, replacement: 'ஒன்று ஒன்பது ஒன்று மூன்று' },
-    { regex: /\b1930\b/g, replacement: 'ஒன்று ஒன்பது மூன்று பூஜ்ஜியம்' },
-    { regex: /\b1100\b/g, replacement: 'ஒன்று ஒன்று பூஜ்ஜியம் பூஜ்ஜியம்' },
-    { regex: /\b1070\b/g, replacement: 'ஒன்று பூஜ்ஜியம் ஏழு பூஜ்ஜியம்' },
-    { regex: /\b1077\b/g, replacement: 'ஒன்று பூஜ்ஜியம் ஏழு ஏழு' },
-    { regex: /\b1064\b/g, replacement: 'ஒன்று பூஜ்ஜியம் ஆறு நான்கு' },
-    { regex: /\b1915\b/g, replacement: 'ஒன்று ஒன்பது ஒன்று ஐந்து' },
-    { regex: /\b103\b/g, replacement: 'ஒன்று பூஜ்ஜியம் மூன்று' },
-
-    // Government Departments & Utilities
-    { regex: /\bTANGEDCO\b/gi, replacement: 'டான்ஜெட்கோ மின்வாரியம்' },
-    { regex: /\bEB\b/gi, replacement: 'இபி' },
-    { regex: /\bCMRL\b/gi, replacement: 'சென்னை மெட்ரோ' },
-    { regex: /\bMetro\b/gi, replacement: 'மெட்ரோ' },
-    { regex: /\bMTC\b/gi, replacement: 'மாநகர அரசு பேருந்து' },
-    { regex: /\bSETC\b/gi, replacement: 'விரைவு அரசு பேருந்து' },
-    { regex: /\bTWAD\b/gi, replacement: 'குடிநீர் வாரியம்' },
-    { regex: /\bCMWSSB\b/gi, replacement: 'சென்னை மெட்ரோ வாட்டர்' },
-    { regex: /\bMetrowater\b/gi, replacement: 'மெட்ரோ வாட்டர்' },
-    { regex: /\bGCC\b/gi, replacement: 'சென்னை மாநகராட்சி' },
-    { regex: /\bCorporation\b/gi, replacement: 'மாநகராட்சி' },
-    { regex: /\bNHAI\b/gi, replacement: 'தேசிய நெடுஞ்சாலை ஆணையம்' },
-    { regex: /\bMinnalagam\b/gi, replacement: 'மின்னகம் 24x7 கட்டுப்பாட்டு மையம்' },
-    { regex: /\bDVAC\b/gi, replacement: 'லஞ்ச ஒழிப்புத் துறை' },
-    { regex: /\bRTO\b/gi, replacement: 'ஆர்டிஓ அலுவலகம்' },
-    { regex: /\bVAO\b/gi, replacement: 'கிராம நிர்வாக அலுவலர்' },
+    // Government Departments & Utilities (Spoken Tanglish friendly)
+    { regex: /\bTANGEDCO\b/gi, replacement: 'EB மின்வாரியம்' },
+    { regex: /\bEB\b/gi, replacement: 'EB' },
+    { regex: /\bCMRL\b/gi, replacement: 'Chennai Metro' },
+    { regex: /\bMetro\b/gi, replacement: 'Metro' },
+    { regex: /\bMTC\b/gi, replacement: 'MTC bus' },
+    { regex: /\bSETC\b/gi, replacement: 'SETC bus' },
+    { regex: /\bTWAD\b/gi, replacement: 'TWAD குடிநீர் வாரியம்' },
+    { regex: /\bCMWSSB\b/gi, replacement: 'Metro Water' },
+    { regex: /\bMetrowater\b/gi, replacement: 'Metro Water' },
+    { regex: /\bGCC\b/gi, replacement: 'Chennai Corporation' },
+    { regex: /\bCorporation\b/gi, replacement: 'corporation' },
+    { regex: /\bNHAI\b/gi, replacement: 'NHAI நெடுஞ்சாலை' },
+    { regex: /\bMinnalagam\b/gi, replacement: 'மின்னகம் Helpline' },
+    { regex: /\bDVAC\b/gi, replacement: 'DVAC லஞ்ச ஒழிப்புத் துறை' },
+    { regex: /\bRTO\b/gi, replacement: 'RTO office' },
+    { regex: /\bVAO\b/gi, replacement: 'VAO office' },
 
     // Everyday Legal & Dispute Terms
-    { regex: /\bCSR\b/gi, replacement: 'சிஎஸ்ஆர் ரசீது' },
-    { regex: /\bFIR\b/gi, replacement: 'எப்ஐஆர் முதல் தகவல் அறிக்கை' },
-    { regex: /\bTNRRRL\b/gi, replacement: 'தமிழ்நாடு வாடகைதாரர் ஒழுங்குமுறை சட்டம்' },
-    { regex: /\bAdvance\b/gi, replacement: 'வீட்டு அட்வான்ஸ் பணம்' },
+    { regex: /\bCSR\b/gi, replacement: 'CSR receipt' },
+    { regex: /\bFIR\b/gi, replacement: 'FIR' },
+    { regex: /\bTNRRRL\b/gi, replacement: 'தமிழ்நாடு வாடகைதாரர் சட்டம்' },
+    { regex: /\bAdvance\b/gi, replacement: 'advance பணம்' },
     { regex: /\bPatta\b/gi, replacement: 'பட்டா' },
     { regex: /\bChitta\b/gi, replacement: 'சிட்டா' },
-    { regex: /\bDigiLocker\b/gi, replacement: 'டிஜிலாக்கர் ஆப்' },
+    { regex: /\bDigiLocker\b/gi, replacement: 'DigiLocker app' },
 
-    // Everyday Words
-    { regex: /\bPower Cut\b/gi, replacement: 'கரண்ட் கட்' },
-    { regex: /\bShutdown\b/gi, replacement: 'மின்தடை' },
-    { regex: /\bMaintenance\b/gi, replacement: 'பராமரிப்பு வேலை' },
-    { regex: /\bUpdate\b/gi, replacement: 'அப்டேட்' },
-    { regex: /\bUpdates\b/gi, replacement: 'அப்டேட்ஸ்' },
-    { regex: /\bAlert\b/gi, replacement: 'முக்கிய அறிவிப்பு' },
-    { regex: /\bComplaint\b/gi, replacement: 'கம்ப்ளைன்ட்' },
-    { regex: /\bPortal\b/gi, replacement: 'வலைத்தளம்' },
-    { regex: /\bWebsite\b/gi, replacement: 'வலைத்தளம்' },
-    { regex: /\bHelpline\b/gi, replacement: 'உதவி எண்' },
+    // ── Grantha & Clumsy Tamil Transliterations → Crisp English Words ──
+    // Eliminates TTS stutters on "ஹ" (ha), "டிரா" (tra), "ப்ளை" (plai), etc.
+    { regex: /ஹவுஸ்|ஹவுசு/g, replacement: 'house' },
+    { regex: /டிராபிக்/g, replacement: 'traffic' },
+    { regex: /ரோடு|ரோட்டு/g, replacement: 'road' },
+    { regex: /கம்ப்ளைன்ட்|கம்ப்ளையிண்ட்|கம்ப்ளைண்ட்/g, replacement: 'complaint' },
+    { regex: /போலீஸ்\s*ஸ்டேஷன்/g, replacement: 'police station' },
+    { regex: /போலீஸ்|போலீசு/g, replacement: 'police' },
+    { regex: /கலெக்டர்/g, replacement: 'collector' },
+    { regex: /சப்ஸ்டேஷன்/g, replacement: 'substation' },
+    { regex: /டிரான்ஸ்பார்மர்/g, replacement: 'transformer' },
+    { regex: /முனிசிபாலிட்டி/g, replacement: 'municipality' },
+    { regex: /கார்ப்பரேஷன்/g, replacement: 'corporation' },
+    { regex: /ஹெல்ப்லைன்/g, replacement: 'helpline' },
+    { regex: /அப்டேட்ஸ்/g, replacement: 'updates' },
+    { regex: /அப்டேட்/g, replacement: 'update' },
+    { regex: /நோட்டீஸ்/g, replacement: 'notice' },
+    { regex: /கான்ட்ராக்டர்/g, replacement: 'contractor' },
+    { regex: /டெண்டர்/g, replacement: 'tender' },
+    { regex: /பட்ஜெட்/g, replacement: 'budget' },
+    { regex: /மீட்டர்/g, replacement: 'meter' },
+    { regex: /லைசன்ஸ்/g, replacement: 'license' },
+    { regex: /செக்\s*போஸ்ட்/g, replacement: 'check post' },
+    { regex: /ஆபீஸ்|ஆபீசு/g, replacement: 'office' },
+    { regex: /ஆபீசர்/g, replacement: 'officer' },
+    { regex: /இன்ஸ்பெக்டர்/g, replacement: 'inspector' },
+    { regex: /லைன்மேன்/g, replacement: 'linesman' },
+    { regex: /சீட்டிங்/g, replacement: 'cheating' },
+    { regex: /மெசேஜ்/g, replacement: 'message' },
+    { regex: /லிங்க்/g, replacement: 'link' },
+    { regex: /வீடியோ/g, replacement: 'video' },
+    { regex: /போஸ்ட்/g, replacement: 'post' },
+    { regex: /ஷார்ட்ஸ்/g, replacement: 'Shorts' },
+    { regex: /கரண்ட்\s*கட்|பவர்கட்/g, replacement: 'power cut' },
+    { regex: /பைப்லைன்/g, replacement: 'pipeline' },
+    { regex: /டிரைனேஜ்/g, replacement: 'drainage' },
+    { regex: /பிளாட்பார்ம்/g, replacement: 'platform' },
+    { regex: /சார்ஜ்/g, replacement: 'charge' },
+    { regex: /லேப்டாப்/g, replacement: 'laptop' },
+    { regex: /அக்ரிமென்ட்/g, replacement: 'agreement' },
+    { regex: /ரூல்ஸ்/g, replacement: 'rules' },
+    { regex: /டாக்குமென்ட்/g, replacement: 'document' },
+    { regex: /ஸ்கிரீன்ஷாட்/g, replacement: 'screenshot' },
+    { regex: /வாட்ஸ்அப்/g, replacement: 'WhatsApp' },
+    { regex: /ஸ்டெப்\s*1/g, replacement: 'Step 1' },
+    { regex: /ஸ்டெப்\s*2/g, replacement: 'Step 2' },
+    { regex: /ஸ்டெப்\s*3/g, replacement: 'Step 3' },
+    { regex: /ஸ்டெப்/g, replacement: 'step' },
+
+    // English Words -> Clean Spoken Form
+    { regex: /\bPower Cut\b/gi, replacement: 'power cut' },
+    { regex: /\bShutdown\b/gi, replacement: 'power cut' },
+    { regex: /\bMaintenance\b/gi, replacement: 'maintenance' },
+    { regex: /\bUpdate\b/gi, replacement: 'update' },
+    { regex: /\bUpdates\b/gi, replacement: 'updates' },
+    { regex: /\bAlert\b/gi, replacement: 'alert' },
+    { regex: /\bComplaint\b/gi, replacement: 'complaint' },
+    { regex: /\bPortal\b/gi, replacement: 'portal' },
+    { regex: /\bWebsite\b/gi, replacement: 'website' },
+    { regex: /\bHelpline\b/gi, replacement: 'helpline' },
     { regex: /\bvizhitn\.in\b/gi, replacement: 'விழி டிஎன் டாட் இன்' }
   ];
 
@@ -100,6 +138,31 @@ export function splitIntoSpokenClauses(text) {
 
   if (current) clauses.push(current);
   return clauses;
+}
+
+/**
+ * Cleans narration clause text:
+ * 1. Strips leading numbers, bullets, list markers (e.g. "1. ", "2) ", "2 ", "- ", "* ")
+ * 2. Strips trailing punctuation (commas, semicolons)
+ * 3. Corrects common grammatical/typographical errors in generated Tamil
+ */
+export function sanitizeClauseText(text) {
+  if (!text) return '';
+  let cleaned = String(text).trim();
+
+  // Strip leading numbering or bullet prefixes: "1. ", "2) ", "2 ", "- ", "* ", "• ", "# "
+  cleaned = cleaned.replace(/^[\s\d\.\)\:\-\*\•\–\—]+(?=[^\d\s\.\)\:\-\*\•\–\—])/g, '').trim();
+  cleaned = cleaned.replace(/^\d+\s+/g, '').trim();
+
+  // Strip trailing punctuation
+  cleaned = cleaned.replace(/[,;:\s]+$/g, '').trim();
+
+  // Fix common spelling / grammatical slips
+  cleaned = cleaned.replace(/எதிர்காலத்தக்கு/g, 'எதிர்காலத்துக்கு');
+  cleaned = cleaned.replace(/திட்டத்தக்கு/g, 'திட்டத்துக்கு');
+  cleaned = cleaned.replace(/பகுதியிலயும்/g, 'பகுதியிலும்');
+
+  return cleaned;
 }
 
 /**
