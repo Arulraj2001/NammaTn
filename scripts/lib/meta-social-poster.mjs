@@ -287,11 +287,16 @@ export async function broadcastToSocials(post = {}, options = {}) {
   });
 
   const caption = formatSocialCaption(post);
-  const link = post.slug
-    ? (post.category_slug === 'tn-politics'
-        ? `https://www.vizhitn.in/tn-politics/${post.slug}`
-        : `https://www.vizhitn.in/post/${post.slug}`)
-    : 'https://www.vizhitn.in';
+  let link = 'https://www.vizhitn.in';
+  if (post.slug) {
+    if (post.isTnToday || post.category === 'tn_today' || post.category_slug === 'tn-today') {
+      link = `https://www.vizhitn.in/tn-today/${post.slug}`;
+    } else if (post.category_slug === 'tn-politics') {
+      link = `https://www.vizhitn.in/tn-politics/${post.slug}`;
+    } else {
+      link = `https://www.vizhitn.in/post/${post.slug}`;
+    }
+  }
 
   console.log(`[MetaPoster] Editorial Card Ready: ${cardResult.filePath} (${cardResult.sizeKb} KB)`);
   console.log(`\n[MetaPoster] Generated Caption:\n${caption}\n`);

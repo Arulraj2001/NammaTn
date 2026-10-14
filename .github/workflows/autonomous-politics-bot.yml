@@ -50,6 +50,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_IMAGE_MODEL: ${{ vars.CLOUDFLARE_IMAGE_MODEL || '@cf/black-forest-labs/flux-1-schnell' }}
           WHATSAPP_SESSION: ${{ secrets.WHATSAPP_SESSION }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_INSTA_ACCOUNT_ID: ${{ secrets.META_INSTA_ACCOUNT_ID }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
         run: |
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             echo "Executing in dry-run mode"
