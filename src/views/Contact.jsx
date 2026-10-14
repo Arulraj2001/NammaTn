@@ -210,27 +210,15 @@ export default function Contact() {
                 {T("Direct Department Inboxes", "துறைசார் நேரடி மின்னஞ்சல்கள்")}
               </h3>
               <div className="space-y-3 text-xs">
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800">
-                  <span className="font-bold text-slate-900 dark:text-white block">
-                    {T("Citizen Support Desk", "பொதுமக்கள் உதவி மையம்")}
-                  </span>
-                  <a href="mailto:support@vizhitn.in" className="text-blue-600 dark:text-blue-400 font-mono hover:underline">
-                    support@vizhitn.in
-                  </a>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">
-                    {T("General platform & technical support", "பொதுவான தொழில்நுட்ப உதவிகள்")}
-                  </span>
-                </div>
-
                 <div className="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40">
                   <span className="font-bold text-blue-950 dark:text-blue-200 block">
-                    {T("Official Platform Inbox (Gmail)", "அதிகாரப்பூர்வ ஜிமெயில் தொடர்பு")}
+                    {T("Citizen Support Desk", "பொதுமக்கள் உதவி மையம்")}
                   </span>
                   <a href="mailto:vizhitnin@gmail.com" className="text-blue-600 dark:text-blue-400 font-mono font-semibold hover:underline">
                     vizhitnin@gmail.com
                   </a>
                   <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                    {T("Direct administrative & media outreach", "நேரடி நிர்வாகம் & ஊடகத் தொடர்பு")}
+                    {T("General platform & technical support", "பொதுவான தொழில்நுட்ப உதவிகள்")}
                   </span>
                 </div>
 
@@ -238,8 +226,8 @@ export default function Contact() {
                   <span className="font-bold text-slate-900 dark:text-white block">
                     {T("Editorial & Newsroom Desk", "செய்தி & தலையங்கப் பிரிவு")}
                   </span>
-                  <a href="mailto:editor@vizhitn.in" className="text-blue-600 dark:text-blue-400 font-mono hover:underline">
-                    editor@vizhitn.in
+                  <a href="mailto:vizhitnin@gmail.com" className="text-blue-600 dark:text-blue-400 font-mono hover:underline">
+                    vizhitnin@gmail.com
                   </a>
                   <span className="text-[10px] text-slate-400 block mt-0.5">
                     {T("Civic tips, breaking issues & dispatches", "உள்ளூர் நிகழ்வுகள் மற்றும் ஆதாரங்கள்")}
@@ -250,8 +238,8 @@ export default function Contact() {
                   <span className="font-bold text-slate-900 dark:text-white block">
                     {T("Resident Grievance Officer", "குறைதீர்ப்பு அதிகாரி")}
                   </span>
-                  <a href="mailto:grievance@vizhitn.in" className="text-blue-600 dark:text-blue-400 font-mono hover:underline">
-                    grievance@vizhitn.in
+                  <a href="mailto:vizhitnin@gmail.com" className="text-blue-600 dark:text-blue-400 font-mono hover:underline">
+                    vizhitnin@gmail.com
                   </a>
                   <span className="text-[10px] text-slate-400 block mt-0.5">
                     {T("IT Rules 2021 compliance & content dispute", "சட்டப்பூர்வ குறைதீர்ப்பு & தனியுரிமை")}

@@ -179,6 +179,51 @@ export default function Stay({ initialListings = [] }) {
           </div>
         )}
 
+        {/* High-Intent Search Corridors (Hot Tech & Student Hubs in TN) */}
+        <div className="mb-6 bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-2 flex items-center gap-1.5">
+            <Building className="w-4 h-4" />
+            <span>{T("Popular Tech & Educational Corridors in Tamil Nadu:", "தமிழ்நாட்டின் முக்கிய தகவல் தொழில்நுட்ப & கல்வி வளாகங்கள்:")}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: "Navalur OMR (Chennai IT)", search: "Navalur", district: "chengalpattu" },
+              { label: "Sholinganallur (Chennai IT)", search: "Sholinganallur", district: "chennai" },
+              { label: "Velachery (Chennai South)", search: "Velachery", district: "chennai" },
+              { label: "Guindy (Chennai Central)", search: "Guindy", district: "chennai" },
+              { label: "Tambaram (Chennai Suburban)", search: "Tambaram", district: "chennai" },
+              { label: "Saravanampatti (Coimbatore IT)", search: "Saravanampatti", district: "coimbatore" },
+              { label: "Peelamedu (Coimbatore Tech)", search: "Peelamedu", district: "coimbatore" },
+              { label: "Gandhipuram (Coimbatore City)", search: "Gandhipuram", district: "coimbatore" },
+              { label: "Thillai Nagar (Trichy)", search: "Thillai Nagar", district: "tiruchirappalli" },
+              { label: "KK Nagar (Madurai)", search: "KK Nagar", district: "madurai" },
+            ].map((hub) => {
+              const isSelected = filters.search === hub.search;
+              return (
+                <button
+                  key={hub.label}
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) {
+                      setFilters({ ...filters, search: "", district: "" });
+                    } else {
+                      setFilters({ ...filters, search: hub.search, district: hub.district });
+                    }
+                    setPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                    isSelected
+                      ? "bg-indigo-600 text-white border-indigo-600 shadow-md scale-105"
+                      : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40"
+                  }`}
+                >
+                  📍 {hub.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-4">

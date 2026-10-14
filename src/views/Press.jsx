@@ -288,24 +288,11 @@ export default function Press() {
 
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto">
             <a
-              href="mailto:editor@vizhitn.in"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-white text-blue-950 font-bold text-xs rounded-xl shadow-lg hover:bg-blue-50 transition-all text-center"
+              href="mailto:vizhitnin@gmail.com"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-blue-950 font-bold text-xs rounded-xl shadow-lg hover:bg-blue-50 transition-all text-center"
             >
               <Mail className="w-4 h-4 text-blue-600" />
-              editor@vizhitn.in
-            </a>
-            <a
-              href="mailto:vizhitnin@gmail.com"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-800/80 hover:bg-blue-700 text-white font-bold text-xs rounded-xl border border-blue-400/40 transition-colors text-center"
-            >
-              <Mail className="w-4 h-4 text-blue-300" />
               vizhitnin@gmail.com
-            </a>
-            <a
-              href="mailto:support@vizhitn.in"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-950/60 hover:bg-blue-900 text-white font-bold text-xs rounded-xl border border-blue-500/30 transition-colors text-center"
-            >
-              support@vizhitn.in
             </a>
           </div>
         </div>

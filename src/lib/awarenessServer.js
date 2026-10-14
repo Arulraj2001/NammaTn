@@ -1248,9 +1248,20 @@ export const getAllSchemes = () => [
   }
 ];
 
-// Get scheme by slug or id
+const SCHEME_ALIASES = {
+  'kalaignar-magalir-urimai-status': 'kalaignar-magalir-urimai-thogai',
+  'magalir-urimai-status-check': 'kalaignar-magalir-urimai-thogai',
+  'smart-ration-card-address-change': 'ration-card',
+  'patta-chitta-online-download': 'patta-chitta',
+  'tangedco-eb-name-transfer': 'apply-new-electricity-connection',
+  'pudhumai-penn-status': 'pudhumai-penn-scheme-girl-students',
+  'tamil-pudhalvan-status': 'tamil-pudhalvan-scheme-boy-students',
+};
+
+// Get scheme by slug or id (supports high-intent pSEO search aliases)
 export const getSchemeBySlug = (slug) => {
-  return getAllSchemes().find(s => s.slug === slug || s.id === slug);
+  const resolvedSlug = SCHEME_ALIASES[slug] || slug;
+  return getAllSchemes().find(s => s.slug === resolvedSlug || s.id === resolvedSlug);
 };
 
 export const GOVT_SCHEMES = getAllSchemes();

@@ -9,9 +9,17 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const schemes = getAllSchemes();
-  return schemes.map((s) => ({
-    slug: s.slug,
-  }));
+  const baseSlugs = schemes.map((s) => ({ slug: s.slug }));
+  const aliasSlugs = [
+    { slug: 'kalaignar-magalir-urimai-status' },
+    { slug: 'magalir-urimai-status-check' },
+    { slug: 'smart-ration-card-address-change' },
+    { slug: 'patta-chitta-online-download' },
+    { slug: 'tangedco-eb-name-transfer' },
+    { slug: 'pudhumai-penn-status' },
+    { slug: 'tamil-pudhalvan-status' },
+  ];
+  return [...baseSlugs, ...aliasSlugs];
 }
 
 export async function generateMetadata({ params }) {

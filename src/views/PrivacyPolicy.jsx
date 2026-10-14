@@ -134,8 +134,8 @@ const PRIVACY_CHAPTERS = [
     ta: "10. குறைதீர்ப்பு அதிகாரி & தொடர்பு விவரங்கள்",
     summary_en: "Contact our Resident Grievance Officer for statutory compliance or privacy disputes. Inquiries are resolved within 24-48 hours.",
     summary_ta: "தனியுரிமை அல்லது குறைதீர்ப்பு தொடர்பான கேள்விகளுக்கு எங்கள் அதிகாரியை நேரடியாக தொடர்பு கொள்ளலாம்.",
-    content_en: "In compliance with the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021 and India's DPDPA 2023, VizhiTN has appointed a dedicated Resident Grievance Officer. For privacy concerns, takedown requests, or data port requests, write to: grievance@vizhitn.in or support@vizhitn.in. Office Address: VizhiTN Civic Media Desk, Chennai, Tamil Nadu, India.",
-    content_ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 மற்றும் DPDPA 2023 சட்டத்தின்படி நியமிக்கப்பட்ட எங்கள் குறைதீர்ப்பு அதிகாரியை grievance@vizhitn.in அல்லது support@vizhitn.in வழியாக தொடர்பு கொள்ளலாம். அலுவலக முகவரி: VizhiTN குடிமை செய்தி மையம், சென்னை, தமிழ்நாடு."
+    content_en: "In compliance with the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021 and India's DPDPA 2023, VizhiTN has appointed a dedicated Resident Grievance Officer. For privacy concerns, takedown requests, or data port requests, write to: vizhitnin@gmail.com. Office Address: VizhiTN Civic Media Desk, Chennai, Tamil Nadu, India.",
+    content_ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 மற்றும் DPDPA 2023 சட்டத்தின்படி நியமிக்கப்பட்ட எங்கள் குறைதீர்ப்பு அதிகாரியை vizhitnin@gmail.com வழியாக தொடர்பு கொள்ளலாம். அலுவலக முகவரி: VizhiTN குடிமை செய்தி மையம், சென்னை, தமிழ்நாடு."
   }
 ];
 
@@ -152,8 +152,8 @@ export default function PrivacyPolicy() {
     staleTime: 60_000,
   });
 
-  const contactEmail = settings.support_email || settings.contact_email || "support@vizhitn.in";
-  const grievanceEmail = settings.grievance_email || "grievance@vizhitn.in";
+  const contactEmail = settings.support_email || settings.contact_email || "vizhitnin@gmail.com";
+  const grievanceEmail = settings.grievance_email || "vizhitnin@gmail.com";
 
   usePageMeta({
     title: "Privacy Policy | VizhiTN — Citizen Data Protection & DPDPA Disclosures",

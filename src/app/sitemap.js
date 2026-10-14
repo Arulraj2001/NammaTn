@@ -14,6 +14,7 @@ import { getActiveAreas } from '@/lib/publicHubServer';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
 import { getAllArticles, getAllRights, getAllSchemes, getAllGuides, getAllPortals, getAllFaqs, getAllEmergencyContacts, GOVT_SCHEMES, SAFETY_GUIDES } from '@/lib/awarenessServer';
+import { slugifyArea, getAllPowerCutAreaStaticParams } from '@/lib/powerCutAreas';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
@@ -363,6 +364,18 @@ export default async function sitemap() {
       lastModified: new Date(),
       changeFrequency: 'hourly',
       priority: 0.9,
+    });
+
+  });
+
+  // Programmatic Localities / Substation Landing Pages (pSEO High-Intent Engine)
+  const allPowerCutAreas = getAllPowerCutAreaStaticParams();
+  allPowerCutAreas.forEach(({ district, area }) => {
+    entries.push({
+      url: `${SITE_URL}/power-cuts-today-tamil-nadu/${district}/${area}`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly',
+      priority: 0.85,
     });
   });
 

@@ -15,8 +15,9 @@ export async function generateMetadata({ params }) {
   const district = getDistrictBySlug(params.district);
   if (!district) notFound();
 
-  const title = `${district.name_en} School & College Holiday Today (Rain Alert & Collector Order) | ${district.name_ta} பள்ளி விடுமுறை`;
-  const description = `Live ${district.name_en} district school and college holiday updates declared by District Collector. Check IMD heavy rain status, waterlogged areas, and 24x7 control room 1077.`;
+  const todayFormatted = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  const title = `${district.name_en} School & College Holiday Today (${todayFormatted}): Rain Alert & Collector Order | ${district.name_ta} பள்ளி விடுமுறை`;
+  const description = `Live ${district.name_en} district school and college holiday updates declared by District Collector on ${todayFormatted}. Check IMD heavy rain status, waterlogged areas, and 24x7 control room 1077.`;
   const canonical = `${SITE_URL}/school-college-holiday-alerts/${district.slug}`;
 
   const ogUrl = new URL(`${SITE_URL}/api/og`);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Zap, PhoneCall, AlertTriangle, Filter, Search, CheckCircle2, MapPin, Share2, MessageCircle } from "lucide-react";
+import { Zap, PhoneCall, AlertTriangle, Filter, Search, CheckCircle2, MapPin, Share2, MessageCircle, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import PostCard from "@/components/posts/PostCard";
 import { Link, useNavigate } from "@/lib/router-compat";
@@ -9,6 +9,7 @@ import AdSlot from "@/components/ads/AdSlot";
 import { DISTRICTS } from "@/lib/districts";
 import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
 import NumberedPagination from "@/components/common/NumberedPagination";
+import InlinePowerReportCard from "@/components/powerCuts/InlinePowerReportCard";
 
 const PRIORITY_DISTRICTS = [
   { slug: "all", name_en: "All Districts", name_ta: "அனைத்து மாவட்டங்கள்" },
@@ -24,28 +25,50 @@ const PRIORITY_DISTRICTS = [
   { slug: "tiruvallur", name_en: "Tiruvallur", name_ta: "திருவள்ளூர்" },
 ];
 
-export default function PowerCutsToday({ initialPosts = [], targetDistrict = null }) {
+export default function PowerCutsToday({
+  initialPosts = [],
+  targetDistrict = null,
+  targetArea = null,
+  allDistrictAreas = [],
+}) {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
   const navigate = useNavigate();
 
+  const [posts, setPosts] = useState(initialPosts);
   const [selectedDistrict, setSelectedDistrict] = useState(targetDistrict ? targetDistrict.slug : "all");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 8;
 
   React.useEffect(() => {
+    setPosts(initialPosts);
+  }, [initialPosts]);
+
+  React.useEffect(() => {
     setCurrentPage(1);
   }, [selectedDistrict, searchQuery]);
 
   const filteredPosts = useMemo(() => {
-    return initialPosts.filter((post) => {
+    return posts.filter((post) => {
       const matchDistrict = selectedDistrict === "all" || post.district_slug === selectedDistrict;
+      
+      // If targetArea is specified, prioritize matching that area
+      let matchArea = true;
+      if (targetArea) {
+        const areaSlug = targetArea.slug.toLowerCase();
+        const areaName = targetArea.name_en.toLowerCase();
+        const postAreaSlug = (post.area_slug || "").toLowerCase();
+        const postAreaName = (post.area_name || "").toLowerCase();
+        const combined = `${post.title_en || ""} ${post.content_en || ""} ${post.location_text || ""}`.toLowerCase();
+        matchArea = postAreaSlug === areaSlug || postAreaName.includes(areaName) || combined.includes(areaName);
+      }
+
       const textToSearch = `${post.title_en || ""} ${post.title_ta || ""} ${post.content_en || ""} ${post.location_text || ""} ${post.area_name || ""}`.toLowerCase();
       const matchQuery = !searchQuery || textToSearch.includes(searchQuery.toLowerCase().trim());
-      return matchDistrict && matchQuery;
+      return matchDistrict && matchArea && matchQuery;
     });
-  }, [initialPosts, selectedDistrict, searchQuery]);
+  }, [posts, selectedDistrict, searchQuery, targetArea]);
 
   const currentDistrictObj = targetDistrict || DISTRICTS.find((d) => d.slug === selectedDistrict);
 
@@ -53,12 +76,22 @@ export default function PowerCutsToday({ initialPosts = [], targetDistrict = nul
     ? (lang === "ta" ? currentDistrictObj.name_ta : currentDistrictObj.name_en)
     : T("All Tamil Nadu Districts", "அனைத்து மாவட்டங்கள்");
 
-  const pageUrl = targetDistrict
+  const areaNameDisplay = targetArea
+    ? (lang === "ta" ? (targetArea.name_ta || targetArea.name_en) : targetArea.name_en)
+    : null;
+
+  const pageUrl = targetArea
+    ? `https://www.vizhitn.in/power-cuts-today-tamil-nadu/${targetDistrict.slug}/${targetArea.slug}`
+    : targetDistrict
     ? `https://www.vizhitn.in/power-cuts-today-tamil-nadu/${targetDistrict.slug}`
     : "https://www.vizhitn.in/power-cuts-today-tamil-nadu";
 
+  const shareTitle = targetArea
+    ? `${areaNameDisplay} (${districtNameDisplay})`
+    : districtNameDisplay;
+
   const shareText = encodeURIComponent(
-    `⚡ *${districtNameDisplay} Power Cut Schedule Today*\n` +
+    `⚡ *${shareTitle} Power Cut Schedule Today*\n` +
     `Scheduled Shutdowns: ${filteredPosts.length > 0 ? `${filteredPosts.length} Substation Areas Reported` : "No Major Shutdown Reported"}\n` +
     `Check affected streets & Minnalagam 1912: ${pageUrl}`
   );
@@ -68,21 +101,40 @@ export default function PowerCutsToday({ initialPosts = [], targetDistrict = nul
       {/* ── HERO BANNER ── */}
       <section className="bg-gradient-to-br from-amber-600 via-amber-700 to-yellow-800 text-white py-10 px-4 sm:px-6 lg:px-8 border-b border-amber-500/30">
         <div className="max-w-7xl mx-auto">
+          {/* Breadcrumb row if deep in an area */}
+          {targetArea && (
+            <nav className="flex items-center gap-2 text-xs font-semibold text-amber-200/90 mb-4 overflow-x-auto">
+              <Link to="/" className="hover:text-white transition-colors">Home</Link>
+              <ChevronRight className="w-3 h-3 text-amber-400" />
+              <Link to="/power-cuts-today-tamil-nadu" className="hover:text-white transition-colors">Power Cuts</Link>
+              <ChevronRight className="w-3 h-3 text-amber-400" />
+              <Link to={`/power-cuts-today-tamil-nadu/${targetDistrict.slug}`} className="hover:text-white transition-colors">{districtNameDisplay}</Link>
+              <ChevronRight className="w-3 h-3 text-amber-400" />
+              <span className="text-white font-bold">{areaNameDisplay}</span>
+            </nav>
+          )}
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 bg-black/25 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-amber-200 mb-3 border border-amber-400/30">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                {targetDistrict ? `${districtNameDisplay.toUpperCase()} TANGEDCO DESK` : T("LIVE TANGEDCO SUBSTATION FEED", "நேரடி மின்தடை அறிவிப்புகள்")}
+                {targetArea
+                  ? `${areaNameDisplay.toUpperCase()} TANGEDCO SUBSTATION FEED`
+                  : targetDistrict
+                  ? `${districtNameDisplay.toUpperCase()} TANGEDCO DESK`
+                  : T("LIVE TANGEDCO SUBSTATION FEED", "நேரடி மின்தடை அறிவிப்புகள்")}
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-3 text-white">
-                {targetDistrict
+                {targetArea
+                  ? `${areaNameDisplay} ${T("Power Cut Today", "இன்று மின்தடை பகுதிகள்")}`
+                  : targetDistrict
                   ? `${districtNameDisplay} ${T("Power Cut Today", "இன்று மின்தடை பகுதிகள்")}`
                   : T("Tamil Nadu Power Cut Today", "தமிழ்நாடு இன்று மின்தடை பகுதிகள்")}
               </h1>
               <p className="text-amber-100 text-sm sm:text-base leading-relaxed max-w-2xl">
                 {T(
-                  `Verified scheduled power shutdowns, substation maintenance timings (9 AM – 2 PM), affected streets, and 24x7 Minnalagam 1912 helpline across ${targetDistrict ? districtNameDisplay : "all 38 districts"}.`,
-                  `மின்வாரிய பராமரிப்பு பணி காரணமாக ${targetDistrict ? districtNameDisplay : "தமிழ்நாடு முழுவதும்"} இன்று மின்சாரம் நிறுத்தப்படும் பகுதிகள், தெருக்கள் விவரம் மற்றும் மின்தடை உதவி எண்கள்.`
+                  `Verified scheduled power shutdowns, substation maintenance timings (9 AM – 2 PM), affected streets, and 24x7 Minnalagam 1912 helpline across ${targetArea ? `${areaNameDisplay}, ${districtNameDisplay}` : targetDistrict ? districtNameDisplay : "all 38 districts"}.`,
+                  `மின்வாரிய பராமரிப்பு பணி காரணமாக ${targetArea ? `${areaNameDisplay}, ${districtNameDisplay}` : targetDistrict ? districtNameDisplay : "தமிழ்நாடு முழுவதும்"} இன்று மின்சாரம் நிறுத்தப்படும் பகுதிகள், தெருக்கள் விவரம் மற்றும் மின்தடை உதவி எண்கள்.`
                 )}
               </p>
             </div>
@@ -163,6 +215,46 @@ export default function PowerCutsToday({ initialPosts = [], targetDistrict = nul
         </div>
       </div>
 
+      {/* ── AREA NAVIGATION CLOUD (Programmatic Internal Linking Web) ── */}
+      {currentDistrictObj && allDistrictAreas.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-2 flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5" />
+              <span>{T(`Substation Areas in ${districtNameDisplay}:`, `${districtNameDisplay} துணை மின்நிலைய பகுதிகள்:`)}</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                to={`/power-cuts-today-tamil-nadu/${currentDistrictObj.slug}`}
+                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                  !targetArea
+                    ? "bg-amber-600 text-white shadow-sm"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                }`}
+              >
+                {T("All Subdivisions", "அனைத்து பகுதிகள்")}
+              </Link>
+              {allDistrictAreas.map((a) => {
+                const isActive = targetArea && targetArea.slug === a.slug;
+                return (
+                  <Link
+                    key={a.slug}
+                    to={`/power-cuts-today-tamil-nadu/${currentDistrictObj.slug}/${a.slug}`}
+                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                      isActive
+                        ? "bg-amber-600 text-white shadow-sm scale-105"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-700 dark:hover:text-amber-300 border border-transparent hover:border-amber-300"
+                    }`}
+                  >
+                    {lang === "ta" ? (a.name_ta || a.name_en) : a.name_en}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── HIGH-IMPACT GLANCEABLE STATUS CARD ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <div className="rounded-3xl p-6 sm:p-8 border-2 shadow-lg bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/30 dark:via-yellow-950/20 dark:to-orange-950/20 border-amber-300 dark:border-amber-800">
@@ -180,8 +272,8 @@ export default function PowerCutsToday({ initialPosts = [], targetDistrict = nul
 
               <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                 {filteredPosts.length > 0
-                  ? T(`⚡ ${districtNameDisplay} Scheduled Power Shutdowns Active Today`, `⚡ ${districtNameDisplay} - இன்று திட்டமிடப்பட்ட மின்தடை பகுதிகள்`)
-                  : T(`✅ No Major Scheduled Power Shutdowns in ${districtNameDisplay}`, `✅ ${districtNameDisplay} - பெரிய மின்தடை எதுவும் பதிவாகவில்லை`)}
+                  ? T(`⚡ ${shareTitle} Scheduled Power Shutdowns Active Today`, `⚡ ${shareTitle} - இன்று திட்டமிடப்பட்ட மின்தடை பகுதிகள்`)
+                  : T(`✅ No Major Scheduled Power Shutdowns in ${shareTitle}`, `✅ ${shareTitle} - பெரிய மின்தடை எதுவும் பதிவாகவில்லை`)}
               </h2>
 
               <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
@@ -217,17 +309,32 @@ export default function PowerCutsToday({ initialPosts = [], targetDistrict = nul
         </div>
       </div>
 
-      {/* ── CONTENT FEED ── */}
+      {/* ── CONTENT FEED & INLINE REPORT ── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Posts Feed */}
+          {/* Left Column: Inline Reporter + Posts Feed */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
+            {/* ABOVE-THE-FOLD INLINE OUTAGE REPORTER (Direct 1-Click Action) */}
+            <InlinePowerReportCard
+              district={currentDistrictObj}
+              area={targetArea}
+              onReportSubmitted={(newPost) => setPosts((prev) => [newPost, ...prev])}
+            />
+
+            <div className="flex items-center justify-between pt-2">
               <h3 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <Zap className="w-5 h-5 text-amber-500" />
                 {T(
-                  selectedDistrict === "all" ? "Scheduled Power Outages Today" : `${districtNameDisplay} Power Cut Dispatches`,
-                  selectedDistrict === "all" ? "இன்றைய மின்தடை அறிவிப்புகள்" : `${districtNameDisplay} மின்தடை விவரங்கள்`
+                  targetArea
+                    ? `${areaNameDisplay} Power Cut Dispatches`
+                    : selectedDistrict === "all"
+                    ? "Scheduled Power Outages Today"
+                    : `${districtNameDisplay} Power Cut Dispatches`,
+                  targetArea
+                    ? `${areaNameDisplay} மின்தடை விவரங்கள்`
+                    : selectedDistrict === "all"
+                    ? "இன்றைய மின்தடை அறிவிப்புகள்"
+                    : `${districtNameDisplay} மின்தடை விவரங்கள்`
                 )}
               </h3>
               <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-800">

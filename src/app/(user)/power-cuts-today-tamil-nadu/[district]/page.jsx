@@ -2,6 +2,7 @@ import React from 'react';
 import PowerCutsToday from '@/views/PowerCutsToday';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { DISTRICTS, getDistrictBySlug } from '@/lib/districts';
+import { getPowerCutAreas } from '@/lib/powerCutAreas';
 import { notFound } from 'next/navigation';
 
 const SITE_URL = 'https://www.vizhitn.in';
@@ -15,8 +16,9 @@ export async function generateMetadata({ params }) {
   const district = getDistrictBySlug(params.district);
   if (!district) notFound();
 
-  const title = `${district.name_en} Power Cut Today: Scheduled EB Shutdown Timings & Streets | ${district.name_ta} மின்தடை`;
-  const description = `Live ${district.name_en} TANGEDCO scheduled power shutdown timings, affected substations, and streets today. Emergency EB helpline: 1912.`;
+  const todayFormatted = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  const title = `${district.name_en} Power Cut Today (${todayFormatted}): Scheduled EB Shutdown Timings & Streets | ${district.name_ta} மின்தடை`;
+  const description = `Live ${district.name_en} TANGEDCO scheduled power shutdown timings, affected substations, and streets today (${todayFormatted}). Emergency EB helpline: 1912.`;
   const canonical = `${SITE_URL}/power-cuts-today-tamil-nadu/${district.slug}`;
 
   const ogUrl = new URL(`${SITE_URL}/api/og`);
@@ -98,6 +100,7 @@ export default async function Page({ params }) {
   if (!district) notFound();
 
   const posts = await fetchDistrictElectricityPosts(district.slug);
+  const siblingAreas = getPowerCutAreas(district.slug);
 
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -136,7 +139,7 @@ export default async function Page({ params }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <PowerCutsToday initialPosts={posts} targetDistrict={district} />
+      <PowerCutsToday initialPosts={posts} targetDistrict={district} allDistrictAreas={siblingAreas} />
     </>
   );
 }

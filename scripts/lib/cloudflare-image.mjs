@@ -221,3 +221,32 @@ export async function generateCivicHeroImage({ title = '', category = 'general',
     return null;
   }
 }
+
+/**
+ * Generate and upload a photorealistic interior room image for Stay/PG listings.
+ * Returns public Supabase Storage CDN URL, or null on failure.
+ */
+export async function generateStayHeroImage({ title = '', location = 'Tamil Nadu', type = 'pg_available', slug = '' } = {}) {
+  try {
+    const prompt = `Interior architectural photography of a bright, clean modern student paying guest PG accommodation or rental room in South India with a neat single bed, wooden study desk, chair, wardrobe, tiled floor, air conditioner, window with warm morning sunlight, tidy bedroom, 35mm lens, 4k realism, no text, no logos`;
+    const rawBuffer = await callCloudflareFlux(prompt);
+    if (!rawBuffer) return null;
+
+    const webpBuffer = await sharp(rawBuffer)
+      .resize(1000, 700, { fit: 'cover', position: 'center' })
+      .webp({ quality: 80, effort: 4 })
+      .toBuffer();
+
+    const cleanSlug = (slug || `stay-${Date.now()}`).slice(0, 50).replace(/[^a-z0-9-]/gi, '-');
+    const storageFileName = `stay/${cleanSlug}-${Date.now().toString().slice(-4)}.webp`;
+
+    const { uploadCardToStorage } = await import('./supabase-storage.mjs');
+    const publicUrl = await uploadCardToStorage(webpBuffer, storageFileName, 'image/webp');
+    console.log(`[CloudflareAI ✓] Uploaded stay listing image: ${publicUrl}`);
+    return publicUrl;
+  } catch (err) {
+    console.warn(`[CloudflareAI WARN] Stay image generation failed: ${err.message}`);
+    return null;
+  }
+}
+

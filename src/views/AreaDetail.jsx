@@ -18,6 +18,7 @@ import { getAreaCivicPosts } from "@/services/posts";
 import { getActiveScams } from "@/services/scamAlerts";
 import { getActiveEmergencies } from "@/services/emergencyPosts";
 import { supabase } from "@/api/supabaseClient";
+import InlineCivicReportCard from "@/components/civic/InlineCivicReportCard";
 
 // Dynamic map (no SSR)
 const InteractiveHomeMap = dynamic(
@@ -232,6 +233,7 @@ export default function AreaDetail({ initialSlug, initialData }) {
 
   const [mapFilter, setMapFilter] = useState("all");
   const [moreTab, setMoreTab] = useState("wins");
+  const [showInlineReporter, setShowInlineReporter] = useState(false);
 
   /* ── Queries ────────────────────────────────────── */
   const { data: area, isLoading: areaLoading } = useQuery({
@@ -440,14 +442,34 @@ export default function AreaDetail({ initialSlug, initialData }) {
           </Link>
         </div>
 
-        {/* CTA */}
-        <Link
-          to={`/create?area=${slug}&district=${area.district_slug || ""}`}
-          className="mt-3 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-4 rounded-xl transition-colors w-full"
-        >
-          <Plus className="w-4 h-4" />
-          {T("Create Civic Receipt in this area", "இந்த பகுதியில் குடிமை ரசீது உருவாக்கு")}
-        </Link>
+        {/* CTA — Inline Instant Grievance Action */}
+        <div className="mt-3 space-y-3">
+          <button
+            type="button"
+            onClick={() => setShowInlineReporter((prev) => !prev)}
+            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-4 rounded-xl transition-all w-full cursor-pointer shadow-md"
+          >
+            <Plus className="w-4 h-4" />
+            {showInlineReporter
+              ? T("Close Grievance Form", "படிவத்தை மூடு")
+              : T("Report a Civic Issue in this area", "இந்த பகுதியில் புகார் பதிவிடு")}
+          </button>
+
+          {showInlineReporter && (
+            <div className="pt-2 animate-in fade-in slide-in-from-top-3 duration-200">
+              <InlineCivicReportCard
+                district={{
+                  slug: area.district_slug,
+                  name: area.district_name_en,
+                  name_en: area.district_name_en,
+                  name_ta: area.district_name_ta,
+                }}
+                areaName={areaName}
+                onReportSubmitted={() => setShowInlineReporter(false)}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

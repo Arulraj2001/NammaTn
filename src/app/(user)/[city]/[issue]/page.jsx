@@ -35,6 +35,9 @@ import { runAutonomousCoreAsync }  from '@/lib/seo/autonomousSeoCore';
 import { evaluateIndexBoost }      from '@/lib/seo/indexBoost';
 import { isPageTrending }          from '@/lib/seo/trendDetector';
 import { DEFAULT_SUBSYSTEM_WEIGHTS, computeWeightAdjustments } from '@/lib/seo/selfImprovingSeoLoop';
+import InlineCivicReportCard       from '@/components/civic/InlineCivicReportCard';
+import VerifiedHelplineBar         from '@/components/civic/VerifiedHelplineBar';
+import { slugifyArea }             from '@/lib/powerCutAreas';
 
 export const revalidate = 3600;
 
@@ -377,6 +380,35 @@ export default async function Page({ params }) {
             aria-hidden="true"
           />
         </div>
+
+        {/* ── Above-The-Fold Inline Grievance Engine (Instant Action & Attribution) ── */}
+        <section aria-label="File Civic Grievance" className="space-y-4">
+          <InlineCivicReportCard district={cityData} category={issueData} />
+          <VerifiedHelplineBar categorySlug={issue} />
+        </section>
+
+        {/* ── Locality Sub-Directory Pills (Neighborhood Internal Linking Web) ── */}
+        {cityData.neighborhoods && cityData.neighborhoods.length > 0 && (
+          <section className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+            <p className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+              📍 Explore {issueData.name} by {cityData.name} Neighborhood:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {cityData.neighborhoods.map((neigh) => {
+                const areaSlug = slugifyArea(neigh);
+                return (
+                  <Link
+                    key={areaSlug}
+                    href={`/area/${areaSlug}`}
+                    className="px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 transition-colors"
+                  >
+                    {neigh}
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* ── Trending Alert ────────────────────────────────────────────── */}
         {isTrendingNow && decisions.trendingBlock && (

@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Mail, Send, CheckCircle, Shield, AlertTriangle,
-  HelpCircle, MessageSquare, Building2, Phone,
-  Loader2, Copy, Check, MapPin, Sparkles
-} from "lucide-react";
+import { Mail, Send, CheckCircle, Loader2, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { base44 } from "@/api/base44Client";
 import { DISTRICTS } from "@/lib/districts";
@@ -113,12 +109,30 @@ export default function ContactForm({ activeTopic, onTopicSelect }) {
         status: "new",
       });
 
+      // Trigger instant email alert to admin via Resend
+      fetch("/api/notify-admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "contact_message",
+          data: {
+            ticket_id: generatedTicket,
+            name: form.name.trim(),
+            email: form.email.trim(),
+            phone: form.phone.trim(),
+            district: form.district,
+            topic: form.topic,
+            message: payloadMessage,
+          },
+        }),
+      }).catch((e) => console.warn("[NOTIFY ADMIN WARN]:", e));
+
       setTicketId(generatedTicket);
       setLoading(false);
       setSent(true);
     } catch (dbError) {
       console.error("Failed to save contact message to DB:", dbError);
-      setError(T("Failed to send message. Please try again or email support@vizhitn.in directly.", "செய்தியை அனுப்ப முடியவில்லை. மீண்டும் முயலவும் அல்லது support@vizhitn.in மின்னஞ்சல் செய்யவும்."));
+      setError(T("Failed to send message. Please try again or email vizhitnin@gmail.com directly.", "செய்தியை அனுப்ப முடியவில்லை. மீண்டும் முயலவும் அல்லது vizhitnin@gmail.com மின்னஞ்சல் செய்யவும்."));
       setLoading(false);
     }
   };

@@ -72,3 +72,11 @@ jobs:
             echo "Executing auto-detected pulse based on IST schedule"
             node scripts/auto-civic-poster.mjs
           fi
+
+      - name: Ping Search Engines via IndexNow
+        if: success()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
+        run: npm run indexnow:all || true

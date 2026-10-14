@@ -145,8 +145,8 @@ const TERMS_CHAPTERS = [
     ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 & குறைதீர்ப்பு முறை",
     summary_en: "We comply with India's Intermediary Guidelines. Statutory content grievances are acknowledged within 24 hours.",
     summary_ta: "இந்தியாவின் தகவல் தொழில்நுட்ப விதிகளின்படி புகார்கள் 24 மணி நேரத்திற்குள் ஏற்கப்பட்டு உரிய தீர்வு காணப்படும்.",
-    content_en: "In compliance with Rule 3 of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, any citizen, property owner, or authority aggrieved by content on VizhiTN may submit a statutory grievance to our Resident Grievance Officer at grievance@vizhitn.in. Grievances are acknowledged within 24 hours and disposed of within 15 calendar days in accordance with the law.",
-    content_ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 இன் கீழ், தளத்தில் உள்ள ஏதேனும் ஒரு பதிவினால் பாதிக்கப்பட்ட எவரும் grievance@vizhitn.in வழியாக மனு அளிக்கலாம். மனுக்கள் 24 மணி நேரத்திற்குள் ஏற்கப்பட்டு 15 நாட்களுக்குள் சட்டப்படி தீர்வு காணப்படும்."
+    content_en: "In compliance with Rule 3 of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, any citizen, property owner, or authority aggrieved by content on VizhiTN may submit a statutory grievance to our Resident Grievance Officer at vizhitnin@gmail.com. Grievances are acknowledged within 24 hours and disposed of within 15 calendar days in accordance with the law.",
+    content_ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 இன் கீழ், தளத்தில் உள்ள ஏதேனும் ஒரு பதிவினால் பாதிக்கப்பட்ட எவரும் vizhitnin@gmail.com வழியாக மனு அளிக்கலாம். மனுக்கள் 24 மணி நேரத்திற்குள் ஏற்கப்பட்டு 15 நாட்களுக்குள் சட்டப்படி தீர்வு காணப்படும்."
   },
   {
     num: "12",
@@ -174,8 +174,8 @@ export default function TermsOfService() {
     staleTime: 60_000,
   });
 
-  const contactEmail = settings.support_email || settings.contact_email || "support@vizhitn.in";
-  const grievanceEmail = settings.grievance_email || "grievance@vizhitn.in";
+  const contactEmail = settings.support_email || settings.contact_email || "vizhitnin@gmail.com";
+  const grievanceEmail = settings.grievance_email || "vizhitnin@gmail.com";
 
   usePageMeta({
     title: "Terms of Service | VizhiTN — Citizen Charter & Platform Governance",

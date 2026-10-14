@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/api/supabaseClient";
+import StayInquiryModal from "./StayInquiryModal";
 
 const TYPE_LABELS = {
   pg_available: { label: "PG Available", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
@@ -52,6 +53,7 @@ export default function StayListingCard({ listing, onReport }) {
 
   const [contactRevealed, setContactRevealed] = useState(false);
   const [revealBlocked, setRevealBlocked] = useState(false);
+  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const { requireAuth } = useAuthModal();
 
@@ -192,33 +194,67 @@ export default function StayListingCard({ listing, onReport }) {
               </button>
             )}
 
-            {/* Contact */}
-            {listing.contact_preference !== "message_only" && (
+            {/* Contact / Inquire */}
+            {listing.contact_preference === "inquiry_form" ? (
+              <button
+                onClick={() => setIsInquiryOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                <span>📅 Check Vacancy</span>
+              </button>
+            ) : listing.contact_preference !== "message_only" ? (
               <>
                 {!contactRevealed ? (
-                  <button
-                    onClick={handleRevealContact}
-                    disabled={revealBlocked}
-                    className="flex items-center gap-1 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
-                  >
-                    {!isAuthenticated ? <LogIn className="w-3 h-3" /> : <Phone className="w-3 h-3" />}
-                    {revealBlocked ? "Limit reached" : !isAuthenticated ? "Sign in to Contact" : "Show Contact"}
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setIsInquiryOpen(true)}
+                      className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                      title="Request Vacancy"
+                    >
+                      Check Vacancy
+                    </button>
+                    <button
+                      onClick={handleRevealContact}
+                      disabled={revealBlocked}
+                      className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                    >
+                      {!isAuthenticated ? <LogIn className="w-3 h-3" /> : <Phone className="w-3 h-3" />}
+                      {revealBlocked ? "Limit reached" : !isAuthenticated ? "Sign in" : "Phone"}
+                    </button>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-end gap-1">
-                    {maskedPhone && <a href={`tel:${listing.phone}`} className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-mono">📞 {listing.phone}</a>}
-                    {maskedWA && <a href={`https://wa.me/91${listing.whatsapp}`} target="_blank" rel="noopener noreferrer" className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-mono">💬 WhatsApp</a>}
-                    {listing.telegram && <a href={`https://t.me/${listing.telegram}`} target="_blank" rel="noopener noreferrer" className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-mono">✈️ Telegram</a>}
+                    {maskedPhone && <a href={`tel:${listing.phone}`} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">📞 {listing.phone}</a>}
+                    {maskedWA && (
+                      <a
+                        href={`https://wa.me/91${listing.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                          `Hi, I found your stay listing "${listing.title || "Accommodation"}" in ${listing.area_name || listing.district_name || "Tamil Nadu"} on VizhiTN (https://www.vizhitn.in/stay/${listing.id}). Is it available?`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold transition-colors"
+                      >
+                        💬 WhatsApp Inquiry
+                      </a>
+                    )}
+                    {listing.telegram && <a href={`https://t.me/${listing.telegram}`} target="_blank" rel="noopener noreferrer" className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-0.5 rounded font-mono">✈️ Telegram</a>}
                   </div>
                 )}
               </>
-            )}
-            {listing.contact_preference === "message_only" && (
-              <span className="text-xs text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">Message Only</span>
+            ) : (
+              <button
+                onClick={() => setIsInquiryOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                <span>📅 Inquire</span>
+              </button>
             )}
           </div>
         </div>
       </div>
+
+      {/* Inquiry Modal */}
+      <StayInquiryModal listing={listing} isOpen={isInquiryOpen} onClose={() => setIsInquiryOpen(false)} />
     </div>
   );
 }

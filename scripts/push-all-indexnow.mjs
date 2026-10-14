@@ -97,16 +97,20 @@ async function main() {
 
   console.log(`[✓] Retrieved ${articleUrls.length} published TN Today articles.`);
 
-  // 2. Add 38 district hubs
+  // 2. Add 38 district hubs & utility hubs
   const districtUrls = DISTRICT_SLUGS.map(d => `${SITE_URL}/${d}`);
+  const powerCutUrls = DISTRICT_SLUGS.map(d => `${SITE_URL}/power-cuts-today-tamil-nadu/${d}`);
+  const holidayUrls = DISTRICT_SLUGS.map(d => `${SITE_URL}/school-college-holiday-alerts/${d}`);
 
   // 3. Assemble total unique URL batch
-  const urlSet = new Set([...CORE_HUBS, ...districtUrls, ...articleUrls]);
+  const urlSet = new Set([...CORE_HUBS, ...districtUrls, ...powerCutUrls, ...holidayUrls, ...articleUrls]);
   const urlList = Array.from(urlSet);
 
   console.log(`[2/4] Prepared batch payload of ${urlList.length} total URLs:`);
   console.log(`      - ${CORE_HUBS.length} Core Hubs & Service Pages`);
   console.log(`      - ${districtUrls.length} District Hubs`);
+  console.log(`      - ${powerCutUrls.length} Power Cut District Hubs`);
+  console.log(`      - ${holidayUrls.length} School Holiday District Hubs`);
   console.log(`      - ${articleUrls.length} In-Depth TN Today Articles`);
 
   // 4. Submit to IndexNow API
