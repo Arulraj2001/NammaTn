@@ -346,12 +346,23 @@ export default function PowerCutsToday({
               <div className="bg-white dark:bg-slate-900 rounded-2xl p-10 text-center border border-slate-200 dark:border-slate-800">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
                 <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                  {T(`No Major Power Cuts Reported in ${districtNameDisplay}`, `${districtNameDisplay} - குறிப்பிடத்தக்க மின்தடை இல்லை`)}
+                  {T(
+                    targetArea
+                      ? `No Scheduled Power Cuts in ${areaNameDisplay}, ${districtNameDisplay}`
+                      : `No Major Power Cuts Reported in ${districtNameDisplay}`,
+                    targetArea
+                      ? `${areaNameDisplay} பகுதியில் இன்று திட்டமிடப்பட்ட மின்தடை இல்லை`
+                      : `${districtNameDisplay} - குறிப்பிடத்தக்க மின்தடை இல்லை`
+                  )}
                 </h4>
                 <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
                   {T(
-                    "No scheduled maintenance shutdowns matching your search criteria. If your power is down, report it directly to TANGEDCO 1912.",
-                    "தேடலுக்குரிய மின்தடை எதுவும் பதிவாகவில்லை. உங்கள் பகுதியில் மின்சாரம் இல்லையெனில் 1912 எண்ணிற்கு புகாரளிக்கவும்."
+                    targetArea
+                      ? `Feeder lines in ${areaNameDisplay} are operating normally with no scheduled maintenance outages today. If you experience an unexpected blackout, dial Minnalagam 24x7 at 1912.`
+                      : "No scheduled maintenance shutdowns matching your search criteria. If your power is down, report it directly to TANGEDCO 1912.",
+                    targetArea
+                      ? `${areaNameDisplay} பகுதியில் துணை மின்நிலைய பராமரிப்பு எதுவும் இல்லை. எதிர்பாராத மின்தடை ஏற்பட்டால் 1912 எண்ணை அழைக்கவும்.`
+                      : "தேடலுக்குரிய மின்தடை எதுவும் பதிவாகவில்லை. உங்கள் பகுதியில் மின்சாரம் இல்லையெனில் 1912 எண்ணிற்கு புகாரளிக்கவும்."
                   )}
                 </p>
                 <Link

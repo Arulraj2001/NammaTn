@@ -105,13 +105,14 @@ async function fetchAreaElectricityPosts(districtSlug, areaName, areaSlug) {
       return combined.includes(normalizedAreaName);
     });
 
-    // If specific area has matching posts, return them; otherwise return all district posts with area context
-    return areaPosts.length > 0 ? areaPosts : data;
+    // Return strictly posts matching this specific area. If none, returns empty array so the page renders a unique, verified zero-outage state.
+    return areaPosts;
   } catch (err) {
     console.warn(`[POWER CUTS ${districtSlug}/${areaSlug}] Error fetching posts:`, err?.message);
     return [];
   }
 }
+
 
 export default async function Page({ params }) {
   const district = getDistrictBySlug(params.district);
