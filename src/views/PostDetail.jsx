@@ -40,6 +40,7 @@ import CommentSection from "@/components/comments/CommentSection";
 import SponsorThisIssue from "@/components/sponsors/SponsorThisIssue";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
+import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
 
 function SafeMediaImage({ url, alt }) {
   const [hasError, setHasError] = useState(false);
@@ -566,6 +567,39 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
           )}
 
           <AdSlot placement="feed" className="mb-6" />
+
+          {/* WhatsApp Channel & Civic Alerts CTA */}
+          <a
+            href="https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mb-6 bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 hover:from-emerald-500 hover:to-green-600 text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all shadow-md group"
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 text-white shadow-inner">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 fill-current" viewBox="0 0 24 24">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.167 1.45 4.814 1.453 5.457 0 9.895-4.436 9.898-9.896.002-2.646-1.018-5.132-2.873-6.99C15.823 1.863 13.334.844 10.692.844 5.234.844.798 5.281.795 10.741c-.001 1.702.447 3.366 1.3 4.84l-.995 3.637 3.737-.98c1.477.805 3.125 1.233 4.805 1.235zm11.232-7.653c-.307-.154-1.82-.898-2.102-1.001-.282-.103-.487-.154-.691.154-.205.308-.795 1.001-.974 1.205-.179.205-.359.231-.666.077-.307-.154-1.3-.478-2.476-1.527-.914-.815-1.53-1.822-1.71-2.129-.18-.308-.019-.475.135-.629.138-.138.307-.359.461-.539.154-.179.205-.308.307-.513.103-.205.051-.385-.026-.539-.077-.154-.691-1.667-.948-2.283-.25-.6-.525-.519-.72-.529-.186-.009-.4-.01-.614-.01-.215 0-.564.081-.861.405-.297.324-1.133 1.107-1.133 2.7 0 1.593 1.159 3.13 1.318 3.344.159.214 2.28 3.482 5.522 4.883.771.333 1.373.532 1.84.68.775.246 1.48.212 2.037.129.621-.093 1.82-.744 2.076-1.462.256-.718.256-1.333.179-1.462-.076-.128-.282-.205-.589-.359z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
+                  <span>{T("Join VizhiTN on WhatsApp", "VizhiTN வாட்ஸ்அப் சேனலில் இணையுங்கள்")}</span>
+                  <span className="text-[10px] bg-white/20 text-white font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Free</span>
+                </p>
+                <p className="text-xs sm:text-sm text-emerald-100 mt-0.5 leading-snug">
+                  {T(
+                    "Get instant district power cut timings, flood & rain alerts, and verified civic news directly on WhatsApp.",
+                    "உங்கள் மாவட்ட மின்தடை, மழை விடுமுறை மற்றும் உடனடி மக்கள் அறிவிப்புகளை வாட்ஸ்அப்பில் பெறவும்."
+                  )}
+                </p>
+              </div>
+            </div>
+            <span className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white text-emerald-800 rounded-xl text-xs font-black shadow-sm group-hover:scale-105 transition-transform whitespace-nowrap w-full sm:w-auto">
+              {T("Join Channel →", "இணையுங்கள் →")}
+            </span>
+          </a>
+
+          <GoogleNewsFollow className="mb-6" />
 
           <div data-comment-section>
             <CommentSection postId={id} postCommentCount={post.comment_count} />

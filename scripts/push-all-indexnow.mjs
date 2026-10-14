@@ -97,13 +97,32 @@ async function main() {
 
   console.log(`[✓] Retrieved ${articleUrls.length} published TN Today articles.`);
 
+  // 1b. Fetch active politics & civic posts
+  let postUrls = [];
+  try {
+    const { data: posts } = await supabase
+      .from('post')
+      .select('slug, id, category_slug')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(300);
+
+    postUrls = (posts || []).map(p => {
+      const slug = p.slug?.trim() || p.id;
+      return p.category_slug === 'tn-politics' ? `${SITE_URL}/tn-politics/${slug}` : `${SITE_URL}/post/${slug}`;
+    });
+    console.log(`[✓] Retrieved ${postUrls.length} active civic and political alert posts.`);
+  } catch (err) {
+    console.warn('[WARN] Could not fetch civic posts for IndexNow:', err.message);
+  }
+
   // 2. Add 38 district hubs & utility hubs
   const districtUrls = DISTRICT_SLUGS.map(d => `${SITE_URL}/${d}`);
   const powerCutUrls = DISTRICT_SLUGS.map(d => `${SITE_URL}/power-cuts-today-tamil-nadu/${d}`);
   const holidayUrls = DISTRICT_SLUGS.map(d => `${SITE_URL}/school-college-holiday-alerts/${d}`);
 
   // 3. Assemble total unique URL batch
-  const urlSet = new Set([...CORE_HUBS, ...districtUrls, ...powerCutUrls, ...holidayUrls, ...articleUrls]);
+  const urlSet = new Set([...CORE_HUBS, ...districtUrls, ...powerCutUrls, ...holidayUrls, ...articleUrls, ...postUrls]);
   const urlList = Array.from(urlSet);
 
   console.log(`[2/4] Prepared batch payload of ${urlList.length} total URLs:`);
@@ -112,6 +131,7 @@ async function main() {
   console.log(`      - ${powerCutUrls.length} Power Cut District Hubs`);
   console.log(`      - ${holidayUrls.length} School Holiday District Hubs`);
   console.log(`      - ${articleUrls.length} In-Depth TN Today Articles`);
+  console.log(`      - ${postUrls.length} Active Civic & Political Alerts`);
 
   // 4. Submit to IndexNow API
   console.log('\n[3/4] Dispatching to IndexNow API (Bing, Yahoo, Yandex, Seznam)...');

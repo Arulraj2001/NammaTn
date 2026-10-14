@@ -187,12 +187,15 @@ export default async function sitemap() {
     // ── Posts (Civic Reports & Community Updates) ────────────────────────
     const { data: publicPosts } = await supabase
       .from('post')
-      .select('slug, id, updated_date, created_date, is_publicly_visible, moderation_status')
+      .select('slug, id, updated_date, created_date, is_publicly_visible, moderation_status, category_slug')
       .eq('status', 'active')
       .order('created_date', { ascending: false })
       .limit(1000);
 
     (publicPosts || []).forEach(p => {
+      // Politics posts are enumerated under /tn-politics/ above to prevent duplicate canonical conflicts
+      if (p.category_slug === 'tn-politics') return;
+
       // Exclude seed/test posts from sitemap to prevent "Excluded by noindex" and crawl budget waste
       const idStr = String(p.id || '');
       const slugStr = String(p.slug || '').trim();

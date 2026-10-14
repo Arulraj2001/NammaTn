@@ -72,6 +72,11 @@ export default async function Page({ params }) {
   const { post, complaintTrackers } = await getPublicPostDetail(params.id);
   if (!post) notFound();
 
+  // If this is a politics post, permanently redirect (308) to the dedicated political desk
+  if (post.category_slug === 'tn-politics') {
+    permanentRedirect(`/tn-politics/${post.slug || post.id}`);
+  }
+
   // If accessed by UUID or receipt ID, permanently redirect (308) to the clean keyword slug
   if (post.slug && params.id !== post.slug) {
     permanentRedirect(`/post/${post.slug}`);

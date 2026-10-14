@@ -19,7 +19,7 @@ function AnalyticsTracker() {
     const query = searchParams?.toString();
     const url = query ? `${pathname}?${query}` : pathname;
 
-    window.gtag('config', GA_MEASUREMENT_ID, {
+    window.gtag('event', 'page_view', {
       page_path: url,
       page_location: window.location.href,
       page_title: document.title,
@@ -43,7 +43,7 @@ export default function PublicScripts() {
           window.gtag = gtag;
           gtag('js', new Date());
           gtag('config', '${GA_MEASUREMENT_ID}', {
-            send_page_view: true
+            send_page_view: false
           });
         `}
       </Script>

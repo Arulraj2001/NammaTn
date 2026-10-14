@@ -6,8 +6,11 @@
 export function getPostUrl(post) {
   if (!post) return "/explore";
   const slug = post.slug?.trim();
-  if (slug) return `/post/${slug}`;
-  return `/post/${post.id}`;
+  const idOrSlug = slug || post.id;
+  if (post.category_slug === 'tn-politics') {
+    return `/tn-politics/${idOrSlug}`;
+  }
+  return `/post/${idOrSlug}`;
 }
 
 export function getPostCanonicalUrl(post, siteUrl = "https://www.vizhitn.in") {
