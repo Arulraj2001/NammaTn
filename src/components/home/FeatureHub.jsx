@@ -2,8 +2,7 @@ import React from "react";
 import { Link } from "@/lib/router-compat";
 import { motion } from "framer-motion";
 import {
-  FileText, Zap, TrendingUp, Trophy,
-  Users, MessageCircle, HelpCircle, Heart,
+  FileText, Zap, TrendingUp, Trophy, MessageCircle, HelpCircle, Heart,
   Briefcase, Home, Building2, AlertTriangle,
   MapPin, Map, Leaf, ShoppingBag, ArrowRight
 } from "lucide-react";

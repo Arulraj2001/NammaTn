@@ -38,6 +38,8 @@ const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/
 const IMD_RSS_URL = 'https://mausam.imd.gov.in/imd_latest/contents/warning.rss';
 // TN Government news (press releases)
 const TN_GOVT_NEWS_URL = 'https://www.tn.gov.in/pressrelease/pressrelease_view';
+const ALERT_SOURCE_HOSTS = ['mausam.imd.gov.in', 'imd.gov.in', 'tn.gov.in', 'tnsdma.tn.gov.in'];
+const ALERT_VALIDITY_HOURS = 24;
 
 // All 38 TN districts — used when a state-wide alert is issued
 const ALL_DISTRICTS = [
@@ -58,6 +60,30 @@ function isAuthorized(request) {
   return authHeader.replace('Bearer ', '').trim() === secret;
 }
 
+function isApprovedAlertSource(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:'
+      && ALERT_SOURCE_HOSTS.some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`));
+  } catch {
+    return false;
+  }
+}
+
+async function validateAlertSource(url) {
+  if (!isApprovedAlertSource(url)) {
+    throw new Error('source_url must be a direct IMD, TNSDMA, or Tamil Nadu Government HTTPS URL');
+  }
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'VizhiTN-ContentBot/1.0' },
+    next: { revalidate: 0 },
+  });
+  if (!res.ok || !isApprovedAlertSource(res.url)) {
+    throw new Error('Official alert source could not be verified');
+  }
+  return res.url;
+}
+
 /**
  * Fetch and combine IMD RSS + TN Govt press releases.
  * Returns a plain text summary of today's alerts.
@@ -65,6 +91,7 @@ function isAuthorized(request) {
 async function fetchAlertSources() {
   const today = getISTDateSlug();
   const parts = [];
+  const sourceUrls = [];
 
   // 1. IMD RSS feed
   try {
@@ -73,6 +100,7 @@ async function fetchAlertSources() {
       next: { revalidate: 0 },
     });
     if (res.ok) {
+      if (!isApprovedAlertSource(res.url)) throw new Error('IMD source redirected outside approved domains');
       const xml = await res.text();
       // Extract item titles and descriptions from RSS (simple regex, no XML parser needed)
       const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)];
@@ -85,7 +113,10 @@ async function fetchAlertSources() {
         .filter((s) => s.toLowerCase().includes('tamil') || s.toLowerCase().includes('tn'))
         .slice(0, 10)
         .join('\n');
-      if (imdAlerts) parts.push(`=== IMD ALERTS ===\n${imdAlerts}`);
+      if (imdAlerts) {
+        parts.push(`=== IMD ALERTS ===\n${imdAlerts}`);
+        sourceUrls.push(res.url);
+      }
     }
   } catch { /* non-blocking */ }
 
@@ -96,6 +127,7 @@ async function fetchAlertSources() {
       next: { revalidate: 0 },
     });
     if (res.ok) {
+      if (!isApprovedAlertSource(res.url)) throw new Error('Tamil Nadu Government source redirected outside approved domains');
       const html = await res.text();
       const text = html
         .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -111,11 +143,23 @@ async function fetchAlertSources() {
         text.toLowerCase().includes('flood')
       ) {
         parts.push(`=== TN GOVERNMENT PRESS RELEASE (${today}) ===\n${text.slice(0, 3000)}`);
+        sourceUrls.push(res.url);
       }
     }
   } catch { /* non-blocking */ }
 
-  return parts.join('\n\n');
+  return { content: parts.join('\n\n'), sourceUrls: [...new Set(sourceUrls)] };
+}
+
+async function expireStaleAutomatedAlerts(supabase) {
+  const cutoff = new Date(Date.now() - ALERT_VALIDITY_HOURS * 60 * 60 * 1000).toISOString();
+  const { error } = await supabase
+    .from('post')
+    .update({ status: 'expired', is_publicly_visible: false, is_indexable: false })
+    .eq('status', 'active')
+    .like('admin_note', 'Rain-alert automation:%')
+    .lt('created_date', cutoff);
+  if (error) console.warn('[rain-alert] Could not expire prior alerts:', error.message);
 }
 
 /**
@@ -173,18 +217,30 @@ export async function POST(request) {
   let body = {};
   try { body = await request.json(); } catch { /* empty body ok */ }
 
-  const { source_content, district_slugs, dry_run = false } = body;
+  const { source_content, source_url, district_slugs, dry_run = false } = body;
 
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_VITE_SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY,
     );
+    await expireStaleAutomatedAlerts(supabase);
 
     // Auto-fetch mode: check sources and skip if nothing new
     let rawContent = source_content || '';
+    let sourceUrls = [];
+    if (rawContent) {
+      if (!source_url) {
+        return NextResponse.json({
+          error: 'Manual alerts require a direct official source_url. Nothing was published.',
+        }, { status: 400 });
+      }
+      sourceUrls = [await validateAlertSource(source_url)];
+    }
     if (!rawContent) {
-      rawContent = await fetchAlertSources();
+      const fetchedSources = await fetchAlertSources();
+      rawContent = fetchedSources.content;
+      sourceUrls = fetchedSources.sourceUrls;
       if (!rawContent || rawContent.trim().length < 50) {
         return NextResponse.json({
           status: 'no_alert',
@@ -233,11 +289,24 @@ export async function POST(request) {
       }, { status: 422 });
     }
 
+    if (sourceUrls.length === 0) {
+      return NextResponse.json({
+        error: 'No verified official source was available. Nothing was published.',
+      }, { status: 422 });
+    }
+
+    const expiresAt = new Date(Date.now() + ALERT_VALIDITY_HOURS * 60 * 60 * 1000).toISOString();
+    const sourceBackedPosts = validPosts.map((post) => ({
+      ...post,
+      official_sources: sourceUrls.join('\n'),
+      admin_note: `Rain-alert automation: official sources ${sourceUrls.join(', ')}. Expires ${expiresAt}.`,
+    }));
+
     // Dedup by slug
     const { data: existing } = await supabase
-      .from('post').select('slug').in('slug', validPosts.map((p) => p.slug));
+      .from('post').select('slug').in('slug', sourceBackedPosts.map((p) => p.slug));
     const existingSlugs = new Set((existing || []).map((r) => r.slug));
-    const newPosts = validPosts.filter((p) => !existingSlugs.has(p.slug));
+    const newPosts = sourceBackedPosts.filter((p) => !existingSlugs.has(p.slug));
 
     // Bilingual
     const bilingualPosts = await Promise.all(
@@ -260,12 +329,18 @@ export async function POST(request) {
 
     const newUrls = (inserted || []).map((p) => `${SITE_URL}/post/${p.slug}`);
     if (newUrls.length > 0) notifySearchEngines(newUrls).catch(() => {});
-    fetch(`${SITE_URL}/api/revalidate`, { method: 'POST' }).catch(() => {});
+    const revalidateSecret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
+    if (revalidateSecret) {
+      fetch(`${SITE_URL}/api/revalidate`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${revalidateSecret}` },
+      }).catch(() => {});
+    }
 
     return NextResponse.json({
       inserted: inserted?.length || 0,
       skipped: validationErrors.length,
-      duplicates_skipped: validPosts.length - newPosts.length,
+      duplicates_skipped: sourceBackedPosts.length - newPosts.length,
       posts: inserted || [],
       validation_errors: validationErrors,
     });
@@ -282,7 +357,7 @@ export async function GET() {
     endpoint: 'POST /api/rain-alert',
     usage: {
       auto: '{}  — fetches IMD RSS + TN Govt, publishes if alerts found',
-      manual: { source_content: '<paste IMD alert text>', district_slugs: ['chennai', 'tiruvallur'] },
+      manual: { source_content: '<paste official alert text>', source_url: 'https://mausam.imd.gov.in/...', district_slugs: ['chennai', 'tiruvallur'] },
       dry_run: { dry_run: true },
     },
   });

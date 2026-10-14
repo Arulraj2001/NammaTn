@@ -89,6 +89,51 @@ const VALID_CIVIC_STATUS = [
   'resolved'
 ];
 
+// Automatic civic publication is allowed only for current, reachable primary
+// public-service notices. Community allegations and unsupported AI claims are
+// never eligible for this pipeline.
+const OFFICIAL_SOURCE_HOSTS = new Set([
+  'tn.gov.in', 'dipr.tn.gov.in', 'tnebltd.gov.in', 'chennaicorporation.gov.in',
+  'chennaimetrowater.tn.gov.in', 'cmrl.in', 'imd.gov.in', 'tnsdma.tn.gov.in',
+  'sr.indianrailways.gov.in', 'indianrailways.gov.in', 'tnstc.in', 'tnega.tn.gov.in',
+  'tnpcb.gov.in', 'pib.gov.in'
+]);
+
+function extractUrls(value) {
+  return [...String(value || '').matchAll(/https:\/\/[^\s<>()\]"']+/g)]
+    .map(match => match[0].replace(/[.,;:]+$/, ''));
+}
+
+function isApprovedOfficialUrl(urlString) {
+  try {
+    const url = new URL(urlString);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+    return url.protocol === 'https:' && url.pathname !== '/' &&
+      (host.endsWith('.gov.in') || host.endsWith('.nic.in') || OFFICIAL_SOURCE_HOSTS.has(host));
+  } catch (_) {
+    return false;
+  }
+}
+
+async function validateOfficialSources(value) {
+  const candidates = [...new Set(extractUrls(value).filter(isApprovedOfficialUrl))];
+  const valid = [];
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url, {
+        method: 'GET', redirect: 'follow', signal: AbortSignal.timeout(12_000),
+        headers: { 'User-Agent': 'VizhiTN-Civic-Source-Validator/1.0 (+https://www.vizhitn.in)' }
+      });
+      if (response.ok && isApprovedOfficialUrl(response.url)) valid.push(response.url);
+      else if (response.ok) console.warn(`[SOURCE REJECTED] ${url} redirected outside an approved official source.`);
+      else console.warn(`[SOURCE REJECTED] ${url} returned HTTP ${response.status}`);
+    } catch (error) {
+      console.warn(`[SOURCE REJECTED] ${url} could not be reached: ${error.message}`);
+    }
+  }
+  return valid;
+}
+
 // Helper to sanitize slug
 function slugify(text) {
   return String(text || '')
@@ -387,6 +432,7 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
     c) Pure Tamil Script: e.g. "[பகுதி] மின்தடை இன்று", "மின்சார நிறுத்தம் [மாவட்டம்]", "மின்னகம் 1912"
 13. HIGH-CONVERTING META DESCRIPTION ("seo_description"):
     145 to 160 characters stating exact area, timing, affected streets, and helpline number. This snippet appears directly below the title in Google search results.
+14. "official_sources": Array with at least one direct HTTPS URL to the specific official notice, shutdown schedule, order, advisory, or release supporting this update. Do not use homepages, media reports, social posts, or invented URLs. If no official source exists, do not return the update.
 
 OUTPUT FORMAT:
 Return ONLY a valid JSON array containing the post objects.
@@ -623,9 +669,9 @@ No conversational intro, no commentary outside the JSON array.
     let urgency_level = (raw.urgency_level || 'medium').toLowerCase().trim();
     if (!VALID_URGENCY.includes(urgency_level)) urgency_level = 'medium';
 
-    // Civic Status
-    let civic_status = (raw.civic_status || 'community_verified').toLowerCase().trim();
-    if (!VALID_CIVIC_STATUS.includes(civic_status)) civic_status = 'community_verified';
+    // AI-generated candidates start as reports. Only a human reviewer may
+    // apply a stronger verification status after checking evidence.
+    const civic_status = 'reported';
 
     // Slug generation and uniqueness check
     let slug = (raw.slug || '').trim();
@@ -645,20 +691,32 @@ No conversational intro, no commentary outside the JSON array.
     const area_name = (raw.area_name || raw.area || '').trim();
     const area_slug = slugify(area_name);
 
-    // Randomize engagement metrics for natural feel
-    const upvotes = Number(raw.upvotes) || Math.floor(12 + Math.random() * 28);
-    const verification_count = Number(raw.verification_count) || Math.floor(4 + Math.random() * 9);
-    const civic_receipt_id = raw.civic_receipt_id || `TN-${Math.floor(100000 + Math.random() * 900000)}`;
+    // Never manufacture engagement, verification, or civic-receipt evidence.
+    const upvotes = 0;
+    const verification_count = 0;
+    const civic_receipt_id = '';
 
     const assigned_department = (raw.assigned_department || raw.department || 'Tamil Nadu Civic Administration').trim();
     const location_text = (raw.location_text || (area_name ? `${area_name}, ${district_slug}` : district_slug)).trim();
+    const sourceUrls = await validateOfficialSources(
+      Array.isArray(raw.official_sources) ? raw.official_sources.join('\n') : raw.official_sources
+    );
+    if (sourceUrls.length === 0) {
+      console.warn(`[SKIP] ${title_en || slug}: no reachable approved official source URL.`);
+      continue;
+    }
+    const sourceMarkup = sourceUrls
+      .map(url => `<li><a href="${url}" target="_blank" rel="noopener noreferrer">Official source</a></li>`)
+      .join('');
+    const sourceSectionEn = `<h2>Official sources</h2><ul>${sourceMarkup}</ul>`;
+    const sourceSectionTa = `<h2>அதிகாரப்பூர்வ ஆதாரங்கள்</h2><ul>${sourceMarkup}</ul>`;
 
     // Build Post Object
     const normalizedPost = {
       title_en: title_en || title_ta,
       title_ta: title_ta || title_en,
-      content_en: content_en || content_ta,
-      content_ta: content_ta || content_en,
+      content_en: `${content_en || content_ta}\n${sourceSectionEn}`,
+      content_ta: `${content_ta || content_en}\n${sourceSectionTa}`,
       post_type,
       district_slug,
       category_slug,
@@ -666,7 +724,7 @@ No conversational intro, no commentary outside the JSON array.
       area_slug: area_slug || null,
       author_name: raw.author_name || 'VizhiTN Civic Desk',
       is_anonymous: false,
-      status: 'active', // MANDATORY
+      status: 'active',
       moderation_status: 'approved',
       is_publicly_visible: true,
       upvotes,
@@ -689,6 +747,7 @@ No conversational intro, no commentary outside the JSON array.
       seo_keywords: raw.seo_keywords || `${district_slug} civic, ${category_slug}, vizhitn news, tamil nadu alerts`,
       canonical_url: `${siteUrl}/post/${slug}`,
       is_indexable: true,
+      admin_note: `Auto-published after official source validation: ${sourceUrls.join(', ')}`,
       created_date: new Date().toISOString()
     };
 
@@ -747,7 +806,7 @@ No conversational intro, no commentary outside the JSON array.
     process.exit(1);
   }
 
-  console.log(`[DATABASE] Publishing ${validPosts.length} verified civic reports to Supabase 'post' table...`);
+  console.log(`[DATABASE] Saving ${validPosts.length} civic candidates for editorial review in Supabase 'post' table...`);
   
   let successCount = 0;
   let failCount = 0;
@@ -789,16 +848,20 @@ No conversational intro, no commentary outside the JSON array.
     }
   }
 
-  console.log(`\n[SUMMARY] Batch completed: ${successCount} published, ${failCount} failed.`);
+  console.log(`\n[SUMMARY] Batch completed: ${successCount} queued for review, ${failCount} failed.`);
 
   // --- STEP 7: INSTANT SERVER CACHE PURGE VIA /api/revalidate ---
-  if (successCount > 0) {
+  // Draft candidates must not trigger cache refreshes, search-engine pings, or
+  // social/WhatsApp distribution. Those actions happen only after an editor
+  // promotes a post to approved and active.
+  if (successCount > 0 && validPosts.some(post => post.moderation_status === 'approved')) {
     const revalidateEndpoint = `${siteUrl}/api/revalidate`;
+    const revalidateSecret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
     console.log(`[CACHE] Triggering instant revalidation at: ${revalidateEndpoint}...`);
     try {
       const resp = await fetch(revalidateEndpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(revalidateSecret ? { Authorization: `Bearer ${revalidateSecret}` } : {}) },
         body: JSON.stringify({ path: '/explore' })
       });
       if (resp.ok) {

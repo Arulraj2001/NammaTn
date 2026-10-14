@@ -4,11 +4,9 @@ import React, { useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import {
-  FileCheck2,
   ArrowRight,
   PlusCircle,
   MapPin,
-  CheckCircle2,
   AlertCircle,
   ShieldCheck,
   Building2,

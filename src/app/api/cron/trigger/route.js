@@ -15,7 +15,9 @@ const REPO_NAME = 'NammaTn';
 
 function isAuthorized(request) {
   const secret = process.env.AUTO_PUBLISH_SECRET;
-  if (!secret) return true; // dev mode
+  // This endpoint can dispatch publishing workflows. Fail closed when its
+  // deployment secret is absent rather than allowing anonymous execution.
+  if (!secret) return false;
 
   const { searchParams } = new URL(request.url);
   const querySecret = searchParams.get('secret');
@@ -29,8 +31,8 @@ function isAuthorized(request) {
   return false;
 }
 
-export async function GET(request) {
-  return handleTrigger(request);
+export async function GET() {
+  return NextResponse.json({ error: 'Method not allowed. Use POST.' }, { status: 405 });
 }
 
 export async function POST(request) {

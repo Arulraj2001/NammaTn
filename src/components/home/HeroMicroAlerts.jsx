@@ -3,8 +3,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "@/lib/router-compat";
 import {
-  ArrowRight, PhoneCall, RefreshCw, Zap, AlertTriangle,
-  MapPin, CheckCircle2, ShieldAlert, Radio, FileText, Megaphone
+  ArrowRight, PhoneCall, RefreshCw, Zap, AlertTriangle, CheckCircle2, Megaphone
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { findNearestDistrict } from "@/lib/geoDistrict";

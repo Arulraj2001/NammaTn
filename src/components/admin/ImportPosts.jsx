@@ -483,14 +483,8 @@ export default function ImportPosts({ onDone }) {
     qc.invalidateQueries({ queryKey: ["area-pulse-posts"] });
     qc.invalidateQueries({ queryKey: ["category-posts"] });
 
-    // Instantly purge Next.js server cache for Explore and news sitemaps
-    try {
-      fetch('/api/revalidate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: '/explore' }),
-      }).catch(() => {});
-    } catch (_) {}
+    // The server cache endpoint is intentionally not callable from browser
+    // code: it requires a deployment-only secret. Normal ISR remains active.
 
     toast({ description: `Successfully imported ${success.length} post(s).` });
   };

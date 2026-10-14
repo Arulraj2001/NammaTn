@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Globe, Zap, ShieldAlert, FileText, MessageSquare, CreditCard, Heart, BookOpen, ArrowRight, ExternalLink, Copy, Check, Building2 } from "lucide-react";
+import React from "react";
+import { Globe, Zap, ShieldAlert, FileText, MessageSquare, Heart, ArrowRight, ExternalLink, Building2 } from "lucide-react";
 import Link from "next/link";
 import { getAllPortals } from "@/lib/awarenessServer";
 

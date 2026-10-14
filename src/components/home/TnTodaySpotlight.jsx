@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Clock, ArrowRight, Sparkles, BookOpen } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getPublishedTnToday, getFeaturedTnToday } from "@/services/tnToday";
-import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
+import { isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import { formatDistanceToNow } from "date-fns";
 
 const CATEGORY_TAG_COLORS = {
@@ -137,7 +137,6 @@ export default function TnTodaySpotlight() {
           <article className="lg:col-span-7 flex flex-col justify-between bg-slate-50 dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all group">
             <Link to={`/tn-today/${lead.slug}`} className="block relative overflow-hidden aspect-[16/9] sm:aspect-[21/10] bg-slate-800">
               {leadImage ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={leadImage}
                   alt={leadTitle}
@@ -223,7 +222,6 @@ export default function TnTodaySpotlight() {
                     className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden flex-shrink-0 bg-slate-800 relative"
                   >
                     {itemImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={itemImage}
                         alt={itemTitle}

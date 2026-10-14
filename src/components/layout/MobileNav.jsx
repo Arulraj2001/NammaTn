@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
-  Home, PlusCircle, Zap, X, FileText,
-  Users, TrendingUp, MessageCircle, AlertTriangle, Shield,
+  Home, PlusCircle, Zap, X, FileText, TrendingUp, MessageCircle, AlertTriangle, Shield,
   Briefcase, ShoppingBag, Building2, Map, MapPin,
   HelpCircle, Heart, Leaf, Trophy, ArrowRight, BarChart2, User, Newspaper
 } from "lucide-react";

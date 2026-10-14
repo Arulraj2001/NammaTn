@@ -38,6 +38,59 @@ const VALID_POST_TYPES = [
   'weekly_digest'
 ];
 
+// Political posts are published automatically only when a reachable primary
+// public authority supports them. Party claims, media reporting, and social
+// posts may be research leads, but cannot independently pass this gate.
+const OFFICIAL_SOURCE_HOSTS = new Set([
+  'tn.gov.in',
+  'dipr.tn.gov.in',
+  'assembly.tn.gov.in',
+  'eci.gov.in',
+  'pib.gov.in',
+  'egazette.tn.gov.in',
+  'indiacode.nic.in',
+  'cag.gov.in'
+]);
+
+function extractUrls(value) {
+  return [...String(value || '').matchAll(/https:\/\/[^\s<>()\]"']+/g)]
+    .map(match => match[0].replace(/[.,;:]+$/, ''));
+}
+
+function isApprovedOfficialUrl(urlString) {
+  try {
+    const url = new URL(urlString);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+    return url.protocol === 'https:' && url.pathname !== '/' &&
+      (host.endsWith('.gov.in') || host.endsWith('.nic.in') || OFFICIAL_SOURCE_HOSTS.has(host));
+  } catch (_) {
+    return false;
+  }
+}
+
+async function validateOfficialSources(value) {
+  const candidates = [...new Set(extractUrls(value).filter(isApprovedOfficialUrl))];
+  const valid = [];
+
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        signal: AbortSignal.timeout(12_000),
+        headers: { 'User-Agent': 'VizhiTN-Politics-Source-Validator/1.0 (+https://www.vizhitn.in)' }
+      });
+      if (response.ok && isApprovedOfficialUrl(response.url)) valid.push(response.url);
+      else if (response.ok) console.warn(`[SOURCE REJECTED] ${url} redirected outside an approved official source.`);
+      else console.warn(`[SOURCE REJECTED] ${url} returned HTTP ${response.status}`);
+    } catch (error) {
+      console.warn(`[SOURCE REJECTED] ${url} could not be reached: ${error.message}`);
+    }
+  }
+
+  return valid;
+}
+
 function slugify(text) {
   return String(text || '')
     .toLowerCase()
@@ -161,8 +214,8 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
    - "title_en": Engaging, informative headline in English (60-85 characters).
    - "content_en": Structured article (3-4 paragraphs) with background context, key quotes, policy impact, and next steps.
    - "content_ta": Full Tamil translation of the article maintaining professional journalistic tone.
-9. "source": Specific official news or departmental source (e.g. "TN DIPR Press Release", "Tamil Nadu Legislative Assembly Secretariat", "Dinamalar Political Bureau", "The Hindu Chennai").
-10. "civic_receipt_id": Unique identifier format "VTN-POL-${yearStr}-${Math.floor(100 + Math.random() * 900)}".
+9. "official_sources": Array of direct HTTPS URLs to the specific government order, Assembly proceeding, Election Commission notice, DIPR release, or other primary authority supporting the report. Never use homepages, media reports, social-media posts, or invented URLs. If no qualifying primary source exists, do not return that report.
+10. Do not create or claim civic receipt IDs, community verification, votes, or other evidence that does not exist.
 11. "slug": Clean, URL-safe English slug ending with date (e.g. "cm-vijay-tvk-cabinet-announcement-${todayStr.replace(/-/g, '')}").
 12. "seo_title": SEO title (under 65 chars).
 13. "seo_description": SEO meta description (130-155 chars).
@@ -292,7 +345,18 @@ No conversational intro, no commentary outside the JSON array.
     const post_type = VALID_POST_TYPES.includes(raw.post_type) ? raw.post_type : 'party_update';
     const area_name = raw.area_name || 'Tamil Nadu';
     const author_name = raw.author_name || 'VizhiTN Politics Desk';
-    const civic_receipt_id = raw.civic_receipt_id || `VTN-POL-${yearStr}-${Math.floor(100 + Math.random() * 900)}`;
+    const sourceUrls = await validateOfficialSources(
+      Array.isArray(raw.official_sources) ? raw.official_sources.join('\n') : raw.official_sources
+    );
+    if (sourceUrls.length === 0) {
+      console.warn(`  [SKIP] ${title_en || finalSlug}: no reachable approved official source URL.`);
+      continue;
+    }
+    const sourceMarkup = sourceUrls
+      .map(url => `<li><a href="${url}" target="_blank" rel="noopener noreferrer">Official source</a></li>`)
+      .join('');
+    const sourceSectionEn = `<h2>Official sources</h2><ul>${sourceMarkup}</ul>`;
+    const sourceSectionTa = `<h2>அதிகாரப்பூர்வ ஆதாரங்கள்</h2><ul>${sourceMarkup}</ul>`;
 
     let media_urls = (Array.isArray(raw.media_urls) && raw.media_urls.length > 0 && !raw.media_urls[0].startsWith('/images/mlas/') && !raw.media_urls[0].includes('/api/og'))
       ? raw.media_urls
@@ -325,14 +389,15 @@ No conversational intro, no commentary outside the JSON array.
       area_name,
       title_en,
       title_ta,
-      content_en,
-      content_ta,
+      content_en: `${content_en}\n${sourceSectionEn}`,
+      content_ta: `${content_ta}\n${sourceSectionTa}`,
       author_name,
-      civic_receipt_id,
+      civic_receipt_id: '',
       media_urls,
       slug: finalSlug,
       seo_title: raw.seo_title || title_en,
       seo_description: raw.seo_description || (content_en ? content_en.slice(0, 150) : ''),
+      admin_note: `Auto-published after official source validation: ${sourceUrls.join(', ')}`,
       created_date: new Date().toISOString()
     };
 
@@ -364,10 +429,11 @@ No conversational intro, no commentary outside the JSON array.
   // --- STEP 5: INSTANT CACHE REVALIDATION & SEARCH ENGINE INGESTION ---
   if (!isDryRun && insertedCount > 0 && siteUrl) {
     console.log(`\n[REVALIDATE] Purging ISR cache for /tn-politics on ${siteUrl}...`);
+    const revalidateSecret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
     try {
       const revRes = await fetch(`${siteUrl}/api/revalidate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(revalidateSecret ? { Authorization: `Bearer ${revalidateSecret}` } : {}) },
         body: JSON.stringify({ path: '/tn-politics' })
       });
       if (revRes.ok) {

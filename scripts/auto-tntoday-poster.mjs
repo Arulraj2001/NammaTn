@@ -56,6 +56,68 @@ const VALID_DISTRICTS = [
   'vellore', 'viluppuram', 'virudhunagar', 'tamil-nadu'
 ];
 
+// Autonomous publication is limited to primary public-service sources. A model
+// may summarize these sources, but must never invent a source or publish from
+// an unverified media/social link.
+const OFFICIAL_SOURCE_HOSTS = new Set([
+  'cmrl.in',
+  'chennaicorporation.gov.in',
+  'chennaimetrowater.tn.gov.in',
+  'tnebltd.gov.in',
+  'tnstc.in',
+  'tn.gov.in',
+  'dipr.tn.gov.in',
+  'tnega.tn.gov.in',
+  'tnsands.in',
+  'tnpcb.gov.in',
+  'tnrd.tn.gov.in',
+  'imd.gov.in',
+  'indianrailways.gov.in',
+  'pib.gov.in',
+  'eci.gov.in',
+  'cag.gov.in'
+]);
+
+function extractUrls(value) {
+  return [...String(value || '').matchAll(/https:\/\/[^\s<>()\]"']+/g)]
+    .map(match => match[0].replace(/[.,;:]+$/, ''));
+}
+
+function isApprovedOfficialUrl(urlString) {
+  try {
+    const url = new URL(urlString);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+    // Require a meaningful document path, rather than a generic homepage.
+    return url.protocol === 'https:' && url.pathname !== '/' &&
+      (host.endsWith('.gov.in') || OFFICIAL_SOURCE_HOSTS.has(host));
+  } catch (_) {
+    return false;
+  }
+}
+
+async function validateOfficialSources(value) {
+  const candidates = [...new Set(extractUrls(value).filter(isApprovedOfficialUrl))];
+  const valid = [];
+
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        signal: AbortSignal.timeout(12_000),
+        headers: { 'User-Agent': 'VizhiTN-Source-Validator/1.0 (+https://www.vizhitn.in)' }
+      });
+      if (response.ok && isApprovedOfficialUrl(response.url)) valid.push(response.url);
+      else if (response.ok) console.warn(`[SOURCE REJECTED] ${url} redirected outside an approved official source.`);
+      else console.warn(`[SOURCE REJECTED] ${url} returned HTTP ${response.status}`);
+    } catch (error) {
+      console.warn(`[SOURCE REJECTED] ${url} could not be reached: ${error.message}`);
+    }
+  }
+
+  return valid;
+}
+
 function slugify(text) {
   return String(text || '')
     .toLowerCase()
@@ -274,7 +336,8 @@ STRICT JOURNALISTIC & GOOGLE DISCOVER CONSTITUTION:
    - content_ta MUST be an equally rich, full-length (700+ words) journalistic report in Tamil.
    - Tamil text must read like high-standard print journalism (*Dinamani* or *The Hindu Tamil Thisai*), using official terminology (மின்வாரியம், பெருநகர சென்னை மாநகராட்சி, குடிநீர் வடிகால் வாரியம், மெட்ரோ ரயில் நிறுவனம்).
 6. MANDATORY OFFICIAL SOURCES:
-   - Must provide at least 1 real, working official government URL in official_sources (e.g. "Chennai Metro Rail Limited: https://cmrl.in", "DIPR Tamil Nadu: https://dipr.tn.gov.in", "TNeGA Portal: https://tnega.tn.gov.in").
+   - Must provide at least 1 direct HTTPS URL to the specific official announcement, order, notice, report, or release that supports the article. Do not use a homepage, search page, media report, social-media post, or invented URL.
+   - Every material factual claim must be traceable to the cited official source. If no qualifying source exists, return an empty official_sources array and no article.
 
 OUTPUT FORMAT:
 Return ONLY a valid JSON object matching this exact schema (use arrays of strings for multi-line sections to avoid escape issues):
@@ -325,8 +388,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     "மார்ச் 2027: பொதுமக்கள் பயன்பாட்டிற்கு திறப்பு"
   ],
   "official_sources": [
-    "CMRL Official Portal: https://cmrl.in",
-    "DIPR Tamil Nadu: https://dipr.tn.gov.in"
+    "Official source: https://example.gov.in/department/specific-announcement"
   ],
   "reading_time": 5,
   "seo_title": "Optimized SEO title under 70 chars | VizhiTN",
@@ -444,6 +506,15 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     return String(val || '').trim();
   };
 
+  const submittedSources = toMultilineText(parsed.official_sources);
+  const validatedSourceUrls = await validateOfficialSources(submittedSources);
+  if (validatedSourceUrls.length === 0) {
+    console.warn('[SKIP] Article was not published: no reachable, approved official source URL was supplied.');
+    return;
+  }
+  const officialSources = validatedSourceUrls.map(url => `Official source: ${url}`).join('\n');
+  console.log(`[SOURCE GATE] Accepted ${validatedSourceUrls.length} reachable official source URL(s).`);
+
   // --- STEP 5: NORMALIZE & ENFORCE SCHEMA ---
   const title = String(parsed.title || '').trim();
   const title_ta = String(parsed.title_ta || '').trim();
@@ -488,7 +559,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     key_facts_ta: toMultilineText(parsed.key_facts_ta),
     timeline: toMultilineText(parsed.timeline),
     timeline_ta: toMultilineText(parsed.timeline_ta),
-    official_sources: toMultilineText(parsed.official_sources) || 'DIPR Tamil Nadu: https://dipr.tn.gov.in',
+    official_sources: officialSources,
     category,
     district_slug,
     district_name: String(parsed.district_name || 'Tamil Nadu').trim(),
@@ -499,7 +570,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     publish_date: new Date().toISOString(),
     reading_time: Number(parsed.reading_time) || Math.max(4, Math.ceil(wordCountEn / 180)),
     is_featured: spec.isFeatured,
-    view_count: Math.floor(45 + Math.random() * 80),
+    view_count: 0,
     seo_title: String(parsed.seo_title || `${title} | VizhiTN`).trim(),
     seo_description: String(parsed.seo_description || parsed.summary || title).slice(0, 155).trim(),
     seo_keywords: String(parsed.seo_keywords || `tamil nadu news, ${category}, ${district_slug}, vizhitn news`).trim(),
@@ -561,11 +632,12 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
 
   // --- STEP 7: INSTANT SERVER CACHE PURGE VIA /api/revalidate ---
   const revalidateEndpoint = `${siteUrl}/api/revalidate`;
+  const revalidateSecret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
   console.log(`\n[CACHE] Triggering instant ISR revalidation...`);
   try {
     const revResp = await fetch(revalidateEndpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(revalidateSecret ? { Authorization: `Bearer ${revalidateSecret}` } : {}) },
       body: JSON.stringify({ path: `/tn-today/${articleObj.slug}` })
     });
     if (revResp.ok) {
@@ -575,7 +647,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     // Also purge archive and home
     await fetch(revalidateEndpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(revalidateSecret ? { Authorization: `Bearer ${revalidateSecret}` } : {}) },
       body: JSON.stringify({ path: '/tn-today' })
     });
     console.log(`[CACHE ✓] Purged archive page: /tn-today`);

@@ -7,6 +7,7 @@ import { X, ArrowRight, Clock, ChevronUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
+import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
 
 const CATEGORY_COLORS = {
   infrastructure: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800/30",
@@ -188,6 +189,11 @@ export default function TnTodayCard({ className }) {
                   <div className="w-full h-full bg-slate-800" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+                {mediaProvenanceLabel(posterSrc) && (
+                  <span className="absolute right-2 top-2 rounded bg-black/75 px-1.5 py-0.5 text-[8px] font-semibold text-white">
+                    AI illustration
+                  </span>
+                )}
                 <div className="absolute bottom-2 left-2.5">
                   <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm capitalize border", catColor)}>
                     {article.category}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   LayoutDashboard, FileText, MessageSquare, Tag, MapPin,
-  Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Users, Mail, Home, UserCheck, BookOpen, SearchCheck, Newspaper,
+  Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Mail, Home, UserCheck, BookOpen, SearchCheck, Newspaper,
   AlertTriangle
 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";

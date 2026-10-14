@@ -3,7 +3,7 @@
 import React from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
-import { ShieldAlert, Zap, AlertTriangle, ArrowRight, PhoneCall } from "lucide-react";
+import { ArrowRight, PhoneCall } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getActiveSituations } from "@/services/situations";
 import { getActiveCivicPosts } from "@/services/posts";

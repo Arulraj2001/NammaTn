@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown, X, Shield, Sparkles, CheckCircle2 } from "lucide-react";
+import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown, X, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getActiveCivicPosts } from "@/services/posts";
 import { getActiveSituations } from "@/services/situations";

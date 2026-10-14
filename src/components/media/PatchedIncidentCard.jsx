@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ShieldCheck, CheckCircle2, Radio } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 /**
  * PatchedIncidentCard

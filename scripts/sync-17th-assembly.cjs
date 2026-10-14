@@ -7,7 +7,8 @@ const fs = require('fs');
 const path = require('path');
 
 const SUPABASE_URL = 'https://hzgrzcablefquddisqkf.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6Z3J6Y2FibGVmcXVkZGlzcWtmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTU0NjgxNSwiZXhwIjoyMDk3MTIyODE1fQ.LGUhBM6PD7NxWMBCYXvcgEjGckCrkFaaCURn7scvrQw';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!SUPABASE_KEY) throw new Error('SUPABASE_SERVICE_ROLE_KEY must be configured before syncing assembly data.');
 
 const MLAS_17TH_ASSEMBLY = [
   {

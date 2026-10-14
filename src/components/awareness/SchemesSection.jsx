@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Droplets, Users, GraduationCap, Heart, Briefcase, Award, ArrowRight, ExternalLink, Sparkles, Coins } from "lucide-react";
+import { Users, GraduationCap, Heart, Briefcase, Award, ArrowRight, Coins } from "lucide-react";
 import Link from "next/link";
 import { getAllSchemes } from "@/lib/awarenessServer";
 

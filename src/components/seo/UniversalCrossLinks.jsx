@@ -6,7 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import {
   Shield, BookOpen, Gift, FileText, AlertTriangle, Building2,
   Zap, MessageCircle, Map, ArrowRight,
-  Briefcase, Home, Trophy, Users
+  Briefcase, Home, Trophy
 } from "lucide-react";
 
 export default function UniversalCrossLinks({ pageType }) {

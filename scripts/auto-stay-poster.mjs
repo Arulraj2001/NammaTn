@@ -2,15 +2,15 @@
 /**
  * VizhiTN Autonomous Stay & Room Directory Poster
  *
- * Uses Google Gemini (GOOGLE_API_KEY) + Cloudflare FLUX AI to publish
- * realistic, authentic student and IT professional PG/room accommodations
- * across Tamil Nadu tech and college corridors daily.
+ * Legacy synthetic-listing generator. It is intentionally disabled: a model
+ * cannot verify accommodation availability, ownership, rent, or safety.
  *
  * Privacy Standards:
  * - contact_preference: "inquiry_form"
  * - Zero personal phone numbers exposed (protects admin privacy)
  * - Users submit direct on-page inquiry ("Check Vacancy")
- * - status: "active", safety_status: "verified", is_trusted: true
+ * A future replacement must accept real owner/manager submissions and route
+ * them through identity, evidence, image, and availability verification.
  */
 
 import { GoogleGenAI } from '@google/genai';
@@ -27,7 +27,7 @@ const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const SITE_URL = process.env.SITE_URL || 'https://www.vizhitn.in';
-const REVALIDATE_SECRET = process.env.REVALIDATE_SECRET || 'vizhitn-revalidate-secret-2026';
+const REVALIDATE_SECRET = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
 
 // Top Student & Tech Corridors in Tamil Nadu
 const STAY_CORRIDORS = [
@@ -86,6 +86,14 @@ function slugify(text) {
 }
 
 async function runStayBot() {
+  console.warn(
+    '[SAFETY] Synthetic stay-listing generation is disabled. No database, image, cache, or search-index changes were made.'
+  );
+  console.warn(
+    '[SAFETY] Publish only owner/manager-submitted listings after identity, evidence, image, and availability verification.'
+  );
+  return;
+
   console.log('====================================================');
   console.log('🏠 VizhiTN Autonomous Stay Poster');
   console.log('   Timestamp:', new Date().toISOString());

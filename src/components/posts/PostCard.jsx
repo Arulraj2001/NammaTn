@@ -13,6 +13,7 @@ import ShareBar from "@/components/sharing/ShareBar";
 import { isCivicPost, getDaysOpen, getUrgency } from "@/lib/civicReceipt";
 import CivicStatusBadge from "@/components/civic/CivicStatusBadge";
 import { getPostUrl } from "@/lib/postUrl";
+import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
 
 const CATEGORY_BULLETINS = {
   'public-safety': {
@@ -146,6 +147,7 @@ function CivicBulletinCard({ post, title, postUrl }) {
     !candidateImg.includes("pexels") &&
     (candidateImg.startsWith("https://") || candidateImg.startsWith("http://"))
   );
+  const illustrationLabel = mediaProvenanceLabel(candidateImg);
 
   return (
     <Link
@@ -165,6 +167,11 @@ function CivicBulletinCard({ post, title, postUrl }) {
           />
           {/* Deep gradient scrim ensuring 100% text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/45" />
+          {illustrationLabel && (
+            <span className="absolute right-2 bottom-2 rounded bg-black/75 px-2 py-1 text-[9px] font-semibold text-white">
+              {illustrationLabel}
+            </span>
+          )}
         </div>
       ) : (
         <div className={`absolute inset-0 ${theme.bg} pointer-events-none`} />
@@ -197,8 +204,8 @@ function CivicBulletinCard({ post, title, postUrl }) {
           <Shield className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
           <span className="truncate">{post.assigned_department || theme.dept}</span>
         </span>
-        <span className="text-[10px] text-slate-400 font-medium truncate max-w-[28%] text-right font-mono">
-          {post.civic_receipt_id || "VERIFIED"}
+        <span className="text-[10px] text-slate-400 font-medium truncate max-w-[28%] text-right">
+          {post.civic_receipt_id || "Official update"}
         </span>
       </div>
     </Link>

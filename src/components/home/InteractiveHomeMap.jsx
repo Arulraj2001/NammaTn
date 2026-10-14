@@ -394,7 +394,7 @@ export default function InteractiveHomeMap({ items = [], userLocation = null, zo
 
   return (
     <div className="h-full w-full relative z-10">
-      <style jsx global>{`
+      <style>{`
         .civic-map-popup .leaflet-popup-content-wrapper {
           border-radius: 14px;
           box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.25);

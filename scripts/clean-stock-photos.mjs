@@ -154,11 +154,12 @@ async function clean() {
   // --- 3. REVALIDATE FRONTEND CACHES ---
   console.log('\n[3/3] Triggering instant revalidation at /api/revalidate...');
   const pathsToRevalidate = ['/tn-today', '/explore', '/', '/tn-politics'];
+  const revalidateSecret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
   for (const p of pathsToRevalidate) {
     try {
       const res = await fetch(`${siteUrl}/api/revalidate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(revalidateSecret ? { Authorization: `Bearer ${revalidateSecret}` } : {}) },
         body: JSON.stringify({ path: p })
       });
       console.log(`  ✓ Purged cache for ${p} (Status ${res.status})`);

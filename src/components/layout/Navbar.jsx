@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
-  Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, Users, MessageCircle,
+  Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, MessageCircle,
   HelpCircle, Heart, Briefcase, Home, Building2, AlertTriangle,
   MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight, Plus, LayoutDashboard, Info, X, Clock
 } from "lucide-react";

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { BookOpen, Search, X, Sparkles, Shield, Zap, Phone, Gift, FileText } from "lucide-react";
+import { BookOpen, Search, X, Sparkles, Shield, Phone, Gift, FileText } from "lucide-react";
 
 const SUGGESTED_QUERIES = [
   { en: "Magalir Urimai ₹1,000", ta: "மகளிர் உரிமை ₹1,000", q: "magalir urimai" },

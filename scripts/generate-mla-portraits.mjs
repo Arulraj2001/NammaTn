@@ -198,7 +198,11 @@ export const MLAS_BY_DISTRICT = TN_MLAS_DATA.reduce((acc, mla) => {
 
   // 2. Sync to Supabase mla_tracker table
   const SUPABASE_URL = process.env.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co';
-  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6Z3J6Y2FibGVmcXVkZGlzcWtmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTU0NjgxNSwiZXhwIjoyMDk3MTIyODE1fQ.LGUhBM6PD7NxWMBCYXvcgEjGckCrkFaaCURn7scvrQw';
+  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!SUPABASE_KEY) {
+    console.warn('SUPABASE_SERVICE_ROLE_KEY is not configured; local portraits were generated but database sync was skipped.');
+    return;
+  }
 
   console.log('\n🔄 Syncing local photo_url to Supabase mla_tracker table...');
   for (const mla of updatedMlas) {

@@ -13,6 +13,7 @@ import { TN_TODAY_CATEGORIES as CATEGORIES } from '@/lib/tnTodayCategories';
 import { useLanguage } from "@/context/LanguageContext";
 import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 import { isImagePrompt } from "@/lib/tntodayPosterGenerator";
+import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
 import NumberedPagination from "@/components/common/NumberedPagination";
 
 const VALID_EDITORIAL_GRAPHICS = new Set([
@@ -73,6 +74,7 @@ function FeaturedCard({ article }) {
   const displaySubtitle = (lang === "ta" && article.subtitle_ta) ? article.subtitle_ta : article.subtitle;
   const imgSrc = resolveEditorialImage(article);
   const categoryLabel = (lang === "ta" && cat?.label_ta) ? cat.label_ta : (cat?.label || "Special Report");
+  const illustrationLabel = mediaProvenanceLabel(imgSrc, lang);
 
   return (
     <Link to={`/tn-today/${article.slug}`}
@@ -93,6 +95,11 @@ function FeaturedCard({ article }) {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+        {illustrationLabel && (
+          <span className="absolute right-3 top-3 z-10 rounded bg-black/75 px-2 py-1 text-[10px] font-semibold text-white">
+            {illustrationLabel}
+          </span>
+        )}
 
         {/* Top Floating Badge */}
         <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
@@ -142,6 +149,7 @@ function ArticleCard({ article }) {
   const displaySubtitle = (lang === "ta" && article.subtitle_ta) ? article.subtitle_ta : article.subtitle;
   const imgSrc = resolveEditorialImage(article);
   const categoryLabel = (lang === "ta" && cat?.label_ta) ? cat.label_ta : (cat?.label || "General");
+  const illustrationLabel = mediaProvenanceLabel(imgSrc, lang);
 
   return (
     <Link to={`/tn-today/${article.slug}`}
@@ -164,6 +172,11 @@ function ArticleCard({ article }) {
         <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-black/70 text-white backdrop-blur-xs">
           {cat?.emoji} {categoryLabel}
         </span>
+        {illustrationLabel && (
+          <span className="absolute right-2 top-2 rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-semibold text-white">
+            {illustrationLabel}
+          </span>
+        )}
       </div>
       <div className="flex-1 min-w-0 flex flex-col justify-between">
         <div>

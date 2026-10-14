@@ -48,6 +48,12 @@ import { attachIncidentPhotosToPosts } from '@/lib/incidentPhotoMatcher';
 const SITE_URL = 'https://www.vizhitn.in';
 const GEMINI_MODEL = 'gemini-3.1-flash-lite'; // Stable, fast, ideal for structured JSON batch output
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+const OFFICIAL_SOURCE_HOSTS = {
+  power_cut: ['tnebltd.gov.in', 'tangedco.gov.in'],
+  water_cut: ['cmwssb.tn.gov.in', 'chennaimetrowater.gov.in'],
+  railway_block: ['sr.indianrailways.gov.in', 'indianrailways.gov.in'],
+  rain_alert: ['mausam.imd.gov.in', 'imd.gov.in', 'tn.gov.in', 'tnsdma.tn.gov.in'],
+};
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -70,12 +76,29 @@ function isAuthorized(request) {
  * Fetch page content from a URL (for TANGEDCO/Metrowater pages).
  * Returns plain text — strips HTML tags.
  */
-async function fetchSourceContent(url) {
+function isApprovedOfficialSource(url, source) {
+  try {
+    const parsed = new URL(url);
+    const allowedHosts = OFFICIAL_SOURCE_HOSTS[source] || [];
+    return parsed.protocol === 'https:'
+      && allowedHosts.some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`));
+  } catch {
+    return false;
+  }
+}
+
+async function fetchSourceContent(url, source) {
+  if (!isApprovedOfficialSource(url, source)) {
+    throw new Error(`source_url must be an approved official ${source} source`);
+  }
   const res = await fetch(url, {
     headers: { 'User-Agent': 'VizhiTN-ContentBot/1.0 (+https://vizhitn.in)' },
     next: { revalidate: 0 }, // Always fresh
   });
   if (!res.ok) throw new Error(`Source fetch failed: ${res.status} ${url}`);
+  if (!isApprovedOfficialSource(res.url, source)) {
+    throw new Error('Source redirected outside the approved official domains');
+  }
   const html = await res.text();
   // Strip HTML tags, collapse whitespace
   return html
@@ -223,11 +246,12 @@ export async function POST(request) {
     // 3. Get source content
     let rawSourceContent = source_content || '';
     if (!rawSourceContent && source_url) {
-      rawSourceContent = await fetchSourceContent(source_url);
+      rawSourceContent = await fetchSourceContent(source_url, source);
     }
     if (!rawSourceContent) {
-      // Provide minimal context so Gemini can still generate based on its training
-      rawSourceContent = `No live source data provided. Generate realistic TANGEDCO scheduled maintenance posts for ${getISTDateSlug(targetDate)} based on standard maintenance patterns for Tamil Nadu. Use plausible area names and standard 9:00 AM–2:00 PM maintenance windows. Mark source as "TANGEDCO Scheduled Maintenance".`;
+      return NextResponse.json({
+        error: 'An official source_content or approved official source_url is required. Nothing was published.',
+      }, { status: 400 });
     }
 
     // 4. Build Gemini prompt based on source type

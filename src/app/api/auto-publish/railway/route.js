@@ -29,6 +29,7 @@ const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/
 
 // Southern Railway block notification page
 const SR_DEFAULT_URL = 'https://sr.indianrailways.gov.in/view_detail.jsp?lang=0&dcd=4&id=0,4,268';
+const RAILWAY_SOURCE_HOSTS = ['sr.indianrailways.gov.in', 'indianrailways.gov.in'];
 
 function isAuthorized(request) {
   const secret = process.env.AUTO_PUBLISH_SECRET;
@@ -37,12 +38,28 @@ function isAuthorized(request) {
   return authHeader.replace('Bearer ', '').trim() === secret;
 }
 
+function isApprovedRailwaySource(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:'
+      && RAILWAY_SOURCE_HOSTS.some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`));
+  } catch {
+    return false;
+  }
+}
+
 async function fetchSourceContent(url) {
+  if (!isApprovedRailwaySource(url)) {
+    throw new Error('source_url must be an approved Southern Railway or Indian Railways URL');
+  }
   const res = await fetch(url, {
     headers: { 'User-Agent': 'VizhiTN-ContentBot/1.0 (+https://vizhitn.in)' },
     next: { revalidate: 0 },
   });
   if (!res.ok) throw new Error(`Source fetch failed: ${res.status} ${url}`);
+  if (!isApprovedRailwaySource(res.url)) {
+    throw new Error('Source redirected outside the approved railway domains');
+  }
   const html = await res.text();
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -157,7 +174,13 @@ export async function POST(request) {
     const newUrls = (inserted || []).map((p) => `${SITE_URL}/post/${p.slug}`);
     if (newUrls.length > 0) notifySearchEngines(newUrls).catch(() => {});
 
-    fetch(`${SITE_URL}/api/revalidate`, { method: 'POST' }).catch(() => {});
+    const revalidateSecret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
+    if (revalidateSecret) {
+      fetch(`${SITE_URL}/api/revalidate`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${revalidateSecret}` },
+      }).catch(() => {});
+    }
 
     return NextResponse.json({
       inserted: inserted?.length || 0,

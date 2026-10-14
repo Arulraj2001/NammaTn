@@ -21,6 +21,7 @@ import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
 import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
+import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -471,6 +472,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const timelineEvents = parseTimelineLines(article.timeline);
   const officialSources = parsePipeLines(article.official_sources);
   const relatedLinks = parsePipeLines(article.related_civic_links);
+  const heroProvenance = mediaProvenanceLabel(heroImg, lang === "ta" ? "ta" : "en");
 
   const seoLinks = resolveArticleInternalLinks(article);
 
@@ -597,9 +599,8 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                   }}
                   className="w-full aspect-[16/9] max-h-[440px] sm:max-h-[500px] object-cover"
                 />
-                <div className="px-4 py-2 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>📷 {T("Visual Archive • VizhiTN Field Desk", "படத்தொகுப்பு • VizhiTN கள ஆய்வு பிரிவு")}</span>
-                  <span className="font-semibold text-emerald-400">✓ {T("Verified Story", "உண்மை சரிபார்க்கப்பட்ட செய்தி")}</span>
+                <div className="px-4 py-2 bg-slate-900/95 border-t border-slate-800 text-[11px] text-slate-400">
+                  <span>{heroProvenance || T("Image provided with this article", "இந்தக் கட்டுரையுடன் வழங்கப்பட்ட படம்")}</span>
                 </div>
               </div>
             ) : null}

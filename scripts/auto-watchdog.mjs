@@ -33,11 +33,12 @@ try {
 const IST_OFFSET_MS = 5.5 * 3600 * 1000;
 const ROOT = new URL('../', import.meta.url).pathname;
 
-// Expected minimum content per bot for a given IST day. Thresholds are intentionally
-// low so recovery only triggers on a REAL failure, not on partial variance.
+// Source-gated publishers may correctly produce no content on quiet days. The
+// watchdog therefore retries a completely missing batch once; it must never
+// pressure a bot to hit a volume quota or bypass its source-validation gate.
 const EXPECTED = {
-  morning: { civic: { min: 5 }, tntoday: { min: 1 }, politics: { min: 0 } },
-  evening: { civic: { min: 15 }, politics: { min: 1 }, tntoday: { min: 2 } },
+  morning: { civic: { min: 1 }, tntoday: { min: 1 }, politics: { min: 0 } },
+  evening: { civic: { min: 1 }, politics: { min: 1 }, tntoday: { min: 1 } },
 };
 
 const PULSE_ARG = {
@@ -85,6 +86,8 @@ async function countCivicToday(client, bounds) {
     .gte('created_date', bounds.todayStartISO)
     .lt('created_date', bounds.todayEndISO)
     .eq('status', 'active')
+    .eq('is_publicly_visible', true)
+    .eq('moderation_status', 'approved')
     .neq('category_slug', 'tn-politics');
   if (error) throw new Error(`civic count failed: ${error.message}`);
   return count ?? 0;
@@ -98,6 +101,8 @@ async function countPoliticsToday(client, bounds) {
     .gte('created_date', bounds.todayStartISO)
     .lt('created_date', bounds.todayEndISO)
     .eq('status', 'active')
+    .eq('is_publicly_visible', true)
+    .eq('moderation_status', 'approved')
     .eq('category_slug', 'tn-politics');
   if (error) throw new Error(`politics count failed: ${error.message}`);
   return count ?? 0;
@@ -151,7 +156,7 @@ async function notifyGithubIssue(summary) {
   const body = [
     '## ⚠️ Scheduled batch was missed and auto-recovered',
     '',
-    'One or more autonomous bot batches failed to publish on schedule (likely because GitHub Actions could not provision a hosted runner), and the watchdog backfilled them.',
+    'One or more autonomous bot batches produced no public source-backed content on schedule. The watchdog reran the same source-gated pipeline once; a successful retry may correctly publish nothing when no qualifying official notice exists.',
     '',
     ...summary.map(s => `- **${s.label}** — found ${s.found}/${s.min}, backfilled: \`${s.backfilled ? 'yes' : 'no'}\``),
     '',
@@ -215,7 +220,9 @@ async function main() {
   console.log(`\n[WATCHDOG] ${toRecover.length} missing batch(es): ${toRecover.join(', ')}`);
   for (const key of toRecover) {
     const pulse = PULSE_ARG[mode][key];
-    const ok = await runScript(key, pulse ? [pulse] : []);
+    // The child runs the same source-gated code path as the scheduled job.
+    // This marker is informational only; it grants no publishing exception.
+    const ok = await runScript(key, [...(pulse ? [pulse] : []), '--watchdog-recovery']);
     const entry = summary.find(s => s.label === LABEL[key]);
     if (entry) entry.backfilled = ok;
   }

@@ -9,10 +9,7 @@ import {
   Zap, 
   BookOpen, 
   ArrowRight, 
-  Sparkles, 
-  MapPin, 
-  CheckCircle2,
-  PhoneCall
+  Sparkles
 } from "lucide-react";
 
 const STORAGE_KEY = "vizhitn_welcome_tour_v1";

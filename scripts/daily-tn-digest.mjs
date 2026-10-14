@@ -16,6 +16,46 @@
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
 
+const OFFICIAL_SOURCE_HOSTS = new Set([
+  'tn.gov.in', 'dipr.tn.gov.in', 'assembly.tn.gov.in', 'egazette.tn.gov.in',
+  'pib.gov.in', 'eci.gov.in', 'cag.gov.in', 'indiacode.nic.in'
+]);
+
+function extractUrls(value) {
+  return [...String(value || '').matchAll(/https:\/\/[^\s<>()\]"']+/g)]
+    .map(match => match[0].replace(/[.,;:]+$/, ''));
+}
+
+function isApprovedOfficialUrl(urlString) {
+  try {
+    const url = new URL(urlString);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+    return url.protocol === 'https:' && url.pathname !== '/' &&
+      (host.endsWith('.gov.in') || host.endsWith('.nic.in') || OFFICIAL_SOURCE_HOSTS.has(host));
+  } catch (_) {
+    return false;
+  }
+}
+
+async function validateOfficialSources(value) {
+  const candidates = [...new Set(extractUrls(value).filter(isApprovedOfficialUrl))];
+  const valid = [];
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url, {
+        method: 'GET', redirect: 'follow', signal: AbortSignal.timeout(12_000),
+        headers: { 'User-Agent': 'VizhiTN-Digest-Source-Validator/1.0 (+https://www.vizhitn.in)' }
+      });
+      if (response.ok && isApprovedOfficialUrl(response.url)) valid.push(response.url);
+      else if (response.ok) console.warn(`[SOURCE REJECTED] ${url} redirected outside an approved official source.`);
+      else console.warn(`[SOURCE REJECTED] ${url} returned HTTP ${response.status}`);
+    } catch (error) {
+      console.warn(`[SOURCE REJECTED] ${url} could not be reached: ${error.message}`);
+    }
+  }
+  return valid;
+}
+
 // Load .env.local if running in local environment
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -84,6 +124,7 @@ STRICT CONSTRAINTS:
 1. Zero hallucination: Use real, scheduled departmental actions, exact G.O. numbers or press release titles.
 2. Verified Helplines: Always reference working helpline numbers (CM Cell: 1100, Minnalagam: 1912, GCC: 1913, Cyber Crime: 1930, TNDMA: 1070).
 3. Bilingual: Complete English and authentic Tamil text.
+4. "official_sources": An array containing at least one direct HTTPS URL to each official order, gazette, Assembly record, DIPR release, or departmental notice used. Do not use homepages, media reports, social posts, or invented URLs. If no qualifying source exists, return an empty object.
 
 Return STRICT JSON ONLY matching this format:
 {
@@ -142,7 +183,8 @@ Return STRICT JSON ONLY matching this format:
     { "name": "CM Helpline", "number": "1100", "service": "Grievance Redressal" },
     { "name": "TANGEDCO Minnalagam", "number": "1912", "service": "Power Cuts" },
     { "name": "Disaster Control", "number": "1070", "service": "Emergency Rescue" }
-  ]
+  ],
+  "official_sources": ["https://example.gov.in/department/specific-notice"]
 }
 `;
 
@@ -184,6 +226,11 @@ Return STRICT JSON ONLY matching this format:
 
   // Fallback if Gemini unavailable or returned null
   if (!digestPayload) {
+    console.warn('[SKIP] Digest was not published: no source-backed generation was available.');
+    return;
+
+    /* Legacy fabricated fallback retained temporarily for migration reference.
+       It is unreachable and must never be used for publication.
     console.log('[DigestBot] Using structured verified fallback template for', targetDate);
     digestPayload = {
       date: targetDate,
@@ -269,7 +316,20 @@ Return STRICT JSON ONLY matching this format:
         { title_en: "CM Cell Petition Redressal Guide", title_ta: "முதல்வர் தனிப்பிரிவு மனு வழிகாட்டி", href: "/rights/cm-cell-petition-redressal-guide" }
       ]
     };
+    */
   }
+
+  const validatedSourceUrls = await validateOfficialSources(
+    Array.isArray(digestPayload.official_sources)
+      ? digestPayload.official_sources.join('\n')
+      : digestPayload.official_sources
+  );
+  if (validatedSourceUrls.length === 0) {
+    console.warn('[SKIP] Digest was not published: no reachable approved official source URL was supplied.');
+    return;
+  }
+  digestPayload.official_sources = validatedSourceUrls;
+  console.log(`[SOURCE GATE] Accepted ${validatedSourceUrls.length} reachable official source URL(s).`);
 
   if (isDryRun) {
     console.log('[DigestBot] [DRY RUN] Generated digest output:');
@@ -308,6 +368,8 @@ Return STRICT JSON ONLY matching this format:
       media_urls: mediaUrls,
       status: 'active',
       is_publicly_visible: true,
+      is_indexable: true,
+      admin_note: `Auto-published after official source validation: ${validatedSourceUrls.join(', ')}`,
       seo_title: `${digestPayload.title_en} | VizhiTN`,
       seo_description: digestPayload.headline_en,
       created_date: new Date().toISOString()
@@ -326,14 +388,17 @@ Return STRICT JSON ONLY matching this format:
   }
 
   // Trigger cache revalidation
-  const revalidateSecret = process.env.REVALIDATE_SECRET || 'vizhitn-revalidate-token';
+  const revalidateSecret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
   try {
+    if (!revalidateSecret) {
+      console.warn('[DigestBot] Revalidation skipped: REVALIDATE_SECRET or AUTO_PUBLISH_SECRET is not configured.');
+    } else {
     console.log(`[DigestBot] Triggering instant revalidation on ${siteUrl}/api/revalidate...`);
     const revalRes = await fetch(`${siteUrl}/api/revalidate`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${revalidateSecret}` },
       body: JSON.stringify({
         secret: revalidateSecret,
         paths: ['/tn-politics', '/tn-politics/today', '/tn-politics/cm-vijay']
@@ -342,6 +407,7 @@ Return STRICT JSON ONLY matching this format:
 
     if (revalRes?.ok) {
       console.log('[DigestBot] Revalidation succeeded!');
+    }
     }
   } catch (_) {}
 

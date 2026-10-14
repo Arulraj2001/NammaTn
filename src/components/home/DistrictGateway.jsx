@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Link } from "@/lib/router-compat";
-import { Search, MapPin, ArrowRight, Building, Compass } from "lucide-react";
+import { Search, MapPin, Compass } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { DISTRICTS } from "@/lib/districts";
 

@@ -1,7 +1,23 @@
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
+function isAuthorized(request) {
+  // Reuse the automation secret when a dedicated revalidation secret has not
+  // been configured. Never expose cache invalidation to anonymous requests.
+  const secret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
+  if (!secret) return false;
+
+  const authorization = request.headers.get('authorization') || '';
+  const suppliedSecret = authorization.replace(/^Bearer\s+/i, '').trim()
+    || request.headers.get('x-revalidate-secret')?.trim();
+  return suppliedSecret === secret;
+}
+
 export async function POST(request) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     let body = {};
     try {
@@ -34,13 +50,6 @@ export async function POST(request) {
   }
 }
 
-export async function GET(request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const path = searchParams.get('path') || '/explore';
-    revalidatePath(path);
-    return NextResponse.json({ revalidated: true, path, now: Date.now() });
-  } catch (err) {
-    return NextResponse.json({ message: 'Error revalidating', error: err?.message }, { status: 500 });
-  }
+export async function GET() {
+  return NextResponse.json({ error: 'Method not allowed. Use POST.' }, { status: 405 });
 }

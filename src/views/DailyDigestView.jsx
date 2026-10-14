@@ -115,7 +115,7 @@ export default function DailyDigestView({ digest, weekly, monthly }) {
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">
-                  {isTa ? 'அரசிதழ் சரிபார்க்கப்பட்டது' : 'Gazette Verified'}
+                  {isTa ? 'அதிகாரப்பூர்வ ஆதாரங்கள் இணைக்கப்பட்டுள்ளன' : 'Official sources linked'}
                 </span>
               </div>
 
@@ -126,6 +126,17 @@ export default function DailyDigestView({ digest, weekly, monthly }) {
               <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                 {isTa ? digest.headline_ta : digest.headline_en}
               </p>
+
+              {digest.official_sources?.length > 0 && (
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-600 dark:text-slate-300">
+                  <span className="font-bold">{isTa ? 'அதிகாரப்பூர்வ ஆதாரங்கள்: ' : 'Official sources: '}</span>
+                  {digest.official_sources.map((url, index) => (
+                    <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">
+                      {new URL(url).hostname.replace(/^www\./, '')}{index < digest.official_sources.length - 1 ? ' · ' : ''}
+                    </a>
+                  ))}
+                </div>
+              )}
             </header>
 
             {/* 60-Second Flash Brief (Clean single-box callout, NOT giant cards) */}

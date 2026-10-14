@@ -39,12 +39,13 @@ import { useAuthModal } from "@/context/AuthModalContext";
 import CommentSection from "@/components/comments/CommentSection";
 import SponsorThisIssue from "@/components/sponsors/SponsorThisIssue";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
+import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
 
 function SafeMediaImage({ url, alt }) {
   const [hasError, setHasError] = useState(false);
   if (hasError || !url) return null;
   return (
-    <div className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-video">
+    <div className="relative rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-video">
       <img
         src={url}
         alt={alt}
@@ -52,6 +53,11 @@ function SafeMediaImage({ url, alt }) {
         className="w-full h-full object-cover"
         loading="lazy"
       />
+      {mediaProvenanceLabel(url) && (
+        <span className="absolute right-2 bottom-2 rounded bg-black/75 px-2 py-1 text-[11px] font-semibold text-white">
+          {mediaProvenanceLabel(url)}
+        </span>
+      )}
     </div>
   );
 }

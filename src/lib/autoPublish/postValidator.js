@@ -162,7 +162,9 @@ export function validatePost(post, index = 0) {
     assigned_department: (post.assigned_department || 'Tamil Nadu Civic Administration').trim(),
     location_text: (post.location_text || post.area_name || post.district_slug).trim(),
     urgency_level: post.urgency_level || 'medium',
-    civic_status: post.civic_status || 'community_verified',
+    // A generated post is not community-verified merely because it passed a
+    // formatter. Verification must come from a source or real user action.
+    civic_status: 'reported',
     slug: cleanSlug,
     seo_title: post.seo_title || `${post.title_en.trim()} | VizhiTN`,
     seo_description: post.seo_description || post.content_en.trim().slice(0, 155),
@@ -172,10 +174,10 @@ export function validatePost(post, index = 0) {
     moderation_status: 'approved',
     is_publicly_visible: true,
     is_indexable: post.is_indexable ?? true,
-    civic_receipt_id: post.civic_receipt_id || `TN-${Math.floor(100000 + Math.random() * 900000)}`,
+    civic_receipt_id: post.civic_receipt_id || '',
     author_name: post.author_name || 'VizhiTN Civic Desk',
-    upvotes: Number(post.upvotes) || Math.floor(12 + Math.random() * 28),
-    verification_count: Number(post.verification_count) || Math.floor(4 + Math.random() * 9),
+    upvotes: Number(post.upvotes) || 0,
+    verification_count: Number(post.verification_count) || 0,
     created_date: new Date().toISOString(),
   };
 
