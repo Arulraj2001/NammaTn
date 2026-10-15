@@ -36,6 +36,7 @@ export async function generateMetadata({ params }) {
     if (tamilTitle) ogUrl.searchParams.set('title_ta', tamilTitle);
     ogUrl.searchParams.set('category', categorySlug);
     ogUrl.searchParams.set('lang', tamilTitle ? 'ta' : 'en');
+    if (cleanImage) ogUrl.searchParams.set('image', cleanImage);
     socialImage = ogUrl.toString();
   }
   const image = socialImage;

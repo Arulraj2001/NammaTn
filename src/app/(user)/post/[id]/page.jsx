@@ -41,9 +41,12 @@ export async function generateMetadata({ params }) {
   if (post.urgency_level) ogUrl.searchParams.set('urgency', post.urgency_level);
   if (post.civic_receipt_id) ogUrl.searchParams.set('receipt', post.civic_receipt_id);
   if (post.assigned_department) ogUrl.searchParams.set('helpline', post.assigned_department);
+  const rawPhoto = post.before_photos?.[0] || post.media_urls?.[0];
+  if (rawPhoto && typeof rawPhoto === 'string' && rawPhoto.startsWith('http')) {
+    ogUrl.searchParams.set('image', rawPhoto);
+  }
 
   const ogImageUrl = ogUrl.toString();
-  const rawPhoto = post.before_photos?.[0] || post.media_urls?.[0];
   const postImages = [
     { url: ogImageUrl, width: 1200, height: 630, alt: postTitle, type: 'image/png' },
     ...(rawPhoto && rawPhoto.startsWith('http') ? [{ url: rawPhoto, width: 1200, height: 630, alt: postTitle }] : []),

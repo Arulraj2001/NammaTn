@@ -67,6 +67,8 @@ export async function renderEditorialCard(cardData = {}) {
   const logoPath = path.resolve('public/logo.png').replace(/\\/g, '/');
   const bgPhoto = (cardData.photoPath || path.resolve('public/images/test-cf-flux.jpg')).replace(/\\/g, '/');
 
+  const fontPath = path.resolve('public/fonts/NotoSansTamil-Bold.ttf').replace(/\\/g, '/');
+
   const bulletsHtml = [bullet1, bullet2, bullet3]
     .filter(Boolean)
     .map(b => `
@@ -85,6 +87,12 @@ export async function renderEditorialCard(cardData = {}) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Noto Sans Tamil';
+      src: url('file:///${fontPath}') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       width: 1080px;
@@ -96,9 +104,9 @@ export async function renderEditorialCard(cardData = {}) {
     }
     .bg-image {
       position: absolute;
-      right: 0;
+      left: 0;
       top: 0;
-      width: 620px;
+      width: 1080px;
       height: 1080px;
       object-fit: cover;
     }
@@ -108,87 +116,145 @@ export async function renderEditorialCard(cardData = {}) {
       top: 0;
       width: 1080px;
       height: 1080px;
-      background: linear-gradient(90deg, #071224 0%, #071224 50%, rgba(7, 18, 36, 0.94) 62%, rgba(7, 18, 36, 0.25) 85%, transparent 100%);
+      background: linear-gradient(
+        180deg,
+        rgba(7, 18, 36, 0.15) 0%,
+        rgba(7, 18, 36, 0.35) 30%,
+        rgba(7, 18, 36, 0.88) 55%,
+        rgba(7, 18, 36, 0.98) 78%,
+        #071224 100%
+      );
     }
-    .content {
-      position: relative;
-      z-index: 10;
-      width: 680px;
-      height: 1004px;
-      padding: 60px 40px 40px 60px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .logo-row {
+    .top-bar {
+      position: absolute;
+      top: 48px;
+      left: 54px;
+      right: 54px;
       display: flex;
       align-items: center;
-      margin-bottom: 24px;
+      justify-content: space-between;
+      z-index: 15;
+    }
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 10px 22px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
     .logo-img {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      margin-right: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
     }
-    .logo-title {
-      font-size: 34px;
+    .brand-text {
+      font-size: 20px;
       font-weight: 900;
       color: #ffffff;
-      letter-spacing: -0.5px;
-      line-height: 1.1;
+      letter-spacing: 1.5px;
     }
-    .logo-sub {
-      font-size: 13px;
-      font-weight: 700;
-      color: #94a3b8;
-      letter-spacing: 0.5px;
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 12px #10b981;
     }
     .category-pill {
-      display: inline-block;
-      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       background: ${catTheme.bg};
       border: 2px solid ${catTheme.border};
-      padding: 7px 22px;
+      padding: 10px 24px;
       border-radius: 9999px;
       color: #ffffff;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .content-box {
+      position: absolute;
+      bottom: 86px;
+      left: 54px;
+      right: 54px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      z-index: 10;
+    }
+    .tags-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .location-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 8px 20px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+    }
+    .ribbon-tag {
+      display: inline-flex;
+      align-items: center;
+      background: #eab308;
+      color: #0f172a;
       font-size: 17px;
       font-weight: 900;
-      letter-spacing: 1.5px;
-      margin-bottom: 24px;
+      padding: 8px 20px;
+      border-radius: 999px;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 16px rgba(234, 179, 8, 0.4);
     }
     .headline {
-      font-size: 42px;
+      font-size: ${titleTa.length > 60 ? '46px' : '54px'};
       font-weight: 900;
       color: #ffffff;
-      line-height: 1.3;
-      margin-bottom: 18px;
+      line-height: 1.32;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.9);
+      letter-spacing: -0.5px;
     }
     .subtitle {
-      font-size: 21px;
+      font-size: 22px;
       font-weight: 700;
       color: #cbd5e1;
-      line-height: 1.4;
-      margin-bottom: 32px;
+      line-height: 1.45;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
     }
     .bullets {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 16px 20px;
+      backdrop-filter: blur(8px);
     }
     .bullet-item {
       display: flex;
       align-items: flex-start;
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
       color: #f8fafc;
       line-height: 1.4;
     }
     .bullet-dot {
       color: #38bdf8;
-      font-size: 24px;
-      margin-right: 12px;
+      font-size: 22px;
+      margin-right: 10px;
       line-height: 1;
     }
     .arrow {
@@ -196,85 +262,72 @@ export async function renderEditorialCard(cardData = {}) {
       font-weight: 900;
       margin: 0 8px;
     }
-    .cta-row {
-      font-size: 20px;
-      font-weight: 800;
-      color: #fbbf24;
-      margin-top: 20px;
-    }
-    .ribbon {
-      position: absolute;
-      top: 40px;
-      right: -55px;
-      transform: rotate(45deg);
-      background: #eab308;
-      color: #0f172a;
-      padding: 10px 75px;
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-    }
     .bottom-bar {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 1080px;
       height: 76px;
-      background: #1d4ed8;
+      background: rgba(7, 18, 36, 0.95);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 50px;
+      padding: 0 54px;
       z-index: 20;
     }
-    .bottom-loc {
-      color: #ffffff;
-      font-size: 23px;
+    .bottom-verified {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #10b981;
+      font-size: 19px;
       font-weight: 800;
     }
     .bottom-handle {
       color: #ffffff;
-      font-size: 25px;
+      font-size: 20px;
       font-weight: 900;
       letter-spacing: 0.5px;
+    }
+    .bottom-handle span {
+      color: #38bdf8;
     }
   </style>
 </head>
 <body>
   <img class="bg-image" src="file:///${bgPhoto}" />
   <div class="gradient-overlay"></div>
-  <div class="ribbon">${ribbon}</div>
 
-  <div class="content">
-    <div>
-      <div class="logo-row">
-        <img class="logo-img" src="file:///${logoPath}" alt="VizhiTN" />
-        <div>
-          <div class="logo-title">VizhiTN</div>
-          <div class="logo-sub">Community Verified. People Powered.</div>
-        </div>
-      </div>
+  <div class="top-bar">
+    <div class="brand-pill">
+      <span class="live-dot"></span>
+      <img class="logo-img" src="file:///${logoPath}" alt="VizhiTN" />
+      <span class="brand-text">VIZHITN.IN</span>
+    </div>
+    <div class="category-pill">${catTheme.label}</div>
+  </div>
 
-      <div class="category-pill">${catTheme.label}</div>
-
-      <h1 class="headline">${titleTa}</h1>
-
-      ${subtitle ? `<p class="subtitle">${subtitle}</p>` : ''}
-
-      <div class="bullets">
-        ${bulletsHtml}
-      </div>
+  <div class="content-box">
+    <div class="tags-row">
+      <div class="location-tag">📍 ${location}</div>
+      <div class="ribbon-tag">${ribbon}</div>
     </div>
 
-    <div class="cta-row">
-      மேலும் படிக்க: <span style="color:#ffffff;">vizhitn.in</span>
-    </div>
+    <h1 class="headline">${titleTa}</h1>
+
+    ${subtitle ? `<p class="subtitle">${subtitle}</p>` : ''}
+
+    ${bulletsHtml ? `<div class="bullets">${bulletsHtml}</div>` : ''}
   </div>
 
   <div class="bottom-bar">
-    <div class="bottom-loc">📍 ${location}</div>
-    <div class="bottom-handle">@vizhi_tn</div>
+    <div class="bottom-verified">
+      ✓ உறுதிப்படுத்தப்பட்ட மக்கள் தளம்
+    </div>
+    <div class="bottom-handle">
+      @vizhi_tn • <span>vizhitn.in</span>
+    </div>
   </div>
 </body>
 </html>`;

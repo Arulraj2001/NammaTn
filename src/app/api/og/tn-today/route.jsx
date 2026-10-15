@@ -58,6 +58,11 @@ export async function GET(request) {
     const district = (searchParams.get('district') || '').trim();
     const readTime = searchParams.get('read_time') || '5 min read';
 
+    const rawImage = searchParams.get('image') || searchParams.get('img') || searchParams.get('photo');
+    const bgImageUrl = rawImage
+      ? (rawImage.startsWith('http') ? rawImage : `https://www.vizhitn.in${rawImage}`)
+      : `https://www.vizhitn.in/images/categories/${categoryKey}.webp`;
+
     const isTamil = lang === 'ta' && Boolean(titleTa);
     const theme = THEMES[categoryKey] || THEMES.general;
 
@@ -85,7 +90,7 @@ export async function GET(request) {
             width: '100%',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            backgroundImage: `radial-gradient(circle at 90% 15%, ${theme.border}22 0%, #050814 55%, #020408 100%)`,
+            backgroundColor: '#050814',
             fontFamily: isTamil
               ? 'Noto Sans Tamil, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif'
               : '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
@@ -94,6 +99,34 @@ export async function GET(request) {
             position: 'relative',
           }}
         >
+          {/* Full-bleed background photo */}
+          {bgImageUrl && (
+            <img
+              src={bgImageUrl}
+              alt=""
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '1200px',
+                height: '630px',
+                objectFit: 'cover',
+              }}
+            />
+          )}
+
+          {/* Cinema-Grade 55% Bottom Dark Gradient Scrim */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '1200px',
+              height: '630px',
+              backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 20, 0.2) 0%, rgba(5, 8, 20, 0.45) 30%, rgba(5, 8, 20, 0.92) 65%, #030610 100%)',
+            }}
+          />
+
           {/* Subtle Outer Card Glow Border */}
           <div
             style={{
@@ -105,6 +138,7 @@ export async function GET(request) {
               border: `1.5px solid ${theme.border}44`,
               borderRadius: '24px',
               pointerEvents: 'none',
+              zIndex: 5,
             }}
           />
 
@@ -119,11 +153,12 @@ export async function GET(request) {
               backgroundColor: theme.border,
               borderTopLeftRadius: '24px',
               borderBottomLeftRadius: '24px',
+              zIndex: 5,
             }}
           />
 
           {/* TOP BAR: Brand Pill + Category Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', zIndex: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               {/* VizhiTN TN TODAY Brand Pill */}
               <div
@@ -204,7 +239,7 @@ export async function GET(request) {
           </div>
 
           {/* MAIN HEADLINE HERO AREA (Clean Multi-line News Display) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', margin: '25px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', margin: '25px 0', zIndex: 10 }}>
             <div
               style={{
                 fontSize: isTamil
@@ -223,6 +258,7 @@ export async function GET(request) {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 letterSpacing: isTamil ? '0px' : '-0.02em',
+                textShadow: '0 4px 24px rgba(0,0,0,0.95)',
               }}
             >
               {displayTitle}
@@ -234,11 +270,12 @@ export async function GET(request) {
                 style={{
                   fontSize: '20px',
                   fontWeight: 600,
-                  color: '#94a3b8',
+                  color: '#cbd5e1',
                   lineHeight: 1.3,
                   maxHeight: '52px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
+                  textShadow: '0 2px 12px rgba(0,0,0,0.9)',
                 }}
               >
                 {titleEn}
@@ -253,8 +290,9 @@ export async function GET(request) {
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingTop: '20px',
-              borderTop: '1px solid #1e293b',
+              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
               width: '100%',
+              zIndex: 10,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>

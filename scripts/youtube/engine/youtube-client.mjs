@@ -66,18 +66,15 @@ export async function uploadToYouTube({
   const fileSize = stats.size;
 
   const hasCreds = process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET && process.env.YOUTUBE_REFRESH_TOKEN;
+  const isDryRunMode = process.argv.includes('--dry-run');
 
-  if (!hasCreds) {
-    console.log('\n[YOUTUBE DRY-RUN / NO CREDENTIALS CONFIGURED]');
+  if (!hasCreds || isDryRunMode) {
+    console.log('\n[YOUTUBE DRY-RUN MODE ENABLED]');
     console.log(`Video ready: ${videoFilePath} (${(fileSize / (1024 * 1024)).toFixed(2)} MB)`);
     console.log(`Title: ${title}`);
     console.log(`Tags: ${tags.join(', ')}`);
     console.log(`Privacy: ${privacyStatus}`);
     console.log(`AI Disclosure: Synthetic Voice & Visuals Tagged (2026 Policy Compliant)`);
-    console.log('\nTo enable automated upload, set the following repository secrets:');
-    console.log('- YOUTUBE_CLIENT_ID');
-    console.log('- YOUTUBE_CLIENT_SECRET');
-    console.log('- YOUTUBE_REFRESH_TOKEN\n');
     return {
       videoId: 'DRY_RUN_MOCK_ID',
       videoUrl: isShort ? 'https://youtube.com/shorts/DRY_RUN' : 'https://youtube.com/watch?v=DRY_RUN',

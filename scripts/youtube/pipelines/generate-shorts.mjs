@@ -17,6 +17,7 @@ import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { generateShortsThumbnail } from '../engine/thumbnail-engine.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
+import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 
 // Load .env.local if running locally
 try {
@@ -168,6 +169,14 @@ async function main() {
     }
   }
 
+  // Fetch free B-roll video clip for continuous background motion
+  console.log(`[B-ROLL] Fetching moving B-roll clip for category "${category}"...`);
+  const brollClip = await fetchFreeBrollClip({
+    category,
+    aspectRatio: '9:16',
+    durationSec: totalDur
+  });
+
   const brandLogoDataUri = getBrandLogoDataUri();
 
   // ─── 5. Render Scene 1 — Hook Frame with category-aware urgency styling ──
@@ -245,9 +254,9 @@ async function main() {
   console.log('[COMPOSER] Assembling 3-Scene Civic Short with dynamic motion & kinetic captions...');
 
   const scenes = [
-    { imagePath: s1FramePath, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: s1SubPath },
-    { imagePath: s2FramePath, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: s2SubPath },
-    { imagePath: s3FramePath, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: s3SubPath }
+    { imagePath: s1FramePath, videoPath: brollClip, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: s1SubPath },
+    { imagePath: s2FramePath, videoPath: brollClip, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: s2SubPath },
+    { imagePath: s3FramePath, videoPath: brollClip, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: s3SubPath }
   ];
 
   assembleMultiSceneShortsVideo({ scenes, outputPath: videoOutputPath });

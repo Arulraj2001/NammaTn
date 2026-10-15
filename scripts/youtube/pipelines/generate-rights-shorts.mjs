@@ -12,6 +12,7 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
+import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
@@ -73,7 +74,8 @@ async function main() {
   await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+3%' });
   const s3Dur = getAudioDuration(s3AudioPath);
 
-  console.log(`[AUDIO STATS] S1: ${s1Dur.toFixed(1)}s, S2: ${s2Dur.toFixed(1)}s, S3: ${s3Dur.toFixed(1)}s | Total: ${(s1Dur + s2Dur + s3Dur).toFixed(1)}s`);
+  const totalDur = s1Dur + s2Dur + s3Dur;
+  console.log(`[AUDIO STATS] S1: ${s1Dur.toFixed(1)}s, S2: ${s2Dur.toFixed(1)}s, S3: ${s3Dur.toFixed(1)}s | Total: ${totalDur.toFixed(1)}s`);
 
   // 4. Generate Visuals: Scene 1 Photo
   const fluxPrompt = `Indian citizen discussing rights at legal advisory desk in Tamil Nadu Chennai, modern documentary style, natural dramatic lighting`;
@@ -150,14 +152,22 @@ async function main() {
     console.log('[CAPTIONS WARN] Could not generate subtitles:', subErr.message);
   }
 
+  // Fetch free B-roll video clip for continuous background motion
+  console.log(`[B-ROLL] Fetching moving B-roll clip for dispute guide...`);
+  const brollClip = await fetchFreeBrollClip({
+    category: 'public-safety',
+    aspectRatio: '9:16',
+    durationSec: totalDur
+  });
+
   // 9. Assemble Multi-Scene Video with Ken Burns Motion + Kinetic Subtitles
   const videoOutputPath = path.join(outDir, `vizhitn_rights_${topic.id}_${Date.now()}.mp4`);
   console.log('[COMPOSER] Assembling 3-Scene Citizen Rights Video with dynamic motion & captions...');
 
   const scenes = [
-    { imagePath: s1FramePath, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, subtitlePath: s1SubPath },
-    { imagePath: s2FramePath, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, subtitlePath: s2SubPath },
-    { imagePath: s3FramePath, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, subtitlePath: s3SubPath }
+    { imagePath: s1FramePath, videoPath: brollClip, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, subtitlePath: s1SubPath },
+    { imagePath: s2FramePath, videoPath: brollClip, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, subtitlePath: s2SubPath },
+    { imagePath: s3FramePath, videoPath: brollClip, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, subtitlePath: s3SubPath }
   ];
 
   assembleMultiSceneShortsVideo({

@@ -50,18 +50,31 @@ function synthesiseClauseToPython(text, outputPath, opts = {}) {
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  // Escape text safely: wrap in single quotes, escaping any internal single quotes
-  const safeText = text.replace(/'/g, "\\'");
-
-  const cmd = `${python} -m edge_tts --voice "${voice}" --rate="${rate}" --pitch="${pitch}" --text '${safeText}' --write-media "${outputPath.replace(/\\/g, '/')}"`;
-
   try {
-    execSync(cmd, { stdio: 'pipe', timeout: 45000, windowsHide: true });
+    execFileSync(python, [
+      '-m', 'edge_tts',
+      '--voice', voice,
+      '--rate', rate,
+      '--pitch', pitch,
+      '--text', text,
+      '--write-media', outputPath
+    ], { stdio: 'pipe', timeout: 45000, windowsHide: true });
   } catch (err) {
-    // On Windows, PowerShell single-quote handling differs — try double-quote fallback
-    const safeTextDq = text.replace(/"/g, '\\"');
-    const cmdDq = `${python} -m edge_tts --voice "${voice}" --rate="${rate}" --pitch="${pitch}" --text "${safeTextDq}" --write-media "${outputPath.replace(/\\/g, '/')}"`;
-    execSync(cmdDq, { stdio: 'pipe', timeout: 45000, windowsHide: true });
+    // Fallback: write text to UTF-8 file to bypass any Windows command-line quoting quirks
+    const tempTextFile = path.join(dir, `_temp_text_${Date.now()}.txt`);
+    fs.writeFileSync(tempTextFile, text, 'utf-8');
+    try {
+      execFileSync(python, [
+        '-m', 'edge_tts',
+        '--voice', voice,
+        '--rate', rate,
+        '--pitch', pitch,
+        '--file', tempTextFile,
+        '--write-media', outputPath
+      ], { stdio: 'pipe', timeout: 45000, windowsHide: true });
+    } finally {
+      try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch {}
+    }
   }
 
   if (!fs.existsSync(outputPath)) {

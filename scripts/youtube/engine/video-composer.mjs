@@ -193,23 +193,8 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath }) {
       const clipPath = path.join(outDir, `_temp_short_scene_${sessionId}_${idx}.mp4`);
       tempClips.push(clipPath);
 
-      // Ken Burns dynamic camera motion on all scenes
-      const motionMode = sc.hasMotion !== false;
-      const zoomDirections = [
-        `zoompan=z='min(zoom+0.0012,1.15)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920`, // Center zoom-in
-        `zoompan=z='min(zoom+0.0008,1.10)':d=125:x='iw/2-(iw/zoom/2)':y='ih/3-(ih/zoom/3)':s=1080x1920`, // Top-focus zoom-in
-        `zoompan=z='min(zoom+0.0010,1.12)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920`  // Steady push
-      ];
-      const zoomFilter = zoomDirections[idx % zoomDirections.length];
-
-      const vfFilter = motionMode
-        ? `scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,${zoomFilter},format=yuv420p`
-        : `scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p`;
-
-      // Scene fade-in for all scenes (0.25s), fade-out for last scene only
-      const fadeFilter = isLastScene
-        ? `,fade=t=in:st=0:d=0.25,fade=t=out:st=${Math.max(0, sc.durationSec - 0.4)}:d=0.4`
-        : `,fade=t=in:st=0:d=0.25`;
+      // Check if real video B-roll clip is provided
+      const hasBgVideo = sc.videoPath && fs.existsSync(sc.videoPath) && fs.statSync(sc.videoPath).size > 10000;
 
       // Kinetic Subtitles filter if ASS file provided (relative path to prevent Windows drive letter colon issues)
       let subFilter = '';
@@ -218,24 +203,69 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath }) {
         subFilter = `,ass=${relSub}`;
       }
 
-      const args = [
-        '-y',
-        '-loop', '1',
-        '-i', sc.imagePath,
-        '-i', finalAudioPath,
-        '-vf', `${vfFilter}${fadeFilter}${subFilter}`,
-        '-c:v', 'libx264',
-        '-preset', 'fast',
-        '-crf', '20',
-        '-c:a', 'aac',
-        '-b:a', '192k',
-        '-shortest',
-        clipPath
-      ];
+      let args;
+      if (hasBgVideo) {
+        // Multi-Layer: Moving B-roll Video (bg) + HTML Card (overlay) + Kinetic Subtitles
+        const fadeOut = isLastScene
+          ? `,fade=t=out:st=${Math.max(0, sc.durationSec - 0.4)}:d=0.4`
+          : '';
+        const filter = `[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[bg]; [bg][1:v]overlay=0:0:format=auto,fade=t=in:st=0:d=0.25${fadeOut}${subFilter},format=yuv420p[vout]`;
+
+        args = [
+          '-y',
+          '-stream_loop', '-1',
+          '-i', sc.videoPath,
+          '-i', sc.imagePath,
+          '-i', finalAudioPath,
+          '-filter_complex', filter,
+          '-map', '[vout]',
+          '-map', '2:a',
+          '-t', sc.durationSec.toString(),
+          '-c:v', 'libx264',
+          '-preset', 'fast',
+          '-crf', '20',
+          '-c:a', 'aac',
+          '-b:a', '192k',
+          clipPath
+        ];
+      } else {
+        // Ken Burns dynamic camera motion on all scenes
+        const motionMode = sc.hasMotion !== false;
+        const zoomDirections = [
+          `zoompan=z='min(zoom+0.0012,1.15)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920`, // Center zoom-in
+          `zoompan=z='min(zoom+0.0008,1.10)':d=125:x='iw/2-(iw/zoom/2)':y='ih/3-(ih/zoom/3)':s=1080x1920`, // Top-focus zoom-in
+          `zoompan=z='min(zoom+0.0010,1.12)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920`  // Steady push
+        ];
+        const zoomFilter = zoomDirections[idx % zoomDirections.length];
+
+        const vfFilter = motionMode
+          ? `scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,${zoomFilter},format=yuv420p`
+          : `scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p`;
+
+        // Scene fade-in for all scenes (0.25s), fade-out for last scene only
+        const fadeFilter = isLastScene
+          ? `,fade=t=in:st=0:d=0.25,fade=t=out:st=${Math.max(0, sc.durationSec - 0.4)}:d=0.4`
+          : `,fade=t=in:st=0:d=0.25`;
+
+        args = [
+          '-y',
+          '-loop', '1',
+          '-i', sc.imagePath,
+          '-i', finalAudioPath,
+          '-vf', `${vfFilter}${fadeFilter}${subFilter}`,
+          '-c:v', 'libx264',
+          '-preset', 'fast',
+          '-crf', '20',
+          '-c:a', 'aac',
+          '-b:a', '192k',
+          '-shortest',
+          clipPath
+        ];
+      }
 
       const cmd = `"${ffmpeg}" ${args.map(a => `"${a}"`).join(' ')}`;
       execSync(cmd, { stdio: 'pipe', timeout: 90000 });
-      console.log(`[COMPOSER] Scene ${idx + 1}/${scenes.length} rendered: ${(sc.durationSec).toFixed(1)}s`);
+      console.log(`[COMPOSER] Scene ${idx + 1}/${scenes.length} rendered (${hasBgVideo ? 'Video B-Roll' : 'Ken Burns Motion'}): ${(sc.durationSec).toFixed(1)}s`);
     }
 
     // Concatenate all scene clips into final Short

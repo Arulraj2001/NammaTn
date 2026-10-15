@@ -21,6 +21,8 @@ export async function generateLongVideoThumbnail({
   outputPath
 }) {
   const logoDataUri = getBrandLogoDataUri();
+  const fontPath = path.resolve('public/fonts/NotoSansTamil-Bold.ttf').replace(/\\/g, '/');
+
   const htmlContent = `<!DOCTYPE html>
 <html lang="ta">
 <head>
@@ -29,6 +31,12 @@ export async function generateLongVideoThumbnail({
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@800;900&family=Plus+Jakarta+Sans:wght@800;900&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Noto Sans Tamil';
+      src: url('file:///${fontPath}') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       width: 1280px;
@@ -40,12 +48,12 @@ export async function generateLongVideoThumbnail({
       color: #ffffff;
     }
 
-    /* Right Half Hero Visual */
+    /* Full Bleed Hero Visual */
     .bg-image {
       position: absolute;
-      right: 0;
+      left: 0;
       top: 0;
-      width: 780px;
+      width: 1280px;
       height: 720px;
       object-fit: cover;
     }
@@ -55,25 +63,26 @@ export async function generateLongVideoThumbnail({
       top: 0;
       width: 1280px;
       height: 720px;
-      background: linear-gradient(90deg, #071224 0%, #071224 45%, rgba(7, 18, 36, 0.95) 58%, rgba(7, 18, 36, 0.3) 80%, transparent 100%);
+      background: linear-gradient(
+        180deg,
+        rgba(7, 18, 36, 0.2) 0%,
+        rgba(7, 18, 36, 0.4) 30%,
+        rgba(7, 18, 36, 0.9) 60%,
+        rgba(7, 18, 36, 0.98) 82%,
+        #071224 100%
+      );
     }
 
-    /* Left Half Content Box */
-    .content-box {
-      position: relative;
-      z-index: 10;
-      width: 750px;
-      height: 720px;
-      padding: 60px 60px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .top-badge-row {
+    /* Top Bar Floating */
+    .top-bar {
+      position: absolute;
+      top: 36px;
+      left: 48px;
+      right: 48px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      justify-content: space-between;
+      z-index: 15;
     }
     .brand-logo-pill {
       display: flex;
@@ -81,14 +90,20 @@ export async function generateLongVideoThumbnail({
       gap: 12px;
       background: rgba(15, 23, 42, 0.88);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 6px 18px 6px 10px;
+      padding: 8px 20px 8px 12px;
       border-radius: 9999px;
-      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+    }
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 12px #10b981;
     }
     .brand-logo-img {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       object-fit: contain;
       border-radius: 8px;
       background: #ffffff;
@@ -98,59 +113,75 @@ export async function generateLongVideoThumbnail({
       font-size: 20px;
       font-weight: 900;
       color: #ffffff;
-      letter-spacing: -0.5px;
+      letter-spacing: 1px;
     }
     .cat-pill {
-      background: rgba(245, 158, 11, 0.2);
-      border: 1.5px solid #f59e0b;
-      color: #fbbf24;
-      font-size: 16px;
+      background: #ef4444;
+      border: 2px solid #dc2626;
+      color: #ffffff;
+      font-size: 17px;
       font-weight: 900;
-      padding: 6px 16px;
+      padding: 8px 22px;
       border-radius: 9999px;
       letter-spacing: 1.5px;
       text-transform: uppercase;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
     }
 
+    /* Bottom Content Box */
+    .content-box {
+      position: absolute;
+      bottom: 74px;
+      left: 48px;
+      right: 48px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
     .headline-main {
-      font-size: 58px;
+      font-size: 64px;
       font-weight: 900;
       line-height: 1.25;
-      color: #ffffff;
-      text-shadow: 0 6px 24px rgba(0, 0, 0, 0.8);
-      margin-bottom: 16px;
+      color: #FFE500;
+      text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000, 0 6px 24px rgba(0, 0, 0, 0.95);
+      margin-bottom: 8px;
     }
-    .headline-main span {
-      color: #fbbf24;
-    }
-
     .sub-text {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
-      color: #38bdf8;
-      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+      color: #f8fafc;
+      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
     }
 
+    /* Bottom Bar */
     .bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(7, 18, 36, 0.96);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1.5px solid rgba(255, 255, 255, 0.15);
-      padding-top: 16px;
+      padding: 0 48px;
+      z-index: 20;
     }
     .verified-tag {
       font-size: 18px;
       font-weight: 800;
-      color: #94a3b8;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .cta-badge {
-      background: #dc2626;
-      color: #ffffff;
-      font-size: 18px;
+      color: #38bdf8;
+      font-size: 19px;
       font-weight: 900;
-      padding: 6px 18px;
-      border-radius: 8px;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
   </style>
 </head>
@@ -158,24 +189,23 @@ export async function generateLongVideoThumbnail({
   <img class="bg-image" src="${heroImageUrl}" alt="Hero" />
   <div class="gradient-overlay"></div>
 
+  <div class="top-bar">
+    <div class="brand-logo-pill">
+      <span class="live-dot"></span>
+      <img class="brand-logo-img" src="${logoDataUri}" alt="VizhiTN" />
+      <span class="brand-logo-text">VizhiTN</span>
+    </div>
+    <div class="cat-pill">${category}</div>
+  </div>
+
   <div class="content-box">
-    <div class="top-badge-row">
-      <div class="brand-logo-pill">
-        <img class="brand-logo-img" src="${logoDataUri}" alt="VizhiTN" />
-        <span class="brand-logo-text">VizhiTN</span>
-      </div>
-      <div class="cat-pill">${category}</div>
-    </div>
+    <h1 class="headline-main">${titleTa}</h1>
+    <p class="sub-text">${subtitleTa}</p>
+  </div>
 
-    <div>
-      <h1 class="headline-main">${titleTa}</h1>
-      <p class="sub-text">${subtitleTa}</p>
-    </div>
-
-    <div class="bottom-bar">
-      <div class="verified-tag">38 மாவட்ட கள நிலவரம் | vizhitn.in</div>
-      <div class="cta-badge">WATCH NOW</div>
-    </div>
+  <div class="bottom-bar">
+    <div class="verified-tag">✓ உறுதிசெய்யப்பட்ட தமிழ்நாடு உண்மை சரிபார்ப்பு</div>
+    <div class="cta-badge">@vizhi_tn • vizhitn.in</div>
   </div>
 </body>
 </html>`;

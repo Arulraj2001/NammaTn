@@ -74,13 +74,13 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
     ? rawDistrict.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).slice(0, 20)
     : 'Tamil Nadu';
 
-  // --- Title ---
+  // --- Title (Under 65 chars for zero mobile truncation) ---
   let title;
   if (isShort) {
     const areaName = article.area_name || districtLabel;
-    const shortArea = areaName.length > 20 ? areaName.slice(0, 18) + '..' : areaName;
+    const shortArea = areaName.length > 18 ? areaName.slice(0, 16) + '..' : areaName;
     title = script?.youtubeTitle ||
-      `${shortArea} | ${titleTa.slice(0, 45)} | #TamilNadu #Shorts`;
+      `${shortArea} மக்களுக்கு முக்கிய அறிவிப்பு! ${titleTa.slice(0, 36)} | #Shorts`;
   } else {
     const hook = script?.thumbnailHookTa || titleTa.slice(0, 40);
     title = script?.youtubeTitle ||
@@ -139,6 +139,8 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
     ? `\n📌 அத்தியாயங்கள் / Chapters:\n${chapterTimestamps.join('\n')}\n`
     : '';
 
+  const aiDisclosure = `\nℹ️ YouTube Disclosure: This video combines automated public domain archival footage, data visualization, and synthetic voice technology to provide citizen awareness.\n`;
+
   const description = isShort
     ? `📍 மாவட்டம்: ${districtLabel} | 🏛️ துறை: ${dept} | 📞 உதவி: ${helpline}\n\n` +
       `${article.content_ta?.slice(0, 200) || article.content_en?.slice(0, 200) || titleTa}\n\n` +
@@ -146,7 +148,8 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
       `🔴 உங்க ஏரியால பிரச்சனை இருக்கா?\n` +
       `vizhitn.in இல் தமிழ்நாடு அரசு செய்திகளை நேரடியாக படிங்க.\n` +
       `━━━━━━━━━━━━━━━━━━━━━\n\n` +
-      `🏷️ Tags: Tamil Nadu news today, TN government updates, ${districtLabel} news, ${category} Tamil Nadu, civic issues Tamil, vizhitn\n\n` +
+      `🏷️ Tags: Tamil Nadu news today, TN government updates, ${districtLabel} news, ${category} Tamil Nadu, civic issues Tamil, vizhitn\n` +
+      aiDisclosure + '\n' +
       hashtags
     : `🔍 ${titleTa} — முழு கள ஆய்வு மற்றும் அரசு ஆவணங்கள் விவரம்!\n\n` +
       `${article.summary_ta || article.summary_en || ''}\n` +
@@ -159,10 +162,15 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
       `💬 இந்த திட்டம் பற்றி உங்கள் கருத்து என்ன? கமெண்டில் சொல்லுங்கள் 👇\n` +
       `━━━━━━━━━━━━━━━━━━━━━\n\n` +
       `🌐 முழு கட்டுரை: https://vizhitn.in/tn-today/${article.slug || ''}\n\n` +
-      `🏷️ Tags: Tamil Nadu news, TN government, ${districtLabel} civic issues, Tamil documentary, vizhitn\n\n` +
+      `🏷️ Tags: Tamil Nadu news, TN government, ${districtLabel} civic issues, Tamil documentary, vizhitn\n` +
+      aiDisclosure + '\n' +
       hashtags;
 
-  return { title, description, tags, hashtags };
+  const pinnedComment = `💬 உங்கள் பகுதியிலும் இந்த பிரச்சனை உள்ளதா? உங்க கருத்து என்ன? கீழே கமெண்ட் பண்ணுங்க 👇\n` +
+    `📌 நண்பர்களுக்கும் குடும்பத்தினருக்கும் பகிருங்கள் (Share) ↗️\n` +
+    `🔗 முழு ஆதாரங்கள் & கள நிலவரம்: https://vizhitn.in/post/${article.slug || ''}`;
+
+  return { title, description, tags, hashtags, pinnedComment };
 }
 
 /**

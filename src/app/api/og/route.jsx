@@ -70,6 +70,11 @@ export async function GET(request) {
     const lang = searchParams.get('lang') || (title_ta && !title ? 'ta' : 'en');
     const isTamilPrimary = lang === 'ta' && Boolean(title_ta);
 
+    const rawImage = searchParams.get('image') || searchParams.get('img') || searchParams.get('photo');
+    const bgImageUrl = rawImage
+      ? (rawImage.startsWith('http') ? rawImage : `https://www.vizhitn.in${rawImage}`)
+      : `https://www.vizhitn.in/images/categories/${categorySlug}.webp`;
+
     const catStyle = CATEGORY_COLORS[categorySlug] || CATEGORY_COLORS['general'];
     const urgencyStyle = URGENCY_STYLES[urgencyKey] || URGENCY_STYLES['medium'];
 
@@ -105,13 +110,41 @@ export async function GET(request) {
             width: '100%',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            backgroundImage: 'radial-gradient(circle at 90% 10%, #1e1b4b 0%, #090e1a 45%, #030712 100%)',
+            backgroundColor: '#070c18',
             fontFamily: 'Noto Sans Tamil, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
             padding: '45px 55px',
             boxSizing: 'border-box',
             position: 'relative',
           }}
         >
+          {/* Full-bleed background photo */}
+          {bgImageUrl && (
+            <img
+              src={bgImageUrl}
+              alt=""
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '1200px',
+                height: '630px',
+                objectFit: 'cover',
+              }}
+            />
+          )}
+
+          {/* Cinema-Grade Bottom Dark Gradient Scrim */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '1200px',
+              height: '630px',
+              backgroundImage: 'linear-gradient(180deg, rgba(7, 12, 24, 0.25) 0%, rgba(7, 12, 24, 0.5) 30%, rgba(7, 12, 24, 0.92) 65%, #050811 100%)',
+            }}
+          />
+
           {/* Subtle Outer Card Glow Border */}
           <div
             style={{
@@ -123,11 +156,12 @@ export async function GET(request) {
               border: `1.5px solid ${catStyle.border}44`,
               borderRadius: '24px',
               pointerEvents: 'none',
+              zIndex: 5,
             }}
           />
 
           {/* TOP BAR: Brand + District + Category + Urgency */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', zIndex: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {/* VizhiTN Brand Pill */}
               <div
@@ -208,7 +242,7 @@ export async function GET(request) {
           {/* MAIN HEADLINE AREA */}
           {isTamilPrimary ? (
             /* Mode 1: Tamil-First Hero Card */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', margin: '20px 0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', margin: '20px 0', zIndex: 10 }}>
               <div
                 style={{
                   fontSize: title_ta.length > 70 ? '36px' : '42px',
@@ -218,6 +252,7 @@ export async function GET(request) {
                   maxHeight: '180px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
+                  textShadow: '0 4px 24px rgba(0,0,0,0.95)',
                 }}
               >
                 {title_ta}
@@ -232,6 +267,7 @@ export async function GET(request) {
                     maxHeight: '60px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
+                    textShadow: '0 2px 12px rgba(0,0,0,0.9)',
                   }}
                 >
                   {title}
@@ -240,7 +276,7 @@ export async function GET(request) {
             </div>
           ) : (
             /* Mode 2: Balanced Bilingual Split Card */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', margin: '15px 0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', margin: '15px 0', zIndex: 10 }}>
               {/* Primary English Title */}
               <div
                 style={{
@@ -252,6 +288,7 @@ export async function GET(request) {
                   maxHeight: '120px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
+                  textShadow: '0 4px 24px rgba(0,0,0,0.95)',
                 }}
               >
                 {title}
@@ -263,11 +300,12 @@ export async function GET(request) {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.75)',
                     borderLeft: `4px solid ${catStyle.border}`,
                     borderRadius: '8px',
                     padding: '10px 18px',
                     maxWidth: '100%',
+                    backdropFilter: 'blur(8px)',
                   }}
                 >
                   <span
@@ -279,6 +317,7 @@ export async function GET(request) {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
+                      textShadow: '0 2px 8px rgba(0,0,0,0.8)',
                     }}
                   >
                     {title_ta}
@@ -295,8 +334,9 @@ export async function GET(request) {
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingTop: '18px',
-              borderTop: '1px solid #1e293b',
+              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
               width: '100%',
+              zIndex: 10,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
