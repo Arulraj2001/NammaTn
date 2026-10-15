@@ -131,28 +131,6 @@ const AUTHORITY_REGISTRY = {
     },
   },
 
-  'stay': {
-    entity:         'Municipal Corporation Housing Division',
-    fullName:       'Tamil Nadu Housing Board / Municipal Corporation',
-    department:     'Housing and Rental Registrations',
-    primaryHelpline:'1800 425 2145',
-    secondaryHelpline: null,
-    onlinePortal:   'https://www.tn.gov.in',
-    complaintPortal:'https://grievance.tn.gov.in',
-    tnEgrievance:   'https://grievance.tn.gov.in',
-    escalation: [
-      'Local Municipal Corporation Office',
-      'Tamil Nadu Housing Board',
-      'District Collector Housing Cell',
-    ],
-    schemaCivicEntity: {
-      '@type':      'GovernmentOrganization',
-      name:          'Tamil Nadu Housing Board',
-      description:   'Authority for housing registration, rental dispute resolution, and accommodation guidelines in Tamil Nadu.',
-      telephone:     '1800 425 2145',
-      url:           'https://www.tn.gov.in',
-    },
-  },
 
   'education': {
     entity:         'School Education Department',
@@ -376,7 +354,7 @@ const CITY_MUNICIPAL_BODIES = {
 };
 
 // Issues where local municipal body is the primary authority (overrides generic authority)
-const MUNICIPAL_PRIMARY_ISSUES = new Set(['road-problem', 'water-issue', 'stay']);
+const MUNICIPAL_PRIMARY_ISSUES = new Set(['road-problem', 'water-issue']);
 
 // ── Main API ───────────────────────────────────────────────────────────────────
 /**

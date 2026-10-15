@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import {
-  notifyAdminStayInquiry,
   notifyAdminContactMessage,
   notifyAdminCivicReport,
 } from '@/lib/emailNotifier';
@@ -17,9 +16,6 @@ export async function POST(request) {
     let result = { success: false };
 
     switch (type) {
-      case 'stay_inquiry':
-        result = await notifyAdminStayInquiry(data);
-        break;
       case 'contact_message':
         result = await notifyAdminContactMessage(data);
         break;

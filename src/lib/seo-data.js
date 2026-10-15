@@ -102,14 +102,6 @@ export const CATEGORIES = [
     helpline: '1800 425 1545',
   },
   {
-    slug: 'stay',
-    name: 'Room / Stay',
-    plural: 'Rooms & Stays',
-    descriptionFragment: 'rooms for rent, PG accommodations, and housing listings',
-    authority: null,
-    helpline: null,
-  },
-  {
     slug: 'education',
     name: 'Education',
     plural: 'Education Reports',

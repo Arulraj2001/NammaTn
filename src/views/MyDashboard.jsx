@@ -23,7 +23,7 @@ const TABS = [
   { key: "activity",      icon: BarChart3,     label_en: "My Activity",         label_ta: "என் செயல்பாடு" },
   { key: "comments",      icon: MessageSquare, label_en: "Comments",            label_ta: "கருத்துகள்" },
   { key: "reports",       icon: Flag,          label_en: "My Reports",          label_ta: "என் புகார்கள்" },
-  { key: "jobs",          icon: Briefcase,     label_en: "Jobs / Stay",         label_ta: "வேலை / தங்குமிடம்" },
+  { key: "jobs",          icon: Briefcase,     label_en: "Jobs & Listings",     label_ta: "வேலைகள் & வணிகங்கள்" },
   { key: "orgs",          icon: Building2,     label_en: "Organisations",       label_ta: "நிறுவனங்கள்" },
   { key: "notifications", icon: Bell,          label_en: "Notifications",       label_ta: "அறிவிப்புகள்" },
   { key: "settings",      icon: Settings,      label_en: "Settings",            label_ta: "அமைப்புகள்" },
@@ -375,17 +375,16 @@ function ReportsTab({ reports, lang }) {
   );
 }
 
-// ── Jobs / Stay / Listings ────────────────────────────────────────────────────
+// ── Jobs / Listings ──────────────────────────────────────────────────────────
 function JobsTab({ user, lang }) {
   const opts = { enabled: !!user?.id, staleTime: 60_000 };
   const { data: jobs = [] } = useQuery({ queryKey: ["my-jobs", user?.id], queryFn: () => base44.entities.JobAlert.filter({ created_by_id: user?.id }, "-created_date", 50), ...opts });
-  const { data: stays = [] } = useQuery({ queryKey: ["my-stays", user?.id], queryFn: () => base44.entities.StayListing.filter({ created_by_id: user?.id }, "-created_date", 50), ...opts });
   const { data: listings = [] } = useQuery({ queryKey: ["my-listings", user?.id], queryFn: () => base44.entities.LocalListing.filter({ created_by_id: user?.id }, "-created_date", 50), ...opts });
 
   const ST = { active: "bg-green-100 text-green-700", pending: "bg-yellow-100 text-yellow-700", rejected: "bg-red-100 text-red-600", removed: "bg-red-100 text-red-600", expired: "bg-slate-100 text-slate-500" };
 
-  if (!jobs.length && !stays.length && !listings.length) {
-    return <EmptyState icon={Briefcase} title="No submissions yet" desc="Post jobs, stay listings, or local business listings to manage them here." />;
+  if (!jobs.length && !listings.length) {
+    return <EmptyState icon={Briefcase} title="No submissions yet" desc="Post jobs or local business listings to manage them here." />;
   }
 
   const Section = ({ title, items, renderItem }) => items.length === 0 ? null : (
@@ -406,15 +405,6 @@ function JobsTab({ user, lang }) {
             {j.report_count > 0 && <span className="text-xs text-red-500">{j.report_count} reports</span>}
           </div>
           {j.admin_note && <p className="text-xs text-amber-600 mt-1 italic">Admin: {j.admin_note}</p>}
-        </div>
-      )} />
-      <Section title="Stay Listings" items={stays} renderItem={s => (
-        <div key={s.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
-          <p className="text-sm font-medium text-slate-800 dark:text-white truncate mb-1">{s.title}</p>
-          <div className="flex gap-2 flex-wrap">
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ST[s.status] || ST.pending}`}>{s.status}</span>
-            {s.report_count > 0 && <span className="text-xs text-red-500">{s.report_count} reports</span>}
-          </div>
         </div>
       )} />
       <Section title="Local Listings" items={listings} renderItem={l => (
@@ -528,8 +518,6 @@ function NotificationsTab({ notifications, onRefresh, lang }) {
                     <Link to={
                       n.target_type === "post" ? `/post/${n.target_id}` :
                       n.target_type === "job_alert" ? `/jobs` :
-                      n.target_type === "stay_listing" ? `/stay` :
-                      n.target_type === "stay_report" ? `/stay` :
                       `/me`
                     } className="text-xs text-blue-600 hover:underline">View</Link>
                   )}

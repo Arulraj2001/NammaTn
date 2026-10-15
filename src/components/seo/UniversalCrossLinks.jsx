@@ -5,8 +5,8 @@ import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import {
   Shield, BookOpen, Gift, FileText, AlertTriangle, Building2,
-  Zap, MessageCircle, Map, ArrowRight,
-  Briefcase, Home, Trophy
+  Zap, MessageCircle, ArrowRight,
+  Trophy
 } from "lucide-react";
 
 export default function UniversalCrossLinks({ pageType }) {
@@ -47,21 +47,8 @@ export default function UniversalCrossLinks({ pageType }) {
           title_ta: "தொடர்புடைய சேவைகள் & வேலைவாய்ப்பு ஆதாரங்கள்",
           items: [
             { title_en: "e-Sevai Online Certificates Guide", title_ta: "இ-சேவை சான்றிதழ்கள் முழு வழிகாட்டி", href: "/awareness/article/tamil-nadu-esevai-online-services-guide", icon: FileText, desc_en: "Apply for Income, Community & Native certificates.", desc_ta: "வருமானம், சாதி, இருப்பிட சான்றிதழ்கள் பெற." },
-            { title_en: "Find PG & Hostel Accommodation", title_ta: "தங்குமிடம் & PG விடுதிகள்", href: "/stay", icon: Home, desc_en: "Verified rooms and PG listings in TN.", desc_ta: "சரிபார்க்கப்பட்ட PG மற்றும் விடுதிகள்." },
             { title_en: "Naan Mudhalvan Skill Scheme", title_ta: "நான் முதல்வன் திறன் திட்டம்", href: "/awareness/schemes", icon: Gift, desc_en: "Government skill development & career guidance.", desc_ta: "அரசு திறன் மேம்பாடு மற்றும் வழிகாட்டல்." },
             { title_en: "Verified Local Businesses", title_ta: "சரிபார்க்கப்பட்ட வணிகங்கள்", href: "/listings", icon: Building2, desc_en: "Local services and shops near you.", desc_ta: "உள்ளூர் வணிகங்கள் மற்றும் சேவைகள்." },
-          ]
-        };
-
-      case "stay":
-        return {
-          title_en: "Related Local Living Services",
-          title_ta: "தொடர்புடைய உள்ளூர் வாழ்வியல் சேவைகள்",
-          items: [
-            { title_en: "Browse Local Job Alerts", title_ta: "உள்ளூர் வேலை வாய்ப்புகள்", href: "/jobs", icon: Briefcase, desc_en: "Full-time, part-time & local job listings.", desc_ta: "முழு நேர மற்றும் பகுதி நேர வேலைகள்." },
-            { title_en: "Local Verified Businesses", title_ta: "உள்ளூர் சேவைப் பட்டியல்", href: "/listings", icon: Building2, desc_en: "Plumbers, electricians, laundries near you.", desc_ta: "பிளம்பர், எலக்ட்ரீஷியன் மற்றும் சேவைகள்." },
-            { title_en: "Public Offices Directory", title_ta: "அரசு அலுவலகங்கள்", href: "/offices", icon: Map, desc_en: "Find municipal and EB offices.", desc_ta: "நகராட்சி மற்றும் EB அலுவலகங்கள்." },
-            { title_en: "Ask Local Questions", title_ta: "உள்ளூரினரிடம் வினாக்கள்", href: "/ask", icon: MessageCircle, desc_en: "Ask locals about food, safety & transport.", desc_ta: "உணவு, பாதுகாப்பு பற்றி கேளுங்கள்." },
           ]
         };
 

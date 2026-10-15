@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   LayoutDashboard, FileText, MessageSquare, Tag, MapPin,
-  Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Mail, Home, UserCheck, BookOpen, SearchCheck, Newspaper,
+  Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Mail, UserCheck, BookOpen, SearchCheck, Newspaper,
   AlertTriangle
 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
@@ -27,7 +27,6 @@ const NAV = [
   { label: "AI Settings", icon: Zap, path: "/admin/moderation-settings" },
   { label: "Phase 8 Hub", icon: Globe, path: "/admin/phase8", badge: "NEW" },
   { label: "Contact Messages", icon: Mail, path: "/admin/contacts" },
-  { label: "Stay & Rooms", icon: Home, path: "/admin/stay" },
   { label: "Civic Receipts", icon: FileText, path: "/admin/civic", badge: "NEW" },
   { label: "Bribe Tracker", icon: AlertTriangle, path: "/admin/bribes", badge: "NEW" },
   { label: "Citizen Awareness", icon: BookOpen, path: "/admin/awareness", badge: "NEW" },
@@ -81,14 +80,6 @@ export default function AdminSidebar() {
   });
   const newContactCount = newContacts.length;
 
-  const { data: pendingStay = [] } = useQuery({
-    queryKey: ["admin-stay-pending"],
-    queryFn: () => base44.entities.StayListing.filter({ status: "pending" }),
-    refetchInterval: 60000,
-    staleTime: 30000,
-  });
-  const pendingStayCount = pendingStay.length;
-
   const { data: pendingListings = [] } = useQuery({
     queryKey: ["admin-listings-pending"],
     queryFn: () => base44.entities.LocalListing.filter({ status: "pending" }),
@@ -127,7 +118,6 @@ export default function AdminSidebar() {
             onClick={() => setMobileOpen(false)}
             pendingCount={
               item.path === "/admin/contacts" ? newContactCount :
-              item.path === "/admin/stay" ? pendingStayCount :
               item.path === "/admin/monetization" ? pendingListingsCount : 0
             }
           />

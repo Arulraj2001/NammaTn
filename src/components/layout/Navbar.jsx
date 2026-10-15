@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, MessageCircle,
-  HelpCircle, Heart, Briefcase, Home, Building2, AlertTriangle,
+  HelpCircle, Heart, Briefcase, Building2, AlertTriangle,
   MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight, Plus, LayoutDashboard, Info, X, Clock
 } from "lucide-react";
 
@@ -50,11 +50,10 @@ const MEGA_COLUMNS = [
     ],
   },
   {
-    en_title: "Local Life & Stay",
+    en_title: "Local Life & Opportunities",
     ta_title: "வாழ்க்கை & வாய்ப்புகள்",
     items: [
       { path: "/jobs", icon: Briefcase, en: "Local Jobs", ta: "உள்ளூர் வேலை", desc_en: "Local job alerts & listings", desc_ta: "உள்ளூர் வேலை வாய்ப்புகள்" },
-      { path: "/stay", icon: Home, en: "Stay & Rooms", ta: "தங்குமிடம் & PG", desc_en: "PG, hostel & rental rooms", desc_ta: "PG, விடுதி, அறை பட்டியல்" },
       { path: "/listings", icon: ShoppingBag, en: "Local Listings", ta: "உள்ளூர் பட்டியல்", desc_en: "Verified local services", desc_ta: "சரிபார்க்கப்பட்ட சேவைகள்" },
       { path: "/trending", icon: TrendingUp, en: "Trending Topics", ta: "டிரெண்டிங் தலைப்புகள்", desc_en: "Most discussed civic issues", desc_ta: "அதிகம் விவாதிக்கப்பட்ட சிக்கல்கள்" },
       { path: "/leaderboard", icon: Trophy, en: "Civic Leaderboard", ta: "தகுதிப் பட்டியல்", desc_en: "Active citizens & top areas", desc_ta: "செயலில் உள்ள குடிமக்கள்" },

@@ -22,7 +22,6 @@ const ISSUE_INTENT_MATRIX = {
   'road-problem':      { informational: 0.30, navigational: 0.25, transactional: 0.25, investigative: 0.20 },
   'scam':              { informational: 0.35, navigational: 0.20, transactional: 0.15, investigative: 0.30 },
   'jobs':              { informational: 0.40, navigational: 0.30, transactional: 0.25, investigative: 0.05 },
-  'stay':              { informational: 0.30, navigational: 0.35, transactional: 0.30, investigative: 0.05 },
   '__default__':       { informational: 0.30, navigational: 0.25, transactional: 0.25, investigative: 0.20 },
 };
 
@@ -52,11 +51,6 @@ const ISSUE_KEYWORDS = {
     primary:   ['government jobs', 'private jobs', 'job vacancy', 'employment', 'job posting'],
     secondary: ['Tamil Nadu jobs', 'fresher jobs', 'walk-in interview', 'job fair', 'employment exchange'],
     local:     (city) => [`${city} jobs today`, `${city} job vacancy`, `${city} government job`, `employment ${city}`],
-  },
-  'stay': {
-    primary:   ['room for rent', 'PG accommodation', 'hostel', 'house rental', 'apartment'],
-    secondary: ['bachelor room', 'furnished room', 'room near', 'affordable PG', '2BHK rent'],
-    local:     (city) => [`${city} room for rent`, `${city} PG accommodation`, `${city} hostel`, `rooms in ${city}`],
   },
 };
 

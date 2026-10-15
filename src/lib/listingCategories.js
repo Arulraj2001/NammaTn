@@ -7,10 +7,8 @@ export const LISTING_CATEGORIES = [
   { slug: "esevai", label: "E-Sevai Support", label_ta: "இ-சேவை உதவி", icon: "🖥️" },
   { slug: "tuition", label: "Tuition Center", label_ta: "தனிப்பயிற்சி மையம்", icon: "📚" },
   { slug: "clinic", label: "Clinic / Doctor", label_ta: "மருத்துவமனை", icon: "🏥" },
-  { slug: "hostel_pg", label: "Hostel / PG", label_ta: "விடுதி / PG", icon: "🏠" },
   { slug: "repair", label: "Local Repair Service", label_ta: "உள்ளூர் பழுது சேவை", icon: "🔨" },
   { slug: "job_provider", label: "Job Provider", label_ta: "வேலை வழங்குநர்", icon: "💼" },
-  { slug: "rental_stay", label: "Rental / Stay Provider", label_ta: "வாடகை / தங்கும் இடம்", icon: "🏡" },
   { slug: "other", label: "Other", label_ta: "மற்றவை", icon: "📌" },
 ];
 

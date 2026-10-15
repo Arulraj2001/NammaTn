@@ -260,11 +260,7 @@ assert.doesNotMatch(jobsPage, /ssr:\s*false/, 'Job alerts must be server rendere
 assert.match(jobsPage, /getActiveJobAlerts/, 'Job alerts must fetch initial server data');
 assert.match(jobsView, /initialData:\s*!filterDistrict/, 'Job filters must hydrate from the unfiltered server list');
 
-const stayPage = await read('src/app/(user)/stay/page.jsx');
-const stayView = await read('src/views/Stay.jsx');
-assert.doesNotMatch(stayPage, /ssr:\s*false/, 'Stay listings must be server rendered');
-assert.match(stayPage, /getActiveStayListings/, 'Stay listings must fetch initial server data');
-assert.match(stayView, /initialData:\s*initialListings/, 'Stay listings must hydrate from server data');
+
 
 const areasPage = await read('src/app/(user)/areas/page.jsx');
 const areasView = await read('src/views/Areas.jsx');

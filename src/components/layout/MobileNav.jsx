@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
-  Home, PlusCircle, Zap, X, FileText, TrendingUp, MessageCircle, AlertTriangle, Shield,
+  PlusCircle, Zap, X, FileText, TrendingUp, MessageCircle, AlertTriangle, Shield,
   Briefcase, ShoppingBag, Building2, Map, MapPin,
   HelpCircle, Heart, Leaf, Trophy, ArrowRight, BarChart2, User, Newspaper
 } from "lucide-react";
@@ -45,7 +45,6 @@ const MOBILE_MENU_GROUPS = [
     ta_title: "உள்ளூர் வாழ்க்கை",
     items: [
       { path: "/jobs", icon: Briefcase, en: "Jobs", ta: "வேலை", desc_en: "Local job alerts", desc_ta: "உள்ளூர் வேலை வாய்ப்பு" },
-      { path: "/stay", icon: Home, en: "Stay & Rooms", ta: "தங்குமிடம்", desc_en: "PG, hostel, rooms", desc_ta: "PG, விடுதி, அறைகள்" },
       { path: "/listings", icon: ShoppingBag, en: "Local Listings", ta: "உள்ளூர் பட்டியல்", desc_en: "Verified businesses", desc_ta: "சரிபார்க்கப்பட்ட வணிகங்கள்" },
       { path: "/offices", icon: Building2, en: "Offices", ta: "அலுவலகங்கள்", desc_en: "Public offices near you", desc_ta: "உள்ளூர் அரசு அலுவலகங்கள்" },
     ],

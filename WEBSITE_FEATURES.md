@@ -81,11 +81,7 @@
 * **Purpose:** Local job postings and hiring notifications.
 * **Key Fields:** `id`, `title`, `description`, `job_type`, `district_slug`, `area_slug`, `contact_info`, `salary_info`, `duration`, `status`, `expires_at`, `safety_status`, `moderation_status`, `slug`.
 
-### 10. Stay Listing (`stay_listing`)
-* **Purpose:** Directory entries for local rental rooms, PGs, and hostels.
-* **Key Fields:** `id`, `title`, `description`, `stay_type`, `district_slug`, `area_slug`, `address`, `price_range`, `contact_info`, `amenities` (JSON), `status`.
-
-### 11. User Profile (`profile`)
+### 10. User Profile (`profile`)
 * **Purpose:** Registered user data linked to Supabase Auth.
 * **Key Fields:** `id` (UUID references `auth.users`), `email`, `full_name`, `avatar_url`, `trust_score` (0–100), `approved_verifications_count`, `resolved_issues_count`, `spam_deletions_count`.
 
@@ -181,7 +177,6 @@
 | **Situation Updates (`situation_update`)** | **10** |
 | **Questions & Answers (`question` / `answer`)** | **6 Questions / 6 Answers** |
 | **Local Job Alerts (`job_alert`)** | **5** |
-| **Stay Listings (`stay_listing`)** | **5** |
 | **Government Office Reports (`office_report`)** | **5** |
 | **Active RWA Groups (`rwa_group`)** | **1** |
 | **Local Business Listings (`local_listing`)** | **0** |

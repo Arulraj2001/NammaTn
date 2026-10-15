@@ -149,7 +149,7 @@ export async function generateMetadata({ params }) {
 // Keep deployments fast while retaining on-demand ISR for every valid pair.
 export async function generateStaticParams({ params } = {}) {
   const issues = [
-    'power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay',
+    'power-cut', 'water-issue', 'road-problem', 'scam', 'jobs',
     'education', 'government-schemes', 'general', 'healthcare', 'environment'
   ];
   if (!params?.city || !BUILD_TIME_DISTRICT_SLUGS.includes(params.city)) return [];

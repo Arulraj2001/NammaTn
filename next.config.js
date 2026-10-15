@@ -169,8 +169,9 @@ const nextConfig = {
       { source: '/category/scam',              destination: '/scams',                       permanent: true },
       { source: '/category/scam-alert',        destination: '/scams',                       permanent: true },
       { source: '/category/scams',             destination: '/scams',                       permanent: true },
-      { source: '/category/jobs',              destination: '/jobs',                        permanent: true },
-      { source: '/category/stay',              destination: '/stay',                        permanent: true },
+      { source: '/category/stay',              destination: '/explore',                     permanent: true },
+      { source: '/stay',                       destination: '/explore',                     permanent: true },
+      { source: '/stay/:path*',                destination: '/explore',                     permanent: true },
       { source: '/category/politics',          destination: '/tn-politics',                 permanent: true },
 
       // ── Zombie & Legacy Slug Redirects (Bing Crawl Sanitization) ──

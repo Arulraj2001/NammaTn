@@ -65,8 +65,6 @@ const Help = lazy(() => import('@/pages/Help'));
 const Support = lazy(() => import('@/pages/Support'));
 const AdminPhase8 = lazy(() => import('@/pages/admin/AdminPhase8'));
 const AdminContacts = lazy(() => import('@/pages/admin/AdminContacts'));
-const Stay = lazy(() => import('@/pages/Stay'));
-const AdminStay = lazy(() => import('@/pages/admin/AdminStay'));
 const AdminUsers = lazy(() => import('@/pages/admin/AdminUsers'));
 const AdminCivicReceipts = lazy(() => import('@/pages/admin/AdminCivicReceipts'));
 const AdminAwareness = lazy(() => import('@/views/admin/AdminAwareness'));
@@ -227,7 +225,6 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/scams" element={settings.scam_alerts_enabled !== "false" ? <Scams /> : <PageNotFound />} />
         <Route path="/help" element={settings.emergency_enabled !== "false" ? <Help /> : <PageNotFound />} />
         <Route path="/support" element={<Support />} />
-        <Route path="/stay" element={<Stay />} />
         <Route path="/listings" element={<LocalListings />} />
         <Route path="/leaderboard" element={<CivicLeaderboard />} />
         <Route path="/rwa" element={settings.rwa_enabled !== "false" ? <RWADashboard /> : <PageNotFound />} />
@@ -269,7 +266,6 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="moderation-settings" element={<AdminModerationSettings />} />
         <Route path="phase8" element={<AdminPhase8 />} />
         <Route path="contacts" element={<AdminContacts />} />
-        <Route path="stay" element={<AdminStay />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="civic" element={<AdminCivicReceipts />} />
         <Route path="awareness" element={<AdminAwareness />} />

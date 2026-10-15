@@ -35,7 +35,7 @@ const entityProxy = new Proxy({}, {
             .select()
             .single();
           if (error) {
-            // Fallback for tables that don't allow public SELECT (e.g. contact_message, stay_report)
+            // Fallback for tables that don't allow public SELECT (e.g. contact_message, report)
             if (error.code === '42501' || error.message?.includes('violates row-level security')) {
               const { error: insertError } = await supabase
                 .from(tableName)

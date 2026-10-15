@@ -713,7 +713,6 @@ export default function DistrictDetail({ initialSlug }) {
             { slug: "road-problem", icon: "🛣️", en: "Roads & Potholes", ta: "சாலை & குழிகள்", desc: "Highway & pothole reports" },
             { slug: "scam", icon: "🛡️", en: "Scam Alerts", ta: "மோசடி எச்சரிக்கை", desc: "Cyber fraud & safety" },
             { slug: "jobs", icon: "💼", en: "Jobs & Careers", ta: "வேலைவாய்ப்பு", desc: "Local vacancies & drives" },
-            { slug: "stay", icon: "🏠", en: "Rooms & Stays", ta: "அறைகள் & தங்குமிடம்", desc: "Rental listings & PG stays" },
             { slug: "education", icon: "🎓", en: "Education & Exams", ta: "கல்வி & தேர்வுகள்", desc: "School & college notices" },
             { slug: "government-schemes", icon: "📜", en: "Govt Schemes", ta: "அரசு திட்டங்கள்", desc: "Welfare eligibility & e-Sevai" },
             { slug: "healthcare", icon: "🏥", en: "Healthcare & PHC", ta: "சுகாதாரம் & மருத்துவமனை", desc: "Hospital services & 108" },

@@ -3,7 +3,7 @@ import { Link } from "@/lib/router-compat";
 import { motion } from "framer-motion";
 import {
   FileText, Zap, TrendingUp, Trophy, MessageCircle, HelpCircle, Heart,
-  Briefcase, Home, Building2, AlertTriangle,
+  Briefcase, Building2, AlertTriangle,
   MapPin, Map, Leaf, ShoppingBag, ArrowRight
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -171,22 +171,6 @@ const GROUPS = [
         ctaClass: "bg-blue-600 text-white hover:bg-blue-700",
       },
       {
-        path: "/stay",
-        icon: Home,
-        en: "Stay & Rooms",
-        ta: "தங்குமிடம்",
-        desc_en: "Find or share stay, rooms, PG, hostel, and local accommodation-related updates safely.",
-        desc_ta: "தங்குமிடம், அறைகள், PG, விடுதி தகவல்களை பாதுகாப்பாக கண்டுபிடிக்கவும் அல்லது பகிரவும்.",
-        cta_en: "Find Stay",
-        cta_ta: "தங்குமிடம் கண்டுபிடி",
-        bg: "bg-indigo-50 dark:bg-indigo-900/20",
-        iconBg: "bg-indigo-100 dark:bg-indigo-800",
-        iconColor: "text-indigo-600 dark:text-indigo-400",
-        textColor: "text-slate-900 dark:text-white",
-        descColor: "text-slate-500 dark:text-slate-400",
-        ctaClass: "bg-indigo-600 text-white hover:bg-indigo-700",
-      },
-      {
         path: "/offices",
         icon: Building2,
         en: "Offices",
@@ -320,8 +304,8 @@ export default function FeatureHub() {
         </h2>
         <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl mx-auto leading-relaxed">
           {T(
-            "From Civic Receipts to local help, jobs, stays, offices, scams, RWAs, and CSR dashboards — everything is organized for Tamil Nadu communities.",
-            "குடிமை ரசீதுகள் முதல் உள்ளூர் உதவி, வேலை, தங்குமிடம், அலுவலகங்கள், மோசடி, RWA மற்றும் CSR வரை — தமிழ்நாடு சமுதாயங்களுக்காக அனைத்தும் ஒழுங்கமைக்கப்பட்டுள்ளது."
+            "From Civic Receipts to local help, jobs, civic offices, scams, RWAs, and CSR dashboards — everything is organized for Tamil Nadu communities.",
+            "குடிமை ரசீதுகள் முதல் உள்ளூர் உதவி, வேலைவாய்ப்பு, அரசு அலுவலகங்கள், மோசடி தடுப்பு, RWA மற்றும் CSR வரை — தமிழ்நாடு சமுதாயங்களுக்காக அனைத்தும் ஒழுங்கமைக்கப்பட்டுள்ளது."
           )}
         </p>
       </div>

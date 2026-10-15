@@ -609,15 +609,15 @@ export default function LocalListings({ initialListings = [] }) {
               </Link>
 
               <Link
-                to="/stay"
+                to="/offices"
                 className="flex items-center gap-2.5 p-3.5 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl hover:border-indigo-500 hover:shadow-md transition-all group"
               >
-                <span className="text-xl">🏠</span>
+                <span className="text-xl">🏛️</span>
                 <div>
                   <p className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-indigo-600">
-                    {T("Find Room", "தங்குமிடம்")}
+                    {T("Public Offices", "அரசு அலுவலகங்கள்")}
                   </p>
-                  <p className="text-[10px] text-slate-400">{T("PG & Rentals", "வாடகை அறைகள்")}</p>
+                  <p className="text-[10px] text-slate-400">{T("Taluk & Civic", "வட்டாட்சியர் & அரசு")}</p>
                 </div>
               </Link>
             </div>

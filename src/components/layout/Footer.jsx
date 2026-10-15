@@ -42,7 +42,6 @@ const FOOTER_COLUMNS = [
     ta_title: "உள்ளூர் வாழ்க்கை",
     links: [
       { path: "/jobs",      en: "Jobs",           ta: "வேலை" },
-      { path: "/stay",      en: "Stay & Rooms",   ta: "தங்குமிடம்" },
       { path: "/offices",   en: "Offices",        ta: "அலுவலகங்கள்" },
       { path: "/listings",  en: "Local Listings", ta: "உள்ளூர் பட்டியல்" },
     ],

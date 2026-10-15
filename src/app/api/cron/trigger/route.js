@@ -6,8 +6,7 @@ const WORKFLOW_MAP = {
   politics: 'autonomous-politics-bot.yml',
   digest: 'autonomous-daily-digest.yml',
   watchdog: 'autonomous-watchdog.yml',
-  youtube: 'autonomous-youtube-bot.yml',
-  stay: 'autonomous-stay-bot.yml'
+  youtube: 'autonomous-youtube-bot.yml'
 };
 
 const REPO_OWNER = 'Arulraj2001';

@@ -16,7 +16,7 @@ export function isPubliclyVisible(p) {
   return true;
 }
 
-/** Safety guard for jobs/stay/listings */
+/** Safety guard for jobs/listings */
 export function isSafePublicListing(item) {
   if (!item) return false;
   if (item.status === "removed" || item.status === "rejected" || item.status === "pending") return false;

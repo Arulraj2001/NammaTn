@@ -66,33 +66,6 @@ export async function getActiveJobAlerts(limit = 40) {
   }
 }
 
-export async function getActiveStayListings(limit = 100) {
-  const supabase = createServerSupabase();
-  if (!supabase) return [];
-
-  try {
-    const { data, error } = await supabase
-      .from('stay_listing')
-      .select('*')
-      .eq('status', 'active')
-      .order('created_date', { ascending: false })
-      .limit(limit * 2);
-    if (error) throw error;
-
-    return (data || [])
-      .filter(listing =>
-        listing.safety_status !== 'scam' &&
-        listing.safety_status !== 'rejected' &&
-        (listing.report_count || 0) < 5 &&
-        listing.is_publicly_visible !== false,
-      )
-      .slice(0, limit);
-  } catch (error) {
-    console.warn('[stay] Server listing fetch failed:', error.message);
-    return [];
-  }
-}
-
 export async function getActiveAreas(limit = 100) {
   const supabase = createServerSupabase();
   if (!supabase) return [];

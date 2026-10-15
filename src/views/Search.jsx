@@ -4,12 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Search as SearchIcon, X, Clock, MapPin, ArrowRight,
   FileText, SlidersHorizontal, AlertTriangle, Briefcase,
-  Home as HomeIcon, Building2, Users, RefreshCw, Tag
+  Building2, Users, RefreshCw, Tag
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  searchPosts, searchScams, searchJobs, searchStay, searchListings,
+  searchPosts, searchScams, searchJobs, searchListings,
   getSearchSuggestions, addRecentSearch, getRecentSearches, clearRecentSearches
 } from "@/services/search";
 import PostCard from "@/components/posts/PostCard";
@@ -25,7 +25,6 @@ const CONTENT_TYPES = [
   { value: "posts", en: "Civic & Utility Alerts", ta: "குடிமை & சேவை அறிவிப்புகள்" },
   { value: "scam", en: "Scam Alerts", ta: "மோசடி" },
   { value: "job", en: "Jobs", ta: "வேலைகள்" },
-  { value: "stay", en: "Stay", ta: "தங்குமிடம்" },
   { value: "listing", en: "Listings", ta: "பட்டியல்" },
 ];
 
@@ -64,7 +63,7 @@ export default function Search() {
 
   usePageMeta({
     title: "Search | VizhiTN",
-    description: "Search Civic Receipts, issues, scams, jobs, stay listings, and community posts across Tamil Nadu.",
+    description: "Search Civic Receipts, issues, scams, jobs, and community posts across Tamil Nadu.",
   });
 
   const [query, setQuery] = useState(searchParams.get("q") || "");
@@ -100,7 +99,7 @@ export default function Search() {
   // Determine post_type to pass based on contentType
   const postTypeFilter = contentType === "civic" ? "complaint" : (contentType === "posts" ? "all" : "all");
   const civicStatusFilter = contentType === "civic" ? (civicStatus === "all" ? "civic_only" : civicStatus) : civicStatus;
-  const skipPostSearch = ["scam", "job", "stay", "listing"].includes(contentType);
+  const skipPostSearch = ["scam", "job", "listing"].includes(contentType);
 
   const { data: postData, isLoading: postsLoading } = useQuery({
     queryKey: ["search-posts", debouncedQuery, postTypeFilter, districtFilter, categoryFilter, civicStatusFilter, sort],
@@ -126,13 +125,6 @@ export default function Search() {
     staleTime: 60_000,
   });
 
-  const { data: stay = [], isLoading: stayLoading } = useQuery({
-    queryKey: ["search-stay", debouncedQuery],
-    queryFn: () => searchStay(debouncedQuery),
-    enabled: (showOtherTypes || contentType === "stay") && debouncedQuery.trim().length >= 2,
-    staleTime: 60_000,
-  });
-
   const { data: listings = [], isLoading: listingsLoading } = useQuery({
     queryKey: ["search-listings", debouncedQuery],
     queryFn: () => searchListings(debouncedQuery),
@@ -143,17 +135,16 @@ export default function Search() {
   const civicMatch = postData?.civicMatch || null;
   const postResults = postData?.results || [];
   const suggestions = getSearchSuggestions(query);
-  const isLoading = postsLoading || scamsLoading || jobsLoading || stayLoading || listingsLoading;
+  const isLoading = postsLoading || scamsLoading || jobsLoading || listingsLoading;
   const activeFilterCount = [contentType !== "all", districtFilter !== "all", categoryFilter !== "all", civicStatus !== "all"].filter(Boolean).length;
 
   const showScams = (contentType === "all" || contentType === "scam") && scams.length > 0;
   const showJobs = (contentType === "all" || contentType === "job") && jobs.length > 0;
-  const showStay = (contentType === "all" || contentType === "stay") && stay.length > 0;
   const showListings = (contentType === "all" || contentType === "listing") && listings.length > 0;
 
   const totalCount = postResults.length +
     (showScams ? scams.length : 0) + (showJobs ? jobs.length : 0) +
-    (showStay ? stay.length : 0) + (showListings ? listings.length : 0);
+    (showListings ? listings.length : 0);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24 sm:pb-8">
@@ -315,7 +306,6 @@ export default function Search() {
               <SearchResultsSections
                 scams={showScams ? scams : []}
                 jobs={showJobs ? jobs : []}
-                stay={showStay ? stay : []}
                 listings={showListings ? listings : []}
                 T={T}
               />

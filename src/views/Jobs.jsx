@@ -428,11 +428,11 @@ export default function Jobs({ initialJobs = [] }) {
         <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
           <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Explore Related Sections</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Link to="/stay" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-emerald-500 hover:shadow-md transition-all group">
-              <span className="text-2xl">🏠</span>
+            <Link to="/offices" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-emerald-500 hover:shadow-md transition-all group">
+              <span className="text-2xl">🏛️</span>
               <div>
-                <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400">{T("Find a Room / PG Stay", "அறை / தங்குமிடம் தேடுங்கள்")}</p>
-                <p className="text-xs text-slate-500">{T("Explore PG stays, shared rooms & hostels", "PG, பகிர்ந்த அறைகள் மற்றும் விடுதிகள்")}</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400">{T("Public Offices Directory", "அரசு அலுவலகங்கள்")}</p>
+                <p className="text-xs text-slate-500">{T("Find taluk, employment & government offices", "வட்டாட்சியர், வேலைவாய்ப்பு & அரசு அலுவலகங்கள்")}</p>
               </div>
             </Link>
             <Link to="/listings" className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-[#044732] hover:shadow-md transition-all group">

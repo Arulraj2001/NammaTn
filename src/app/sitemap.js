@@ -33,7 +33,7 @@ export default async function sitemap() {
   //     pages (they render H1/intro/FAQs even with 0 reports), so enumerate the
   //     full matrix instead of only the pairs that currently have DB reports.
   const ISSUE_SLUGS = [
-    'power-cut', 'water-issue', 'road-problem', 'scam', 'jobs', 'stay',
+    'power-cut', 'water-issue', 'road-problem', 'scam', 'jobs',
     'education', 'government-schemes', 'general', 'healthcare', 'environment',
   ];
 
@@ -386,7 +386,7 @@ export default async function sitemap() {
     '/districts', '/areas', '/awareness', '/awareness/articles',
     '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',
     '/scams',
-    '/jobs', '/stay', '/offices', '/bribes', '/trending', '/tn-today',
+    '/jobs', '/offices', '/bribes', '/trending', '/tn-today',
     '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
     '/support', '/rwa', '/csr',
     '/about', '/press', '/contact', '/privacy-policy', '/terms', '/how-to-use',

@@ -338,7 +338,7 @@ export async function renderEditorialCard(cardData = {}) {
   fs.writeFileSync(tempHtmlPath, htmlContent, 'utf-8');
 
   // Render via headless Chrome for flawless HarfBuzz text shaping
-  const cmd = `"${browserPath}" --headless --disable-gpu --window-size=1080,1080 --screenshot="${tempRawPngPath}" "file:///${tempHtmlPath.replace(/\\/g, '/')}"`;
+  const cmd = `"${browserPath}" --headless=new --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --window-size=1080,1080 --screenshot="${tempRawPngPath}" "file:///${tempHtmlPath.replace(/\\/g, '/')}"`;
   execSync(cmd, { stdio: 'ignore' });
 
   // Compress through sharp to WebP (quality 82, ~78 KB) to protect Supabase free tier

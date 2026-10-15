@@ -8,7 +8,6 @@
         "post",
         "comment",
         "chat_message",
-        "stay_listing",
         "local_listing",
         "job_alert",
         "scam_alert"
