@@ -16,10 +16,8 @@
         "esevai",
         "tuition",
         "clinic",
-        "hostel_pg",
         "repair",
         "job_provider",
-        "rental_stay",
         "other"
       ],
       "default": "other"
