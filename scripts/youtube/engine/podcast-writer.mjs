@@ -13,10 +13,10 @@ try {
 } catch (_) {}
 
 const CANDIDATE_MODELS = [
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
   'gemini-3.8-flash',
   'gemini-3.7-flash',
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
   'gemini-flash-latest'
 ];
 
@@ -140,8 +140,9 @@ Return ONLY valid JSON matching this exact structure:
 
       return scriptJson;
     } catch (err) {
-      console.warn(`[PODCAST SCRIPT WARN] ${modelName} failed: ${err.message}. Trying next model...`);
+      console.warn(`[PODCAST SCRIPT WARN] ${modelName} failed: ${err.message}. Waiting 2.5s and trying next model...`);
       lastError = err;
+      await new Promise(r => setTimeout(r, 2500));
     }
   }
 
