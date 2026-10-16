@@ -193,11 +193,13 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
         '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100',
         '-t', '0.35',
         '-vf', 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p',
+        '-r', '30',
         '-c:v', 'libx264',
         '-preset', 'fast',
         '-crf', '20',
         '-c:a', 'aac',
         '-b:a', '192k',
+        '-ar', '44100',
         '-shortest',
         thumbClipPath
       ];
@@ -253,11 +255,13 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
           '-map', '[vout]',
           '-map', '2:a',
           '-t', sc.durationSec.toString(),
+          '-r', '30',
           '-c:v', 'libx264',
           '-preset', 'fast',
           '-crf', '20',
           '-c:a', 'aac',
           '-b:a', '192k',
+          '-ar', '44100',
           clipPath
         ];
       } else {
@@ -285,11 +289,13 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
           '-i', sc.imagePath,
           '-i', finalAudioPath,
           '-vf', `${vfFilter}${fadeFilter}${subFilter}`,
+          '-r', '30',
           '-c:v', 'libx264',
           '-preset', 'fast',
           '-crf', '20',
           '-c:a', 'aac',
           '-b:a', '192k',
+          '-ar', '44100',
           '-shortest',
           clipPath
         ];
@@ -300,12 +306,12 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       console.log(`[COMPOSER] Scene ${idx + 1}/${scenes.length} rendered (${hasBgVideo ? 'Video B-Roll' : 'Ken Burns Motion'}): ${(sc.durationSec).toFixed(1)}s`);
     }
 
-    // Concatenate all scene clips into final Short
+    // Concatenate all scene clips into final Short with unified audio/video re-encode to prevent stutter & lag
     const concatListPath = path.join(outDir, `_temp_short_concat_${sessionId}.txt`);
     const fileEntries = tempClips.map(c => `file '${c.replace(/\\/g, '/')}'`).join('\n');
     fs.writeFileSync(concatListPath, fileEntries, 'utf-8');
 
-    const concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c copy "${outputPath}"`;
+    const concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
     execSync(concatCmd, { stdio: 'pipe', timeout: 120000 });
 
     try { fs.unlinkSync(concatListPath); } catch {}
