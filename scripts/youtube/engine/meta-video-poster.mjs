@@ -7,12 +7,14 @@ import path from 'path';
 import { uploadCardToStorage } from '../../lib/supabase-storage.mjs';
 
 const GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
+const GRAPH_VIDEO_API_BASE = 'https://graph-video.facebook.com/v21.0';
 
 /**
  * Cross-posts a rendered MP4 video to Facebook Page & Instagram Reels
  *
  * @param {Object} params
  * @param {string} params.videoFilePath - Absolute or relative path to MP4
+ * @param {string} [params.thumbnailFilePath=null] - Absolute or relative path to 9:16 or 16:9 Thumbnail Cover
  * @param {string} params.title - Video Title
  * @param {string} params.caption - Rich social caption with hooks and hashtags
  * @param {boolean} [params.isReel=true] - True for 9:16 Shorts/Reels, False for 16:9 Long videos
@@ -21,6 +23,7 @@ const GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
  */
 export async function crossPostVideoToMetaSocials({
   videoFilePath,
+  thumbnailFilePath = null,
   title,
   caption,
   isReel = true,
@@ -64,14 +67,31 @@ export async function crossPostVideoToMetaSocials({
   console.log(`[META] Uploading ${fileSizeMb} MB to Supabase CDN for Meta ingestion...`);
   const publicVideoUrl = await uploadCardToStorage(videoBuffer, videoFileName, 'video/mp4');
 
+  // Optional: Upload High-CTR Thumbnail Cover for Instagram Reel & Facebook Poster
+  let publicCoverUrl = null;
+  if (thumbnailFilePath && fs.existsSync(thumbnailFilePath)) {
+    try {
+      const thumbBuffer = fs.readFileSync(thumbnailFilePath);
+      const thumbExt = path.extname(thumbnailFilePath).toLowerCase() || '.jpg';
+      const contentType = thumbExt === '.png' ? 'image/png' : 'image/jpeg';
+      const thumbFileName = `thumbnails/${path.basename(thumbnailFilePath)}`;
+      console.log(`[META] Uploading thumbnail cover to Supabase CDN...`);
+      publicCoverUrl = await uploadCardToStorage(thumbBuffer, thumbFileName, contentType);
+      console.log(`[META] Cover URL ready: ${publicCoverUrl}`);
+    } catch (thumbErr) {
+      console.warn(`[META THUMB WARN] Failed to upload cover image: ${thumbErr.message}`);
+    }
+  }
+
   const results = {
     videoUrl: publicVideoUrl,
+    coverUrl: publicCoverUrl,
     facebook: null,
     instagram: null,
     errors: []
   };
 
-  // 2. Publish to Facebook Page Video
+  // 2. Publish to Facebook Page Video (Uses graph-video.facebook.com endpoint)
   try {
     console.log(`[META] Publishing to Facebook Page (${pageId})...`);
     // Retrieve page-specific access token if available
@@ -84,15 +104,20 @@ export async function crossPostVideoToMetaSocials({
       }
     } catch (_) {}
 
-    const fbRes = await fetch(`${GRAPH_API_BASE}/${pageId}/videos`, {
+    const fbPayload = {
+      file_url: publicVideoUrl,
+      title: title,
+      description: caption,
+      access_token: activePageToken
+    };
+    if (publicCoverUrl) {
+      fbPayload.thumb_url = publicCoverUrl;
+    }
+
+    const fbRes = await fetch(`${GRAPH_VIDEO_API_BASE}/${pageId}/videos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        file_url: publicVideoUrl,
-        title: title,
-        description: caption,
-        access_token: activePageToken
-      })
+      body: JSON.stringify(fbPayload)
     });
 
     const fbData = await fbRes.json();
@@ -112,16 +137,21 @@ export async function crossPostVideoToMetaSocials({
   if (isReel && instaId) {
     try {
       console.log(`[META] Step 1: Creating Instagram Reel Container for account ${instaId}...`);
+      const reelPayload = {
+        media_type: 'REELS',
+        video_url: publicVideoUrl,
+        caption: caption,
+        share_to_feed: true,
+        access_token: pageToken
+      };
+      if (publicCoverUrl) {
+        reelPayload.cover_url = publicCoverUrl;
+      }
+
       const containerRes = await fetch(`${GRAPH_API_BASE}/${instaId}/media`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          media_type: 'REELS',
-          video_url: publicVideoUrl,
-          caption: caption,
-          share_to_feed: true,
-          access_token: pageToken
-        })
+        body: JSON.stringify(reelPayload)
       });
 
       const containerData = await containerRes.json();

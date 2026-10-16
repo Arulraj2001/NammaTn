@@ -244,6 +244,7 @@ async function main() {
   // 11. Cross-Post to Meta Socials (Instagram Reels & Facebook Videos)
   await crossPostVideoToMetaSocials({
     videoFilePath: videoOutputPath,
+    thumbnailFilePath: thumbPath,
     title: ytTitle,
     caption: socialCaption,
     isReel: true,

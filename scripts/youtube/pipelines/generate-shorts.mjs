@@ -319,6 +319,7 @@ async function main() {
 
   await crossPostVideoToMetaSocials({
     videoFilePath: videoOutputPath,
+    thumbnailFilePath: thumbnailPath,
     title,
     caption: facebookCaption,
     isReel: true,

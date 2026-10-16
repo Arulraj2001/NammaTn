@@ -255,6 +255,7 @@ async function main() {
   // 8. Cross-Post to Meta Socials (Facebook Page Video)
   await crossPostVideoToMetaSocials({
     videoFilePath: videoOutputPath,
+    thumbnailFilePath: thumbnailPath,
     title: ytTitle,
     caption: ytDesc,
     isReel: false,
