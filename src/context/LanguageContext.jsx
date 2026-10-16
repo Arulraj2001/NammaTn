@@ -9,6 +9,14 @@ export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState("en");
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get("lang");
+      if (urlLang === "ta" || urlLang === "en") {
+        setLangState(urlLang);
+        return;
+      }
+    }
     setLangState(getStoredLanguage());
   }, []);
 

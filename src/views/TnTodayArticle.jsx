@@ -157,7 +157,12 @@ function ShareRow({ url, title }) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-  const waText = encodeURIComponent(`${title}\n${url}`);
+  const waText = encodeURIComponent(
+    `🚨 *${title}*\n\n` +
+    `📌 முழு செய்தி & அதிகாரப்பூர்வ விவரம்:\n${url}\n\n` +
+    `📲 தமிழ்நாடு முக்கிய செய்திகளுக்கு விழிடிஎன் (VizhiTN) வாட்ஸ்அப் சேனலில் இணையுங்கள்:\n` +
+    `https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228`
+  );
   const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
 
@@ -359,9 +364,16 @@ function ArticleSkeleton() {
 // Text descriptions (stored from JSON import) are safely ignored.
 const isImageUrl = (v) => typeof v === "string" && /^https?:\/\/|^blob:|^data:image\//i.test(v.trim());
 
-export default function TnTodayArticle({ initialArticle = null, initialRelatedArticles = [] }) {
+export default function TnTodayArticle({ initialArticle = null, initialRelatedArticles = [], initialLang = null }) {
   const { slug } = useParams();
-  const { lang } = useLanguage();
+  const { lang, setLang } = useLanguage();
+
+  React.useEffect(() => {
+    if (initialLang === "ta" && lang !== "ta") {
+      setLang("ta");
+    }
+  }, [initialLang, lang, setLang]);
+
   const T = (en, ta) => lang === "ta" ? ta : en;
   const [autoTa, setAutoTa] = React.useState(null);
   const [heroIncident, setHeroIncident] = React.useState(null);
@@ -468,8 +480,8 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
   const pubDate = article.publish_date ? new Date(article.publish_date) : new Date(article.created_date);
   const pageUrl = getTnTodayCanonical(article.slug);
 
-  const keyFacts = parseKeyFacts(article.key_facts);
-  const timelineEvents = parseTimelineLines(article.timeline);
+  const keyFacts = parseKeyFacts((lang === "ta" && article.key_facts_ta) ? article.key_facts_ta : article.key_facts);
+  const timelineEvents = parseTimelineLines((lang === "ta" && article.timeline_ta) ? article.timeline_ta : article.timeline);
   const officialSources = parsePipeLines(article.official_sources);
   const relatedLinks = parsePipeLines(article.related_civic_links);
   const heroProvenance = mediaProvenanceLabel(heroImg, lang === "ta" ? "ta" : "en");
@@ -679,7 +691,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
               <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3 flex items-center gap-2">
                 <Share2 className="w-4 h-4 text-slate-500" /> Share this story
               </h3>
-              <ShareRow url={pageUrl} title={article.title} />
+              <ShareRow url={pageUrl} title={displayTitle || article.title} />
             </div>
 
             {/* SEO Authority Internal Links Block */}

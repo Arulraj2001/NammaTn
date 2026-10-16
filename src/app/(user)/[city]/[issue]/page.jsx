@@ -104,14 +104,46 @@ export async function generateMetadata({ params }) {
     notFound();
   }
 
-  const title           = `${cityData.name} ${issueData.name} Reports & Updates`;
-  const socialTitle     = `${title} | VizhiTN`;
-  const description     = getCityIssueMetaDescription(cityData.name, issueData.name);
+  // Dynamic high-intent search query titles
+  let title = `${cityData.name} ${issueData.name} Reports & Updates`;
+  let description = getCityIssueMetaDescription(cityData.name, issueData.name);
+  let keywords = `${cityData.name} ${issueData.name}, ${cityData.name} civic news, vizhitn`;
+
+  if (issue === 'power-cut') {
+    title = `${cityData.name} Power Cut Today: Scheduled EB Shutdown Timings & Streets`;
+    description = `Scheduled TANGEDCO power cut timings, affected areas, and 1912 Minnalagam helpline in ${cityData.name}, Tamil Nadu. Live citizen verified alerts.`;
+    keywords = `${cityData.name} power cut today, ${cityData.name} eb shutdown timings, tangedco ${cityData.name}, ${cityData.name} minthadai`;
+  } else if (issue === 'water-issue') {
+    title = `${cityData.name} Water Supply Alerts: Pipeline Leaks, Tanker Helplines & Updates`;
+    description = `Official drinking water supply schedules, TWAD / Municipal corporation tanker booking helplines and resident reports in ${cityData.name}, Tamil Nadu.`;
+    keywords = `${cityData.name} water supply problem, ${cityData.name} tanker helpline, ${cityData.name} drinking water`;
+  } else if (issue === 'road-problem') {
+    title = `${cityData.name} Road Conditions: Potholes, Traffic Diversions & Repairs`;
+    description = `Real-time road maintenance updates, traffic diversions and municipal grievance status across ${cityData.name}, Tamil Nadu.`;
+    keywords = `${cityData.name} road problem, ${cityData.name} traffic diversion, ${cityData.name} pothole complaint`;
+  } else if (issue === 'scam') {
+    title = `${cityData.name} Cyber Scam Alerts & National Helpline 1930 Warnings`;
+    description = `Urgent fake EB bill SMS, part-time job and online fraud alerts verified for ${cityData.name} residents with 1930 cyber crime filing steps.`;
+    keywords = `${cityData.name} cyber crime, fake eb bill sms, cyber helpline 1930`;
+  } else if (issue === 'government-schemes') {
+    title = `${cityData.name} Government Schemes: e-Sevai, Ration Card & Patta Camps`;
+    description = `Upcoming Taluk office camps, Smart Ration Card corrections, Patta transfers and welfare scheme application guides in ${cityData.name}.`;
+    keywords = `${cityData.name} esevai camps, ration card camp ${cityData.name}, patta chitta`;
+  } else if (issue === 'education') {
+    title = `${cityData.name} School & College Holiday Alerts: Rain Order & Collector Notices`;
+    description = `Official Collectorate announcements on heavy rain holidays, exam schedule changes and educational updates for ${cityData.name}.`;
+    keywords = `${cityData.name} school holiday today, collector order ${cityData.name}, heavy rain leave`;
+  } else if (issue === 'healthcare') {
+    title = `${cityData.name} Healthcare & Hospital Updates: GH, PHC & Emergency Helplines`;
+    description = `Government Hospital (GH), Primary Health Centre facilities, free medical camps and emergency helplines in ${cityData.name}.`;
+  }
+
+  const socialTitle = `${title} | VizhiTN`;
   const canonicalUrl = `${SITE_URL}/${city}/${issue}`;
   const { reports, dataAvailable } = await fetchCityIssueData(city, issue);
   const robots = getCityIssueRobots({ dataAvailable, reportCount: reports.length });
   const ogUrl = new URL(`${SITE_URL}/api/og`);
-  ogUrl.searchParams.set('title', `${cityData.name} ${issueData.name} Updates`);
+  ogUrl.searchParams.set('title', `${cityData.name} ${issueData.name} Live Updates`);
   ogUrl.searchParams.set('district', city);
   ogUrl.searchParams.set('category', issue);
   ogUrl.searchParams.set('urgency', 'medium');
@@ -120,6 +152,7 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
+    keywords,
     alternates: {
       canonical: canonicalUrl,
       languages: {
@@ -310,40 +343,36 @@ export default async function Page({ params }) {
               VizhiTN Civic Alert
             </span>
 
-          {/* Tier + action + system-mode badge */}
-            <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
-                ${normalizedTier === 'elite' ? 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300' :
-                  normalizedTier === 'top'   ? 'bg-green-100  text-green-700  dark:bg-green-950  dark:text-green-300'  :
-                  normalizedTier === 'mid'   ? 'bg-blue-100   text-blue-700   dark:bg-blue-950   dark:text-blue-300'   :
-                                              'bg-slate-100  text-slate-500  dark:bg-slate-800  dark:text-slate-400'}`}
-              >
-                {normalizedTier}
+          {/* Citizen trust badges */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                📍 {cityData.name} District
               </span>
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
-                ${action === 'BOOST'    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
-                  action === 'SUPPRESS' ? 'bg-red-100     text-red-700     dark:bg-red-950     dark:text-red-300'     :
-                                          'bg-slate-100   text-slate-500   dark:bg-slate-800   dark:text-slate-400'}`}
-              >
-                {action}
+              <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                ✓ Verified Helplines
               </span>
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
-                ${systemMode === 'BOOST'     ? 'bg-cyan-100    text-cyan-700    dark:bg-cyan-950    dark:text-cyan-300'    :
-                  systemMode === 'RECOVER'   ? 'bg-orange-100  text-orange-700  dark:bg-orange-950  dark:text-orange-300'  :
-                  systemMode === 'STABILIZE' ? 'bg-teal-100    text-teal-700    dark:bg-teal-950    dark:text-teal-300'    :
-                                              'bg-slate-100   text-slate-500   dark:bg-slate-800   dark:text-slate-400'}`}
-              >
-                {systemMode}
+              <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                {finalReports.length} Active Notice{finalReports.length !== 1 ? 's' : ''}
               </span>
             </div>
           </div>
 
-          <h1 className="text-3xl font-extrabold tracking-tight mt-1 sm:text-4xl">
-            {cityData.name} {issueData.name} Reports & Updates
+          <h1 className="text-2xl font-black tracking-tight mt-3 sm:text-3xl lg:text-4xl text-slate-900 dark:text-white">
+            {issue === 'power-cut' ? `${cityData.name} Power Cut Today: EB Shutdown Timings & Street Status` :
+             issue === 'water-issue' ? `${cityData.name} Drinking Water Supply Alerts & Tanker Helplines` :
+             issue === 'road-problem' ? `${cityData.name} Road Conditions, Potholes & Route Diversions` :
+             issue === 'scam' ? `${cityData.name} Cyber Scam Alerts & 1930 Helpline Warnings` :
+             `${cityData.name} ${issueData.name} Reports & Live Updates`}
           </h1>
-          <p className="text-sm text-slate-500 mt-2">
+          <p className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1.5">
+            {issue === 'power-cut' ? `${cityData.name} இன்று மின்தடை: TANGEDCO பராமரிப்பு பணிகள் மற்றும் மின் தடை பகுதிகள்` :
+             issue === 'water-issue' ? `${cityData.name} குடிநீர் விநியோகம், குழாய் உடைப்பு மற்றும் டேங்கர் லாரி உதவி எண்கள்` :
+             issue === 'road-problem' ? `${cityData.name} சாலை பழுது, மழைநீர் தேக்கம் மற்றும் போக்குவரத்து மாற்று வழிகள்` :
+             `${cityData.name} மாவட்ட குடிமை தகவல்கள் மற்றும் அதிகாரப்பூர்வ உதவி எண்கள்`}
+          </p>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             {finalReports.length > 0
-              ? `${finalReports.length} active report${finalReports.length !== 1 ? 's' : ''}${latestDateLabel ? ` — latest submitted ${latestDateLabel}` : ' from community submissions'}`
+              ? `${finalReports.length} verified report${finalReports.length !== 1 ? 's' : ''}${latestDateLabel ? ` — latest submitted ${latestDateLabel}` : ' from community submissions'}`
               : 'No active reports at this time'}
           </p>
 
@@ -385,6 +414,31 @@ export default async function Page({ params }) {
         <section aria-label="File Civic Grievance" className="space-y-4">
           <InlineCivicReportCard district={cityData} category={issueData} />
           <VerifiedHelplineBar categorySlug={issue} />
+
+          {/* ── WhatsApp Channel District Alerts Card ── */}
+          <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-2xl p-4 sm:p-5 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-emerald-200">
+                <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+                <span>உடனடி மாவட்ட தகவல்கள் • WhatsApp Channel</span>
+              </div>
+              <h3 className="text-base sm:text-lg font-black tracking-tight text-white">
+                Get {cityData.name} Power Cut & Rain Holiday Alerts on WhatsApp
+              </h3>
+              <p className="text-xs text-emerald-100 max-w-lg leading-relaxed">
+                Join 15,000+ Tamil Nadu residents getting daily TANGEDCO shutdown notices, collector rain orders and civic alerts directly on WhatsApp.
+              </p>
+            </div>
+            <a
+              href="https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-800 text-xs font-black shadow-md transition-all active:scale-95 whitespace-nowrap w-full sm:w-auto flex-shrink-0"
+            >
+              <span>வாட்ஸ்அப் சேனலில் இணைய</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </section>
 
         {/* ── Locality Sub-Directory Pills (Neighborhood Internal Linking Web) ── */}
