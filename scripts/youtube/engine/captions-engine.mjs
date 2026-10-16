@@ -119,12 +119,12 @@ export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:1
   const playResX = isShort ? 1080 : 1920;
   const playResY = isShort ? 1920 : 1080;
 
-  // Shorts: Large display font (48px) centered at Y=58% (MarginV: 760)
+  // Shorts: Large display font (50px) placed at lower-third safe zone (MarginV: 240)
   // Long-Form: 35px at lower-third (MarginV: 135)
-  const fontSize = isShort ? 48 : 35;
-  const marginV  = isShort ? 760 : 135;
-  const outlineWidth = isShort ? 5.0 : 3.5;
-  const shadowDepth = isShort ? 3.0 : 2.0;
+  const fontSize = isShort ? 50 : 35;
+  const marginV  = isShort ? 240 : 135;
+  const outlineWidth = isShort ? 5.5 : 3.5;
+  const shadowDepth = isShort ? 4.0 : 2.0;
 
   let dialogEvents = '';
   segments.forEach(seg => {
@@ -137,13 +137,13 @@ export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:1
     const words = cleanText.split(/\s+/).filter(Boolean);
     let styledText = '';
 
-    // Active word in Vibrant Golden Yellow (&H0015CCFA& BGR), remaining words in crisp Pure White (&H00FFFFFF&)
+    // Active word in Vibrant Neon Yellow (&H0000E6FF& BGR), remaining words in crisp Pure White (&H00FFFFFF&)
     if (words.length > 1) {
       const firstWord = words[0];
       const rest = words.slice(1).join(' ');
-      styledText = `{\\c&H0015CCFA&}${firstWord} {\\c&H00FFFFFF&}${rest}`;
+      styledText = `{\\c&H0000E6FF&}${firstWord} {\\c&H00FFFFFF&}${rest}`;
     } else {
-      styledText = `{\\c&H0015CCFA&}${cleanText}`;
+      styledText = `{\\c&H0000E6FF&}${cleanText}`;
     }
 
     dialogEvents += `Dialogue: 0,${startStr},${endStr},Default,,0,0,0,,${styledText}\n`;

@@ -11,7 +11,7 @@
       width: 1080px;
       height: 1920px;
       overflow: hidden;
-      background: #071224;
+      background: linear-gradient(180deg, rgba(7, 18, 36, 0.85) 0%, rgba(7, 18, 36, 0.4) 30%, rgba(7, 18, 36, 0.45) 70%, rgba(7, 18, 36, 0.94) 100%);
       font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
       position: relative;
       color: #ffffff;
@@ -89,14 +89,16 @@
       gap: 24px;
     }
     .hl-card {
-      background: rgba(15, 23, 42, 0.95);
-      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.84);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 2px solid rgba(255, 255, 255, 0.16);
       border-radius: 24px;
       padding: 30px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
     }
     .hl-left {
       display: flex;
@@ -128,25 +130,45 @@
       box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
     }
 
-    .cta-container {
-      background: linear-gradient(135deg, #1e3a8a, #0f172a);
-      border: 2px solid #38bdf8;
-      border-radius: 28px;
-      padding: 36px 40px;
-      text-align: center;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    .bottom-anchor {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 110px;
+      background: rgba(7,18,36,0.95);
+      border-top: 2px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      gap: 16px;
+      z-index: 30;
     }
-    .cta-url {
-      font-size: 44px;
+    .anchor-site {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .anchor-url {
+      font-size: 32px;
       font-weight: 900;
       color: #38bdf8;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+      letter-spacing: 0.5px;
     }
-    .cta-sub {
-      font-size: 24px;
-      font-weight: 800;
-      color: #ffffff;
+    .anchor-tagline {
+      font-size: 20px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .anchor-action-btn {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 900;
+      padding: 14px 28px;
+      border-radius: 14px;
+      text-align: center;
+      white-space: nowrap;
+      box-shadow: 0 6px 20px rgba(37,99,235,0.4);
     }
   </style>
 </head>
@@ -191,10 +213,13 @@
     </div>
   </div>
 
-  <div class="cta-container">
-    <div class="cta-url">🌐 vizhitn.in</div>
-    <div class="cta-sub">உங்க ஏரியால பிரச்சனையை நீங்களே பதிவு பண்ணுங்க</div>
-    <div style="font-size:20px;font-weight:700;color:#94a3b8;margin-top:10px;">உங்க ஒரு post 1000 பேரை protect பண்ணும் 🔴</div>
+  <!-- Sleek Bottom Anchor Bar -->
+  <div class="bottom-anchor">
+    <div class="anchor-site">
+      <div class="anchor-url">🌐 vizhitn.in</div>
+      <div class="anchor-tagline">உங்க பிரச்சனையை நீங்களே பதிவு பண்ணுங்க</div>
+    </div>
+    <div class="anchor-action-btn">புகார் பதிவு ➔</div>
   </div>
 </body>
 </html>

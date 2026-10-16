@@ -170,8 +170,9 @@ export function mixAudioWithSoundDesign(voicePath, outputPath, options = {}) {
  * @param {Object} options
  * @param {Array<{ imagePath: string, audioPath: string, durationSec: number, hasMotion?: boolean, isLastScene?: boolean }>} options.scenes
  * @param {string} options.outputPath
+ * @param {string} [options.thumbnailPath] - Optional thumbnail image to prepend as Frame 0:00 (0.35s)
  */
-export function assembleMultiSceneShortsVideo({ scenes, outputPath }) {
+export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPath }) {
   const ffmpeg = getFfmpegBinaryPath();
   const outDir = path.dirname(outputPath);
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
@@ -181,6 +182,37 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath }) {
   const sessionId = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
   try {
+    // If high-CTR thumbnail provided, prepend as Frame 0:00 (0.35s) so YouTube Shorts feeds catch it
+    if (thumbnailPath && fs.existsSync(thumbnailPath)) {
+      const thumbClipPath = path.join(outDir, `_temp_short_thumb_${sessionId}.mp4`);
+      const thumbArgs = [
+        '-y',
+        '-loop', '1',
+        '-i', thumbnailPath,
+        '-f', 'lavfi',
+        '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100',
+        '-t', '0.35',
+        '-vf', 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p',
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-crf', '20',
+        '-c:a', 'aac',
+        '-b:a', '192k',
+        '-shortest',
+        thumbClipPath
+      ];
+      try {
+        const thumbCmd = `"${ffmpeg}" ${thumbArgs.map(a => `"${a}"`).join(' ')}`;
+        execSync(thumbCmd, { stdio: 'pipe', timeout: 30000 });
+        if (fs.existsSync(thumbClipPath)) {
+          tempClips.push(thumbClipPath);
+          console.log('[COMPOSER] High-CTR viral thumbnail prepended as Frame 0:00 (0.35s)');
+        }
+      } catch (thumbErr) {
+        console.warn('[COMPOSER WARN] Could not prepend thumbnail clip:', thumbErr.message);
+      }
+    }
+
     for (let idx = 0; idx < scenes.length; idx++) {
       const sc = scenes[idx];
       const isLastScene = idx === scenes.length - 1;

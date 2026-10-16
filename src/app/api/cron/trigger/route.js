@@ -6,7 +6,11 @@ const WORKFLOW_MAP = {
   politics: 'autonomous-politics-bot.yml',
   digest: 'autonomous-daily-digest.yml',
   watchdog: 'autonomous-watchdog.yml',
-  youtube: 'autonomous-youtube-bot.yml'
+  youtube: 'autonomous-youtube-bot.yml',
+  'youtube-long': 'autonomous-youtube-bot.yml',
+  'youtube-podcast': 'autonomous-youtube-bot.yml',
+  'youtube-rights': 'autonomous-youtube-bot.yml',
+  'youtube-shorts': 'autonomous-youtube-bot.yml'
 };
 
 const REPO_OWNER = 'Arulraj2001';
@@ -64,8 +68,19 @@ async function handleTrigger(request) {
     });
   }
 
+  const explicitPipeline = searchParams.get('pipeline') ||
+    (botKey === 'youtube-long' ? 'long-form' :
+     botKey === 'youtube-podcast' ? 'podcast' :
+     botKey === 'youtube-rights' ? 'rights-shorts' :
+     botKey === 'youtube-shorts' ? 'civic-shorts' : null);
+
   try {
     const dispatchUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowFile}/dispatches`;
+    const dispatchPayload = { ref: 'main' };
+    if (explicitPipeline && workflowFile === 'autonomous-youtube-bot.yml') {
+      dispatchPayload.inputs = { pipeline_type: explicitPipeline };
+    }
+
     const ghRes = await fetch(dispatchUrl, {
       method: 'POST',
       headers: {
@@ -74,7 +89,7 @@ async function handleTrigger(request) {
         'Content-Type': 'application/json',
         'User-Agent': 'VizhiTN-CronTrigger/1.0'
       },
-      body: JSON.stringify({ ref: 'main' })
+      body: JSON.stringify(dispatchPayload)
     });
 
     if (!ghRes.ok) {

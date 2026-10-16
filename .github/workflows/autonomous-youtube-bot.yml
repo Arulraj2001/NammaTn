@@ -6,7 +6,9 @@ on:
     - cron: '30 1 * * 1,3,5'
     # 2. Daily 01:30 PM IST (08:00 UTC): Citizen Rights & Dispute Guide Short
     - cron: '0 8 * * *'
-    # 3. Daily 07:30 PM IST (14:00 UTC): Daily Civic Lifeline Alert Short
+    # 3. Tue, Thu, Sat 06:00 PM IST (12:30 UTC): Vizhi Uncut Duo Investigative Podcast
+    - cron: '30 12 * * 2,4,6'
+    # 4. Daily 07:30 PM IST (14:00 UTC): Daily Civic Lifeline Alert Short
     - cron: '0 14 * * *'
 
   workflow_dispatch:
@@ -89,33 +91,56 @@ jobs:
             EXTRA_FLAGS="--dry-run"
           fi
 
-          if [ "$PIPELINE" = "auto" ]; then
-            CURRENT_HOUR=$(date -u +%H)
-            if [ "$CURRENT_HOUR" -lt "5" ]; then
-              echo "[AUTO TRIGGER] Morning Slot (07:00 AM IST): In-Depth Long-Form Documentary..."
-              node scripts/youtube/pipelines/generate-long-video.mjs $EXTRA_FLAGS
-            elif [ "$CURRENT_HOUR" -lt "11" ]; then
-              echo "[AUTO TRIGGER] Lunchtime Slot (01:30 PM IST): Citizen Rights Dispute Guide..."
-              node scripts/youtube/pipelines/generate-rights-shorts.mjs $EXTRA_FLAGS
+          SCHEDULE="${{ github.event.schedule }}"
+          PIPELINE="${{ github.event.inputs.pipeline_type }}"
+
+          if [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
+            if [ "$SCHEDULE" = "30 1 * * 1,3,5" ]; then
+              echo "[CRON SCHEDULE] Morning Slot: In-Depth Long-Form Documentary..."
+              PIPELINE="long-form"
+            elif [ "$SCHEDULE" = "30 12 * * 2,4,6" ]; then
+              echo "[CRON SCHEDULE] Evening Slot: Vizhi Uncut Duo Investigative Podcast..."
+              PIPELINE="podcast"
+            elif [ "$SCHEDULE" = "0 8 * * *" ]; then
+              echo "[CRON SCHEDULE] Lunchtime Slot: Citizen Rights Dispute Guide Short..."
+              PIPELINE="rights-shorts"
+            elif [ "$SCHEDULE" = "0 14 * * *" ]; then
+              echo "[CRON SCHEDULE] Night Slot: Daily Civic Lifeline Short..."
+              PIPELINE="civic-shorts"
             else
-              echo "[AUTO TRIGGER] Evening Slot (07:30 PM IST): Daily Civic Lifeline Short..."
-              node scripts/youtube/pipelines/generate-shorts.mjs $EXTRA_FLAGS
+              # Fallback to UTC hour if schedule string is not matched
+              CURRENT_HOUR=$(date -u +%H)
+              if [ "$CURRENT_HOUR" -lt "5" ]; then
+                echo "[AUTO FALLBACK] Morning Slot: In-Depth Long-Form Documentary..."
+                PIPELINE="long-form"
+              elif [ "$CURRENT_HOUR" -lt "10" ]; then
+                echo "[AUTO FALLBACK] Lunchtime Slot: Citizen Rights Dispute Guide..."
+                PIPELINE="rights-shorts"
+              elif [ "$CURRENT_HOUR" -lt "13" ]; then
+                echo "[AUTO FALLBACK] Evening Slot: Vizhi Uncut Duo Podcast..."
+                PIPELINE="podcast"
+              else
+                echo "[AUTO FALLBACK] Night Slot: Daily Civic Lifeline Short..."
+                PIPELINE="civic-shorts"
+              fi
             fi
-          elif [ "$PIPELINE" = "rights-shorts" ]; then
-            echo "[DISPATCH] Executing Citizen Rights Dispute Guide Short..."
+          fi
+
+          if [ "$PIPELINE" = "rights-shorts" ]; then
+            echo "[EXECUTE] Executing Citizen Rights Dispute Guide Short..."
             node scripts/youtube/pipelines/generate-rights-shorts.mjs $EXTRA_FLAGS
           elif [ "$PIPELINE" = "civic-shorts" ]; then
-            echo "[DISPATCH] Executing Daily Civic Lifeline Short..."
+            echo "[EXECUTE] Executing Daily Civic Lifeline Short..."
             node scripts/youtube/pipelines/generate-shorts.mjs $EXTRA_FLAGS
           elif [ "$PIPELINE" = "long-form" ]; then
-            echo "[DISPATCH] Executing Long-Form Documentary Explainer..."
+            echo "[EXECUTE] Executing Long-Form Documentary Explainer..."
             if [ -n "$SLUG" ]; then
               node scripts/youtube/pipelines/generate-long-video.mjs --slug=$SLUG $EXTRA_FLAGS
             else
               node scripts/youtube/pipelines/generate-long-video.mjs $EXTRA_FLAGS
             fi
           elif [ "$PIPELINE" = "podcast" ]; then
-            echo "[DISPATCH] Executing Vizhi Uncut Duo Investigative Podcast..."
+            echo "[EXECUTE] Executing Vizhi Uncut Duo Investigative Podcast..."
             node scripts/youtube/pipelines/generate-podcast.mjs $EXTRA_FLAGS
           elif [ "$PIPELINE" = "all" ]; then
             echo "[DISPATCH] Executing All Video Broadcast Pipelines..."

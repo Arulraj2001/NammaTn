@@ -11,7 +11,7 @@
       width: 1080px;
       height: 1920px;
       overflow: hidden;
-      background: #071224;
+      background: linear-gradient(180deg, rgba(7, 18, 36, 0.82) 0%, rgba(7, 18, 36, 0.38) 25%, rgba(7, 18, 36, 0.45) 70%, rgba(7, 18, 36, 0.94) 100%);
       font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
       color: #ffffff;
       position: relative;
@@ -22,7 +22,8 @@
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 88px;
-      background: rgba(7,18,36,0.96);
+      background: rgba(7,18,36,0.92);
+      backdrop-filter: blur(20px);
       border-bottom: 2px solid rgba(255,255,255,0.1);
       display: flex;
       align-items: center;
@@ -105,12 +106,14 @@
     }
 
     .alert-card {
-      background: rgba(15,23,42,0.96);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-left: 6px solid #2563eb;
-      border-radius: 20px;
+      background: rgba(15,23,42,0.84);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1.5px solid rgba(255,255,255,0.16);
+      border-left: 8px solid #2563eb;
+      border-radius: 22px;
       padding: 28px 32px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     }
     .alert-card.warn { border-left-color: #f59e0b; }
     .alert-card.danger { border-left-color: #ef4444; }

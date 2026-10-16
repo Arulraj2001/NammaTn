@@ -15,7 +15,7 @@ import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
-import { generateShortsThumbnail } from '../engine/thumbnail-engine.mjs';
+import { generateShortsThumbnail } from '../engine/thumbnail-shorts-engine.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
 import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 
@@ -185,7 +185,7 @@ async function main() {
   tplS1 = tplS1
     .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
     .replace('{{SCENE_PHOTO_SRC}}', toImageSource(heroPhotoUrl))
-    .replace('{{HOOK_HEADLINE_TA}}', leadPost.title_ta || leadPost.title_en || 'இன்றைய முக்கிய செய்தி')
+    .replaceAll('{{HOOK_HEADLINE_TA}}', leadPost.title_ta || leadPost.title_en || 'இன்றைய முக்கிய செய்தி')
     .replace('{{DATE_TEXT}}', dateStr)
     .replace('{{CATEGORY_COLOR}}', theme.color)
     .replace('{{CATEGORY_ICON}}', theme.icon)
@@ -249,7 +249,20 @@ async function main() {
     console.log('[CAPTIONS WARN] Could not generate subtitles:', subErr.message);
   }
 
-  // ─── 9. Assemble Multi-Scene Short with Dynamic Motion & Captions ─────────
+  // ─── 9. Generate High-CTR Vertical Thumbnail (1080x1920) ────────────────
+  const thumbnailPath = path.join(outDir, `vizhitn_thumb_short_${Date.now()}.png`);
+  try {
+    await generateShortsThumbnail({
+      titleTa: leadPost.title_ta || leadPost.title_en || '',
+      category: theme.label,
+      heroImageUrl: heroPhotoUrl,
+      outputPath: thumbnailPath
+    });
+  } catch (e) {
+    console.warn('[THUMBNAIL] Generation failed, skipping custom thumbnail:', e.message);
+  }
+
+  // ─── 10. Assemble Multi-Scene Short with Dynamic Motion & Frame 0 Thumbnail ─
   const videoOutputPath = path.join(outDir, `vizhitn_short_${Date.now()}.mp4`);
   console.log('[COMPOSER] Assembling 3-Scene Civic Short with dynamic motion & kinetic captions...');
 
@@ -259,27 +272,12 @@ async function main() {
     { imagePath: s3FramePath, videoPath: brollClip, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: s3SubPath }
   ];
 
-  assembleMultiSceneShortsVideo({ scenes, outputPath: videoOutputPath });
+  assembleMultiSceneShortsVideo({
+    scenes,
+    outputPath: videoOutputPath,
+    thumbnailPath: fs.existsSync(thumbnailPath) ? thumbnailPath : undefined
+  });
   console.log(`[COMPOSER] Short generated: ${videoOutputPath}`);
-
-  // ─── 9. Generate Custom Thumbnail (1280×720) ─────────────────────────────
-  const thumbnailPath = path.join(outDir, `vizhitn_thumb_short_${Date.now()}.png`);
-  try {
-    await generateShortsThumbnail({
-      titleTa:       (leadPost.title_ta || leadPost.title_en || '').slice(0, 40),
-      heroImageUrl:   heroPhotoUrl,
-      categoryLabel:  theme.label,
-      categoryIcon:   theme.icon,
-      categoryColor:  theme.color,
-      districtName:   (leadPost.district_slug || 'TN').toUpperCase(),
-      urgencyClass:   leadPost.urgency_level === 'critical' ? 'pill-critical' :
-                      leadPost.urgency_level === 'high'     ? 'pill-high'     :
-                      leadPost.urgency_level === 'medium'   ? 'pill-medium'   : 'pill-low',
-      outputPath:     thumbnailPath
-    });
-  } catch (e) {
-    console.warn('[THUMBNAIL] Generation failed, skipping custom thumbnail:', e.message);
-  }
 
   // ─── 10. Build SEO Metadata ───────────────────────────────────────────────
   const { title, description, tags } = generateVideoMetadata({
@@ -328,7 +326,7 @@ async function main() {
   });
 
   // Cleanup temp files
-  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, s1SubPath, s2SubPath, s3SubPath];
+  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, thumbnailPath, s1SubPath, s2SubPath, s3SubPath];
   for (const t of temps) {
     try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
   }

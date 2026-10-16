@@ -16,6 +16,7 @@ import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
+import { generateShortsThumbnail } from '../engine/thumbnail-shorts-engine.mjs';
 
 // Load .env.local if running in local environment
 try {
@@ -87,12 +88,25 @@ async function main() {
     heroPhotoUrl = fs.existsSync(localCard) ? localCard : path.resolve('public/images/categories/general.webp');
   }
 
-  // 5. Render Scene 1 Hook Frame (with Official Brand Logo)
+  // 5. Generate High-CTR Vertical Thumbnail (1080x1920)
+  const thumbPath = path.join(outDir, `rights_thumb_${Date.now()}.png`);
+  try {
+    await generateShortsThumbnail({
+      titleTa: topic.titleTa,
+      category: topic.category || 'சட்ட உரிமைகள்',
+      heroImageUrl: heroPhotoUrl,
+      outputPath: thumbPath
+    });
+  } catch (thumbErr) {
+    console.warn('[THUMBNAIL WARN] Could not generate rights short thumbnail:', thumbErr.message);
+  }
+
+  // 6. Render Scene 1 Hook Frame (with Official Brand Logo)
   const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
   let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
   tplS1 = tplS1.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
   tplS1 = tplS1.replace('{{SCENE_PHOTO_SRC}}', toImageSource(heroPhotoUrl));
-  tplS1 = tplS1.replace('{{HOOK_HEADLINE_TA}}', topic.titleTa);
+  tplS1 = tplS1.replaceAll('{{HOOK_HEADLINE_TA}}', topic.titleTa);
   tplS1 = tplS1.replace('{{DATE_TEXT}}', 'விழி சட்டம் & உரிமைகள்');
   tplS1 = tplS1.replace('{{CATEGORY_COLOR}}', '#8B5CF6');
   tplS1 = tplS1.replace('{{CATEGORY_ICON}}', '⚖️');
@@ -103,7 +117,7 @@ async function main() {
   const s1FramePath = path.join(outDir, `rights_s1_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
 
-  // 6. Render Scene 2 Breakdown Frame (with Official Brand Logo)
+  // 7. Render Scene 2 Breakdown Frame (with Official Brand Logo)
   const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-2-breakdown.html');
   let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
   tplS2 = tplS2.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
@@ -172,7 +186,8 @@ async function main() {
 
   assembleMultiSceneShortsVideo({
     scenes,
-    outputPath: videoOutputPath
+    outputPath: videoOutputPath,
+    thumbnailPath: fs.existsSync(thumbPath) ? thumbPath : undefined
   });
 
   console.log(`[COMPOSER] Video generated: ${videoOutputPath}`);
@@ -211,6 +226,10 @@ async function main() {
   });
 
   if (uploadResult.videoId && !uploadResult.dryRun) {
+    // 10. Attach High-CTR Custom Thumbnail
+    if (fs.existsSync(thumbPath)) {
+      await setYouTubeThumbnail(uploadResult.videoId, thumbPath);
+    }
     await postPinnedComment(
       uploadResult.videoId,
       `⚖️ இதே மாதிரி பிரச்சனை உங்களுக்கும் வந்தா — vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
@@ -232,7 +251,7 @@ async function main() {
   });
 
   // Cleanup temporary frames, audio, and subtitles
-  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, s1SubPath, s2SubPath, s3SubPath];
+  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, thumbPath, s1SubPath, s2SubPath, s3SubPath];
   for (const t of temps) {
     try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
   }
