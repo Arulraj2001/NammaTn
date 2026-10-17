@@ -20,7 +20,7 @@ const NAV = [
   { label: "AI Moderation", icon: Shield, path: "/admin/moderation", badge: "AI" },
   { label: "Categories", icon: Tag, path: "/admin/categories" },
   { label: "Districts", icon: MapPin, path: "/admin/districts" },
-  { label: "Media", icon: Image, path: "/admin/media" },
+  { label: "Media & Storage", icon: Image, path: "/admin/media", badge: "CLEAN" },
   { label: "Ads", icon: Megaphone, path: "/admin/ads" },
   { label: "Settings", icon: Settings, path: "/admin/settings" },
   { label: "SEO Manager", icon: SearchCheck, path: "/admin/seo", badge: "SEO" },

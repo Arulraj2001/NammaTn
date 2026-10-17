@@ -31,3 +31,26 @@ export function getBrandLogoDataUri() {
 
   return '';
 }
+
+const cachedAvatars = {};
+
+/**
+ * Returns the host avatar (karthik or kavitha) as a Base64 data URI
+ * @param {'karthik' | 'kavitha'} hostName
+ * @returns {string} data:image/jpeg;base64,...
+ */
+export function getHostAvatarDataUri(hostName) {
+  const key = (hostName || '').toLowerCase();
+  if (cachedAvatars[key]) return cachedAvatars[key];
+
+  const avatarPath = path.resolve(process.cwd(), 'public', 'images', 'avatars', `${key}.jpg`);
+  if (fs.existsSync(avatarPath)) {
+    try {
+      const buffer = fs.readFileSync(avatarPath);
+      cachedAvatars[key] = `data:image/jpeg;base64,${buffer.toString('base64')}`;
+      return cachedAvatars[key];
+    } catch (_) {}
+  }
+
+  return '';
+}

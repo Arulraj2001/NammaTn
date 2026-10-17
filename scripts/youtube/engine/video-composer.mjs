@@ -16,6 +16,7 @@ const SFX_DIR = path.resolve('scripts/youtube/assets/sfx');
 
 const SFX = {
   hum: path.join(SFX_DIR, 'newsroom-hum.mp3'),          // low ambient newsroom hum
+  bed: path.join(SFX_DIR, 'broadcast-bed.mp3'),         // subtle documentary score bed
   whoosh: path.join(SFX_DIR, 'scene-whoosh.mp3'),        // bass whoosh for transitions
   click: path.join(SFX_DIR, 'text-click.mp3'),           // subtle click on text appear
   chime: path.join(SFX_DIR, 'helpline-chime.mp3'),       // bell when helpline spoken
@@ -82,65 +83,100 @@ export function getAudioDuration(audioFilePath) {
 }
 
 /**
- * Builds an FFmpeg amix audio filter that layers voiceover + ambient SFX.
- * Falls back gracefully to voiceover-only if SFX files are missing.
+ * Builds an FFmpeg audio filter that layers voiceover + ambient music with sidechain ducking.
+ * When the narrator speaks, the background bed is smoothly ducked by -16dB.
+ * During vocal pauses, the music bed rises gently to maintain documentary momentum.
  *
  * @param {string} voicePath - Path to the main TTS voiceover audio file
  * @param {string} outputPath - Final mixed audio output path
  * @param {Object} options
- * @param {boolean} options.isLastScene - Whether to add the outro beat
+ * @param {boolean} [options.isLastScene=false] - Whether to add the outro beat
+ * @param {boolean} [options.includeBed=true] - Whether to add background music/hum
  * @returns {string} outputPath if mixing succeeded, voicePath if SFX unavailable
  */
 export function mixAudioWithSoundDesign(voicePath, outputPath, options = {}) {
   const ffmpeg = getFfmpegBinaryPath();
-  const { isLastScene = false } = options;
+  const { isLastScene = false, includeBed = true } = options;
 
   try { ensureSfxAssetsExist(); } catch {}
 
+  const hasBed = includeBed && sfxExists(SFX.bed);
   const hasHum = sfxExists(SFX.hum);
   const hasWhoosh = sfxExists(SFX.whoosh);
   const hasOutro = isLastScene && sfxExists(SFX.outro);
 
-  // If no SFX files exist at all, skip mixing and return voiceover directly
-  if (!hasHum && !hasWhoosh && !hasOutro) {
-    console.log('[AUDIO MIXER] No SFX assets found — using voiceover only. Add SFX to scripts/youtube/assets/sfx/ for full sound design.');
+  if (!hasBed && !hasHum && !hasWhoosh && !hasOutro) {
     return voicePath;
   }
 
   const inputs = [`-i "${voicePath}"`];
-  const amixParts = ['[0:a]volume=1.0[main]'];
-  const mixInputs = ['[main]'];
   let inputIdx = 1;
 
-  // Track 2: Newsroom ambient hum (8% volume, loop to match voiceover duration)
-  if (hasHum) {
+  // Background stem (music bed preferred, hum fallback)
+  let bgInputIdx = -1;
+  if (hasBed) {
+    inputs.push(`-stream_loop -1 -i "${SFX.bed}"`);
+    bgInputIdx = inputIdx++;
+  } else if (hasHum) {
     inputs.push(`-stream_loop -1 -i "${SFX.hum}"`);
-    amixParts.push(`[${inputIdx}:a]volume=0.08[hum]`);
-    mixInputs.push('[hum]');
-    inputIdx++;
+    bgInputIdx = inputIdx++;
   }
 
-  // Track 3: Scene transition whoosh (play once at start, very low)
+  let whooshIdx = -1;
   if (hasWhoosh) {
     inputs.push(`-i "${SFX.whoosh}"`);
-    amixParts.push(`[${inputIdx}:a]volume=0.35[whoosh]`);
-    mixInputs.push('[whoosh]');
-    inputIdx++;
+    whooshIdx = inputIdx++;
   }
 
-  // Track 6: Outro civic beat (for last scene only)
+  let outroIdx = -1;
   if (hasOutro) {
     inputs.push(`-i "${SFX.outro}"`);
-    amixParts.push(`[${inputIdx}:a]volume=0.5[outro]`);
-    mixInputs.push('[outro]');
-    inputIdx++;
+    outroIdx = inputIdx++;
   }
 
-  const numInputs = mixInputs.length;
-  const filterComplex = [
-    ...amixParts,
-    `${mixInputs.join('')}amix=inputs=${numInputs}:duration=first:dropout_transition=2[aout]`
-  ].join('; ');
+  let filterComplex = '';
+  if (bgInputIdx !== -1) {
+    // Dynamic sidechain ducking: background is attenuated when voice speaks
+    const duckingParts = [
+      `[0:a]volume=1.0,asplit=2[voice_main][voice_side]`,
+      `[${bgInputIdx}:a]volume=0.22[bg_pre]`,
+      `[bg_pre][voice_side]sidechaincompress=threshold=0.07:ratio=9:attack=35:release=320[bg_ducked]`
+    ];
+
+    const mixParts = ['[voice_main]', '[bg_ducked]'];
+    if (whooshIdx !== -1) {
+      duckingParts.push(`[${whooshIdx}:a]volume=0.28[whoosh]`);
+      mixParts.push('[whoosh]');
+    }
+    if (outroIdx !== -1) {
+      duckingParts.push(`[${outroIdx}:a]volume=0.45[outro]`);
+      mixParts.push('[outro]');
+    }
+
+    duckingParts.push(
+      `${mixParts.join('')}amix=inputs=${mixParts.length}:duration=first:dropout_transition=2[amixed]`,
+      `[amixed]alimiter=limit=0.96[aout]`
+    );
+
+    filterComplex = duckingParts.join('; ');
+  } else {
+    // Basic summation without ducking
+    const amixParts = ['[0:a]volume=1.0[main]'];
+    const mixInputs = ['[main]'];
+    if (whooshIdx !== -1) {
+      amixParts.push(`[${whooshIdx}:a]volume=0.30[whoosh]`);
+      mixInputs.push('[whoosh]');
+    }
+    if (outroIdx !== -1) {
+      amixParts.push(`[${outroIdx}:a]volume=0.50[outro]`);
+      mixInputs.push('[outro]');
+    }
+    amixParts.push(
+      `${mixInputs.join('')}amix=inputs=${mixInputs.length}:duration=first:dropout_transition=2[amixed]`,
+      `[amixed]alimiter=limit=0.96[aout]`
+    );
+    filterComplex = amixParts.join('; ');
+  }
 
   const cmd = [
     `"${ffmpeg}"`,
@@ -155,20 +191,19 @@ export function mixAudioWithSoundDesign(voicePath, outputPath, options = {}) {
 
   try {
     execSync(cmd, { stdio: 'pipe', timeout: 60000 });
-    console.log(`[AUDIO MIXER ✓] Mixed audio with ${numInputs} tracks: ${outputPath}`);
     return outputPath;
   } catch (err) {
-    console.warn(`[AUDIO MIXER WARN] SFX mixing failed — falling back to voiceover only: ${err.message}`);
+    console.warn(`[AUDIO MIXER WARN] Ducking filter failed — falling back to direct voiceover: ${err.message}`);
     return voicePath;
   }
 }
 
 /**
  * Assembles a Multi-Scene 9:16 YouTube Short with Ken Burns motion + sound design.
- * Scene 1: Ken Burns zoom (dramatic) | Scene 2: static card | Scene 3: static helpline
+ * Features 30fps smooth camera moves, dynamic frame calculation, and B-roll blending.
  *
  * @param {Object} options
- * @param {Array<{ imagePath: string, audioPath: string, durationSec: number, hasMotion?: boolean, isLastScene?: boolean }>} options.scenes
+ * @param {Array<{ imagePath: string, videoPath?: string, audioPath: string, durationSec: number, hasMotion?: boolean, isLastScene?: boolean, subtitlePath?: string }>} options.scenes
  * @param {string} options.outputPath
  * @param {string} [options.thumbnailPath] - Optional thumbnail image to prepend as Frame 0:00 (0.35s)
  */
@@ -219,7 +254,7 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       const sc = scenes[idx];
       const isLastScene = idx === scenes.length - 1;
 
-      // Mix audio with sound design layer
+      // Mix audio with dynamic sidechain ducking
       const mixedAudioPath = path.join(outDir, `_temp_short_audio_mix_${sessionId}_${idx}.mp3`);
       tempAudioMixes.push(mixedAudioPath);
       const finalAudioPath = mixAudioWithSoundDesign(sc.audioPath, mixedAudioPath, { isLastScene });
@@ -230,11 +265,11 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       // Check if real video B-roll clip is provided
       const hasBgVideo = sc.videoPath && fs.existsSync(sc.videoPath) && fs.statSync(sc.videoPath).size > 10000;
 
-      // Kinetic Subtitles filter if ASS file provided (relative path to prevent Windows drive letter colon issues)
+      // Kinetic Subtitles filter if ASS file provided
       let subFilter = '';
       if (sc.subtitlePath && fs.existsSync(sc.subtitlePath)) {
         const relSub = path.relative(process.cwd(), sc.subtitlePath).replace(/\\/g, '/');
-        subFilter = `,ass=${relSub}`;
+        subFilter = `,ass='${relSub}'`;
       }
 
       let args;
@@ -265,12 +300,18 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
           clipPath
         ];
       } else {
-        // Ken Burns dynamic camera motion on all scenes
+        // Ken Burns dynamic camera motion with TRUE 30 FPS rate to eliminate micro-jitter
         const motionMode = sc.hasMotion !== false;
+        const totalFrames = Math.max(30, Math.ceil(sc.durationSec * 30));
         const zoomDirections = [
-          `zoompan=z='min(zoom+0.0012,1.15)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920`, // Center zoom-in
-          `zoompan=z='min(zoom+0.0008,1.10)':d=125:x='iw/2-(iw/zoom/2)':y='ih/3-(ih/zoom/3)':s=1080x1920`, // Top-focus zoom-in
-          `zoompan=z='min(zoom+0.0010,1.12)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920`  // Steady push
+          // Center push-in with 30fps smooth interpolation
+          `zoompan=z='min(zoom+0.0008,1.15)':d=${totalFrames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps=30`,
+          // Top-focus push-in
+          `zoompan=z='min(zoom+0.0006,1.12)':d=${totalFrames}:x='iw/2-(iw/zoom/2)':y='ih/3-(ih/zoom/3)':s=1080x1920:fps=30`,
+          // Steady cinematic push
+          `zoompan=z='min(zoom+0.0007,1.14)':d=${totalFrames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps=30`,
+          // Subtle lateral drift
+          `zoompan=z='min(zoom+0.0005,1.10)':d=${totalFrames}:x='(iw/2-(iw/zoom/2))*(1-0.2*on/${totalFrames})':y='ih/2-(ih/zoom/2)':s=1080x1920:fps=30`
         ];
         const zoomFilter = zoomDirections[idx % zoomDirections.length];
 
@@ -278,7 +319,6 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
           ? `scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,${zoomFilter},format=yuv420p`
           : `scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p`;
 
-        // Scene fade-in for all scenes (0.25s), fade-out for last scene only
         const fadeFilter = isLastScene
           ? `,fade=t=in:st=0:d=0.25,fade=t=out:st=${Math.max(0, sc.durationSec - 0.4)}:d=0.4`
           : `,fade=t=in:st=0:d=0.25`;
@@ -306,7 +346,7 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       console.log(`[COMPOSER] Scene ${idx + 1}/${scenes.length} rendered (${hasBgVideo ? 'Video B-Roll' : 'Ken Burns Motion'}): ${(sc.durationSec).toFixed(1)}s`);
     }
 
-    // Concatenate all scene clips into final Short with unified audio/video re-encode to prevent stutter & lag
+    // Concatenate all scene clips into final Short
     const concatListPath = path.join(outDir, `_temp_short_concat_${sessionId}.txt`);
     const fileEntries = tempClips.map(c => `file '${c.replace(/\\/g, '/')}'`).join('\n');
     fs.writeFileSync(concatListPath, fileEntries, 'utf-8');
@@ -333,11 +373,11 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
 }
 
 /**
- * Assembles a multi-chapter 16:9 Long-Form documentary MP4 (6–8 mins)
- * with Ken Burns slow zoom, scene fades, and sound design per chapter.
+ * Assembles a multi-scene 16:9 Long-Form documentary MP4 with multi-beat visual variety,
+ * B-roll video overlay capability, 30fps camera moves, and audio ducking.
  *
  * @param {Object} options
- * @param {Array<{ slidePath: string, audioPath: string, durationSec: number }>} options.chapters
+ * @param {Array<{ slidePath?: string, videoPath?: string, overlayPath?: string, audioPath: string, durationSec: number, subtitlePath?: string }>} options.chapters
  * @param {string} options.outputPath
  */
 export function assembleLongFormVideo({ chapters, outputPath }) {
@@ -355,7 +395,7 @@ export function assembleLongFormVideo({ chapters, outputPath }) {
       const isLastChapter = idx === chapters.length - 1;
       const isFirstChapter = idx === 0;
 
-      // Mix audio with sound design layer
+      // Mix audio with dynamic sidechain ducking
       const mixedAudioPath = path.join(outDir, `_temp_long_audio_mix_${sessionId}_${idx}.mp3`);
       tempAudioMixes.push(mixedAudioPath);
       const finalAudioPath = mixAudioWithSoundDesign(ch.audioPath, mixedAudioPath, { isLastScene: isLastChapter });
@@ -363,50 +403,111 @@ export function assembleLongFormVideo({ chapters, outputPath }) {
       const clipPath = path.join(outDir, `_temp_long_ch_${sessionId}_${idx}.mp4`);
       tempClips.push(clipPath);
 
-      // Subtle slow Ken Burns on ALL long-form chapter slides (very slow, documentary feel)
-      const vfFilter = `scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,zoompan=z='min(zoom+0.0005,1.05)':d=${Math.ceil(ch.durationSec * 25)}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1920x1080,format=yuv420p`;
+      // Check if moving video B-roll clip is provided
+      const hasBgVideo = ch.videoPath && fs.existsSync(ch.videoPath) && fs.statSync(ch.videoPath).size > 10000;
 
-      // Cross-fade: first chapter fades in, last fades out
-      let fadeFilter = '';
-      if (isFirstChapter) {
-        fadeFilter = `,fade=t=in:st=0:d=0.5`;
-      }
-      if (isLastChapter) {
-        fadeFilter += `,fade=t=out:st=${Math.max(0, ch.durationSec - 1.0)}:d=1.0`;
-      }
-
-      // Kinetic Subtitles filter if ASS file provided (relative path to prevent Windows drive letter colon issues)
+      // Kinetic Subtitles filter if ASS file provided
       let subFilter = '';
       if (ch.subtitlePath && fs.existsSync(ch.subtitlePath)) {
         const relSub = path.relative(process.cwd(), ch.subtitlePath).replace(/\\/g, '/');
-        subFilter = `,ass=${relSub}`;
+        subFilter = `,ass='${relSub}'`;
       }
 
-      const args = [
-        '-y',
-        '-loop', '1',
-        '-i', ch.slidePath,
-        '-i', finalAudioPath,
-        '-vf', `${vfFilter}${fadeFilter}${subFilter}`,
-        '-c:v', 'libx264',
-        '-preset', 'fast',
-        '-crf', '20',
-        '-c:a', 'aac',
-        '-b:a', '192k',
-        '-shortest',
-        clipPath
-      ];
+      let args;
+      if (hasBgVideo) {
+        // Multi-Layer: 16:9 Video B-roll + optional slide/lower-third overlay + Subtitles
+        const overlayInput = (ch.overlayPath && fs.existsSync(ch.overlayPath))
+          ? ch.overlayPath
+          : (ch.slidePath && fs.existsSync(ch.slidePath) ? ch.slidePath : null);
+
+        let filter = '';
+        if (overlayInput) {
+          filter = `[0:v]scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080[bg]; [bg][1:v]overlay=0:0:format=auto,fade=t=in:st=0:d=0.35${subFilter},format=yuv420p[vout]`;
+          args = [
+            '-y',
+            '-stream_loop', '-1',
+            '-i', ch.videoPath,
+            '-i', overlayInput,
+            '-i', finalAudioPath,
+            '-filter_complex', filter,
+            '-map', '[vout]',
+            '-map', '2:a',
+            '-t', ch.durationSec.toString(),
+            '-r', '30',
+            '-c:v', 'libx264',
+            '-preset', 'fast',
+            '-crf', '20',
+            '-c:a', 'aac',
+            '-b:a', '192k',
+            clipPath
+          ];
+        } else {
+          filter = `scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,fade=t=in:st=0:d=0.35${subFilter},format=yuv420p`;
+          args = [
+            '-y',
+            '-stream_loop', '-1',
+            '-i', ch.videoPath,
+            '-i', finalAudioPath,
+            '-vf', filter,
+            '-t', ch.durationSec.toString(),
+            '-r', '30',
+            '-c:v', 'libx264',
+            '-preset', 'fast',
+            '-crf', '20',
+            '-c:a', 'aac',
+            '-b:a', '192k',
+            clipPath
+          ];
+        }
+      } else {
+        // 16:9 Cinematic Ken Burns with TRUE 30 FPS rate
+        const totalFrames = Math.max(30, Math.ceil(ch.durationSec * 30));
+        const longZoomDirections = [
+          // 1. Subtle slow push-in
+          `zoompan=z='min(zoom+0.0003,1.06)':d=${totalFrames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1920x1080:fps=30`,
+          // 2. Subtle slow pan-right
+          `zoompan=z='min(zoom+0.00025,1.05)':d=${totalFrames}:x='(iw/2-(iw/zoom/2))*(1+0.15*on/${totalFrames})':y='ih/2-(ih/zoom/2)':s=1920x1080:fps=30`,
+          // 3. Subtle slow pull-back
+          `zoompan=z='max(1.06-0.00025*on,1.0)':d=${totalFrames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1920x1080:fps=30`
+        ];
+        const zoomChoice = longZoomDirections[idx % longZoomDirections.length];
+        const vfFilter = `scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,${zoomChoice},format=yuv420p`;
+
+        let fadeFilter = '';
+        if (isFirstChapter) {
+          fadeFilter = `,fade=t=in:st=0:d=0.5`;
+        }
+        if (isLastChapter) {
+          fadeFilter += `,fade=t=out:st=${Math.max(0, ch.durationSec - 1.0)}:d=1.0`;
+        }
+
+        args = [
+          '-y',
+          '-loop', '1',
+          '-i', ch.slidePath,
+          '-i', finalAudioPath,
+          '-vf', `${vfFilter}${fadeFilter}${subFilter}`,
+          '-r', '30',
+          '-c:v', 'libx264',
+          '-preset', 'fast',
+          '-crf', '20',
+          '-c:a', 'aac',
+          '-b:a', '192k',
+          '-shortest',
+          clipPath
+        ];
+      }
 
       const cmd = `"${ffmpeg}" ${args.map(a => `"${a}"`).join(' ')}`;
       execSync(cmd, { stdio: 'pipe', timeout: 180000 });
-      console.log(`[COMPOSER] Chapter ${idx + 1}/${chapters.length} rendered: ${(ch.durationSec / 60).toFixed(1)} min`);
+      console.log(`[COMPOSER] Scene beat ${idx + 1}/${chapters.length} rendered (${hasBgVideo ? 'B-Roll Video' : 'Cinematic Ken Burns'}): ${(ch.durationSec).toFixed(1)}s`);
     }
 
     const concatListPath = path.join(outDir, `_temp_long_concat_${sessionId}.txt`);
     const fileEntries = tempClips.map(c => `file '${c.replace(/\\/g, '/')}'`).join('\n');
     fs.writeFileSync(concatListPath, fileEntries, 'utf-8');
 
-    const concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c copy "${outputPath}"`;
+    const concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
     execSync(concatCmd, { stdio: 'pipe', timeout: 300000 });
 
     try { fs.unlinkSync(concatListPath); } catch {}

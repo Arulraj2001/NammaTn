@@ -162,16 +162,18 @@ export async function crossPostVideoToMetaSocials({
         const creationId = containerData.id;
         console.log(`[META INSTA] Container ID: ${creationId}. Polling Meta processing status...`);
 
-        // Poll container status until FINISHED (up to 60s)
+        // Poll container status until FINISHED (up to 180s with progressive interval)
         let isReady = false;
         let attempts = 0;
-        while (!isReady && attempts < 12) {
+        const maxAttempts = 25;
+        while (!isReady && attempts < maxAttempts) {
           attempts++;
-          await new Promise((r) => setTimeout(r, 5000));
+          const waitMs = attempts <= 5 ? 5000 : attempts <= 15 ? 7000 : 10000;
+          await new Promise((r) => setTimeout(r, waitMs));
           const statusRes = await fetch(`${GRAPH_API_BASE}/${creationId}?fields=status_code&access_token=${pageToken}`);
           const statusData = await statusRes.json();
           const statusCode = statusData.status_code || '';
-          console.log(`[META INSTA] Processing status (attempt ${attempts}): ${statusCode}`);
+          console.log(`[META INSTA] Processing status (attempt ${attempts}/${maxAttempts}): ${statusCode}`);
 
           if (statusCode === 'FINISHED') {
             isReady = true;

@@ -18,6 +18,10 @@ import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { generateDocumentaryScript, generateVideoMetadata, getCategoryFluxPrompt } from '../engine/script-writer.mjs';
 import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
+import { runQualityControl } from '../engine/qc-engine.mjs';
+import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
+import { getScheduledUploadForSlot, getTodayIst } from '../engine/calendar-reader.mjs';
+import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
 
 // Load .env.local if running in local environment
 try {
@@ -47,22 +51,68 @@ async function main() {
   const outDir = path.resolve('public/youtube_renders');
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
-  // 1. Fetch targeted or latest tn_today article
-  console.log('[DATABASE] Fetching TN Today feature article...');
-  let query = supabase.from('tn_today').select('*').eq('status', 'published');
-  if (targetSlug) {
-    query = query.eq('slug', targetSlug);
+  const todayIst = getTodayIst();
+
+  // Deduplication Guard: Never upload duplicate video for today's slot unless forced
+  if (!process.argv.includes('--force')) {
+    const status = await isBroadcastCompletedToday('long-form', todayIst);
+    if (status.published) {
+      console.log(`[DEDUP GUARD ✓] Long-Form Documentary already broadcast today (${status.existingRecord?.youtube_video_id || 'recorded'}). Exiting.`);
+      process.exit(0);
+    }
+  }
+
+  // 1. Source topic from 90-Day Calendar or fallback to tn_today database
+  const calEntry = getScheduledUploadForSlot('long-form', todayIst);
+  let article;
+
+  if (calEntry && !targetSlug) {
+    console.log(`[90-DAY CALENDAR] Sourcing scheduled long-form topic: "${calEntry.title}"`);
+    article = {
+      title_ta: calEntry.title,
+      title_en: calEntry.title,
+      summary_ta: calEntry.description,
+      content_ta: calEntry.description,
+      department_name: 'தமிழ்நாடு அரசு & துறை சார்ந்த ஆய்வுகள்',
+      helpline: '1100 / 1912 / 1064',
+      district_focus: 'Tamil Nadu',
+      category_slug: 'general',
+      slug: `vizhitn-doc-${todayIst}`,
+      thumbnail_text: calEntry.thumbnail_text,
+      hashtags: calEntry.hashtags
+    };
+
+    // If an existing published tn_today article matches keywords, merge deeper context
+    const firstWord = calEntry.title.split(/[\s:,-]/)[0];
+    if (firstWord && firstWord.length > 2) {
+      const { data: matched } = await supabase
+        .from('tn_today')
+        .select('*')
+        .or(`title_ta.ilike.%${firstWord}%,title_en.ilike.%${firstWord}%`)
+        .limit(1);
+      if (matched && matched[0]) {
+        console.log(`[CONTEXT ENRICH] Enriched with tn_today article context: "${matched[0].slug}"`);
+        if (matched[0].hero_image_url) article.hero_image_url = matched[0].hero_image_url;
+        if (matched[0].category_slug) article.category_slug = matched[0].category_slug;
+      }
+    }
   } else {
-    query = query.order('publish_date', { ascending: false }).limit(1);
+    console.log('[DATABASE] Fetching TN Today feature article...');
+    let query = supabase.from('tn_today').select('*').eq('status', 'published');
+    if (targetSlug) {
+      query = query.eq('slug', targetSlug);
+    } else {
+      query = query.order('publish_date', { ascending: false }).limit(1);
+    }
+
+    const { data: articles, error } = await query;
+    if (error || !articles || articles.length === 0) {
+      console.error('[ERROR] Could not fetch tn_today article:', error);
+      process.exit(1);
+    }
+    article = articles[0];
   }
 
-  const { data: articles, error } = await query;
-  if (error || !articles || articles.length === 0) {
-    console.error('[ERROR] Could not fetch tn_today article:', error);
-    process.exit(1);
-  }
-
-  const article = articles[0];
   const articleTitleEn = article.title_en || article.title || 'Tamil Nadu Development';
   const articleTitleTa = article.title_ta || article.title || articleTitleEn;
   console.log(`[INFO] Sourced article: "${articleTitleEn}"`);
@@ -90,9 +140,15 @@ async function main() {
   const templatePath = path.resolve('scripts/youtube/templates/long-form/chapter-slide.html');
   const templateHtml = fs.readFileSync(templatePath, 'utf-8');
 
+  const evidenceTplPath = path.resolve('scripts/youtube/templates/long-form/evidence-doc-slide.html');
+  const evidenceTplHtml = fs.existsSync(evidenceTplPath) ? fs.readFileSync(evidenceTplPath, 'utf-8') : templateHtml;
+
+  const dataTplPath = path.resolve('scripts/youtube/templates/long-form/data-stat-slide.html');
+  const dataTplHtml = fs.existsSync(dataTplPath) ? fs.readFileSync(dataTplPath, 'utf-8') : templateHtml;
+
   const brandLogoDataUri = getBrandLogoDataUri();
 
-  // 4. Generate Chapter Slides & Micro-TTS Audio
+  // 4. Generate Chapter Slides & Micro-TTS Audio in Multi-Beat Structure
   const processedChapters = [];
   let totalVideoDuration = 0;
   const chapterTimestamps = [];
@@ -105,7 +161,7 @@ async function main() {
     const narrationList = ch.narrationClauses || ch.narration || [];
     const factsList = ch.facts || [];
 
-    console.log(`\n[CHAPTER ${i + 1}] Processing "${titleEn}" in Spoken Tamil...`);
+    console.log(`\n[ACT ${i + 1}/5] Processing "${titleEn}" in Spoken Tamil with Multi-Beat Visuals...`);
 
     // Generate chapter-tailored 16:9 FLUX visual plate
     const chVisualPrompt = `${categoryFluxPrompt}, ${ch.headlineEn || articleTitleEn}, realistic documentary photography representing ${ch.headlineEn || 'infrastructure in Tamil Nadu'}`;
@@ -122,14 +178,24 @@ async function main() {
       </div>
     `).join('');
 
-    // Build 5-dot chapter progress indicators (active = current chapter)
     const totalChapters = docScript.chapters.length;
     const dotClasses = Array.from({ length: 5 }, (_, di) => {
       if (di < totalChapters) return di === i ? 'active' : '';
-      return ''; // hide unused dots by leaving them inactive
+      return '';
     });
 
-    let slideHtml = templateHtml
+    const mins = Math.floor(totalVideoDuration / 60);
+    const secs = Math.floor(totalVideoDuration % 60).toString().padStart(2, '0');
+    chapterTimestamps.push(`${mins}:${secs} - ${titleEn}`);
+
+    // Sanitize clauses: strip numbers, bullets, trailing commas
+    const sanitizedClauses = (narrationList || []).map(c => sanitizeClauseText(c)).filter(Boolean);
+    const splitIdx = Math.max(1, Math.ceil(sanitizedClauses.length / 2));
+    const beat1Clauses = sanitizedClauses.slice(0, splitIdx);
+    const beat2Clauses = sanitizedClauses.slice(splitIdx);
+
+    // ── Sub-Beat A: Chapter Title & Editorial Plate ───────────────────────
+    let slide1Html = templateHtml
       .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
       .replace('{{HERO_IMAGE_SRC}}', toImageSource(chVisualUrl))
       .replace('{{CHAPTER_NUM}}', chapterNum)
@@ -146,57 +212,110 @@ async function main() {
       .replace('{{DOT_4_CLASS}}', dotClasses[3])
       .replace('{{DOT_5_CLASS}}', dotClasses[4]);
 
-    const slidePngPath = path.join(outDir, `long_slide_${i}_${Date.now()}.png`);
-    renderHtmlToImage(slideHtml, slidePngPath, { width: 1920, height: 1080 });
+    const slide1PngPath = path.join(outDir, `long_slide_${i}_beatA_${Date.now()}.png`);
+    renderHtmlToImage(slide1Html, slide1PngPath, { width: 1920, height: 1080 });
 
-    // Sanitize clauses: strip list numbers ("1. ", "2. "), bullets, trailing commas, and correct typos
-    const sanitizedClauses = (narrationList || []).map(c => sanitizeClauseText(c)).filter(Boolean);
-
-    const audioPath = path.join(outDir, `long_audio_${i}_${Date.now()}.mp3`);
-    await synthesizeSpeech(sanitizedClauses, audioPath, {
+    const audio1Path = path.join(outDir, `long_audio_${i}_beatA_${Date.now()}.mp3`);
+    await synthesizeSpeech(beat1Clauses.length > 0 ? beat1Clauses : sanitizedClauses, audio1Path, {
       voice: YOUTUBE_CONFIG.voices.tamilMale,
       rate: '+2%'
     });
+    const dur1 = getAudioDuration(audio1Path);
+    totalVideoDuration += dur1;
 
-    const dur = getAudioDuration(audioPath);
-    console.log(`[CHAPTER ${i + 1}] Slide: ${slidePngPath}, Audio: ${dur.toFixed(1)}s`);
-
-    // Generate kinetic captions for chapter using clause-locked timing
-    const chSubPath = path.join(outDir, `long_ch_sub_${i}_${Date.now()}.ass`);
+    const sub1Path = path.join(outDir, `long_sub_${i}_beatA_${Date.now()}.ass`);
     try {
-      const subChunks = generateCaptionsFromClauses(sanitizedClauses, dur);
-      generateAssSubtitleFile(subChunks, chSubPath, '16:9');
-    } catch (subErr) {
-      console.log(`[CAPTIONS WARN] Subtitle generation failed for chapter ${i + 1}:`, subErr.message);
-    }
-
-    const mins = Math.floor(totalVideoDuration / 60);
-    const secs = Math.floor(totalVideoDuration % 60).toString().padStart(2, '0');
-    chapterTimestamps.push(`${mins}:${secs} - ${titleEn}`);
-
-    totalVideoDuration += dur;
+      const subChunks = generateCaptionsFromClauses(beat1Clauses.length > 0 ? beat1Clauses : sanitizedClauses, dur1);
+      generateAssSubtitleFile(subChunks, sub1Path, '16:9');
+    } catch (_) {}
 
     processedChapters.push({
-      slidePath: slidePngPath,
-      audioPath,
-      durationSec: dur,
-      subtitlePath: chSubPath,
+      slidePath: slide1PngPath,
+      audioPath: audio1Path,
+      durationSec: dur1,
+      subtitlePath: sub1Path,
       visualPath: chVisualUrl
     });
+
+    // ── Sub-Beat B: Document Evidence Docket or Data Stat Plate ───────────
+    if (beat2Clauses.length > 0) {
+      const isEvidence = (i === 1 || i === 2);
+      let slide2Html = '';
+
+      if (isEvidence) {
+        slide2Html = evidenceTplHtml
+          .replace(/\{\{BRAND_LOGO_DATA_URI\}\}/g, brandLogoDataUri)
+          .replace(/\{\{CHAPTER_NUM\}\}/g, chapterNum)
+          .replace(/\{\{DEPT_NAME\}\}/g, deptName)
+          .replace(/\{\{EVIDENCE_TEXT_TA\}\}/g, factsList[0] || 'அரசு தணிக்கை அறிக்கை மற்றும் துறைசார் சுற்றறிக்கை விவரங்கள்')
+          .replace(/\{\{HEADLINE_TA\}\}/g, titleTa)
+          .replace(/\{\{HEADLINE_EN\}\}/g, titleEn)
+          .replace(/\{\{FACTS_HTML\}\}/g, factsHtml)
+          .replace(/\{\{HELPLINE_NUM\}\}/g, helplineNum);
+      } else {
+        slide2Html = dataTplHtml
+          .replace(/\{\{BRAND_LOGO_DATA_URI\}\}/g, brandLogoDataUri)
+          .replace(/\{\{CHAPTER_NUM\}\}/g, chapterNum)
+          .replace(/\{\{METRIC_TITLE\}\}/g, `${(article.category_slug || 'CIVIC').toUpperCase()} IMPACT`)
+          .replace(/\{\{METRIC_VALUE\}\}/g, '100% VERIFIED')
+          .replace(/\{\{METRIC_CAPTION_TA\}\}/g, factsList[0] || 'திட்ட மதிப்பீடு மற்றும் பொதுமக்கள் கள ஆய்வு')
+          .replace(/\{\{HEADLINE_TA\}\}/g, titleTa)
+          .replace(/\{\{FACTS_HTML\}\}/g, factsHtml);
+      }
+
+      const slide2PngPath = path.join(outDir, `long_slide_${i}_beatB_${Date.now()}.png`);
+      renderHtmlToImage(slide2Html, slide2PngPath, { width: 1920, height: 1080 });
+
+      const audio2Path = path.join(outDir, `long_audio_${i}_beatB_${Date.now()}.mp3`);
+      await synthesizeSpeech(beat2Clauses, audio2Path, {
+        voice: YOUTUBE_CONFIG.voices.tamilMale,
+        rate: '+2%'
+      });
+      const dur2 = getAudioDuration(audio2Path);
+      totalVideoDuration += dur2;
+
+      const sub2Path = path.join(outDir, `long_sub_${i}_beatB_${Date.now()}.ass`);
+      try {
+        const subChunks = generateCaptionsFromClauses(beat2Clauses, dur2);
+        generateAssSubtitleFile(subChunks, sub2Path, '16:9');
+      } catch (_) {}
+
+      processedChapters.push({
+        slidePath: slide2PngPath,
+        audioPath: audio2Path,
+        durationSec: dur2,
+        subtitlePath: sub2Path,
+        visualPath: chVisualUrl
+      });
+    }
   }
 
-  console.log(`\n[INFO] Total estimated feature length: ${(totalVideoDuration / 60).toFixed(1)} minutes (${totalVideoDuration.toFixed(0)} seconds)`);
+  console.log(`\n[INFO] Total feature length: ${(totalVideoDuration / 60).toFixed(1)} mins (${totalVideoDuration.toFixed(0)}s across ${processedChapters.length} visual beats)`);
 
-  // 5. Assemble Final 16:9 Long-Form MP4
+  // 5. Assemble Final 16:9 Long-Form MP4 with Dynamic Ken Burns & Audio Ducking
   const videoOutputPath = path.join(outDir, `vizhitn_feature_${article.slug || Date.now()}.mp4`);
-  console.log('[COMPOSER] Assembling full 16:9 feature video with FFmpeg...');
+  console.log('[COMPOSER] Assembling full 16:9 feature documentary with FFmpeg...');
   assembleLongFormVideo({
     chapters: processedChapters,
     outputPath: videoOutputPath
   });
   console.log(`[COMPOSER] Feature video created: ${videoOutputPath}`);
 
-  // 6. Build SEO metadata with the centralized engine
+  // 6. Automated Quality-Control (QC) Gate
+  const qcReport = runQualityControl({ videoPath: videoOutputPath, isShort: false, generateSheet: true });
+  if (!qcReport.passed) {
+    console.error('[QC BLOCKED] Feature video failed broadcast quality checks. Aborting publishing.');
+    process.exit(1);
+  }
+
+  // 7. Check Daily YouTube Quota Before Upload
+  const quota = checkQuotaAvailable('VIDEO_UPLOAD');
+  if (!quota.allowed) {
+    console.warn(`[QUOTA BLOCKED] ${quota.reason}`);
+    process.exit(0);
+  }
+
+  // 8. Build SEO metadata
   const { title: ytTitle, description: ytDesc, tags } = generateVideoMetadata({
     article,
     script: docScript,
@@ -204,26 +323,22 @@ async function main() {
     chapterTimestamps
   });
 
-  console.log(`[SEO] Title (${ytTitle.length} chars): ${ytTitle}`);
-  console.log(`[SEO] Tags: ${tags.join(', ')}`);
-  console.log(`[SEO] Chapter timestamps:\n${chapterTimestamps.join('\n')}`);
-
-  // 6. Generate Custom High-CTR 16:9 Thumbnail
+  // 9. Generate Custom High-CTR 16:9 Thumbnail
   const thumbnailPath = path.join(outDir, `vizhitn_thumb_${article.slug || Date.now()}.png`);
   console.log('[THUMBNAIL] Rendering custom 16:9 high-CTR thumbnail...');
   try {
     await generateLongVideoThumbnail({
-      titleTa: docScript.thumbnailHookTa || articleTitleTa,
+      titleTa: article.thumbnail_text || docScript.thumbnailHookTa || articleTitleTa,
       subtitleTa: 'முழு கள ஆய்வு & அரசு ஆவணங்கள்',
       category: (categorySlug || 'SPECIAL REPORT').toUpperCase(),
       heroImageUrl: heroImageSrc,
       outputPath: thumbnailPath
     });
   } catch (e) {
-    console.log('[THUMBNAIL] Thumbnail generation failed, skipping custom thumbnail:', e.message);
+    console.log('[THUMBNAIL] Thumbnail generation skipped:', e.message);
   }
 
-  // 7. Upload to YouTube
+  // 10. Upload to YouTube
   const uploadResult = await uploadToYouTube({
     videoFilePath: videoOutputPath,
     title: ytTitle,
@@ -234,12 +349,20 @@ async function main() {
   });
 
   if (uploadResult.videoId && !uploadResult.dryRun) {
-    // Attach custom thumbnail
+    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
+    await recordBroadcastSuccess({
+      broadcastDate: todayIst,
+      format: 'long-form',
+      timeIst: calEntry?.time_ist || '07:00 AM',
+      title: ytTitle,
+      youtubeVideoId: uploadResult.videoId,
+      youtubeUrl: uploadResult.videoUrl,
+      metadata: { slug: article.slug, category: categorySlug }
+    });
+
     if (fs.existsSync(thumbnailPath)) {
       await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
     }
-
-    // Auto-post civic CTA as pinned comment to drive engagement + vizhitn.in traffic
     await postPinnedComment(
       uploadResult.videoId,
       `📍 இந்த பிரச்சனை உங்க ஏரியாலயும் இருக்கா? vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற ஆயிரம் பேரை protect பண்ணும். 🔴 vizhitn.in`

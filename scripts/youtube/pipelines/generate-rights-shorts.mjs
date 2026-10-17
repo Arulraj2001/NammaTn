@@ -17,6 +17,8 @@ import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { generateShortsThumbnail } from '../engine/thumbnail-shorts-engine.mjs';
+import { runQualityControl } from '../engine/qc-engine.mjs';
+import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
 
 // Load .env.local if running in local environment
 try {
@@ -192,6 +194,20 @@ async function main() {
 
   console.log(`[COMPOSER] Video generated: ${videoOutputPath}`);
 
+  // Automated Quality Control (QC) Gate
+  const qcReport = runQualityControl({ videoPath: videoOutputPath, isShort: true, generateSheet: true });
+  if (!qcReport.passed) {
+    console.error('[QC BLOCKED] Rendered video failed broadcast quality checks. Aborting publishing.');
+    process.exit(1);
+  }
+
+  // Quota safety check
+  const quota = checkQuotaAvailable('VIDEO_UPLOAD');
+  if (!quota.allowed) {
+    console.warn(`[QUOTA BLOCKED] ${quota.reason}`);
+    process.exit(0);
+  }
+
   // 9. High-Ranking 2026 SEO Metadata (Bilingual Search Hook + First 125-Char Retention Formula)
   const ytTitle = topic.seoTitleBilingual || `${topic.titleTa} | Practical Citizen Guide #Shorts #VizhiTN`;
 
@@ -226,6 +242,7 @@ async function main() {
   });
 
   if (uploadResult.videoId && !uploadResult.dryRun) {
+    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
     // 10. Attach High-CTR Custom Thumbnail
     if (fs.existsSync(thumbPath)) {
       await setYouTubeThumbnail(uploadResult.videoId, thumbPath);

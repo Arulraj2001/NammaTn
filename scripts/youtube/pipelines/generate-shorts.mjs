@@ -17,7 +17,10 @@ import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { generateShortsThumbnail } from '../engine/thumbnail-shorts-engine.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
-import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
+import { runQualityControl } from '../engine/qc-engine.mjs';
+import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
+import { getScheduledUploadForSlot, getTodayIst } from '../engine/calendar-reader.mjs';
+import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
 
 // Load .env.local if running locally
 try {
@@ -65,23 +68,59 @@ async function main() {
   const outDir = path.resolve('public/youtube_renders');
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
-  // 1. Fetch top 3 active alerts from Supabase (most recent)
-  console.log('[DATABASE] Fetching latest active civic alerts...');
-  const { data: posts, error } = await supabase
-    .from('post')
-    .select('*')
-    .eq('status', 'active')
-    .order('created_date', { ascending: false })
-    .limit(3);
+  const todayIst = getTodayIst();
 
-  if (error || !posts || posts.length === 0) {
-    console.error('[ERROR] Could not fetch active posts from Supabase:', error);
-    process.exit(1);
+  // Deduplication Guard: Never upload duplicate short for today's slot unless forced
+  if (!process.argv.includes('--force')) {
+    const status = await isBroadcastCompletedToday('civic-shorts', todayIst);
+    if (status.published) {
+      console.log(`[DEDUP GUARD ✓] Daily Civic Short already broadcast today (${status.existingRecord?.youtube_video_id || 'recorded'}). Exiting.`);
+      process.exit(0);
+    }
   }
 
-  console.log(`[INFO] Sourced ${posts.length} alerts for today's civic short.`);
+  // 1. Source topic from 90-Day Calendar or fallback to active posts in Supabase
+  const calEntry = getScheduledUploadForSlot('civic-shorts', todayIst);
+  let leadPost;
 
-  const leadPost = posts[0];
+  if (calEntry) {
+    console.log(`[90-DAY CALENDAR] Sourcing scheduled civic short: "${calEntry.title}"`);
+    const detectedCity = calEntry.title.match(/(Chennai|Coimbatore|Madurai|Salem|Tiruchirappalli|Trichy|Tirunelveli|Vellore|Erode|Thanjavur)/i)?.[0] || 'சென்னை';
+    const detectedCategory = calEntry.title.toLowerCase().includes('power cut') || calEntry.title.toLowerCase().includes('tneb') ? 'electricity' :
+                             calEntry.title.toLowerCase().includes('water') || calEntry.title.includes('குடிநீர்') ? 'water-sanitation' :
+                             calEntry.title.includes('சாலை') || calEntry.title.includes('பள்ளம்') ? 'road-infrastructure' : 'general';
+
+    leadPost = {
+      title_ta: calEntry.title,
+      title_en: calEntry.title,
+      content_ta: calEntry.description,
+      content_en: calEntry.description,
+      area_name: detectedCity,
+      district_slug: detectedCity.toLowerCase(),
+      category_slug: detectedCategory,
+      assigned_department: detectedCategory === 'electricity' ? 'TANGEDCO (Minnalagam: 1912)' :
+                           detectedCategory === 'water-sanitation' ? 'Metrowater / TWAD (1913)' :
+                           'Greater Chennai Corporation / Municipal Administration',
+      thumbnail_text: calEntry.thumbnail_text,
+      hashtags: calEntry.hashtags,
+      custom_description: calEntry.description
+    };
+  } else {
+    console.log('[DATABASE] Fetching latest active civic alerts...');
+    const { data: posts, error } = await supabase
+      .from('post')
+      .select('*')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(3);
+
+    if (error || !posts || posts.length === 0) {
+      console.error('[ERROR] Could not fetch active posts from Supabase:', error);
+      process.exit(1);
+    }
+    leadPost = posts[0];
+  }
+
   const category = leadPost.category_slug || 'general';
   const theme = getCategoryTheme(category);
   const area = leadPost.area_name || leadPost.district_slug || 'தமிழ்நாடு';
@@ -95,81 +134,72 @@ async function main() {
   const dateStr = now.toLocaleDateString('ta-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   const timeStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 
-  // ─── 2. SCRIPT — Hook → Truth → Power structure ──────────────────────────
-  // TARGET BUDGET: S1≈8s | S2≈30s | S3≈14s = ~52s total (well under 60s Shorts limit)
+  // ─── 2. SCRIPT — 4-Beat Dynamic Visual Progression ────────────────────────
+  // TARGET BUDGET: S1≈7s | S2≈10s | S3≈16s | S4≈12s = ~45s total (under 60s Shorts ceiling)
 
-  // SCENE 1 — THE HOOK (0:00–0:08): One sharp sentence, no intro filler
+  // BEAT 1 — THE HOOK (0:00–0:07): Urgent headline
   const firstTitle = normalizeAcronymsToSpokenTamil(leadPost.title_ta || leadPost.title_en || '');
-
   const hookOpener = leadPost.urgency_level === 'critical' || leadPost.urgency_level === 'high'
     ? `${area} பகுதியில இன்னைக்கு ${theme.icon} ${firstTitle}`
     : `${area} பகுதியில ${theme.icon} ${firstTitle}`;
-
-  // Keep hook to ~120 chars so TTS stays ≈7-8 seconds
   const scene1Script = [ hookOpener.slice(0, 120) ];
 
-  // SCENE 2 — THE TRUTH (0:08–0:38): ONE punchy sentence per alert — no body content
-  // Each entry ≈10s of speech at natural Tamil pace
-  const scene2Script = [];
-  posts.forEach((p, idx) => {
-    const pArea = p.area_name || p.district_slug || 'பகுதி';
-    const pTitle = normalizeAcronymsToSpokenTamil(p.title_ta || p.title_en).slice(0, 80);
-
-    // Category-specific punchy opener (natural spoken flow, no robotic numbering)
-    const connector = idx === 0 ? '' : 'அடுத்ததா, ';
-    if (p.category_slug === 'electricity') {
-      scene2Script.push(`${connector}${pArea} power cut: ${pTitle}`);
-    } else if (p.category_slug === 'water-sanitation') {
-      scene2Script.push(`${connector}${pArea} குடிநீர் பிரச்சனை: ${pTitle}`);
-    } else if (p.category_slug === 'road-infrastructure') {
-      scene2Script.push(`${connector}${pArea} road issue: ${pTitle}`);
-    } else if (p.category_slug === 'transport') {
-      scene2Script.push(`${connector}${pArea} traffic: ${pTitle}`);
-    } else {
-      scene2Script.push(`${connector}${pArea} — ${pTitle}`);
-    }
-  });
-
-  // SCENE 3 — THE POWER (0:38–0:52): Helpline + vizhitn.in call-to-action
-  const scene3Script = [
-    `complaint பதிவு செய்ய ${helpline} helpline எண்ணை call பண்ணுங்க.`,
-    `முழு details-க்கு vizhitn.in பாருங்க.`
+  // BEAT 2 — GROUND REALITY & B-ROLL (0:07–0:17): Location and ground context
+  const groundDetails = leadPost.location_text ? `பாதிக்கப்பட்ட பகுதிகள்: ${leadPost.location_text}.` : '';
+  const scene2Script = [
+    `${area} கள நிலவரம்: ${firstTitle}. ${groundDetails}`
   ];
 
-  // ─── 3. Synthesize Audio ─────────────────────────────────────────────────
-  console.log('[TTS] Synthesizing Scene 1 — The Hook...');
+  // BEAT 3 — DATA BREAKDOWN & MULTI-AREA IMPACT (0:17–0:33): Sourced data points
+  const scene3Script = [];
+  posts.slice(1).forEach((p) => {
+    const pArea = p.area_name || p.district_slug || 'பகுதி';
+    const pTitle = normalizeAcronymsToSpokenTamil(p.title_ta || p.title_en).slice(0, 80);
+    scene3Script.push(`அடுத்ததா, ${pArea} பகுதியில ${pTitle}.`);
+  });
+  if (scene3Script.length === 0) {
+    scene3Script.push(`இந்த விவகாரம் குறித்து துறைசார் அதிகாரிகள் நேரடி ஆய்வு மேற்கொண்டு வருகின்றனர்.`);
+  }
+
+  // BEAT 4 — THE POWER & HELPLINE ACTION (0:33–0:45): Verified helpline + portal CTA
+  const scene4Script = [
+    `உடனடி புகார் பதிவு செய்ய ${helpline} உதவி எண்ணை தொடர்பு கொள்ளுங்கள்.`,
+    `முழு விவரங்களுக்கு vizhitn.in பாருங்கள்.`
+  ];
+
+  // ─── 3. Synthesize Audio for all 4 beats ─────────────────────────────────
+  console.log('[TTS] Synthesizing Beat 1 — The Hook...');
   const s1AudioPath = path.join(outDir, `short_s1_audio_${Date.now()}.mp3`);
   await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+5%' });
   const s1Dur = getAudioDuration(s1AudioPath);
 
-  console.log('[TTS] Synthesizing Scene 2 — The Truth...');
+  console.log('[TTS] Synthesizing Beat 2 — Ground Reality...');
   const s2AudioPath = path.join(outDir, `short_s2_audio_${Date.now()}.mp3`);
   await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
   const s2Dur = getAudioDuration(s2AudioPath);
 
-  console.log('[TTS] Synthesizing Scene 3 — The Power...');
+  console.log('[TTS] Synthesizing Beat 3 — Data Breakdown...');
   const s3AudioPath = path.join(outDir, `short_s3_audio_${Date.now()}.mp3`);
   await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
   const s3Dur = getAudioDuration(s3AudioPath);
 
-  const totalDur = s1Dur + s2Dur + s3Dur;
-  console.log(`[AUDIO] S1: ${s1Dur.toFixed(1)}s | S2: ${s2Dur.toFixed(1)}s | S3: ${s3Dur.toFixed(1)}s | Total: ${totalDur.toFixed(1)}s`);
+  console.log('[TTS] Synthesizing Beat 4 — Citizen Power...');
+  const s4AudioPath = path.join(outDir, `short_s4_audio_${Date.now()}.mp3`);
+  await synthesizeSpeech(scene4Script, s4AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+  const s4Dur = getAudioDuration(s4AudioPath);
 
-  // ─── 4. Generate Visuals — Category-Specific FLUX Photo ─────────────────
+  const totalDur = s1Dur + s2Dur + s3Dur + s4Dur;
+  console.log(`[AUDIO] S1: ${s1Dur.toFixed(1)}s | S2: ${s2Dur.toFixed(1)}s | S3: ${s3Dur.toFixed(1)}s | S4: ${s4Dur.toFixed(1)}s | Total: ${totalDur.toFixed(1)}s`);
+
+  // ─── 4. Generate Visuals — Category-Specific FLUX Photo & B-Roll ─────────
   const fluxPrompt = getCategoryFluxPrompt(category);
   const heroPhotoPath = path.join(outDir, `short_flux_hero_${Date.now()}.webp`);
   let heroPhotoUrl = await generateYouTubeSceneVisual(fluxPrompt, heroPhotoPath, '9:16');
   if (!heroPhotoUrl) {
-    // Official VizhiTN Category Graphic Card fallback (zero external stock photos)
     const categoryCardPath = path.resolve(`public/images/categories/${category}.webp`);
-    if (fs.existsSync(categoryCardPath)) {
-      heroPhotoUrl = categoryCardPath;
-    } else {
-      heroPhotoUrl = path.resolve('public/images/categories/general.webp');
-    }
+    heroPhotoUrl = fs.existsSync(categoryCardPath) ? categoryCardPath : path.resolve('public/images/categories/general.webp');
   }
 
-  // Fetch free B-roll video clip for continuous background motion
   console.log(`[B-ROLL] Fetching moving B-roll clip for category "${category}"...`);
   const brollClip = await fetchFreeBrollClip({
     category,
@@ -179,7 +209,7 @@ async function main() {
 
   const brandLogoDataUri = getBrandLogoDataUri();
 
-  // ─── 5. Render Scene 1 — Hook Frame with category-aware urgency styling ──
+  // ─── 5. Render Beat 1 — Hook Frame ───────────────────────────────────────
   const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
   let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
   tplS1 = tplS1
@@ -197,79 +227,102 @@ async function main() {
   const s1FramePath = path.join(outDir, `short_s1_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
 
-  // ─── 6. Render Scene 2 — Truth / Breakdown Frame ─────────────────────────
-  let cardsHtml = '';
-  posts.forEach((p) => {
-    const pTheme = getCategoryTheme(p.category_slug);
-    const isDanger = p.urgency_level === 'critical';
-    const isWarn = p.urgency_level === 'high' || p.urgency_level === 'medium';
-    const cardClass = isDanger ? 'alert-card danger' : (isWarn ? 'alert-card warn' : 'alert-card');
-    const timeText = p.location_text || 'விவரங்களுக்கு vizhitn.in பார்க்கவும்';
-
-    cardsHtml += `
-      <div class="${cardClass}" style="border-left: 6px solid ${pTheme.color};">
-        <div class="card-top">
-          <span class="cat-name" style="color:${pTheme.color}">${pTheme.icon} ${(p.category_slug || 'ALERT').toUpperCase()}</span>
-          <span class="dist-name">📍 ${(p.district_slug || 'TN').toUpperCase()}</span>
-        </div>
-        <div class="card-title">${p.title_ta || p.title_en}</div>
-        <div class="card-timing">${timeText}</div>
-      </div>
-    `;
-  });
-
-  const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-2-breakdown.html');
+  // ─── 6. Render Beat 2 — Ground Reality B-Roll Overlay ────────────────────
+  const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-broll-overlay.html');
   let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
   tplS2 = tplS2
     .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
-    .replace('{{DIGEST_TITLE_TA}}', `இன்றைய முக்கிய நிர்வாக அறிவிப்புகள் (${timeStr})`)
-    .replace('{{ALERTS_CARDS_HTML}}', cardsHtml);
+    .replace('{{SCENE_PHOTO_SRC}}', toImageSource(heroPhotoUrl))
+    .replace('{{LOCATION_TEXT}}', `${area} | தமிழ்நாடு`)
+    .replace('{{CATEGORY_COLOR}}', theme.color)
+    .replace('{{CATEGORY_ICON}}', theme.icon)
+    .replace('{{CATEGORY_LABEL}}', theme.label)
+    .replace('{{HEADLINE_TA}}', leadPost.title_ta || leadPost.title_en || 'கள ஆய்வு அறிக்கை')
+    .replace('{{SUBHEADLINE_TA}}', leadPost.location_text || 'நிர்வாக மற்றும் துறைசார் விவரங்கள்')
+    .replace('{{SOURCE_ATTRIBUTION}}', `துறை: ${leadPost.assigned_department || 'தமிழ்நாடு அரசு'}`);
 
   const s2FramePath = path.join(outDir, `short_s2_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS2, s2FramePath, { width: 1080, height: 1920 });
 
-  // ─── 7. Render Scene 3 — Power / vizhitn.in CTA Frame ───────────────────
-  const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
+  // ─── 7. Render Beat 3 — Infographic Data Stat Card ───────────────────────
+  const statMetric = leadPost.category_slug === 'electricity' ? '1912' :
+                     leadPost.category_slug === 'water-sanitation' ? '1913' : 'VERIFIED';
+  const statLabelTa = leadPost.category_slug === 'electricity' ? 'மின்தடை மற்றும் பராமரிப்பு பகுதிகள்' :
+                      leadPost.category_slug === 'water-sanitation' ? 'குடிநீர் வாரிய அவசர அறிவிப்பு' : 'அரசு நிர்வாக அறிவிப்பு';
+
+  let pointsHtml = '';
+  posts.forEach(p => {
+    const pArea = p.area_name || p.district_slug || 'பகுதி';
+    pointsHtml += `
+      <div class="point-item">
+        <span class="point-bullet">✦</span>
+        <span class="point-text"><strong>${pArea}:</strong> ${p.title_ta || p.title_en}</span>
+      </div>
+    `;
+  });
+
+  const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-stat-card.html');
   let tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
-  tplS3 = tplS3.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
+  tplS3 = tplS3
+    .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+    .replace('{{CATEGORY_COLOR}}', theme.color)
+    .replace('{{CATEGORY_ICON}}', theme.icon)
+    .replace('{{CATEGORY_LABEL}}', theme.label)
+    .replace('{{STAT_METRIC}}', statMetric)
+    .replace('{{STAT_LABEL_TA}}', statLabelTa)
+    .replace('{{STAT_DESC_EN}}', `${(leadPost.district_slug || 'TN').toUpperCase()} CIVIC DATA`)
+    .replace('{{POINTS_HTML}}', pointsHtml)
+    .replace('{{SOURCE_NAME}}', leadPost.assigned_department || 'Tamil Nadu Administration')
+    .replace('{{HELPLINE_NUM}}', helpline);
 
   const s3FramePath = path.join(outDir, `short_s3_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
 
-  // ─── 8. Generate Kinetic Subtitles for Mobile Retention ─────────────────
+  // ─── 8. Render Beat 4 — Power & vizhitn.in CTA Frame ─────────────────────
+  const tplS4Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
+  let tplS4 = fs.readFileSync(tplS4Path, 'utf-8');
+  tplS4 = tplS4.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
+
+  const s4FramePath = path.join(outDir, `short_s4_frame_${Date.now()}.png`);
+  renderHtmlToImage(tplS4, s4FramePath, { width: 1080, height: 1920 });
+
+  // ─── 9. Generate Millisecond-Accurate Subtitles ──────────────────────────
   const s1SubPath = path.join(outDir, `short_s1_sub_${Date.now()}.ass`);
   const s2SubPath = path.join(outDir, `short_s2_sub_${Date.now()}.ass`);
   const s3SubPath = path.join(outDir, `short_s3_sub_${Date.now()}.ass`);
+  const s4SubPath = path.join(outDir, `short_s4_sub_${Date.now()}.ass`);
 
   try {
     generateAssSubtitleFile(generateCaptionsFromClauses(scene1Script, s1Dur), s1SubPath, '9:16');
     generateAssSubtitleFile(generateCaptionsFromClauses(scene2Script, s2Dur), s2SubPath, '9:16');
     generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
+    generateAssSubtitleFile(generateCaptionsFromClauses(scene4Script, s4Dur), s4SubPath, '9:16');
   } catch (subErr) {
-    console.log('[CAPTIONS WARN] Could not generate subtitles:', subErr.message);
+    console.log('[CAPTIONS WARN] Subtitle generation error:', subErr.message);
   }
 
-  // ─── 9. Generate High-CTR Vertical Thumbnail (1080x1920) ────────────────
+  // ─── 10. Generate High-CTR Vertical Thumbnail ────────────────────────────
   const thumbnailPath = path.join(outDir, `vizhitn_thumb_short_${Date.now()}.png`);
   try {
     await generateShortsThumbnail({
-      titleTa: leadPost.title_ta || leadPost.title_en || '',
+      titleTa: leadPost.thumbnail_text || leadPost.title_ta || leadPost.title_en || firstTitle,
       category: theme.label,
-      heroImageUrl: heroPhotoUrl,
+      heroImageUrl: heroPhotoUrl || path.resolve('public/images/categories/general.webp'),
       outputPath: thumbnailPath
     });
   } catch (e) {
-    console.warn('[THUMBNAIL] Generation failed, skipping custom thumbnail:', e.message);
+    console.warn('[THUMBNAIL WARN]:', e.message);
   }
 
-  // ─── 10. Assemble Multi-Scene Short with Dynamic Motion & Frame 0 Thumbnail ─
+  // ─── 11. Assemble 4-Beat Multi-Scene Short with Dynamic Motion ────────────
   const videoOutputPath = path.join(outDir, `vizhitn_short_${Date.now()}.mp4`);
-  console.log('[COMPOSER] Assembling 3-Scene Civic Short with dynamic motion & kinetic captions...');
+  console.log('[COMPOSER] Assembling 4-Beat Civic Short with sidechain ducking & kinetic captions...');
 
   const scenes = [
     { imagePath: s1FramePath, videoPath: brollClip, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: s1SubPath },
     { imagePath: s2FramePath, videoPath: brollClip, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: s2SubPath },
-    { imagePath: s3FramePath, videoPath: brollClip, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: s3SubPath }
+    { imagePath: s3FramePath, videoPath: brollClip, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: false, subtitlePath: s3SubPath },
+    { imagePath: s4FramePath, videoPath: brollClip, audioPath: s4AudioPath, durationSec: s4Dur, hasMotion: true, isLastScene: true, subtitlePath: s4SubPath }
   ];
 
   assembleMultiSceneShortsVideo({
@@ -279,30 +332,58 @@ async function main() {
   });
   console.log(`[COMPOSER] Short generated: ${videoOutputPath}`);
 
-  // ─── 10. Build SEO Metadata ───────────────────────────────────────────────
-  const { title, description, tags } = generateVideoMetadata({
+  // ─── 12. Automated Quality-Control (QC) Gate ─────────────────────────────
+  const qcReport = runQualityControl({ videoPath: videoOutputPath, isShort: true, generateSheet: true });
+  if (!qcReport.passed) {
+    console.error('[QC BLOCKED] Rendered video failed broadcast quality checks. Aborting publishing.');
+    process.exit(1);
+  }
+
+  // ─── 13. YouTube API Quota Safety Guard ──────────────────────────────────
+  const quota = checkQuotaAvailable('VIDEO_UPLOAD');
+  if (!quota.allowed) {
+    console.warn(`[QUOTA BLOCKED] ${quota.reason}`);
+    process.exit(0);
+  }
+
+  // ─── 14. Build SEO Metadata ───────────────────────────────────────────────
+  const { title: autoTitle, description: autoDesc, tags } = generateVideoMetadata({
     article: leadPost,
     script: null,
     isShort: true,
     chapterTimestamps: []
   });
 
-  // ─── 11. Upload to YouTube ────────────────────────────────────────────────
+  const finalTitle = (leadPost.title_ta || autoTitle).slice(0, 95);
+  const finalDesc = leadPost.custom_description
+    ? `🚨 ${leadPost.title_ta}\n\n${leadPost.custom_description}\n\n📞 புகார் உதவி மையம்: ${helpline}\n🌐 முழு விவரங்கள்: https://vizhitn.in\n\n${(leadPost.hashtags || ['#Shorts', '#VizhiTN', '#TamilNaduNews']).join(' ')}`
+    : autoDesc;
+
+  // ─── 15. Upload to YouTube ────────────────────────────────────────────────
   const uploadResult = await uploadToYouTube({
     videoFilePath: videoOutputPath,
-    title,
-    description,
+    title: finalTitle,
+    description: finalDesc,
     tags,
     privacyStatus: isDryRun ? 'unlisted' : 'public',
     isShort: true
   });
 
   if (uploadResult.videoId && !uploadResult.dryRun) {
-    // Upload custom thumbnail
+    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: finalTitle });
+    await recordBroadcastSuccess({
+      broadcastDate: todayIst,
+      format: 'civic-shorts',
+      timeIst: calEntry?.time_ist || '07:30 PM',
+      title: finalTitle,
+      youtubeVideoId: uploadResult.videoId,
+      youtubeUrl: uploadResult.videoUrl,
+      metadata: { district: leadPost.district_slug, category: leadPost.category_slug }
+    });
+
     if (fs.existsSync(thumbnailPath)) {
       await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
     }
-    // Auto-post pinned comment to drive vizhitn.in traffic
     await postPinnedComment(uploadResult.videoId,
       `📍 உங்க ஏரியால இது நடக்குதா? vizhitn.in-ல report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
     );

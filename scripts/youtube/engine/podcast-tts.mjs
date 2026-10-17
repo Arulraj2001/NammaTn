@@ -8,7 +8,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { normalizeAcronymsToSpokenTamil, sanitizeClauseText } from './tamil-phonetics.mjs';
 import { getFfmpegBinaryPath, getAudioDuration } from './video-composer.mjs';
-import { cleanCaptionText, chunkSentenceForCaptions } from './captions-engine.mjs';
+import { cleanCaptionText, chunkSentenceForCaptions, parseVttTiming, generateCaptionsFromTimedSegments } from './captions-engine.mjs';
 
 function getPythonBinary() {
   for (const bin of ['python', 'python3']) {
@@ -44,9 +44,9 @@ const VOICE_PROSODY = {
 };
 
 /**
- * Synthesizes a single dialogue turn using edge-tts
+ * Synthesizes a single dialogue turn using edge-tts with optional VTT subtitle output
  */
-function synthesizeTurnAudio(text, outputPath, speaker = 'karthik', emotion = 'default') {
+function synthesizeTurnAudio(text, outputPath, vttPath = null, speaker = 'karthik', emotion = 'default') {
   const python = getPythonBinary();
   const config = VOICE_PROSODY[speaker] || VOICE_PROSODY.karthik;
   const prosody = config.emotions[emotion] || config.emotions.default;
@@ -55,13 +55,14 @@ function synthesizeTurnAudio(text, outputPath, speaker = 'karthik', emotion = 'd
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
   const safeText = text.replace(/'/g, "\\'");
-  const cmd = `${python} -m edge_tts --voice "${config.voice}" --rate="${prosody.rate}" --pitch="${prosody.pitch}" --text '${safeText}' --write-media "${outputPath.replace(/\\/g, '/')}"`;
+  const vttArg = vttPath ? ` --write-subtitles "${vttPath.replace(/\\/g, '/')}"` : '';
+  const cmd = `${python} -m edge_tts --voice "${config.voice}" --rate="${prosody.rate}" --pitch="${prosody.pitch}" --text '${safeText}' --write-media "${outputPath.replace(/\\/g, '/')}"${vttArg}`;
 
   try {
     execSync(cmd, { stdio: 'pipe', timeout: 45000, windowsHide: true });
   } catch {
     const safeTextDq = text.replace(/"/g, '\\"');
-    const cmdDq = `${python} -m edge_tts --voice "${config.voice}" --rate="${prosody.rate}" --pitch="${prosody.pitch}" --text "${safeTextDq}" --write-media "${outputPath.replace(/\\/g, '/')}"`;
+    const cmdDq = `${python} -m edge_tts --voice "${config.voice}" --rate="${prosody.rate}" --pitch="${prosody.pitch}" --text "${safeTextDq}" --write-media "${outputPath.replace(/\\/g, '/')}"${vttArg}`;
     execSync(cmdDq, { stdio: 'pipe', timeout: 45000, windowsHide: true });
   }
 
@@ -98,7 +99,8 @@ export async function synthesizePodcastTurn({ turn, actNum, turnIndex, outputDir
   const cleanText = sanitizeClauseText(normalizeAcronymsToSpokenTamil(rawText));
 
   const rawAudioPath = path.join(outputDir, `turn_raw_${actNum}_${turnIndex}_${Date.now()}.mp3`);
-  synthesizeTurnAudio(cleanText, rawAudioPath, speaker, emotion);
+  const vttPath = path.join(outputDir, `turn_vtt_${actNum}_${turnIndex}_${Date.now()}.vtt`);
+  synthesizeTurnAudio(cleanText, rawAudioPath, vttPath, speaker, emotion);
 
   const rawDur = getAudioDuration(rawAudioPath);
 
@@ -120,14 +122,30 @@ export async function synthesizePodcastTurn({ turn, actNum, turnIndex, outputDir
 
   const finalDur = getAudioDuration(fadedAudioPath);
 
-  // Generate turn-locked ASS subtitle file
+  // Generate turn-locked ASS subtitle file with neural speech boundaries
   const subPath = path.join(outputDir, `turn_sub_${actNum}_${turnIndex}_${Date.now()}.ass`);
   const isKarthik = speaker === 'karthik';
   const speakerLabel = isKarthik ? 'கார்த்திக்' : 'கவிதா';
   const primaryColorCode = isKarthik ? '\\c&H00FFFF00&' : '\\c&H0015CCFA&';
 
-  // Chunk turn into 4 to 5-word smooth subtitle chunks
-  const chunks = chunkSentenceForCaptions(cleanText, finalDur, 0, 4);
+  // Read real VTT timing if available
+  let chunks = [];
+  if (fs.existsSync(vttPath)) {
+    try {
+      const vttContent = fs.readFileSync(vttPath, 'utf-8');
+      const vttSegs = parseVttTiming(vttContent);
+      if (vttSegs.length > 0) {
+        chunks = generateCaptionsFromTimedSegments(vttSegs, '16:9');
+      }
+    } catch (_) {}
+    try { fs.unlinkSync(vttPath); } catch (_) {}
+  }
+
+  // Fallback to clause chunking
+  if (!chunks || chunks.length === 0) {
+    chunks = chunkSentenceForCaptions(cleanText, finalDur, 0, 4);
+  }
+
   let dialogEvents = '';
 
   for (const chunk of chunks) {

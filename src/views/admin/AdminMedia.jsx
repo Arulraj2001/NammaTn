@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import MediaUploader from "@/components/media/MediaUploader";
+import StorageAuditor from "@/components/admin/StorageAuditor";
 import { supabase } from "@/api/supabaseClient";
 
 const getFileType = (url) => {
@@ -142,12 +143,21 @@ export default function AdminMedia() {
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Media</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage files and browse uploaded media</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Media & Storage</h1>
+          <p className="text-sm text-slate-500 mt-1">Audit storage, detect orphaned files, and manage media uploads</p>
         </div>
-        <Button onClick={() => setActiveTab("uploads")} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white">
-          <Plus className="w-4 h-4" /> Upload New Media
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            onClick={() => setActiveTab("cleaner")} 
+            variant={activeTab === "cleaner" ? "default" : "outline"}
+            className={activeTab === "cleaner" ? "bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-2" : "flex items-center gap-2 border-rose-200 text-rose-600 hover:bg-rose-50 dark:border-rose-900/60 dark:hover:bg-rose-950/30"}
+          >
+            <Trash2 className="w-4 h-4" /> Storage Cleaner
+          </Button>
+          <Button onClick={() => setActiveTab("uploads")} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+            <Plus className="w-4 h-4" /> Upload New Media
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -171,6 +181,16 @@ export default function AdminMedia() {
           }`}
         >
           📤 Direct Uploads
+        </button>
+        <button
+          onClick={() => setActiveTab("cleaner")}
+          className={`px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-all flex items-center gap-1.5 ${
+            activeTab === "cleaner"
+              ? "border-rose-600 text-rose-600"
+              : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-white"
+          }`}
+        >
+          <span>🧹 Storage Cleaner & Auditor</span>
         </button>
       </div>
 
@@ -317,6 +337,10 @@ export default function AdminMedia() {
             )}
           </div>
         </div>
+      )}
+
+      {activeTab === "cleaner" && (
+        <StorageAuditor />
       )}
 
       <Dialog open={!!preview} onOpenChange={() => setPreview(null)}>

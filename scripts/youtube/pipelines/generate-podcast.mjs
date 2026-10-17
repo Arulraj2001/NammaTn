@@ -12,9 +12,13 @@ import { synthesizePodcastTurn } from '../engine/podcast-tts.mjs';
 import { assemblePodcastVideo, generatePodcastThumbnail } from '../engine/podcast-composer.mjs';
 import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
-import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
+import { getBrandLogoDataUri, getHostAvatarDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
+import { runQualityControl } from '../engine/qc-engine.mjs';
+import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
+import { getScheduledUploadForSlot, getTodayIst } from '../engine/calendar-reader.mjs';
+import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -35,12 +39,45 @@ async function main() {
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
   const brandLogoDataUri = getBrandLogoDataUri();
+  const todayIst = getTodayIst();
 
-  // 1. Select Episode Topic
+  // Deduplication Guard: Never upload duplicate podcast for today's slot unless forced
+  if (!process.argv.includes('--force')) {
+    const status = await isBroadcastCompletedToday('podcast', todayIst);
+    if (status.published) {
+      console.log(`[DEDUP GUARD ✓] Vizhi Uncut Podcast already broadcast today (${status.existingRecord?.youtube_video_id || 'recorded'}). Exiting.`);
+      process.exit(0);
+    }
+  }
+
+  // 1. Select Episode Topic from 90-Day Calendar or fallback to rotating catalog
+  const calEntry = getScheduledUploadForSlot('podcast', todayIst);
   let topic;
-  if (topicIdFlag) {
+
+  if (calEntry && !topicIdFlag) {
+    console.log(`[90-DAY CALENDAR] Sourcing scheduled podcast topic: "${calEntry.title}"`);
+    topic = {
+      id: `cal-podcast-${todayIst}`,
+      seriesId: 'vizhi-uncut',
+      seriesNameTa: 'விழி அன்கட் பாட்காஸ்ட்',
+      seriesNameEn: 'Vizhi Uncut Duo Podcast',
+      episodeTitleTa: calEntry.title,
+      episodeTitleEn: calEntry.title,
+      caseBrief: calEntry.description,
+      legalSectionOrTool: 'Citizen vigilance, verified public RTI data, official helpline numbers and community action.',
+      helplineText: 'முதல்வர் உதவி மையம் 1100 | மின்வாரிய உதவி 1912 | சைபர் கிரைம் 1930',
+      categoryColor: '#EF4444',
+      categoryIcon: '🎙️',
+      district: 'தமிழ்நாடு (Tamil Nadu)',
+      fluxPrompt: 'Two professional Indian journalists Karthik and Kavitha in modern news podcast studio in Chennai Tamil Nadu discussing investigative citizen issues, cinematic warm studio lights',
+      thumbnailText: calEntry.thumbnail_text,
+      hashtags: calEntry.hashtags,
+      tags: calEntry.hashtags.map(h => h.replace('#', ''))
+    };
+  } else if (topicIdFlag) {
     topic = PODCAST_CATALOG.find(t => t.id === topicIdFlag);
   }
+
   if (!topic) {
     const dayOfWeek = new Date().getDay();
     topic = getPodcastTopicForSchedule(dayOfWeek, seriesFlag);
@@ -104,12 +141,28 @@ async function main() {
       const karthikClass = isKarthik ? 'karthik-active' : 'host-dimmed';
       const kavithaClass = isKarthik ? 'host-dimmed' : 'kavitha-active';
 
-      // Equalizer bars: High-energy varied heights when active, flat 4px when idle
-      const eqK = isKarthik ? [26, 38, 18, 42, 30, 22, 36, 20] : [4, 4, 4, 4, 4, 4, 4, 4];
-      const eqV = isKarthik ? [4, 4, 4, 4, 4, 4, 4, 4] : [24, 40, 20, 36, 42, 18, 30, 26];
+      // Dynamic equalizer bars based on active turn rhythm
+      const activeEq = [
+        20 + Math.round(Math.random() * 22),
+        26 + Math.round(Math.random() * 20),
+        16 + Math.round(Math.random() * 24),
+        32 + Math.round(Math.random() * 16),
+        24 + Math.round(Math.random() * 22),
+        18 + Math.round(Math.random() * 26),
+        28 + Math.round(Math.random() * 18),
+        20 + Math.round(Math.random() * 18)
+      ];
+      const idleEq = [4, 4, 4, 4, 4, 4, 4, 4];
+      const eqK = isKarthik ? activeEq : idleEq;
+      const eqV = isKarthik ? idleEq : activeEq;
+
+      const karthikAvatarUri = getHostAvatarDataUri('karthik');
+      const kavithaAvatarUri = getHostAvatarDataUri('kavitha');
 
       let frameHtml = studioTplHtml
         .replace(/\{\{BRAND_LOGO_DATA_URI\}\}/g, brandLogoDataUri)
+        .replace(/\{\{KARTHIK_AVATAR_URI\}\}/g, karthikAvatarUri)
+        .replace(/\{\{KAVITHA_AVATAR_URI\}\}/g, kavithaAvatarUri)
         .replace(/\{\{CATEGORY_COLOR\}\}/g, topic.categoryColor || '#38bdf8')
         .replace(/\{\{SERIES_ICON\}\}/g, topic.categoryIcon || '🎙️')
         .replace(/\{\{SERIES_NAME_TA\}\}/g, topic.seriesNameTa)
@@ -156,12 +209,26 @@ async function main() {
     outputPath: videoOutputPath
   });
 
+  // Automated Quality Control (QC) Gate
+  const qcReport = runQualityControl({ videoPath: videoOutputPath, isShort: false, generateSheet: true });
+  if (!qcReport.passed) {
+    console.error('[QC BLOCKED] Podcast episode failed broadcast quality checks. Aborting publishing.');
+    process.exit(1);
+  }
+
+  // Quota safety check
+  const quota = checkQuotaAvailable('VIDEO_UPLOAD');
+  if (!quota.allowed) {
+    console.warn(`[QUOTA BLOCKED] ${quota.reason}`);
+    process.exit(0);
+  }
+
   // 6. Render Custom 16:9 High-CTR Thumbnail
   const thumbnailPath = path.join(outDir, `vizhitn_podcast_thumb_${topic.id}_${Date.now()}.png`);
   console.log('\n[THUMBNAIL] Rendering custom 1280x720 high-CTR podcast thumbnail...');
   try {
     await generatePodcastThumbnail({
-      titleTa: scriptData.thumbnailHookTa || topic.episodeTitleTa,
+      titleTa: topic.thumbnailText || scriptData.thumbnailHookTa || topic.episodeTitleTa,
       seriesNameTa: topic.seriesNameTa,
       episodeBadge: 'VIZHI UNCUT',
       heroImageUrl: heroVisualUrl,
@@ -188,7 +255,7 @@ async function main() {
     `💬 இந்த விவாதம் பற்றிய உங்கள் கருத்து என்ன? கமெண்டில் சொல்லுங்கள் 👇\n` +
     `━━━━━━━━━━━━━━━━━━━━━\n\n` +
     `🌐 VizhiTN Community: https://vizhitn.in\n\n` +
-    `#TamilPodcast #VizhiTN #VizhiUncut #TamilNadu #ScamAlertTamil #CitizenRights`;
+    `${(topic.hashtags || ['#TamilPodcast', '#VizhiTN', '#VizhiUncut', '#TamilNadu', '#ScamAlertTamil', '#CitizenRights']).join(' ')}`;
 
   const tags = Array.from(new Set([
     'Tamil Podcast', 'VizhiTN', 'Vizhi Uncut', 'Karthik Kavitha Podcast',
@@ -208,6 +275,17 @@ async function main() {
   });
 
   if (uploadResult.videoId && !uploadResult.dryRun) {
+    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
+    await recordBroadcastSuccess({
+      broadcastDate: todayIst,
+      format: 'podcast',
+      timeIst: calEntry?.time_ist || '06:00 PM',
+      title: ytTitle,
+      youtubeVideoId: uploadResult.videoId,
+      youtubeUrl: uploadResult.videoUrl,
+      metadata: { topicId: topic.id }
+    });
+
     if (fs.existsSync(thumbnailPath)) {
       await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
     }

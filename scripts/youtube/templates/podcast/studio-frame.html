@@ -177,10 +177,17 @@
       border: 3px solid rgba(255, 255, 255, 0.15);
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 64px;
+      overflow: hidden;
       margin-bottom: 20px;
       position: relative;
+    }
+
+    .host-avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
     }
 
     .host-card.karthik-active .host-avatar-ring {
@@ -481,7 +488,7 @@
     <div class="host-card {{KARTHIK_ACTIVE_CLASS}}">
       <div class="speaking-pill">● SPEAKING NOW</div>
       <div class="host-avatar-ring">
-        <span>👨‍💼</span>
+        <img src="{{KARTHIK_AVATAR_URI}}" class="host-avatar-img" alt="கார்த்திக்">
         <div class="mic-icon-badge">🎙️</div>
       </div>
       <div class="host-name-ta">கார்த்திக்</div>
@@ -519,7 +526,7 @@
     <div class="host-card {{KAVITHA_ACTIVE_CLASS}}">
       <div class="speaking-pill">● SPEAKING NOW</div>
       <div class="host-avatar-ring">
-        <span>👩‍💼</span>
+        <img src="{{KAVITHA_AVATAR_URI}}" class="host-avatar-img" alt="கவிதா">
         <div class="mic-icon-badge">🎙️</div>
       </div>
       <div class="host-name-ta">கவிதா</div>

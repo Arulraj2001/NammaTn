@@ -38,6 +38,10 @@ export function ensureSfxAssetsExist() {
     {
       name: 'civic-outro-beat.mp3',
       filter: 'aevalsrc=(sin(2*PI*max(35\\, 120-100*t)*t)*exp(-2.2*t)*0.85 + sin(2*PI*220*t)*exp(-6*t)*0.25):d=2.0:s=44100,volume=0.9'
+    },
+    {
+      name: 'broadcast-bed.mp3',
+      filter: 'aevalsrc=(sin(2*PI*110*t)*0.18 + sin(2*PI*164.81*t)*0.14 + sin(2*PI*220*t)*0.12 + sin(2*PI*293.66*t)*0.08 + sin(2*PI*329.63*t)*0.08)*exp(-0.03*mod(t\\, 8)):d=180:s=44100,lowpass=f=480,volume=0.32'
     }
   ];
 

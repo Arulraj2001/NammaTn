@@ -28,6 +28,10 @@
     "yt:rights:dry-run": "node scripts/youtube/pipelines/generate-rights-shorts.mjs --dry-run",
     "yt:long": "node scripts/youtube/pipelines/generate-long-video.mjs",
     "yt:long:dry-run": "node scripts/youtube/pipelines/generate-long-video.mjs --dry-run",
+    "yt:podcast": "node scripts/youtube/pipelines/generate-podcast.mjs",
+    "yt:podcast:dry-run": "node scripts/youtube/pipelines/generate-podcast.mjs --dry-run",
+    "qc:audit": "node -e \"import('./scripts/youtube/engine/qc-engine.mjs').then(m => console.log('QC Engine Loaded Successfully'))\"",
+    "quota:summary": "node -e \"import('./scripts/youtube/engine/quota-tracker.mjs').then(m => console.log(m.getDailyQuotaSummary()))\"",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix"
   },

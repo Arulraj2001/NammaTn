@@ -31,17 +31,21 @@ function checkEdgeTtsCli(python) {
   }
 }
 
+import { parseVttTiming } from './captions-engine.mjs';
+
 // ── Single-clause synthesis via Python edge-tts ───────────────────────────────
 
 /**
  * Synthesises a single text clause to an MP3 file using the Python edge-tts CLI.
  * Each call spawns a fresh subprocess — no WebSocket state shared between clauses.
+ * Also generates a VTT subtitle file to capture true neural speech timings.
  *
- * @param {string} text        - Tamil text to synthesise
- * @param {string} outputPath  - Destination MP3 file path
- * @param {Object} opts        - { voice, rate, pitch }
+ * @param {string} text           - Tamil text to synthesise
+ * @param {string} outputPath     - Destination MP3 file path
+ * @param {string|null} vttPath   - Optional destination VTT subtitle file path
+ * @param {Object} opts           - { voice, rate, pitch }
  */
-function synthesiseClauseToPython(text, outputPath, opts = {}) {
+function synthesiseClauseToPython(text, outputPath, vttPath = null, opts = {}) {
   const python  = getPythonBinary();
   const voice   = opts.voice  || YOUTUBE_CONFIG.voices.tamilFemale;
   const rate    = opts.rate   || YOUTUBE_CONFIG.voices.defaultRate   || '+5%';
@@ -50,28 +54,28 @@ function synthesiseClauseToPython(text, outputPath, opts = {}) {
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
+  const baseArgs = [
+    '-m', 'edge_tts',
+    '--voice', voice,
+    '--rate', rate,
+    '--pitch', pitch
+  ];
+
+  const fullArgs = [...baseArgs, '--text', text, '--write-media', outputPath];
+  if (vttPath) {
+    fullArgs.push('--write-subtitles', vttPath);
+  }
+
   try {
-    execFileSync(python, [
-      '-m', 'edge_tts',
-      '--voice', voice,
-      '--rate', rate,
-      '--pitch', pitch,
-      '--text', text,
-      '--write-media', outputPath
-    ], { stdio: 'pipe', timeout: 45000, windowsHide: true });
+    execFileSync(python, fullArgs, { stdio: 'pipe', timeout: 45000, windowsHide: true });
   } catch (err) {
     // Fallback: write text to UTF-8 file to bypass any Windows command-line quoting quirks
     const tempTextFile = path.join(dir, `_temp_text_${Date.now()}.txt`);
     fs.writeFileSync(tempTextFile, text, 'utf-8');
     try {
-      execFileSync(python, [
-        '-m', 'edge_tts',
-        '--voice', voice,
-        '--rate', rate,
-        '--pitch', pitch,
-        '--file', tempTextFile,
-        '--write-media', outputPath
-      ], { stdio: 'pipe', timeout: 45000, windowsHide: true });
+      const fallbackArgs = [...baseArgs, '--file', tempTextFile, '--write-media', outputPath];
+      if (vttPath) fallbackArgs.push('--write-subtitles', vttPath);
+      execFileSync(python, fallbackArgs, { stdio: 'pipe', timeout: 45000, windowsHide: true });
     } finally {
       try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch {}
     }
@@ -86,13 +90,13 @@ function synthesiseClauseToPython(text, outputPath, opts = {}) {
 
 /**
  * Synthesises long Tamil narration into studio-quality MP3.
- * Splits input into micro-clauses, synthesises each in isolation,
- * then stitches them together with FFmpeg.
+ * Splits input into micro-clauses, synthesises each in isolation with VTT timestamps,
+ * then stitches them together with FFmpeg while maintaining millisecond-level word timing.
  *
  * @param {string|string[]} input  - Text string OR pre-split clause array
  * @param {string} outputFilePath  - Destination MP3
  * @param {Object} options         - { voice, rate, pitch }
- * @returns {Promise<{ filePath: string, voice: string, durationSec: number }>}
+ * @returns {Promise<{ filePath: string, voice: string, durationSec: number, timedSegments: Array<{ text: string, startSec: number, endSec: number }> }>}
  */
 export async function synthesizeSpeech(input, outputFilePath, options = {}) {
   const voice  = options.voice || YOUTUBE_CONFIG.voices.tamilFemale;
@@ -122,16 +126,19 @@ export async function synthesizeSpeech(input, outputFilePath, options = {}) {
 
   const sessionId = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
   const tempClips = [];
+  const allTimedSegments = [];
+  let cumulativeTimeOffset = 0;
 
   try {
-    // 2. Synthesise each clause independently
+    // 2. Synthesise each clause independently with VTT timing
     for (let i = 0; i < clauses.length; i++) {
       const chunkPath = path.join(outDir, `_tts_chunk_${sessionId}_${i}.mp3`);
+      const vttPath = path.join(outDir, `_tts_chunk_${sessionId}_${i}.vtt`);
 
       let synthesised = false;
       for (let attempt = 1; attempt <= 3 && !synthesised; attempt++) {
         try {
-          synthesiseClauseToPython(clauses[i], chunkPath, options);
+          synthesiseClauseToPython(clauses[i], chunkPath, vttPath, options);
           synthesised = true;
         } catch (err) {
           const waitMs = attempt * 1000;
@@ -143,6 +150,43 @@ export async function synthesizeSpeech(input, outputFilePath, options = {}) {
       if (!synthesised) throw new Error(`[TTS] Failed to synthesise chunk ${i} after 3 attempts: "${clauses[i].slice(0, 60)}"`);
 
       tempClips.push(chunkPath);
+
+      // Measure exact duration of this chunk
+      let chunkDur = 3.0;
+      try {
+        const probe = execSync(`"${ffmpeg}" -i "${chunkPath}" 2>&1`, { timeout: 10000 }).toString();
+        const m = probe.match(/Duration:\s*(\d+):(\d+):(\d+\.\d+)/);
+        if (m) chunkDur = +m[1] * 3600 + +m[2] * 60 + +m[3];
+      } catch (_) {}
+
+      // Extract real VTT timing and offset by cumulative duration
+      let vttSegments = [];
+      if (fs.existsSync(vttPath)) {
+        try {
+          const vttContent = fs.readFileSync(vttPath, 'utf-8');
+          vttSegments = parseVttTiming(vttContent);
+        } catch (_) {}
+        try { fs.unlinkSync(vttPath); } catch (_) {}
+      }
+
+      if (vttSegments.length > 0) {
+        for (const seg of vttSegments) {
+          allTimedSegments.push({
+            text: seg.text,
+            startSec: Math.round((cumulativeTimeOffset + seg.startSec) * 100) / 100,
+            endSec: Math.round((cumulativeTimeOffset + seg.endSec) * 100) / 100
+          });
+        }
+      } else {
+        // Fallback: chunk-level timing boundary
+        allTimedSegments.push({
+          text: clauses[i],
+          startSec: Math.round(cumulativeTimeOffset * 100) / 100,
+          endSec: Math.round((cumulativeTimeOffset + chunkDur) * 100) / 100
+        });
+      }
+
+      cumulativeTimeOffset += chunkDur;
 
       // 150ms pause between calls — prevents edge-tts server rate-limiting
       if (i < clauses.length - 1) await new Promise(r => setTimeout(r, 150));
@@ -165,19 +209,15 @@ export async function synthesizeSpeech(input, outputFilePath, options = {}) {
       try { fs.unlinkSync(concatListPath); } catch {}
     }
 
-    // 4. Probe duration
-    let durationSec = 45;
+    // 4. Probe final duration
+    let durationSec = cumulativeTimeOffset;
     try {
       const probe = execSync(`"${ffmpeg}" -i "${outputFilePath}" 2>&1`, { timeout: 10000 }).toString();
       const m = probe.match(/Duration:\s*(\d+):(\d+):(\d+\.\d+)/);
       if (m) durationSec = +m[1] * 3600 + +m[2] * 60 + +m[3];
-    } catch (err) {
-      const txt = (err.stdout || '').toString() + (err.stderr || '').toString();
-      const m = txt.match(/Duration:\s*(\d+):(\d+):(\d+\.\d+)/);
-      if (m) durationSec = +m[1] * 3600 + +m[2] * 60 + +m[3];
-    }
+    } catch (_) {}
 
-    return { filePath: outputFilePath, voice, durationSec };
+    return { filePath: outputFilePath, voice, durationSec, timedSegments: allTimedSegments };
 
   } finally {
     for (const c of tempClips) {
