@@ -16,6 +16,7 @@ import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engi
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { generateShortsThumbnail } from '../engine/thumbnail-shorts-engine.mjs';
+import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
 import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
@@ -82,6 +83,7 @@ async function main() {
   // 1. Source topic from 90-Day Calendar or fallback to active posts in Supabase
   const calEntry = getScheduledUploadForSlot('civic-shorts', todayIst);
   let leadPost;
+  let posts = [];
 
   if (calEntry) {
     console.log(`[90-DAY CALENDAR] Sourcing scheduled civic short: "${calEntry.title}"`);
@@ -105,19 +107,21 @@ async function main() {
       hashtags: calEntry.hashtags,
       custom_description: calEntry.description
     };
+    posts = [leadPost];
   } else {
     console.log('[DATABASE] Fetching latest active civic alerts...');
-    const { data: posts, error } = await supabase
+    const { data: dbPosts, error } = await supabase
       .from('post')
       .select('*')
       .eq('status', 'active')
       .order('created_date', { ascending: false })
       .limit(3);
 
-    if (error || !posts || posts.length === 0) {
+    if (error || !dbPosts || dbPosts.length === 0) {
       console.error('[ERROR] Could not fetch active posts from Supabase:', error);
       process.exit(1);
     }
+    posts = dbPosts;
     leadPost = posts[0];
   }
 
@@ -392,25 +396,25 @@ async function main() {
   console.log('====================================================');
   console.log('CIVIC ALERT SHORT GENERATED & PUBLISHED!');
   console.log('Video URL:', uploadResult.videoUrl);
-  console.log('Title:', title);
+  console.log('Title:', finalTitle);
   console.log('====================================================');
 
-  // ─── 12. Cross-Post to Meta Socials ──────────────────────────────────────
-  const facebookCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n📞 புகார்: ${helpline}\n🌐 விவரங்கள்: https://vizhitn.in\n\n${description.split('\n').pop()}`;
+  // ─── 16. Cross-Post to Meta Socials ──────────────────────────────────────
+  const facebookCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n📞 புகார்: ${helpline}\n🌐 விவரங்கள்: https://vizhitn.in\n\n${finalDesc.split('\n').pop()}`;
 
   await crossPostVideoToMetaSocials({
     videoFilePath: videoOutputPath,
     thumbnailFilePath: thumbnailPath,
-    title,
+    title: finalTitle,
     caption: facebookCaption,
     isReel: true,
     isDryRun
   });
 
   // Cleanup temp files
-  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, thumbnailPath, s1SubPath, s2SubPath, s3SubPath];
+  const temps = [s1FramePath, s2FramePath, s3FramePath, s4FramePath, s1AudioPath, s2AudioPath, s3AudioPath, s4AudioPath, heroPhotoPath, thumbnailPath, s1SubPath, s2SubPath, s3SubPath, s4SubPath];
   for (const t of temps) {
-    try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+    try { if (t && fs.existsSync(t)) fs.unlinkSync(t); } catch {}
   }
 }
 
