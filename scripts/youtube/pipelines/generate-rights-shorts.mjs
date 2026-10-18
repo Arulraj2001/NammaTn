@@ -58,7 +58,7 @@ async function main() {
   const scene3Script = [
     `Step 3: ${topic.step3Legal}`,
     `Official உதவிக்கு ${topic.helplineText}-ஐ call பண்ணுங்க.`,
-    `இதே மாதிரி பிரச்சனை உங்க ஏரியாவிலயும் இருந்தா — vizhitn.in-ல நேரடியா report பண்ணுங்க. உங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும்.`
+    `இதே போன்ற மக்கள் உரிமை தகவல்கள் மற்றும் அரசு எச்சரிக்கைகளை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணிக்கோங்க!`
   ];
 
   // 3. Synthesize Audio for each scene with micro-chunk engine
@@ -211,15 +211,16 @@ async function main() {
   // 9. High-Ranking 2026 SEO Metadata (Bilingual Search Hook + First 125-Char Retention Formula)
   const ytTitle = topic.seoTitleBilingual || `${topic.titleTa} | Practical Citizen Guide #Shorts #VizhiTN`;
 
-  const socialCaption = `📢 ${topic.titleTa} — சட்டப்படி தீர்வு என்ன? 👇\n` +
+  const socialCaption = `📢 ${topic.titleTa} — சட்டப்படி தீர்வு என்ன? 👇\n\n` +
     `📌 Step 1: ${topic.step1Behave}\n` +
     `📌 Step 2: ${topic.step2Evidence}\n` +
     `📌 Step 3: ${topic.step3Legal}\n\n` +
     `📞 அதிகாரப்பூர்வ உதவி: ${topic.helplineText}\n\n` +
+    `👉 தமிழ்நாட்டின் சட்ட விழிப்புணர்வு & மக்கள் உரிமை தகவல்களுக்கு @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
     `📌 உங்கள் பாதுகாப்பிற்கு சேமித்து (Save) வைத்துக் கொள்ளுங்கள்! நண்பர்களுக்கும் குடும்பத்தினருக்கும் பகிருங்கள் (Share) ↗️\n` +
     `💬 உங்களுக்கும் இந்த மாதிரி பிரச்சனை ஏற்பட்டிருக்கா? உங்கள் அனுபவத்தை கமெண்டில் சொல்லுங்கள் 👇\n\n` +
     `🌐 முழு சட்ட வழிகாட்டியை படிக்க: https://vizhitn.in\n\n` +
-    `${(topic.hashtags || ['#TamilShorts', '#VizhiTN', '#CitizenRightsTamil', '#TamilNadu', '#Shorts']).join(' ')}`;
+    `#VizhiTN #TamilNadu #CitizenRightsTamil #TamilLaw #TamilReels #ReelsInstagram #ReelsViral #Shorts`;
 
   const tags = Array.from(new Set([
     ...(topic.keywords || []),

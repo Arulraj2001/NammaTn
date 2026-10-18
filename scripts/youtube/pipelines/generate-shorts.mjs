@@ -165,10 +165,10 @@ async function main() {
     scene3Script.push(`இந்த விவகாரம் குறித்து துறைசார் அதிகாரிகள் நேரடி ஆய்வு மேற்கொண்டு வருகின்றனர்.`);
   }
 
-  // BEAT 4 — THE POWER & HELPLINE ACTION (0:33–0:45): Verified helpline + portal CTA
+  // BEAT 4 — THE POWER & HELPLINE ACTION (0:33–0:45): Verified helpline + Follow CTA
   const scene4Script = [
     `உடனடி புகார் பதிவு செய்ய ${helpline} உதவி எண்ணை தொடர்பு கொள்ளுங்கள்.`,
-    `முழு விவரங்களுக்கு vizhitn.in பாருங்கள்.`
+    `தமிழ்நாட்டின் அன்றாட முக்கிய எச்சரிக்கைகளை உடனே தெரிஞ்சுக்க — இப்பவே VizhiTN-ஐ Follow பண்ணிக்கோங்க!`
   ];
 
   // ─── 3. Synthesize Audio for all 4 beats ─────────────────────────────────
@@ -399,14 +399,19 @@ async function main() {
   console.log('Title:', finalTitle);
   console.log('====================================================');
 
-  // ─── 16. Cross-Post to Meta Socials ──────────────────────────────────────
-  const facebookCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n📞 புகார்: ${helpline}\n🌐 விவரங்கள்: https://vizhitn.in\n\n${finalDesc.split('\n').pop()}`;
+  // ─── 16. Cross-Post to Meta Socials (Instagram Reels & Facebook Video) ─────
+  const metaCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n` +
+    `📞 அதிகாரப்பூர்வ உதவி / புகார்: ${helpline}\n\n` +
+    `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & மக்கள் விழிப்புணர்வுகளுக்கு @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
+    `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
+    `🌐 முழு விவரங்கள் & நேரடி அறிக்கை: https://vizhitn.in\n\n` +
+    `#VizhiTN #TamilNadu #TamilReels #ReelsInstagram #ReelsViral #${(leadPost.district_slug || 'TN').replace(/[^a-zA-Z0-9]/g, '')} #TNNews`;
 
   await crossPostVideoToMetaSocials({
     videoFilePath: videoOutputPath,
     thumbnailFilePath: thumbnailPath,
     title: finalTitle,
-    caption: facebookCaption,
+    caption: metaCaption,
     isReel: true,
     isDryRun
   });

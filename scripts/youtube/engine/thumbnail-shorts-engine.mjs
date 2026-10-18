@@ -152,31 +152,32 @@ export async function generateShortsThumbnail({
       justify-content: space-between;
     }
 
-    /* ── TOP SECTION: Emotional Visual Scene ─────────────── */
+    /* ── FULL-BLEED CINEMATIC VISUAL BACKGROUND ─────────── */
     .visual-stage {
       position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 980px;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 1080px; height: 1920px;
       overflow: hidden;
+      z-index: 1;
     }
     .hero-photo {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 20%;
-      filter: contrast(1.1) saturate(1.2);
+      object-position: center center;
+      filter: contrast(1.15) saturate(1.3) brightness(0.65);
+      transform: scale(1.05);
     }
     .visual-gradient {
       position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 400px;
-      background: linear-gradient(180deg, rgba(3,7,18,0) 0%, rgba(3,7,18,0.85) 60%, #030712 100%);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at center, rgba(3,7,18,0.4) 0%, rgba(3,7,18,0.85) 65%, #030712 100%);
     }
 
     /* Top Floating Branding */
     .top-header {
       position: absolute;
-      top: 40px; left: 40px; right: 40px;
+      top: 50px; left: 40px; right: 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -216,35 +217,18 @@ export async function generateShortsThumbnail({
       border: 2px solid #ef4444;
     }
 
-    /* Dramatic Refusal 'NO' Icon Stamp */
-    .refuse-badge {
-      position: absolute;
-      top: 140px; right: 50px;
-      width: 140px; height: 140px;
-      background: rgba(220, 38, 38, 0.95);
-      border: 5px solid #ffffff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 80px;
-      font-weight: 900;
-      color: #ffffff;
-      box-shadow: 0 10px 35px rgba(220, 38, 38, 0.7);
-      transform: rotate(8deg);
-      z-index: 15;
-    }
-
-    /* ── MIDDLE SECTION: Giant High-CTR Tamil Typography ─── */
+    /* ── CENTER SECTION: Instagram 1:1 Profile Grid Safe Zone (Y: 440px to 1480px) ─── */
     .text-stage {
       position: absolute;
-      top: 860px;
+      top: 460px;
       left: 30px; right: 30px;
+      height: 980px;
       z-index: 25;
       text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      justify-content: center;
+      gap: 18px;
       align-items: center;
     }
 
@@ -253,9 +237,9 @@ export async function generateShortsThumbnail({
       display: inline-block;
       background: #dc2626;
       color: #ffffff;
-      font-size: 64px;
+      font-size: 58px;
       font-weight: 900;
-      padding: 12px 36px;
+      padding: 10px 32px;
       border-radius: 18px;
       letter-spacing: -0.5px;
       box-shadow: 0 8px 30px rgba(220, 38, 38, 0.5);
@@ -265,7 +249,7 @@ export async function generateShortsThumbnail({
 
     /* Line 2: Giant Neon Yellow with Heavy Black Stroke */
     .line-yellow-pop {
-      font-size: 78px;
+      font-size: 80px;
       font-weight: 900;
       color: #ffe600;
       line-height: 1.15;
@@ -281,7 +265,7 @@ export async function generateShortsThumbnail({
 
     /* Line 3: Crisp Pure White */
     .line-white-crisp {
-      font-size: 72px;
+      font-size: 68px;
       font-weight: 900;
       color: #ffffff;
       line-height: 1.15;
@@ -293,65 +277,65 @@ export async function generateShortsThumbnail({
         0 6px 16px rgba(0,0,0,0.9);
     }
 
-    /* Line 4: Question Callout */
+    /* Line 4: Question / Action Callout */
     .line-question-box {
       display: inline-flex;
       align-items: center;
       gap: 16px;
-      background: #0f172a;
+      background: rgba(15, 23, 42, 0.95);
       border: 3.5px solid #ffe600;
-      padding: 12px 34px;
+      padding: 10px 32px;
       border-radius: 24px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     }
     .question-text {
-      font-size: 66px;
+      font-size: 60px;
       font-weight: 900;
       color: #ffe600;
       text-shadow: 2px 2px 0 #000;
     }
     .question-mark {
       color: #ef4444;
-      font-size: 78px;
+      font-size: 72px;
       font-weight: 900;
-      animation: pulse 1.5s infinite;
     }
 
-    /* ── BOTTOM SECTION: Authority & Legal Props Footer ──── */
+    /* ── BOTTOM SECTION: Follower Growth Callout Footer ──── */
     .footer-props {
       position: absolute;
-      bottom: 40px;
+      bottom: 50px;
       left: 40px; right: 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(15, 23, 42, 0.92);
+      background: rgba(15, 23, 42, 0.95);
       border: 2px solid rgba(255, 255, 255, 0.15);
       border-radius: 24px;
-      padding: 22px 32px;
+      padding: 18px 30px;
       backdrop-filter: blur(20px);
       z-index: 20;
     }
     .prop-item {
       display: flex;
       align-items: center;
-      gap: 14px;
-      font-size: 26px;
+      gap: 12px;
+      font-size: 24px;
       font-weight: 800;
       color: #e2e8f0;
     }
     .prop-icon {
-      font-size: 38px;
+      font-size: 32px;
       line-height: 1;
     }
     .prop-action {
-      background: #2563eb;
+      background: #dc2626;
       color: #ffffff;
       font-size: 24px;
       font-weight: 900;
       padding: 10px 24px;
       border-radius: 14px;
       letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.5);
     }
   </style>
 </head>
@@ -360,7 +344,6 @@ export async function generateShortsThumbnail({
   <div class="visual-stage">
     ${resolvedHero ? `<img class="hero-photo" src="${resolvedHero}" alt="Scene Hero" />` : ''}
     <div class="visual-gradient"></div>
-    <div class="refuse-badge">✕</div>
   </div>
 
   <!-- Top Floating Header -->
@@ -369,10 +352,10 @@ export async function generateShortsThumbnail({
       <img class="brand-logo-img" src="${logoDataUri}" alt="VizhiTN" />
       <span class="brand-title">VizhiTN</span>
     </div>
-    <div class="alert-pill">🚨 உஷார்</div>
+    <div class="alert-pill">🚨 ${category || 'நேரடி நிலவரம்'}</div>
   </div>
 
-  <!-- Giant High-CTR Typography -->
+  <!-- Giant High-CTR Typography in 1:1 Safe Zone -->
   <div class="text-stage">
     ${l1 ? `<div class="line-banner-red">${l1}</div>` : ''}
     ${l2 ? `<div class="line-yellow-pop">${l2}</div>` : ''}
@@ -383,18 +366,14 @@ export async function generateShortsThumbnail({
     </div>
   </div>
 
-  <!-- Bottom Legal & Authority Footer Props -->
+  <!-- Bottom Follower Growth Footer -->
   <div class="footer-props">
     <div class="prop-item">
-      <span class="prop-icon">⚖️</span>
-      <span>சட்ட தீர்வு</span>
-    </div>
-    <div class="prop-item">
-      <span class="prop-icon">📜</span>
-      <span>அரசு ஆவணம்</span>
+      <span class="prop-icon">🔔</span>
+      <span>தமிழ்நாடு அரசு & மக்கள் தகவல்</span>
     </div>
     <div class="prop-action">
-      விவரம் ➔
+      + FOLLOW
     </div>
   </div>
 </body>

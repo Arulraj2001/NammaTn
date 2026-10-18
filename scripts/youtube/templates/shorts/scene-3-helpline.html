@@ -11,20 +11,41 @@
       width: 1080px;
       height: 1920px;
       overflow: hidden;
-      background: linear-gradient(180deg, rgba(7, 18, 36, 0.85) 0%, rgba(7, 18, 36, 0.4) 30%, rgba(7, 18, 36, 0.45) 70%, rgba(7, 18, 36, 0.94) 100%);
+      background: radial-gradient(circle at 50% 30%, #0d2347 0%, #071224 55%, #030712 100%);
       font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
       position: relative;
       color: #ffffff;
-      padding: 90px 70px 100px 70px;
+      padding: 100px 60px 340px 60px; /* Safe zone: 340px bottom clearance for Instagram audio/caption overlays */
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
 
+    /* Ambient background glows */
+    .bg-glow-top {
+      position: absolute;
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 500px;
+      background: radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .bg-glow-bottom {
+      position: absolute;
+      bottom: 250px; left: 50%;
+      transform: translateX(-50%);
+      width: 900px; height: 500px;
+      background: radial-gradient(circle, rgba(236,72,153,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Top Broadcast Header */
     .top-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
+      z-index: 10;
     }
     .brand-logo-pill {
       display: flex;
@@ -39,8 +60,8 @@
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
     }
     .brand-logo-img {
-      width: 54px;
-      height: 54px;
+      width: 52px;
+      height: 52px;
       object-fit: contain;
       border-radius: 12px;
       background: #ffffff;
@@ -52,153 +73,246 @@
       color: #ffffff;
       letter-spacing: -0.5px;
     }
+    .badge-helpline-pill {
+      background: rgba(245, 158, 11, 0.2);
+      border: 2px solid #f59e0b;
+      color: #fbbf24;
+      font-size: 22px;
+      font-weight: 900;
+      padding: 10px 24px;
+      border-radius: 9999px;
+      letter-spacing: 1.5px;
+    }
 
+    /* Hero Section */
     .hero-box {
       text-align: center;
-      margin-top: 40px;
-      margin-bottom: 40px;
+      margin-top: 15px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 10;
     }
     .badge-alert {
       display: inline-block;
-      background: rgba(245, 158, 11, 0.15);
-      border: 2px solid #f59e0b;
-      color: #fbbf24;
-      padding: 10px 32px;
+      background: rgba(239, 68, 68, 0.18);
+      border: 2px solid #ef4444;
+      color: #fca5a5;
+      padding: 8px 28px;
       border-radius: 9999px;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
       letter-spacing: 2px;
-      margin-bottom: 24px;
-    }
-    .hero-title {
-      font-size: 56px;
-      font-weight: 900;
-      line-height: 1.3;
-      color: #ffffff;
       margin-bottom: 16px;
     }
+    .hero-title {
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #ffffff;
+      margin-bottom: 12px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    }
     .hero-desc {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
       color: #94a3b8;
     }
 
+    /* Helpline Grid */
     .helpline-grid {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 18px;
+      position: relative;
+      z-index: 10;
     }
     .hl-card {
-      background: rgba(15, 23, 42, 0.84);
+      background: rgba(15, 23, 42, 0.88);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 2px solid rgba(255, 255, 255, 0.16);
-      border-radius: 24px;
-      padding: 30px 40px;
+      border-radius: 22px;
+      padding: 24px 34px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
     }
     .hl-left {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
     .hl-dept {
       font-size: 26px;
       font-weight: 900;
-      color: #f1f5f9;
+      color: #f8fafc;
     }
     .hl-sub {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
       color: #94a3b8;
     }
     .hl-number-btn {
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: #ffffff;
-      font-size: 36px;
+      font-size: 34px;
       font-weight: 900;
-      padding: 14px 34px;
-      border-radius: 18px;
-      letter-spacing: 2px;
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+      padding: 12px 30px;
+      border-radius: 16px;
+      letter-spacing: 1.5px;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
     }
     .hl-card.emergency .hl-number-btn {
       background: linear-gradient(135deg, #dc2626, #b91c1c);
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.5);
+      border-color: #f87171;
     }
 
-    .bottom-anchor {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 110px;
-      background: rgba(7,18,36,0.95);
-      border-top: 2px solid rgba(255,255,255,0.1);
+    /* ── FOLLOWER GROWTH ENGINE: High-Impact Instagram Follow Card ── */
+    .follow-growth-card {
+      position: relative;
+      z-index: 15;
+      background: linear-gradient(135deg, rgba(240, 148, 51, 0.12) 0%, rgba(220, 39, 67, 0.18) 50%, rgba(188, 24, 136, 0.15) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 3px solid rgba(240, 148, 51, 0.7);
+      border-radius: 26px;
+      padding: 24px 32px;
       display: flex;
       align-items: center;
-      padding: 0 40px;
-      gap: 16px;
-      z-index: 30;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 12px 40px rgba(220, 39, 67, 0.35);
+      animation: pulse-border 2.2s infinite ease-in-out;
     }
-    .anchor-site {
-      flex: 1;
+    @keyframes pulse-border {
+      0%, 100% {
+        border-color: rgba(240, 148, 51, 0.7);
+        box-shadow: 0 12px 40px rgba(220, 39, 67, 0.35);
+      }
+      50% {
+        border-color: rgba(251, 191, 36, 1);
+        box-shadow: 0 16px 50px rgba(240, 148, 51, 0.6);
+      }
+    }
+    .follow-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .follow-icon-box {
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(220, 39, 67, 0.5);
+      flex-shrink: 0;
+    }
+    .follow-info {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-    .anchor-url {
+    .follow-handle {
       font-size: 32px;
       font-weight: 900;
-      color: #38bdf8;
-      letter-spacing: 0.5px;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.6);
     }
-    .anchor-tagline {
+    .follow-subtext {
       font-size: 20px;
+      font-weight: 800;
+      color: #ffe4e6;
+    }
+    .follow-action-btn {
+      background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 900;
+      padding: 16px 32px;
+      border-radius: 9999px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      box-shadow: 0 8px 26px rgba(220, 39, 67, 0.6);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+    }
+
+    /* Portal Bar */
+    .portal-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1.5px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      padding: 14px 28px;
+      position: relative;
+      z-index: 10;
+    }
+    .portal-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .portal-url {
+      font-size: 26px;
+      font-weight: 900;
+      color: #38bdf8;
+    }
+    .portal-desc {
+      font-size: 18px;
       font-weight: 700;
       color: #94a3b8;
     }
-    .anchor-action-btn {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      color: #fff;
-      font-size: 22px;
-      font-weight: 900;
-      padding: 14px 28px;
-      border-radius: 14px;
-      text-align: center;
-      white-space: nowrap;
-      box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+    .portal-tag {
+      font-size: 18px;
+      font-weight: 800;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px 16px;
+      border-radius: 9999px;
     }
   </style>
 </head>
 <body>
+  <div class="bg-glow-top"></div>
+  <div class="bg-glow-bottom"></div>
+
+  <!-- Top Broadcast Header -->
   <div class="top-header">
     <div class="brand-logo-pill">
       <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
       <span class="brand-logo-text">VizhiTN</span>
     </div>
-    <div style="font-size: 22px; font-weight: 800; color: #fbbf24;">24x7 HELPLINES</div>
+    <div class="badge-helpline-pill">📞 24x7 HELPLINES</div>
   </div>
 
+  <!-- Hero Title Section -->
   <div class="hero-box">
-    <div class="badge-alert">📞 அரசு உதவி எண்கள்</div>
-    <h1 class="hero-title">அவசர உதவி மற்றும் நேரடி புகார்</h1>
-    <p class="hero-desc">உடனடி நடவடிக்கை எடுக்க அதிகாரப்பூர்வ எண்கள்</p>
+    <div class="badge-alert">அதிகாரப்பூர்வ அரசு உதவி எண்கள்</div>
+    <h1 class="hero-title">அவசர உதவி & நேரடி புகார்</h1>
+    <p class="hero-desc">துறைசார் உடனடி நடவடிக்கைக்கான தொடர்பு மையங்கள்</p>
   </div>
 
+  <!-- Emergency Helplines Grid -->
   <div class="helpline-grid">
     <div class="hl-card emergency">
       <div class="hl-left">
         <div class="hl-dept">மின்வாரிய புகார் (TANGEDCO)</div>
-        <div class="hl-sub">மின்னகம் 24x7 மின் தடை மையம்</div>
+        <div class="hl-sub">மின்னகம் 24x7 மின் சேவை & மின்தடை மையம்</div>
       </div>
       <div class="hl-number-btn">1912</div>
     </div>
 
     <div class="hl-card">
       <div class="hl-left">
-        <div class="hl-dept">மாநகராட்சி கட்டுப்பாட்டு அறை</div>
+        <div class="hl-dept">மாநகராட்சி கட்டுப்பாட்டு அறை (GCC)</div>
         <div class="hl-sub">சென்னை & மாவட்ட மாநகராட்சிகள்</div>
       </div>
       <div class="hl-number-btn">1913</div>
@@ -206,20 +320,40 @@
 
     <div class="hl-card">
       <div class="hl-left">
-        <div class="hl-dept">சைபர் குற்றங்கள் புகார்</div>
+        <div class="hl-dept">சைபர் குற்றங்கள் & நிதி மோசடி</div>
         <div class="hl-sub">தேசிய சைபர் கிரைம் உதவி மையம்</div>
       </div>
       <div class="hl-number-btn">1930</div>
     </div>
   </div>
 
-  <!-- Sleek Bottom Anchor Bar -->
-  <div class="bottom-anchor">
-    <div class="anchor-site">
-      <div class="anchor-url">🌐 vizhitn.in</div>
-      <div class="anchor-tagline">உங்க பிரச்சனையை நீங்களே பதிவு பண்ணுங்க</div>
+  <!-- FOLLOWER GROWTH ENGINE: Instagram & Facebook Follow Card -->
+  <div class="follow-growth-card">
+    <div class="follow-left">
+      <div class="follow-icon-box">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <line x1="19" y1="8" x2="19" y2="14"></line>
+          <line x1="22" y1="11" x2="16" y2="11"></line>
+        </svg>
+      </div>
+      <div class="follow-info">
+        <div class="follow-handle">FOLLOW @VIZHITN</div>
+        <div class="follow-subtext">தமிழ்நாடு நேரடி எச்சரிக்கைகள் உடனே பெற</div>
+      </div>
     </div>
-    <div class="anchor-action-btn">புகார் பதிவு ➔</div>
+    <div class="follow-action-btn">+ FOLLOW</div>
+  </div>
+
+  <!-- Official Portal Footer -->
+  <div class="portal-bar">
+    <div class="portal-info">
+      <span class="portal-url">🌐 vizhitn.in</span>
+      <span class="portal-desc">பொதுமக்கள் நேரடி கள அறிக்கை தளம்</span>
+    </div>
+    <div class="portal-tag">உரிமை குரல்</div>
   </div>
 </body>
 </html>
+

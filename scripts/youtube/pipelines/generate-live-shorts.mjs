@@ -116,7 +116,7 @@ async function main() {
 
   const scene3Script = [
     `உடனடி உதவி மற்றும் புகார்களுக்கு ${helpline}-ஐ அழைக்கவும்.`,
-    `இதே மாதிரி பிரச்சனை உங்க ஏரியாவிலயும் இருந்தா — vizhitn.in-ல நேரடியா report பண்ணுங்க. உங்க ஒரு பதிவு உங்க ஏரியாவை protect பண்ணும்.`
+    `தமிழ்நாட்டின் அன்றாட அரசு எச்சரிக்கைகள் மற்றும் கள நிலவரங்களை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணிக்கோங்க!`
   ];
 
   // 3. Synthesize Speech
@@ -295,12 +295,20 @@ async function main() {
   console.log('Video URL:', uploadResult.videoUrl);
   console.log('====================================================');
 
-  // 10. Cross-Post to Meta
+  // 10. Cross-Post to Meta Socials (Instagram Reels & Facebook Video)
+  const metaCaption = `🚨 ${area} நேரடி எச்சரிக்கை: ${rawTitle}\n\n` +
+    `📍 கள நிலவரம்: ${urgentPost.content_ta || urgentPost.content_en}\n` +
+    `📞 உதவி மையம் / புகார்: ${helpline}\n\n` +
+    `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & கள நிலவரங்களை உடனே தெரிந்து கொள்ள @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
+    `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
+    `🌐 உங்கள் பகுதி பிரச்சனையை நீங்களே பதிவு செய்ய: https://vizhitn.in\n\n` +
+    `#VizhiTN #TamilNadu #${area.replace(/\s+/g, '')} #TamilReels #ReelsInstagram #ReelsViral #TNNews #Chennai #CivicAlert`;
+
   await crossPostVideoToMetaSocials({
     videoFilePath: videoOutputPath,
     thumbnailFilePath: thumbPath,
     title: ytTitle,
-    caption: ytDesc,
+    caption: metaCaption,
     isReel: true,
     isDryRun
   });

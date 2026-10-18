@@ -174,12 +174,13 @@ export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:1
   const playResX = isShort ? 1080 : 1920;
   const playResY = isShort ? 1920 : 1080;
 
-  // Shorts: Large display font (50px) placed at lower-third safe zone (MarginV: 240)
+  // Shorts (9:16): High-impact 54px display font in Instagram & YouTube Reels Safe-Zone (MarginV: 480)
+  // Sits cleanly above the bottom audio track name, caption text, and interaction buttons
   // Long-Form: 35px at lower-third (MarginV: 135)
-  const fontSize = isShort ? 50 : 35;
-  const marginV  = isShort ? 240 : 135;
-  const outlineWidth = isShort ? 5.5 : 3.5;
-  const shadowDepth = isShort ? 4.0 : 2.0;
+  const fontSize = isShort ? 54 : 35;
+  const marginV  = isShort ? 480 : 135;
+  const outlineWidth = isShort ? 6.0 : 3.5;
+  const shadowDepth = isShort ? 4.5 : 2.0;
 
   let dialogEvents = '';
   segments.forEach(seg => {
