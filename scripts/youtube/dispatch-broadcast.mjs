@@ -157,8 +157,8 @@ async function main() {
     console.log('[WATCHDOG MODE] Checking for any missed broadcasts today...');
     const expected = getExpectedUploadsSoFar(todayIst);
 
-    // If past 02:00 PM IST (840 mins), live-shorts should also have run
-    if (now.totalMinutes >= 840) {
+    // If past 01:30 PM IST (810 mins), live-shorts should also have run
+    if (now.totalMinutes >= 810) {
       expected.push({ format: 'live-shorts', title: 'Daily Live Civic Short', time_ist: '01:30 PM' });
     }
 
@@ -196,6 +196,9 @@ async function main() {
   // Autonomous Self-Healing: Verify if any earlier slot scheduled for today was missed!
   if (!force && !isDryRun) {
     const expected = getExpectedUploadsSoFar(todayIst);
+    if (now.totalMinutes >= 810) {
+      expected.push({ format: 'live-shorts', title: 'Daily Live Civic Short', time_ist: '01:30 PM' });
+    }
     for (const item of expected) {
       const status = await isBroadcastCompletedToday(item.format, todayIst);
       if (!status.published) {
