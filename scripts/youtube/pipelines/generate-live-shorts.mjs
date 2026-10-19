@@ -226,8 +226,24 @@ async function main() {
   // Beat 3: Helpline Action Card
   const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
   let tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
+  let extractedNum = (urgentPost.assigned_department || '').match(/(\d{4,6}[-\s]?\d*|\b1\d{3}\b)/)?.[0];
+  const helplineNumber = extractedNum ||
+                         ((urgentPost.assigned_department || '').includes('TANGEDCO') ? '1912' :
+                          (urgentPost.assigned_department || '').includes('Metrowater') ? '1913' :
+                          (urgentPost.assigned_department || '').includes('Police') ? '103' :
+                          (urgentPost.assigned_department || '').includes('Civil') ? '1967' :
+                          '1100');
+  const assignedDept = (urgentPost.assigned_department || 'அரசு துறை அவசர மையம்')
+    .replace(/\(Helpline:.*?\)/i, '')
+    .trim();
+
   tplS3 = tplS3
-    .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
+    .replaceAll('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+    .replaceAll('{{ASSIGNED_DEPT}}', assignedDept)
+    .replaceAll('{{HELPLINE_NUMBER}}', helplineNumber)
+    .replaceAll('{{DISTRICT_NAME}}', area.toUpperCase())
+    .replaceAll('{{CATEGORY_COLOR}}', theme.color)
+    .replaceAll('{{CATEGORY_ICON}}', theme.icon);
 
   const s3FramePath = path.join(outDir, `live_s3_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });

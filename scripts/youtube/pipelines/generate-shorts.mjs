@@ -304,7 +304,13 @@ async function main() {
   // ─── 8. Render Beat 4 — Power & vizhitn.in CTA Frame ─────────────────────
   const tplS4Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
   let tplS4 = fs.readFileSync(tplS4Path, 'utf-8');
-  tplS4 = tplS4.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
+  tplS4 = tplS4
+    .replaceAll('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+    .replaceAll('{{ASSIGNED_DEPT}}', 'தமிழ்நாடு அவசர உதவி மையங்கள்')
+    .replaceAll('{{HELPLINE_NUMBER}}', '1912 / 1913')
+    .replaceAll('{{DISTRICT_NAME}}', 'தமிழ்நாடு')
+    .replaceAll('{{CATEGORY_COLOR}}', '#38bdf8')
+    .replaceAll('{{CATEGORY_ICON}}', '📞');
 
   const s4FramePath = path.join(outDir, `short_s4_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS4, s4FramePath, { width: 1080, height: 1920 });

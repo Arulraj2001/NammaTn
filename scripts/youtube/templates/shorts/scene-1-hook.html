@@ -11,250 +11,170 @@
       width: 1080px;
       height: 1920px;
       overflow: hidden;
-      background: #071224;
+      background: #020617;
       font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
       position: relative;
       color: #ffffff;
     }
 
-    /* ── Background Photo ─────────────────────────────────── */
+    /* ── Full Bleed Photorealistic Visual Plate ─────────── */
     .bg-photo {
       position: absolute;
       top: 0; left: 0;
       width: 1080px; height: 1920px;
       object-fit: cover;
+      filter: contrast(1.22) saturate(1.35) brightness(0.88);
     }
-    .overlay {
+    .cinematic-vignette {
       position: absolute;
       top: 0; left: 0;
       width: 1080px; height: 1920px;
       background: linear-gradient(
         180deg,
-        rgba(7,18,36,0.8) 0%,
-        rgba(7,18,36,0.35) 30%,
-        rgba(7,18,36,0.55) 60%,
-        rgba(7,18,36,0.97) 85%,
-        #071224 100%
+        rgba(2, 6, 23, 0.82) 0%,
+        rgba(2, 6, 23, 0.25) 25%,
+        rgba(2, 6, 23, 0.15) 60%,
+        rgba(2, 6, 23, 0.80) 82%,
+        rgba(2, 6, 23, 0.98) 100%
       );
     }
 
-    /* ── Broadcast Top Bar ────────────────────────────────── */
-    .broadcast-bar {
+    /* ── Floating Header (Safely Below Mobile Top Bar at Y = 170px) ── */
+    .floating-header, .broadcast-bar {
       position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 88px;
-      background: rgba(7,18,36,0.92);
-      backdrop-filter: blur(20px);
-      border-bottom: 2px solid rgba(255,255,255,0.1);
+      top: 170px;
+      left: 48px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 40px;
+      gap: 14px;
       z-index: 20;
     }
     .brand-pill {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .brand-logo-img {
-      width: 52px; height: 52px;
-      object-fit: contain;
-      border-radius: 12px;
-      background: #ffffff;
-      padding: 3px;
-    }
-    .brand-name {
-      font-size: 32px;
-      font-weight: 900;
-      color: #ffffff;
-      letter-spacing: -0.5px;
-    }
-    .live-pill {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 10px;
-      background: #dc2626;
-      color: #ffffff;
-      padding: 10px 22px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      padding: 8px 18px 8px 10px;
       border-radius: 9999px;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      box-shadow: 0 0 24px rgba(220,38,38,0.7);
-      animation: pulse-glow 1.8s ease-in-out infinite;
     }
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 24px rgba(220,38,38,0.7); }
-      50% { box-shadow: 0 0 40px rgba(220,38,38,1); }
-    }
-    .live-dot {
-      width: 12px; height: 12px;
+    .brand-logo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      border-radius: 10px;
       background: #ffffff;
-      border-radius: 50%;
-      animation: blink 1.2s step-start infinite;
+      padding: 2px;
     }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
-    /* ── District + Category Badge Row ───────────────────── */
-    .badge-row {
-      position: absolute;
-      top: 104px;
-      left: 40px; right: 40px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      z-index: 15;
-    }
-    .district-badge {
-      background: rgba(15,23,42,0.85);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      backdrop-filter: blur(12px);
-      color: #cbd5e1;
-      font-size: 22px;
-      font-weight: 800;
-      padding: 8px 20px;
-      border-radius: 9999px;
-    }
-    .category-badge {
-      background: rgba(15,23,42,0.85);
-      border: 1.5px solid {{CATEGORY_COLOR}};
-      backdrop-filter: blur(12px);
-      color: {{CATEGORY_COLOR}};
+    .brand-name {
       font-size: 22px;
       font-weight: 900;
-      padding: 8px 20px;
-      border-radius: 9999px;
+      color: #ffffff;
+      letter-spacing: 0.5px;
     }
-
-    /* ── Main Content Card ────────────────────────────────── */
-    .content-card {
-      position: absolute;
-      bottom: 340px;
-      left: 40px; right: 40px;
-      background: rgba(7,18,36,0.88);
-      backdrop-filter: blur(24px);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      border-top: 4px solid {{CATEGORY_COLOR}};
-      border-radius: 28px;
-      padding: 36px 44px;
-      z-index: 15;
-    }
-    .urgency-tag {
+    .district-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(220,38,38,0.15);
-      border: 1.5px solid #dc2626;
-      color: #fca5a5;
-      font-size: 20px;
-      font-weight: 900;
-      padding: 7px 20px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      padding: 10px 22px;
       border-radius: 9999px;
-      letter-spacing: 1.5px;
-      margin-bottom: 22px;
-    }
-    .urgency-tag.pill-high {
-      background: rgba(245,158,11,0.15);
-      border-color: #f59e0b;
-      color: #fbbf24;
-    }
-    .urgency-tag.pill-alert {
-      background: rgba(56,189,248,0.12);
-      border-color: #38bdf8;
-      color: #7dd3fc;
-    }
-    .hook-headline {
-      font-size: 62px;
-      font-weight: 900;
-      line-height: 1.2;
-      color: #ffffff;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
-      margin-bottom: 20px;
-    }
-    .hook-sub {
-      font-size: 30px;
-      font-weight: 800;
-      color: #fbbf24;
-    }
-
-    /* ── Bottom Ticker Bar ────────────────────────────────── */
-    .ticker-bar {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 100px;
-      background: rgba(7,18,36,0.95);
-      border-top: 2px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      padding: 0 40px;
-      gap: 20px;
-      z-index: 20;
-      overflow: hidden;
-    }
-    .ticker-label {
-      flex-shrink: 0;
-      background: #dc2626;
-      color: #fff;
       font-size: 20px;
-      font-weight: 900;
-      padding: 6px 16px;
-      border-radius: 8px;
+      font-weight: 800;
+      color: #38bdf8;
+      text-transform: uppercase;
       letter-spacing: 1px;
     }
-    .ticker-text {
-      font-size: 24px;
-      font-weight: 700;
-      color: #e2e8f0;
-      white-space: nowrap;
-      overflow: hidden;
-      flex: 1;
+    .live-alert-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #dc2626;
+      border: 1.5px solid #ef4444;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      font-size: 19px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1.5px;
+      box-shadow: 0 0 25px rgba(220, 38, 38, 0.7);
     }
-    .date-tag {
-      flex-shrink: 0;
-      font-size: 22px;
-      font-weight: 800;
-      color: #fbbf24;
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ffffff;
     }
+
+    /* ── Upper-Third Hook Headline (Safe Right Margin: 180px for Action Buttons) ── */
+    .hook-container {
+      position: absolute;
+      top: 275px;
+      left: 48px;
+      right: 180px; /* Safe from Like/Share column */
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.90);
+      border: 1.5px solid {{CATEGORY_COLOR}};
+      backdrop-filter: blur(16px);
+      padding: 8px 20px;
+      border-radius: 9999px;
+      font-size: 19px;
+      font-weight: 900;
+      color: {{CATEGORY_COLOR}};
+      width: fit-content;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    .hook-headline {
+      font-size: 50px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #ffffff;
+      text-shadow: 0 4px 25px rgba(0, 0, 0, 0.95), 0 2px 10px rgba(0, 0, 0, 0.8);
+      letter-spacing: -0.5px;
+      background: linear-gradient(180deg, #ffffff 60%, #e2e8f0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Bottom 470px is 100% negative space reserved for YouTube Native Controls */
   </style>
 </head>
 <body>
-  <img class="bg-photo" src="{{SCENE_PHOTO_SRC}}" alt="Scene Visual" />
-  <div class="overlay"></div>
+  <!-- Full Bleed Photorealistic Visual -->
+  <img class="bg-photo" src="{{SCENE_PHOTO_SRC}}" alt="Visual" />
+  <div class="cinematic-vignette"></div>
 
-  <!-- Broadcast Top Bar -->
-  <div class="broadcast-bar">
+  <!-- Floating Mobile Header (Y = 170px) -->
+  <div class="floating-header broadcast-bar">
     <div class="brand-pill">
       <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
       <span class="brand-name">VizhiTN</span>
     </div>
-    <div class="live-pill">
+    <div class="district-pill">📍 {{DISTRICT_NAME}}</div>
+    <div class="live-alert-pill">
       <div class="live-dot"></div>
-      LIVE ALERT
+      அலர்ட்
     </div>
   </div>
 
-  <!-- District + Category Badge -->
-  <div class="badge-row">
-    <div class="district-badge">📍 {{DISTRICT_NAME}}</div>
-    <div class="category-badge">{{CATEGORY_ICON}} {{CATEGORY_LABEL}}</div>
-  </div>
-
-  <!-- Main Headline Card -->
-  <div class="content-card">
-    <div class="urgency-tag {{URGENCY_CLASS}}">🔴 இன்று உஷார்</div>
+  <!-- Upper-Third Hook Headline (Y = 275px) -->
+  <div class="hook-container">
+    <div class="category-badge">
+      <span>{{CATEGORY_ICON}}</span>
+      <span>{{CATEGORY_LABEL}}</span>
+    </div>
     <h1 class="hook-headline">{{HOOK_HEADLINE_TA}}</h1>
-    <p class="hook-sub">38 மாவட்டங்கள் | முழு விவரம் ➔</p>
-  </div>
-
-  <!-- Bottom Ticker -->
-  <div class="ticker-bar">
-    <div class="ticker-label">BREAKING</div>
-    <div class="ticker-text">{{HOOK_HEADLINE_TA}} • vizhitn.in-ல பதிவு பண்ணுங்க</div>
-    <div class="date-tag">📅 {{DATE_TEXT}}</div>
   </div>
 </body>
 </html>

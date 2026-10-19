@@ -161,10 +161,15 @@ async function main() {
   const s2FramePath = path.join(outDir, `rights_s2_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS2, s2FramePath, { width: 1080, height: 1920 });
 
-  // 7. Render Scene 3 Helpline Frame (with Official Brand Logo)
   const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
   let tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
-  tplS3 = tplS3.replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
+  tplS3 = tplS3
+    .replaceAll('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+    .replaceAll('{{ASSIGNED_DEPT}}', 'தமிழ்நாடு நுகர்வோர் & அரசு உதவி மையம்')
+    .replaceAll('{{HELPLINE_NUMBER}}', '1967 / 1100')
+    .replaceAll('{{DISTRICT_NAME}}', 'தமிழ்நாடு')
+    .replaceAll('{{CATEGORY_COLOR}}', '#22c55e')
+    .replaceAll('{{CATEGORY_ICON}}', '⚖️');
   const s3FramePath = path.join(outDir, `rights_s3_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
 

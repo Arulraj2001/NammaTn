@@ -174,13 +174,16 @@ export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:1
   const playResX = isShort ? 1080 : 1920;
   const playResY = isShort ? 1920 : 1080;
 
-  // Shorts (9:16): High-impact 54px display font in Instagram & YouTube Reels Safe-Zone (MarginV: 480)
+  // Shorts (9:16): High-impact 62px display font centered in mobile optical safe zone (MarginV: 620)
   // Sits cleanly above the bottom audio track name, caption text, and interaction buttons
+  // MarginR: 190 protects against YouTube vertical action buttons (Like, Comment, Share)
   // Long-Form: 35px at lower-third (MarginV: 135)
-  const fontSize = isShort ? 54 : 35;
-  const marginV  = isShort ? 480 : 135;
-  const outlineWidth = isShort ? 6.0 : 3.5;
-  const shadowDepth = isShort ? 4.5 : 2.0;
+  const fontSize = isShort ? 62 : 35;
+  const marginV  = isShort ? 620 : 135;
+  const marginL  = isShort ? 60 : 35;
+  const marginR  = isShort ? 190 : 35;
+  const outlineWidth = isShort ? 6.5 : 3.5;
+  const shadowDepth = isShort ? 5.0 : 2.0;
 
   let dialogEvents = '';
   segments.forEach(seg => {
@@ -216,7 +219,7 @@ PlayResY: ${playResY}
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Noto Sans Tamil,${fontSize},&H00FFFFFF,&H0000FFFF,&H00000000,&H95000000,-1,0,0,0,100,100,0,0,1,${outlineWidth},${shadowDepth},2,35,35,${marginV},1
+Style: Default,Noto Sans Tamil,${fontSize},&H00FFFFFF,&H0000FFFF,&H00000000,&H95000000,-1,0,0,0,100,100,0,0,1,${outlineWidth},${shadowDepth},2,${marginL},${marginR},${marginV},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text

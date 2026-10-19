@@ -11,349 +11,243 @@
       width: 1080px;
       height: 1920px;
       overflow: hidden;
-      background: radial-gradient(circle at 50% 30%, #0d2347 0%, #071224 55%, #030712 100%);
+      background: radial-gradient(circle at 50% 25%, #0f172a 0%, #020617 70%, #000000 100%);
       font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
       position: relative;
       color: #ffffff;
-      padding: 100px 60px 340px 60px; /* Safe zone: 340px bottom clearance for Instagram audio/caption overlays */
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
     }
 
     /* Ambient background glows */
     .bg-glow-top {
       position: absolute;
-      top: -100px; left: 50%;
+      top: -120px; left: 50%;
       transform: translateX(-50%);
-      width: 800px; height: 500px;
-      background: radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%);
+      width: 850px; height: 550px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.28) 0%, transparent 70%);
       pointer-events: none;
     }
-    .bg-glow-bottom {
+    .bg-glow-mid {
       position: absolute;
-      bottom: 250px; left: 50%;
+      top: 500px; left: 50%;
       transform: translateX(-50%);
-      width: 900px; height: 500px;
-      background: radial-gradient(circle, rgba(236,72,153,0.18) 0%, transparent 70%);
+      width: 900px; height: 600px;
+      background: radial-gradient(circle, rgba(220, 38, 38, 0.22) 0%, transparent 70%);
       pointer-events: none;
     }
 
-    /* Top Broadcast Header */
-    .top-header {
+    /* ── Floating Header (Safely Below Mobile Top Bar at Y = 170px) ── */
+    .floating-header {
+      position: absolute;
+      top: 170px;
+      left: 48px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      position: relative;
-      z-index: 10;
+      gap: 14px;
+      z-index: 20;
     }
-    .brand-logo-pill {
-      display: flex;
+    .brand-pill {
+      display: inline-flex;
       align-items: center;
-      gap: 16px;
+      gap: 10px;
       background: rgba(15, 23, 42, 0.88);
       backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      padding: 10px 24px 10px 14px;
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      padding: 8px 18px 8px 10px;
       border-radius: 9999px;
-      border: 1.5px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
     }
     .brand-logo-img {
-      width: 52px;
-      height: 52px;
+      width: 36px;
+      height: 36px;
       object-fit: contain;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #ffffff;
-      padding: 3px;
+      padding: 2px;
     }
-    .brand-logo-text {
-      font-size: 34px;
+    .brand-name {
+      font-size: 22px;
       font-weight: 900;
       color: #ffffff;
-      letter-spacing: -0.5px;
+      letter-spacing: 0.5px;
     }
     .badge-helpline-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       background: rgba(245, 158, 11, 0.2);
-      border: 2px solid #f59e0b;
+      border: 1.5px solid #f59e0b;
       color: #fbbf24;
-      font-size: 22px;
+      font-size: 19px;
       font-weight: 900;
-      padding: 10px 24px;
+      padding: 8px 20px;
       border-radius: 9999px;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
     }
 
-    /* Hero Section */
-    .hero-box {
+    /* ── Hero Helpline Card (Safe Y = 280px to Y = 820px, Safe Right = 180px) ── */
+    .hero-helpline-card {
+      position: absolute;
+      top: 280px;
+      left: 48px;
+      right: 180px; /* Safe from Like/Share vertical column */
+      z-index: 20;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(24px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 32px;
+      padding: 38px 36px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      margin-top: 15px;
-      margin-bottom: 20px;
-      position: relative;
-      z-index: 10;
+      gap: 20px;
     }
-    .badge-alert {
-      display: inline-block;
-      background: rgba(239, 68, 68, 0.18);
-      border: 2px solid #ef4444;
+
+    .card-top-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(220, 38, 38, 0.2);
+      border: 1.5px solid #ef4444;
       color: #fca5a5;
-      padding: 8px 28px;
+      padding: 8px 22px;
       border-radius: 9999px;
-      font-size: 22px;
+      font-size: 19px;
       font-weight: 900;
-      letter-spacing: 2px;
-      margin-bottom: 16px;
+      letter-spacing: 1px;
     }
-    .hero-title {
-      font-size: 52px;
+
+    .dept-title {
+      font-size: 34px;
       font-weight: 900;
       line-height: 1.25;
       color: #ffffff;
-      margin-bottom: 12px;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
     }
-    .hero-desc {
-      font-size: 24px;
+
+    .dept-sub {
+      font-size: 20px;
       font-weight: 700;
       color: #94a3b8;
     }
 
-    /* Helpline Grid */
-    .helpline-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      position: relative;
-      z-index: 10;
-    }
-    .hl-card {
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 2px solid rgba(255, 255, 255, 0.16);
-      border-radius: 22px;
-      padding: 24px 34px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
-    }
-    .hl-left {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .hl-dept {
-      font-size: 26px;
-      font-weight: 900;
-      color: #f8fafc;
-    }
-    .hl-sub {
-      font-size: 19px;
-      font-weight: 700;
-      color: #94a3b8;
-    }
-    .hl-number-btn {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    /* Giant High-Impact Phone Button */
+    .hl-giant-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
       color: #ffffff;
-      font-size: 34px;
-      font-weight: 900;
-      padding: 12px 30px;
-      border-radius: 16px;
-      letter-spacing: 1.5px;
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
-      border: 1.5px solid rgba(255, 255, 255, 0.2);
-    }
-    .hl-card.emergency .hl-number-btn {
-      background: linear-gradient(135deg, #dc2626, #b91c1c);
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.5);
-      border-color: #f87171;
-    }
-
-    /* ── FOLLOWER GROWTH ENGINE: High-Impact Instagram Follow Card ── */
-    .follow-growth-card {
-      position: relative;
-      z-index: 15;
-      background: linear-gradient(135deg, rgba(240, 148, 51, 0.12) 0%, rgba(220, 39, 67, 0.18) 50%, rgba(188, 24, 136, 0.15) 100%);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 3px solid rgba(240, 148, 51, 0.7);
-      border-radius: 26px;
-      padding: 24px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      box-shadow: 0 12px 40px rgba(220, 39, 67, 0.35);
-      animation: pulse-border 2.2s infinite ease-in-out;
-    }
-    @keyframes pulse-border {
-      0%, 100% {
-        border-color: rgba(240, 148, 51, 0.7);
-        box-shadow: 0 12px 40px rgba(220, 39, 67, 0.35);
-      }
-      50% {
-        border-color: rgba(251, 191, 36, 1);
-        box-shadow: 0 16px 50px rgba(240, 148, 51, 0.6);
-      }
-    }
-    .follow-left {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .follow-icon-box {
-      width: 70px;
-      height: 70px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      padding: 22px 30px;
+      border-radius: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 12px 35px rgba(220, 38, 38, 0.65);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 24px rgba(220, 39, 67, 0.5);
-      flex-shrink: 0;
+      gap: 16px;
     }
-    .follow-info {
+    .hl-call-icon {
+      font-size: 42px;
+    }
+    .hl-giant-number {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    .hl-status-footer {
+      font-size: 18px;
+      font-weight: 800;
+      color: #4ade80;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Community Portal Card (Y = 870px, Safe Right = 180px) ── */
+    .portal-card {
+      position: absolute;
+      top: 870px;
+      left: 48px;
+      right: 180px;
+      z-index: 20;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      border-radius: 24px;
+      padding: 24px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    }
+    .portal-left {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-    .follow-handle {
-      font-size: 32px;
-      font-weight: 900;
-      color: #ffffff;
-      letter-spacing: -0.5px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-    }
-    .follow-subtext {
-      font-size: 20px;
-      font-weight: 800;
-      color: #ffe4e6;
-    }
-    .follow-action-btn {
-      background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-      color: #ffffff;
-      font-size: 26px;
-      font-weight: 900;
-      padding: 16px 32px;
-      border-radius: 9999px;
-      letter-spacing: 1px;
-      white-space: nowrap;
-      box-shadow: 0 8px 26px rgba(220, 39, 67, 0.6);
-      border: 2px solid rgba(255, 255, 255, 0.4);
-    }
-
-    /* Portal Bar */
-    .portal-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(15, 23, 42, 0.75);
-      border: 1.5px solid rgba(255, 255, 255, 0.14);
-      border-radius: 18px;
-      padding: 14px 28px;
-      position: relative;
-      z-index: 10;
-    }
-    .portal-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
     .portal-url {
-      font-size: 26px;
+      font-size: 28px;
       font-weight: 900;
       color: #38bdf8;
+      letter-spacing: -0.5px;
     }
     .portal-desc {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
-      color: #94a3b8;
-    }
-    .portal-tag {
-      font-size: 18px;
-      font-weight: 800;
       color: #cbd5e1;
-      background: rgba(255, 255, 255, 0.08);
+    }
+    .portal-badge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      font-size: 16px;
+      font-weight: 800;
       padding: 6px 16px;
       border-radius: 9999px;
+      white-space: nowrap;
     }
+
+    /* Bottom 470px is 100% negative space reserved for YouTube Native Controls */
   </style>
 </head>
 <body>
   <div class="bg-glow-top"></div>
-  <div class="bg-glow-bottom"></div>
+  <div class="bg-glow-mid"></div>
 
-  <!-- Top Broadcast Header -->
-  <div class="top-header">
-    <div class="brand-logo-pill">
+  <!-- Floating Mobile Header (Y = 170px) -->
+  <div class="floating-header">
+    <div class="brand-pill">
       <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
-      <span class="brand-logo-text">VizhiTN</span>
+      <span class="brand-name">VizhiTN</span>
     </div>
-    <div class="badge-helpline-pill">📞 24x7 HELPLINES</div>
+    <div class="badge-helpline-pill">📞 அவசர உதவி மையம்</div>
   </div>
 
-  <!-- Hero Title Section -->
-  <div class="hero-box">
-    <div class="badge-alert">அதிகாரப்பூர்வ அரசு உதவி எண்கள்</div>
-    <h1 class="hero-title">அவசர உதவி & நேரடி புகார்</h1>
-    <p class="hero-desc">துறைசார் உடனடி நடவடிக்கைக்கான தொடர்பு மையங்கள்</p>
-  </div>
-
-  <!-- Emergency Helplines Grid -->
-  <div class="helpline-grid">
-    <div class="hl-card emergency">
-      <div class="hl-left">
-        <div class="hl-dept">மின்வாரிய புகார் (TANGEDCO)</div>
-        <div class="hl-sub">மின்னகம் 24x7 மின் சேவை & மின்தடை மையம்</div>
-      </div>
-      <div class="hl-number-btn">1912</div>
+  <!-- Hero Helpline Card (Y = 280px to Y = 820px) -->
+  <div class="hero-helpline-card">
+    <div class="card-top-chip">அதிகாரப்பூர்வ உதவி எண்</div>
+    <h2 class="dept-title">{{ASSIGNED_DEPT}}</h2>
+    <p class="dept-sub">மற்றும் அவசர சேவை உடனடி நடவடிக்கை</p>
+    
+    <div class="hl-giant-btn">
+      <span class="hl-call-icon">📞</span>
+      <span class="hl-giant-number">{{HELPLINE_NUMBER}}</span>
     </div>
 
-    <div class="hl-card">
-      <div class="hl-left">
-        <div class="hl-dept">மாநகராட்சி கட்டுப்பாட்டு அறை (GCC)</div>
-        <div class="hl-sub">சென்னை & மாவட்ட மாநகராட்சிகள்</div>
-      </div>
-      <div class="hl-number-btn">1913</div>
-    </div>
-
-    <div class="hl-card">
-      <div class="hl-left">
-        <div class="hl-dept">சைபர் குற்றங்கள் & நிதி மோசடி</div>
-        <div class="hl-sub">தேசிய சைபர் கிரைம் உதவி மையம்</div>
-      </div>
-      <div class="hl-number-btn">1930</div>
+    <div class="hl-status-footer">
+      <span>●</span>
+      <span>இலவச உடனடி அழைப்பு • 24 மணி நேர சேவை (1912 / 1913)</span>
     </div>
   </div>
 
-  <!-- FOLLOWER GROWTH ENGINE: Instagram & Facebook Follow Card -->
-  <div class="follow-growth-card">
-    <div class="follow-left">
-      <div class="follow-icon-box">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-          <circle cx="9" cy="7" r="4"></circle>
-          <line x1="19" y1="8" x2="19" y2="14"></line>
-          <line x1="22" y1="11" x2="16" y2="11"></line>
-        </svg>
-      </div>
-      <div class="follow-info">
-        <div class="follow-handle">FOLLOW @VIZHITN</div>
-        <div class="follow-subtext">தமிழ்நாடு நேரடி எச்சரிக்கைகள் உடனே பெற</div>
-      </div>
-    </div>
-    <div class="follow-action-btn">+ FOLLOW</div>
-  </div>
-
-  <!-- Official Portal Footer -->
-  <div class="portal-bar">
-    <div class="portal-info">
+  <!-- Community Portal Card (Y = 870px) -->
+  <div class="portal-card">
+    <div class="portal-left">
       <span class="portal-url">🌐 vizhitn.in</span>
       <span class="portal-desc">பொதுமக்கள் நேரடி கள அறிக்கை தளம்</span>
     </div>
-    <div class="portal-tag">உரிமை குரல்</div>
+    <div class="portal-badge">உண்மை நிலவரம்</div>
   </div>
 </body>
 </html>
-

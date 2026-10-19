@@ -329,3 +329,42 @@ export async function getVideoStatistics(videoId) {
   }
 }
 
+/**
+ * Deletes a video from YouTube using the YouTube Data API v3
+ * @param {string} videoId
+ * @returns {Promise<{ success: boolean, dryRun?: boolean, status?: number, error?: string }>}
+ */
+export async function deleteFromYouTube(videoId) {
+  if (!videoId || videoId === 'DRY_RUN_MOCK_ID') {
+    console.log(`[YOUTUBE DRY-RUN] Would delete video ${videoId}`);
+    return { success: true, dryRun: true };
+  }
+
+  const hasCreds = process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET && process.env.YOUTUBE_REFRESH_TOKEN;
+  if (!hasCreds) {
+    console.warn('[YOUTUBE WARN] Missing credentials — skipping delete.');
+    return { success: false, error: 'Missing YouTube credentials' };
+  }
+
+  try {
+    const accessToken = await getFreshAccessToken();
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+
+    if (res.status === 204 || res.ok) {
+      console.log(`[YOUTUBE DELETE ✓] Video ${videoId} deleted successfully.`);
+      return { success: true };
+    } else {
+      const errorText = await res.text();
+      console.error(`[YOUTUBE DELETE ERROR] Failed to delete ${videoId}: HTTP ${res.status} - ${errorText}`);
+      return { success: false, status: res.status, error: errorText };
+    }
+  } catch (err) {
+    console.error(`[YOUTUBE DELETE ERROR] Exception deleting ${videoId}: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+}
+
+
