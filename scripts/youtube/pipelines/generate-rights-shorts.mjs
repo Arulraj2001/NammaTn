@@ -233,46 +233,55 @@ async function main() {
     'Shorts'
   ]));
 
-  const uploadResult = await uploadToYouTube({
-    videoFilePath: videoOutputPath,
-    title: ytTitle,
-    description: socialCaption,
-    tags,
-    privacyStatus: isDryRun ? 'unlisted' : 'public',
-    isShort: true
-  });
+  let uploadResult = null;
+  try {
+    uploadResult = await uploadToYouTube({
+      videoFilePath: videoOutputPath,
+      title: ytTitle,
+      description: socialCaption,
+      tags,
+      privacyStatus: isDryRun ? 'unlisted' : 'public',
+      isShort: true
+    });
 
-  if (uploadResult.videoId && !uploadResult.dryRun) {
-    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
-    // 10. Attach High-CTR Custom Thumbnail
-    if (fs.existsSync(thumbPath)) {
-      await setYouTubeThumbnail(uploadResult.videoId, thumbPath);
+    if (uploadResult?.videoId && !uploadResult.dryRun) {
+      recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
+      // 10. Attach High-CTR Custom Thumbnail
+      if (fs.existsSync(thumbPath)) {
+        await setYouTubeThumbnail(uploadResult.videoId, thumbPath);
+      }
+      await postPinnedComment(
+        uploadResult.videoId,
+        `⚖️ இதே மாதிரி பிரச்சனை உங்களுக்கும் வந்தா — vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
+      );
     }
-    await postPinnedComment(
-      uploadResult.videoId,
-      `⚖️ இதே மாதிரி பிரச்சனை உங்களுக்கும் வந்தா — vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
-    );
+
+    console.log('====================================================');
+    console.log('CITIZEN RIGHTS SHORT GENERATED & PUBLISHED TO YOUTUBE!');
+    console.log('Video URL:', uploadResult?.videoUrl || 'N/A');
+    console.log('====================================================');
+  } catch (ytErr) {
+    console.warn('[YOUTUBE WARN] YouTube upload encountered an issue:', ytErr.message);
   }
 
-  console.log('====================================================');
-  console.log('CITIZEN RIGHTS SHORT GENERATED & PUBLISHED TO YOUTUBE!');
-  console.log('Video URL:', uploadResult.videoUrl);
-  console.log('====================================================');
-
-  // 11. Cross-Post to Meta Socials (Instagram Reels & Facebook Videos)
-  await crossPostVideoToMetaSocials({
-    videoFilePath: videoOutputPath,
-    thumbnailFilePath: thumbPath,
-    title: ytTitle,
-    caption: socialCaption,
-    isReel: true,
-    isDryRun
-  });
-
-  // Cleanup temporary frames, audio, and subtitles
-  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, thumbPath, s1SubPath, s2SubPath, s3SubPath];
-  for (const t of temps) {
-    try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+  // 11. Cross-Post to Meta Socials (Instagram Reels & Facebook Videos) - ALWAYS EXECUTED
+  try {
+    await crossPostVideoToMetaSocials({
+      videoFilePath: videoOutputPath,
+      thumbnailFilePath: thumbPath,
+      title: ytTitle,
+      caption: socialCaption,
+      isReel: true,
+      isDryRun
+    });
+  } catch (metaErr) {
+    console.warn('[META SOCIAL WARN] Meta cross-post error:', metaErr.message);
+  } finally {
+    // Cleanup temporary frames, audio, and subtitles
+    const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, thumbPath, s1SubPath, s2SubPath, s3SubPath];
+    for (const t of temps) {
+      try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+    }
   }
 }
 

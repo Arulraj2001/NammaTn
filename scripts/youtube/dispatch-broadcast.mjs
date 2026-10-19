@@ -126,6 +126,19 @@ async function main() {
 
   // Mode 3: Auto slot resolution based on real-world IST time & calendar
   console.log('[AUTO ROUTER] Determining active broadcast slot by IST hour...');
+
+  // Autonomous Self-Healing: Verify if any earlier slot scheduled for today was missed!
+  if (!force && !isDryRun) {
+    const expected = getExpectedUploadsSoFar(todayIst);
+    for (const item of expected) {
+      const status = await isBroadcastCompletedToday(item.format, todayIst);
+      if (!status.published) {
+        console.warn(`[AUTO CATCH-UP] Detected missed broadcast for earlier slot today: ${item.format} ("${item.title}"). Catching up now!`);
+        await handleSlot(item.format, isDryRun, false);
+      }
+    }
+  }
+
   let targetFormat = null;
 
   if (now.hours < 12) {

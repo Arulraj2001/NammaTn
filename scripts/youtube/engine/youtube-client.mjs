@@ -93,12 +93,24 @@ export async function uploadToYouTube({
     safeTitle = safeTitle.slice(0, 92).trim() + '...';
   }
 
+  // Sanitize description: YouTube strictly forbids < and > and caps at 5000 chars
+  let safeDescription = (description || '')
+    .replace(/[<>]/g, '')
+    .trim()
+    .slice(0, 4850);
+
+  // Sanitize tags: strip <>, filter empty, cap individual tag length
+  let safeTags = (tags || [])
+    .map(t => String(t || '').replace(/[<>]/g, '').trim())
+    .filter(Boolean)
+    .slice(0, 25);
+
   // 1. Initialize Resumable Upload Session with 2026 Synthetic Media Tag
-  const metadata = {
+  const buildMetadata = (desc) => ({
     snippet: {
       title: safeTitle,
-      description,
-      tags,
+      description: desc,
+      tags: safeTags,
       categoryId,
       defaultLanguage: 'ta',
       defaultAudioLanguage: 'ta'
@@ -106,14 +118,12 @@ export async function uploadToYouTube({
     status: {
       privacyStatus,
       selfDeclaredMadeForKids: false,
-      // 2026 YouTube AI Disclosure: true only for realistic synthetic human media (deepfake/avatar).
-      // Edge-TTS voice + FLUX images do NOT require disclosure — do NOT set true for those.
       containsSyntheticMedia: false
     }
-  };
+  });
 
   console.log('[YOUTUBE] Initializing resumable session with 2026 AI disclosure tag...');
-  const initRes = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
+  let initRes = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
@@ -121,25 +131,44 @@ export async function uploadToYouTube({
       'X-Upload-Content-Length': fileSize.toString(),
       'X-Upload-Content-Type': 'video/mp4'
     },
-    body: JSON.stringify(metadata)
+    body: JSON.stringify(buildMetadata(safeDescription))
   });
 
   if (!initRes.ok) {
     const errText = await initRes.text();
-    if (errText.includes('uploadLimitExceeded')) {
+
+    // Auto-Recovery: If YouTube rejects with 400 invalidDescription/invalidTitle/badRequest, retry with clean fallback
+    if (initRes.status === 400 && (errText.includes('invalidDescription') || errText.includes('invalidTitle') || errText.includes('badRequest'))) {
+      console.warn(`[YOUTUBE RECOVERY] First init session failed with 400 (${errText}). Retrying with clean minimal description...`);
+      const fallbackDesc = `${safeTitle}\n\nதமிழ்நாடு அரசு அறிவிப்புகள், கள நிலவரங்கள் மற்றும் அதிகாரப்பூர்வ உதவி எண்கள்.\n\n🌐 முழு விவரங்கள்: https://vizhitn.in\n\n#VizhiTN #TamilNaduNews #TamilNadu`;
+      initRes = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json; charset=UTF-8',
+          'X-Upload-Content-Length': fileSize.toString(),
+          'X-Upload-Content-Type': 'video/mp4'
+        },
+        body: JSON.stringify(buildMetadata(fallbackDesc))
+      });
+      if (initRes.ok) {
+        console.log('[YOUTUBE RECOVERY ✓] Successfully initialized upload session using clean fallback description.');
+      }
+    } else if (errText.includes('uploadLimitExceeded')) {
       console.log('\n[YOUTUBE QUOTA NOTICE]');
       console.log('Daily YouTube video upload limit has been reached for this Google channel account.');
       console.log(`Rendered video is saved and ready: ${videoFilePath} (${(fileSize / (1024 * 1024)).toFixed(2)} MB)`);
-      if (privacyStatus === 'unlisted' || process.argv.includes('--dry-run')) {
-        console.log('[YOUTUBE DRY-RUN] Handled gracefully for test/dry-run mode.');
-        return {
-          videoId: 'QUOTA_LIMIT_LOCAL_SUCCESS',
-          videoUrl: isShort ? 'https://youtube.com/shorts/LOCAL_RENDER' : 'https://youtube.com/watch?v=LOCAL_RENDER',
-          dryRun: true
-        };
-      }
+      return {
+        videoId: 'QUOTA_LIMIT_LOCAL_SUCCESS',
+        videoUrl: isShort ? 'https://youtube.com/shorts/LOCAL_RENDER' : 'https://youtube.com/watch?v=LOCAL_RENDER',
+        dryRun: true
+      };
     }
-    throw new Error(`Failed to initialize upload session: ${initRes.status} ${errText}`);
+
+    if (!initRes.ok) {
+      const finalErrText = initRes.bodyUsed ? errText : await initRes.text();
+      throw new Error(`Failed to initialize upload session: ${initRes.status} ${finalErrText}`);
+    }
   }
 
   const uploadUrl = initRes.headers.get('location');

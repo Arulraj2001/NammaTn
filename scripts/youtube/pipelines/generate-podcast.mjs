@@ -265,60 +265,69 @@ async function main() {
   ])).slice(0, 15);
 
   // 8. Upload to YouTube
-  const uploadResult = await uploadToYouTube({
-    videoFilePath: videoOutputPath,
-    title: ytTitle,
-    description: ytDesc,
-    tags,
-    privacyStatus: isDryRun ? 'unlisted' : 'public',
-    isShort: false
-  });
-
-  if (uploadResult.videoId && !uploadResult.dryRun) {
-    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
-    await recordBroadcastSuccess({
-      broadcastDate: todayIst,
-      format: 'podcast',
-      timeIst: calEntry?.time_ist || '06:00 PM',
+  let uploadResult = null;
+  try {
+    uploadResult = await uploadToYouTube({
+      videoFilePath: videoOutputPath,
       title: ytTitle,
-      youtubeVideoId: uploadResult.videoId,
-      youtubeUrl: uploadResult.videoUrl,
-      metadata: { topicId: topic.id }
+      description: ytDesc,
+      tags,
+      privacyStatus: isDryRun ? 'unlisted' : 'public',
+      isShort: false
     });
 
-    if (fs.existsSync(thumbnailPath)) {
-      await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
+    if (uploadResult?.videoId && !uploadResult.dryRun) {
+      recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
+      await recordBroadcastSuccess({
+        broadcastDate: todayIst,
+        format: 'podcast',
+        timeIst: calEntry?.time_ist || '06:00 PM',
+        title: ytTitle,
+        youtubeVideoId: uploadResult.videoId,
+        youtubeUrl: uploadResult.videoUrl,
+        metadata: { topicId: topic.id }
+      });
+
+      if (fs.existsSync(thumbnailPath)) {
+        await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
+      }
+
+      await postPinnedComment(
+        uploadResult.videoId,
+        `🎙️ இந்த எபிசோடை உங்கள் குடும்பத்தினருக்கு பகிருங்கள் (Share) ↗️\nஉங்க ஏரியாவில இந்த மாதிரி பிரச்சனை இருந்தா vizhitn.in-ல் நேரடியா report பண்ணுங்க 👇\n🔴 vizhitn.in`
+      );
     }
 
-    await postPinnedComment(
-      uploadResult.videoId,
-      `🎙️ இந்த எபிசோடை உங்கள் குடும்பத்தினருக்கு பகிருங்கள் (Share) ↗️\nஉங்க ஏரியாவில இந்த மாதிரி பிரச்சனை இருந்தா vizhitn.in-ல் நேரடியா report பண்ணுங்க 👇\n🔴 vizhitn.in`
-    );
+    console.log('\n====================================================');
+    console.log('VIZHI UNCUT PODCAST EPISODE BROADCASTED SUCCESSFULLY!');
+    console.log('Video URL:', uploadResult?.videoUrl || 'N/A');
+    console.log('Thumbnail:', thumbnailPath);
+    console.log('====================================================');
+  } catch (ytErr) {
+    console.warn('[YOUTUBE WARN] YouTube upload encountered an issue:', ytErr.message);
   }
 
-  console.log('\n====================================================');
-  console.log('VIZHI UNCUT PODCAST EPISODE BROADCASTED SUCCESSFULLY!');
-  console.log('Video URL:', uploadResult.videoUrl);
-  console.log('Thumbnail:', thumbnailPath);
-  console.log('====================================================');
-
-  // 9. Cross-Post Full Video to Meta Socials (Facebook Page)
-  await crossPostVideoToMetaSocials({
-    videoFilePath: videoOutputPath,
-    thumbnailFilePath: thumbnailPath,
-    title: ytTitle,
-    caption: ytDesc,
-    isReel: false,
-    isDryRun
-  });
-
-  // Cleanup temporary turn slides, audio, and subtitles
-  for (const seg of processedSegments) {
-    try {
-      if (fs.existsSync(seg.slidePath)) fs.unlinkSync(seg.slidePath);
-      if (fs.existsSync(seg.audioPath)) fs.unlinkSync(seg.audioPath);
-      if (fs.existsSync(seg.subPath)) fs.unlinkSync(seg.subPath);
-    } catch {}
+  // 9. Cross-Post Full Video to Meta Socials (Facebook Page) - ALWAYS EXECUTED
+  try {
+    await crossPostVideoToMetaSocials({
+      videoFilePath: videoOutputPath,
+      thumbnailFilePath: thumbnailPath,
+      title: ytTitle,
+      caption: ytDesc,
+      isReel: false,
+      isDryRun
+    });
+  } catch (metaErr) {
+    console.warn('[META SOCIAL WARN] Meta cross-post error:', metaErr.message);
+  } finally {
+    // Cleanup temporary turn slides, audio, and subtitles
+    for (const seg of processedSegments) {
+      try {
+        if (fs.existsSync(seg.slidePath)) fs.unlinkSync(seg.slidePath);
+        if (fs.existsSync(seg.audioPath)) fs.unlinkSync(seg.audioPath);
+        if (fs.existsSync(seg.subPath)) fs.unlinkSync(seg.subPath);
+      } catch {}
+    }
   }
 }
 

@@ -339,59 +339,68 @@ async function main() {
   }
 
   // 10. Upload to YouTube
-  const uploadResult = await uploadToYouTube({
-    videoFilePath: videoOutputPath,
-    title: ytTitle,
-    description: ytDesc,
-    tags,
-    privacyStatus: isDryRun ? 'unlisted' : 'public',
-    isShort: false
-  });
-
-  if (uploadResult.videoId && !uploadResult.dryRun) {
-    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
-    await recordBroadcastSuccess({
-      broadcastDate: todayIst,
-      format: 'long-form',
-      timeIst: calEntry?.time_ist || '07:00 AM',
+  let uploadResult = null;
+  try {
+    uploadResult = await uploadToYouTube({
+      videoFilePath: videoOutputPath,
       title: ytTitle,
-      youtubeVideoId: uploadResult.videoId,
-      youtubeUrl: uploadResult.videoUrl,
-      metadata: { slug: article.slug, category: categorySlug }
+      description: ytDesc,
+      tags,
+      privacyStatus: isDryRun ? 'unlisted' : 'public',
+      isShort: false
     });
 
-    if (fs.existsSync(thumbnailPath)) {
-      await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
+    if (uploadResult?.videoId && !uploadResult.dryRun) {
+      recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
+      await recordBroadcastSuccess({
+        broadcastDate: todayIst,
+        format: 'long-form',
+        timeIst: calEntry?.time_ist || '07:00 AM',
+        title: ytTitle,
+        youtubeVideoId: uploadResult.videoId,
+        youtubeUrl: uploadResult.videoUrl,
+        metadata: { slug: article.slug, category: categorySlug }
+      });
+
+      if (fs.existsSync(thumbnailPath)) {
+        await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
+      }
+      await postPinnedComment(
+        uploadResult.videoId,
+        `📍 இந்த பிரச்சனை உங்க ஏரியாலயும் இருக்கா? vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற ஆயிரம் பேரை protect பண்ணும். 🔴 vizhitn.in`
+      );
     }
-    await postPinnedComment(
-      uploadResult.videoId,
-      `📍 இந்த பிரச்சனை உங்க ஏரியாலயும் இருக்கா? vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற ஆயிரம் பேரை protect பண்ணும். 🔴 vizhitn.in`
-    );
+
+    console.log('====================================================');
+    console.log('CONVERSATIONAL FEATURE VIDEO GENERATED SUCCESSFULLY!');
+    console.log('Video URL:', uploadResult?.videoUrl || 'N/A');
+    console.log('Thumbnail:', thumbnailPath);
+    console.log('====================================================');
+  } catch (ytErr) {
+    console.warn('[YOUTUBE WARN] YouTube upload encountered an issue:', ytErr.message);
   }
 
-  console.log('====================================================');
-  console.log('CONVERSATIONAL FEATURE VIDEO GENERATED SUCCESSFULLY!');
-  console.log('Video URL:', uploadResult.videoUrl);
-  console.log('Thumbnail:', thumbnailPath);
-  console.log('====================================================');
-
-  // 8. Cross-Post to Meta Socials (Facebook Page Video)
-  await crossPostVideoToMetaSocials({
-    videoFilePath: videoOutputPath,
-    thumbnailFilePath: thumbnailPath,
-    title: ytTitle,
-    caption: ytDesc,
-    isReel: false,
-    isDryRun
-  });
-
-  for (const ch of processedChapters) {
-    try {
-      if (fs.existsSync(ch.slidePath)) fs.unlinkSync(ch.slidePath);
-      if (fs.existsSync(ch.audioPath)) fs.unlinkSync(ch.audioPath);
-      if (ch.subtitlePath && fs.existsSync(ch.subtitlePath)) fs.unlinkSync(ch.subtitlePath);
-      if (ch.visualPath && ch.visualPath.startsWith(outDir) && fs.existsSync(ch.visualPath)) fs.unlinkSync(ch.visualPath);
-    } catch {}
+  // 8. Cross-Post to Meta Socials (Facebook Page Video) - ALWAYS EXECUTED
+  try {
+    await crossPostVideoToMetaSocials({
+      videoFilePath: videoOutputPath,
+      thumbnailFilePath: thumbnailPath,
+      title: ytTitle,
+      caption: ytDesc,
+      isReel: false,
+      isDryRun
+    });
+  } catch (metaErr) {
+    console.warn('[META SOCIAL WARN] Meta cross-post error:', metaErr.message);
+  } finally {
+    for (const ch of processedChapters) {
+      try {
+        if (fs.existsSync(ch.slidePath)) fs.unlinkSync(ch.slidePath);
+        if (fs.existsSync(ch.audioPath)) fs.unlinkSync(ch.audioPath);
+        if (ch.subtitlePath && fs.existsSync(ch.subtitlePath)) fs.unlinkSync(ch.subtitlePath);
+        if (ch.visualPath && ch.visualPath.startsWith(outDir) && fs.existsSync(ch.visualPath)) fs.unlinkSync(ch.visualPath);
+      } catch {}
+    }
   }
 }
 

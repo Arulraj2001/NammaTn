@@ -260,63 +260,72 @@ async function main() {
 
   const tags = ['VizhiTN', area, district, 'Tamil Nadu Civic Alert', 'Breaking News Tamil', 'Shorts', theme.label];
 
-  const uploadResult = await uploadToYouTube({
-    videoFilePath: videoOutputPath,
-    title: ytTitle,
-    description: ytDesc,
-    tags,
-    privacyStatus: isDryRun ? 'unlisted' : 'public',
-    isShort: true
-  });
-
-  if (uploadResult.videoId && !uploadResult.dryRun) {
-    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
-    await recordBroadcastSuccess({
-      broadcastDate: todayIst,
-      format: 'live-shorts',
-      timeIst: '01:30 PM',
+  let uploadResult = null;
+  try {
+    uploadResult = await uploadToYouTube({
+      videoFilePath: videoOutputPath,
       title: ytTitle,
-      youtubeVideoId: uploadResult.videoId,
-      youtubeUrl: uploadResult.videoUrl,
-      metadata: { district, category }
+      description: ytDesc,
+      tags,
+      privacyStatus: isDryRun ? 'unlisted' : 'public',
+      isShort: true
     });
 
-    if (fs.existsSync(thumbPath)) {
-      await setYouTubeThumbnail(uploadResult.videoId, thumbPath);
+    if (uploadResult?.videoId && !uploadResult.dryRun) {
+      recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
+      await recordBroadcastSuccess({
+        broadcastDate: todayIst,
+        format: 'live-shorts',
+        timeIst: '01:30 PM',
+        title: ytTitle,
+        youtubeVideoId: uploadResult.videoId,
+        youtubeUrl: uploadResult.videoUrl,
+        metadata: { district, category }
+      });
+
+      if (fs.existsSync(thumbPath)) {
+        await setYouTubeThumbnail(uploadResult.videoId, thumbPath);
+      }
+      await postPinnedComment(
+        uploadResult.videoId,
+        `🚨 ${area} மக்கள் கவனத்திற்கு! இந்த பிரச்சனை உங்க ஏரியாலயும் இருந்தா vizhitn.in-ல report பண்ணுங்க 👇\n🔴 vizhitn.in`
+      );
     }
-    await postPinnedComment(
-      uploadResult.videoId,
-      `🚨 ${area} மக்கள் கவனத்திற்கு! இந்த பிரச்சனை உங்க ஏரியாலயும் இருந்தா vizhitn.in-ல report பண்ணுங்க 👇\n🔴 vizhitn.in`
-    );
+
+    console.log('====================================================');
+    console.log('LIVE CIVIC SHORT BROADCASTED SUCCESSFULLY!');
+    console.log('Video URL:', uploadResult?.videoUrl || 'N/A');
+    console.log('====================================================');
+  } catch (ytErr) {
+    console.warn('[YOUTUBE WARN] YouTube upload encountered an issue:', ytErr.message);
   }
 
-  console.log('====================================================');
-  console.log('LIVE CIVIC SHORT BROADCASTED SUCCESSFULLY!');
-  console.log('Video URL:', uploadResult.videoUrl);
-  console.log('====================================================');
+  // 10. Cross-Post to Meta Socials (Instagram Reels & Facebook Video) - ALWAYS EXECUTED
+  try {
+    const metaCaption = `🚨 ${area} நேரடி எச்சரிக்கை: ${rawTitle}\n\n` +
+      `📍 கள நிலவரம்: ${urgentPost.content_ta || urgentPost.content_en}\n` +
+      `📞 உதவி மையம் / புகார்: ${helpline}\n\n` +
+      `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & கள நிலவரங்களை உடனே தெரிந்து கொள்ள @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
+      `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
+      `🌐 உங்கள் பகுதி பிரச்சனையை நீங்களே பதிவு செய்ய: https://vizhitn.in\n\n` +
+      `#VizhiTN #TamilNadu #${area.replace(/\s+/g, '')} #TamilReels #ReelsInstagram #ReelsViral #TNNews #Chennai #CivicAlert`;
 
-  // 10. Cross-Post to Meta Socials (Instagram Reels & Facebook Video)
-  const metaCaption = `🚨 ${area} நேரடி எச்சரிக்கை: ${rawTitle}\n\n` +
-    `📍 கள நிலவரம்: ${urgentPost.content_ta || urgentPost.content_en}\n` +
-    `📞 உதவி மையம் / புகார்: ${helpline}\n\n` +
-    `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & கள நிலவரங்களை உடனே தெரிந்து கொள்ள @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
-    `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
-    `🌐 உங்கள் பகுதி பிரச்சனையை நீங்களே பதிவு செய்ய: https://vizhitn.in\n\n` +
-    `#VizhiTN #TamilNadu #${area.replace(/\s+/g, '')} #TamilReels #ReelsInstagram #ReelsViral #TNNews #Chennai #CivicAlert`;
-
-  await crossPostVideoToMetaSocials({
-    videoFilePath: videoOutputPath,
-    thumbnailFilePath: thumbPath,
-    title: ytTitle,
-    caption: metaCaption,
-    isReel: true,
-    isDryRun
-  });
-
-  // Cleanup temp files
-  const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, thumbPath, s1SubPath, s2SubPath, s3SubPath];
-  for (const t of temps) {
-    try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+    await crossPostVideoToMetaSocials({
+      videoFilePath: videoOutputPath,
+      thumbnailFilePath: thumbPath,
+      title: ytTitle,
+      caption: metaCaption,
+      isReel: true,
+      isDryRun
+    });
+  } catch (metaErr) {
+    console.warn('[META SOCIAL WARN] Meta social cross-post error:', metaErr.message);
+  } finally {
+    // Cleanup temp files
+    const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, thumbPath, s1SubPath, s2SubPath, s3SubPath];
+    for (const t of temps) {
+      try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+    }
   }
 }
 

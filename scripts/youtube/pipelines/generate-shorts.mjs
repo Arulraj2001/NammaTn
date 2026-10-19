@@ -364,62 +364,71 @@ async function main() {
     : autoDesc;
 
   // ─── 15. Upload to YouTube ────────────────────────────────────────────────
-  const uploadResult = await uploadToYouTube({
-    videoFilePath: videoOutputPath,
-    title: finalTitle,
-    description: finalDesc,
-    tags,
-    privacyStatus: isDryRun ? 'unlisted' : 'public',
-    isShort: true
-  });
-
-  if (uploadResult.videoId && !uploadResult.dryRun) {
-    recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: finalTitle });
-    await recordBroadcastSuccess({
-      broadcastDate: todayIst,
-      format: 'civic-shorts',
-      timeIst: calEntry?.time_ist || '07:30 PM',
+  let uploadResult = null;
+  try {
+    uploadResult = await uploadToYouTube({
+      videoFilePath: videoOutputPath,
       title: finalTitle,
-      youtubeVideoId: uploadResult.videoId,
-      youtubeUrl: uploadResult.videoUrl,
-      metadata: { district: leadPost.district_slug, category: leadPost.category_slug }
+      description: finalDesc,
+      tags,
+      privacyStatus: isDryRun ? 'unlisted' : 'public',
+      isShort: true
     });
 
-    if (fs.existsSync(thumbnailPath)) {
-      await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
+    if (uploadResult?.videoId && !uploadResult.dryRun) {
+      recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: finalTitle });
+      await recordBroadcastSuccess({
+        broadcastDate: todayIst,
+        format: 'civic-shorts',
+        timeIst: calEntry?.time_ist || '07:30 PM',
+        title: finalTitle,
+        youtubeVideoId: uploadResult.videoId,
+        youtubeUrl: uploadResult.videoUrl,
+        metadata: { district: leadPost.district_slug, category: leadPost.category_slug }
+      });
+
+      if (fs.existsSync(thumbnailPath)) {
+        await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
+      }
+      await postPinnedComment(uploadResult.videoId,
+        `📍 உங்க ஏரியால இது நடக்குதா? vizhitn.in-ல report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
+      );
     }
-    await postPinnedComment(uploadResult.videoId,
-      `📍 உங்க ஏரியால இது நடக்குதா? vizhitn.in-ல report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
-    );
+
+    console.log('====================================================');
+    console.log('CIVIC ALERT SHORT GENERATED & PUBLISHED!');
+    console.log('Video URL:', uploadResult?.videoUrl || 'N/A');
+    console.log('Title:', finalTitle);
+    console.log('====================================================');
+  } catch (ytErr) {
+    console.warn('[YOUTUBE WARN] YouTube upload encountered an issue:', ytErr.message);
   }
 
-  console.log('====================================================');
-  console.log('CIVIC ALERT SHORT GENERATED & PUBLISHED!');
-  console.log('Video URL:', uploadResult.videoUrl);
-  console.log('Title:', finalTitle);
-  console.log('====================================================');
-
   // ─── 16. Cross-Post to Meta Socials (Instagram Reels & Facebook Video) ─────
-  const metaCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n` +
-    `📞 அதிகாரப்பூர்வ உதவி / புகார்: ${helpline}\n\n` +
-    `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & மக்கள் விழிப்புணர்வுகளுக்கு @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
-    `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
-    `🌐 முழு விவரங்கள் & நேரடி அறிக்கை: https://vizhitn.in\n\n` +
-    `#VizhiTN #TamilNadu #TamilReels #ReelsInstagram #ReelsViral #${(leadPost.district_slug || 'TN').replace(/[^a-zA-Z0-9]/g, '')} #TNNews`;
+  try {
+    const metaCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n` +
+      `📞 அதிகாரப்பூர்வ உதவி / புகார்: ${helpline}\n\n` +
+      `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & மக்கள் விழிப்புணர்வுகளுக்கு @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
+      `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
+      `🌐 முழு விவரங்கள் & நேரடி அறிக்கை: https://vizhitn.in\n\n` +
+      `#VizhiTN #TamilNadu #TamilReels #ReelsInstagram #ReelsViral #${(leadPost.district_slug || 'TN').replace(/[^a-zA-Z0-9]/g, '')} #TNNews`;
 
-  await crossPostVideoToMetaSocials({
-    videoFilePath: videoOutputPath,
-    thumbnailFilePath: thumbnailPath,
-    title: finalTitle,
-    caption: metaCaption,
-    isReel: true,
-    isDryRun
-  });
-
-  // Cleanup temp files
-  const temps = [s1FramePath, s2FramePath, s3FramePath, s4FramePath, s1AudioPath, s2AudioPath, s3AudioPath, s4AudioPath, heroPhotoPath, thumbnailPath, s1SubPath, s2SubPath, s3SubPath, s4SubPath];
-  for (const t of temps) {
-    try { if (t && fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+    await crossPostVideoToMetaSocials({
+      videoFilePath: videoOutputPath,
+      thumbnailFilePath: thumbnailPath,
+      title: finalTitle,
+      caption: metaCaption,
+      isReel: true,
+      isDryRun
+    });
+  } catch (metaErr) {
+    console.warn('[META SOCIAL WARN] Meta social cross-post error:', metaErr.message);
+  } finally {
+    // Cleanup temp files
+    const temps = [s1FramePath, s2FramePath, s3FramePath, s4FramePath, s1AudioPath, s2AudioPath, s3AudioPath, s4AudioPath, heroPhotoPath, thumbnailPath, s1SubPath, s2SubPath, s3SubPath, s4SubPath];
+    for (const t of temps) {
+      try { if (t && fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+    }
   }
 }
 
