@@ -8,6 +8,7 @@ import path from 'path';
 import { YOUTUBE_CONFIG } from '../config.mjs';
 import { getPodcastTopicForSchedule, PODCAST_CATALOG } from '../engine/podcast-topics.mjs';
 import { generatePodcastScript } from '../engine/podcast-writer.mjs';
+import { generateArtDirectedVisualPrompt } from '../engine/script-writer.mjs';
 import { synthesizePodcastTurn } from '../engine/podcast-tts.mjs';
 import { assemblePodcastVideo, generatePodcastThumbnail } from '../engine/podcast-composer.mjs';
 import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
@@ -98,7 +99,23 @@ async function main() {
   // 3. Prepare Visuals Plate via Cloudflare FLUX
   console.log('\n[VISUALS] Generating 16:9 documentary evidence visual...');
   const heroVisualPath = path.join(outDir, `podcast_flux_hero_${Date.now()}.webp`);
-  let heroVisualUrl = await generateYouTubeSceneVisual(topic.fluxPrompt, heroVisualPath, '16:9');
+  let visualPrompt = topic.fluxPrompt;
+  try {
+    const artDirected = await generateArtDirectedVisualPrompt({
+      title: topic.episodeTitleEn || topic.episodeTitleTa,
+      category: topic.seriesNameEn || 'Investigation',
+      aspectRatio: '16:9',
+      variant: 'A'
+    });
+    if (artDirected) {
+      visualPrompt = artDirected;
+      console.log(`[AI ART DIRECTOR] Enhanced podcast visual prompt: "${visualPrompt.slice(0, 90)}..."`);
+    }
+  } catch (err) {
+    console.warn('[AI ART DIRECTOR] Using fallback topic fluxPrompt:', err.message);
+  }
+
+  let heroVisualUrl = await generateYouTubeSceneVisual(visualPrompt, heroVisualPath, '16:9');
   if (!heroVisualUrl) {
     // Official Category Graphic Card fallback (zero stock photos)
     const categoryCard = path.resolve('public/images/categories/public-safety.webp');

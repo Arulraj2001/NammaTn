@@ -47,6 +47,88 @@ export function getCategoryFluxPrompt(categorySlug) {
 }
 
 /**
+ * Uses Gemini as an automated Visual Art Director to synthesize high-stakes,
+ * conflict-driven photorealistic prompts for Cloudflare FLUX / Imagen thumbnail generation.
+ * Follows the YouTube creator high-CTR blueprint:
+ * - Direct conflict or shock action matching the title
+ * - Dramatic lighting (rim light, high saturation, sharp focal depth)
+ * - Clear empty safe zone for typography overlay
+ *
+ * @param {Object} params
+ * @param {string} params.title - Article/Post title
+ * @param {string} params.category - Category slug
+ * @param {'16:9'|'9:16'} [params.aspectRatio='9:16']
+ * @param {'A'|'B'} [params.variant='A'] - 'A' = Curiosity Question Hook, 'B' = Proof/Shock Warning
+ * @returns {Promise<string>}
+ */
+export async function generateArtDirectedVisualPrompt({
+  title,
+  category = 'general',
+  aspectRatio = '9:16',
+  variant = 'A'
+}) {
+  const apiKey = process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    const baseFallback = getCategoryFluxPrompt(category);
+    if (variant === 'B') {
+      return `${baseFallback}, emergency red warning indicator, close-up high contrast evidence, dramatic cinematic documentary photo, 8k, photorealistic`;
+    }
+    return `${baseFallback}, person looking in shock and curiosity, dramatic side lighting, high saturation, hyperrealistic photojournalism`;
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+    const promptInstructions = `
+You are an expert YouTube Thumbnail Art Director specialized in ultra-high CTR thumbnails (MrBeast, Netflix documentaries, Vox style) for Tamil Nadu investigative journalism.
+
+Video Topic: "${title}"
+Category: "${category}"
+Format: "${aspectRatio}"
+Variant Goal: "${variant === 'A' ? 'High-stakes Curiosity & Personal Conflict (Resident/citizen reacting in shock to unexpected crisis)' : 'High-impact Proof & Urgency (Close-up of official evidence, glowing digital meter/bill, red warning indicators)'}"
+
+TASK:
+Write a single-paragraph FLUX image generation prompt (in English, 40 to 65 words) that describes an intense, cinematic real-world photographic scene.
+
+STRICT ART DIRECTION RULES:
+1. Show the ACTION/CONFLICT: Don't just show an object. Show the human interaction or tangible evidence (e.g. resident in shock holding an electric bill, dry kitchen tap with empty pot, smartphone screen glowing with a scam warning).
+2. Lighting & Style: High contrast, dramatic rim lighting, vibrant saturation on warning elements (yellow, neon red, amber), cinematic shallow depth of field, 8k documentary realism.
+3. Composition: The main subject should be offset to leave the center/left clean and uncluttered for high-contrast Tamil typography overlay.
+4. NO TEXT INSIDE IMAGE: Do NOT ask the AI to render English or Tamil text or letters.
+5. Return ONLY the final prompt paragraph. No conversational intro, no quotes, no markdown.
+`;
+
+    for (const model of CANDIDATE_MODELS) {
+      try {
+        const response = await ai.models.generateContent({
+          model,
+          contents: promptInstructions,
+          config: {
+            temperature: 0.7,
+            maxOutputTokens: 120
+          }
+        });
+        const text = response?.text?.trim();
+        if (text && text.length > 25) {
+          const cleanPrompt = text.replace(/^["'`]|["'`]$/g, '').replace(/^(Prompt|Visual prompt):\s*/i, '').trim();
+          console.log(`[ART DIRECTOR ✓] Generated ${variant === 'A' ? 'Curiosity' : 'Proof'} FLUX Prompt: "${cleanPrompt.slice(0, 90)}..."`);
+          return cleanPrompt;
+        }
+      } catch (_) {
+        // Fall to next candidate model
+      }
+    }
+  } catch (err) {
+    console.warn('[ART DIRECTOR WARN] Falling back to category prompt:', err.message);
+  }
+
+  const baseFallback = getCategoryFluxPrompt(category);
+  return variant === 'B'
+    ? `${baseFallback}, emergency red warning indicator, close-up high contrast evidence, dramatic cinematic documentary photo, 8k, photorealistic`
+    : `${baseFallback}, person looking in shock and curiosity, dramatic side lighting, high saturation, hyperrealistic photojournalism`;
+}
+
+
+/**
  * Builds tiered YouTube metadata: title, description, chapters, hashtags
  * @param {Object} params
  * @returns {Object} { title, description, tags, hashtags }

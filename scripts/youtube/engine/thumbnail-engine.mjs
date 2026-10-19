@@ -1,15 +1,23 @@
 import fs from 'fs';
 import path from 'path';
 import { renderHtmlToImage } from './frame-renderer.mjs';
-import { getBrandLogoDataUri } from './brand-assets.mjs';
+import { getBrandLogoDataUri, getHostAvatarDataUri } from './brand-assets.mjs';
 
 /**
  * Generates an ultra-high CTR 1280x720 YouTube Thumbnail PNG
+ * Modeled on the YouTube creator blueprint:
+ * - Camera Raw color grading & ambient occlusion vignette
+ * - Conflict prop / shock warning badges
+ * - Host persona compositing (Kavitha / Karthik) with rim lighting & drop shadow
+ * - Noto Sans Tamil bold typography in safe zone
+ *
  * @param {Object} params
  * @param {string} params.titleTa - Short 3 to 5-word bold Tamil curiosity hook
  * @param {string} [params.subtitleTa] - Supporting short text
  * @param {string} [params.category='EXPLORER'] - Category pill
  * @param {string} params.heroImageUrl - Background hero image URL or local path
+ * @param {'kavitha'|'karthik'|null} [params.host=null] - Optional host persona cutout
+ * @param {string} [params.conflictStamp=null] - Optional conflict stamp badge
  * @param {string} params.outputPath - Destination PNG file
  * @returns {Promise<string>} output path
  */
@@ -18,10 +26,17 @@ export async function generateLongVideoThumbnail({
   subtitleTa = 'முழு கள ஆய்வு & அரசு ஆவணங்கள்',
   category = 'SPECIAL REPORT',
   heroImageUrl,
+  host = null,
+  conflictStamp = null,
   outputPath
 }) {
   const logoDataUri = getBrandLogoDataUri();
+  const hostAvatarDataUri = host ? getHostAvatarDataUri(host) : '';
   const fontPath = path.resolve('public/fonts/NotoSansTamil-Bold.ttf').replace(/\\/g, '/');
+
+  const resolvedHero = heroImageUrl && fs.existsSync(heroImageUrl)
+    ? `file:///${heroImageUrl.replace(/\\/g, '/')}`
+    : (heroImageUrl || '');
 
   const htmlContent = `<!DOCTYPE html>
 <html lang="ta">
@@ -42,13 +57,13 @@ export async function generateLongVideoThumbnail({
       width: 1280px;
       height: 720px;
       overflow: hidden;
-      background: #071224;
+      background: #020617;
       font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
       position: relative;
       color: #ffffff;
     }
 
-    /* Full Bleed Hero Visual */
+    /* Full Bleed Hero Visual with Photoshop Camera Raw Emulation */
     .bg-image {
       position: absolute;
       left: 0;
@@ -56,21 +71,21 @@ export async function generateLongVideoThumbnail({
       width: 1280px;
       height: 720px;
       object-fit: cover;
+      /* Camera Raw High Contrast + Vibrance Punch */
+      filter: contrast(1.24) saturate(1.4) brightness(0.82);
+      transform: scale(1.04);
     }
+
+    /* Ambient Occlusion Vignette & Split Toning */
     .gradient-overlay {
       position: absolute;
       left: 0;
       top: 0;
       width: 1280px;
       height: 720px;
-      background: linear-gradient(
-        180deg,
-        rgba(7, 18, 36, 0.2) 0%,
-        rgba(7, 18, 36, 0.4) 30%,
-        rgba(7, 18, 36, 0.9) 60%,
-        rgba(7, 18, 36, 0.98) 82%,
-        #071224 100%
-      );
+      background:
+        radial-gradient(circle at 45% 45%, rgba(0,0,0,0) 25%, rgba(2,6,23,0.7) 65%, #020617 100%),
+        linear-gradient(180deg, rgba(2,6,23,0.3) 0%, rgba(2,6,23,0.1) 40%, rgba(2,6,23,0.95) 90%, #020617 100%);
     }
 
     /* Top Bar Floating */
@@ -88,8 +103,8 @@ export async function generateLongVideoThumbnail({
       display: flex;
       align-items: center;
       gap: 12px;
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(14px);
       padding: 8px 20px 8px 12px;
       border-radius: 9999px;
       border: 1.5px solid rgba(255, 255, 255, 0.25);
@@ -116,8 +131,8 @@ export async function generateLongVideoThumbnail({
       letter-spacing: 1px;
     }
     .cat-pill {
-      background: #ef4444;
-      border: 2px solid #dc2626;
+      background: #dc2626;
+      border: 2px solid #ef4444;
       color: #ffffff;
       font-size: 17px;
       font-weight: 900;
@@ -125,27 +140,79 @@ export async function generateLongVideoThumbnail({
       border-radius: 9999px;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+      box-shadow: 0 4px 20px rgba(220, 38, 38, 0.55);
     }
 
-    /* Bottom Content Box */
+    /* Host Persona Cutout (Right Third Layer) */
+    .host-card {
+      position: absolute;
+      right: 32px;
+      bottom: 64px;
+      width: 340px;
+      height: 520px;
+      z-index: 12;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .host-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      border-radius: 28px 28px 0 0;
+      border-top: 3px solid rgba(255, 255, 255, 0.4);
+      border-left: 3px solid rgba(255, 255, 255, 0.3);
+      filter: drop-shadow(-12px 12px 35px rgba(0, 0, 0, 0.95)) contrast(1.18) saturate(1.22);
+      mask-image: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 18%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 18%);
+    }
+    .host-tag {
+      position: absolute;
+      bottom: 24px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 16px;
+      font-weight: 900;
+      color: #38bdf8;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Left Safe-Zone Content Box */
     .content-box {
       position: absolute;
-      bottom: 74px;
+      bottom: 84px;
       left: 48px;
-      right: 48px;
-      z-index: 10;
+      max-width: ${hostAvatarDataUri ? '860px' : '1180px'};
+      z-index: 15;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
+    }
+    .conflict-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #dc2626;
+      border: 2px solid #fecaca;
+      color: #ffffff;
+      padding: 6px 18px;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 18px rgba(220, 38, 38, 0.6);
+      width: fit-content;
+      text-shadow: 1px 1px 0 #000;
     }
     .headline-main {
-      font-size: 64px;
+      font-size: ${titleTa.length > 35 ? '56px' : '64px'};
       font-weight: 900;
       line-height: 1.25;
       color: #FFE500;
       text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000, 0 6px 24px rgba(0, 0, 0, 0.95);
-      margin-bottom: 8px;
     }
     .sub-text {
       font-size: 26px;
@@ -161,7 +228,7 @@ export async function generateLongVideoThumbnail({
       left: 0;
       right: 0;
       height: 64px;
-      background: rgba(7, 18, 36, 0.96);
+      background: rgba(7, 18, 36, 0.98);
       border-top: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
@@ -186,7 +253,7 @@ export async function generateLongVideoThumbnail({
   </style>
 </head>
 <body>
-  <img class="bg-image" src="${heroImageUrl}" alt="Hero" />
+  <img class="bg-image" src="${resolvedHero}" alt="Hero" />
   <div class="gradient-overlay"></div>
 
   <div class="top-bar">
@@ -198,7 +265,15 @@ export async function generateLongVideoThumbnail({
     <div class="cat-pill">${category}</div>
   </div>
 
+  ${hostAvatarDataUri ? `
+  <div class="host-card">
+    <img class="host-img" src="${hostAvatarDataUri}" alt="${host}" />
+    <span class="host-tag">🎙️ ${host === 'kavitha' ? 'கவிதா' : 'கார்த்திக்'}</span>
+  </div>
+  ` : ''}
+
   <div class="content-box">
+    ${conflictStamp ? `<div class="conflict-badge">${conflictStamp}</div>` : ''}
     <h1 class="headline-main">${titleTa}</h1>
     <p class="sub-text">${subtitleTa}</p>
   </div>
@@ -354,16 +429,18 @@ export async function generateLongThumbnailPair({
   const pathA = path.join(outputDir, `${baseName}_variantA.png`);
   const pathB = path.join(outputDir, `${baseName}_variantB.png`);
 
-  // Variant A: Curiosity Question
+  // Variant A: High-Stakes Curiosity Question (Kavitha Host Layer + Curiosity Badge)
   await generateLongVideoThumbnail({
     titleTa,
     subtitleTa,
     category,
     heroImageUrl,
+    host: 'kavitha',
+    conflictStamp: '⚠️ என்ன காரணம்?',
     outputPath: pathA
   });
 
-  // Variant B: Proof / Evidence Shock Hook
+  // Variant B: Proof / Evidence Shock Hook (Karthik Host Layer + Official Evidence Badge)
   const shockTitle = titleTa.includes('?') ? titleTa.replace('?', '!') : `${titleTa} — உண்மை என்ன?`;
   const shockSub = 'அரசு ஆவணங்கள் & நேரடி ஆதாரம்';
 
@@ -372,10 +449,12 @@ export async function generateLongThumbnailPair({
     subtitleTa: shockSub,
     category: 'EVIDENCE INVESTIGATION',
     heroImageUrl,
+    host: 'karthik',
+    conflictStamp: '🔴 அரசு நேரடி ஆதாரம்',
     outputPath: pathB
   });
 
-  console.log(`[16:9 A/B THUMBNAILS READY ✓] Variant A: ${pathA} | Variant B: ${pathB}`);
+  console.log(`[16:9 A/B THUMBNAILS READY ✓] Variant A (Kavitha Curiosity): ${pathA} | Variant B (Karthik Proof): ${pathB}`);
   return { variantA: pathA, variantB: pathB };
 }
 

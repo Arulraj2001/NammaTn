@@ -7,7 +7,7 @@ import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { YOUTUBE_CONFIG } from '../config.mjs';
 import { normalizeAcronymsToSpokenTamil } from '../engine/tamil-phonetics.mjs';
-import { generateVideoMetadata, getCategoryFluxPrompt } from '../engine/script-writer.mjs';
+import { generateVideoMetadata, getCategoryFluxPrompt, generateArtDirectedVisualPrompt } from '../engine/script-writer.mjs';
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video-composer.mjs';
@@ -209,10 +209,15 @@ async function main() {
   const totalDur = s1Dur + s2Dur + s3Dur + s4Dur;
   console.log(`[AUDIO] S1: ${s1Dur.toFixed(1)}s | S2: ${s2Dur.toFixed(1)}s | S3: ${s3Dur.toFixed(1)}s | S4: ${s4Dur.toFixed(1)}s | Total: ${totalDur.toFixed(1)}s`);
 
-  // ─── 4. Generate Visuals — Category-Specific FLUX Photo & B-Roll ─────────
-  const fluxPrompt = getCategoryFluxPrompt(category);
+  // ─── 4. Generate Visuals — AI Art-Directed Conflict Scene Visual (FLUX) ────
+  const artDirectedPrompt = await generateArtDirectedVisualPrompt({
+    title: leadPost.title_en || leadPost.title_ta || firstTitle,
+    category,
+    aspectRatio: '9:16',
+    variant: 'A'
+  });
   const heroPhotoPath = path.join(outDir, `short_flux_hero_${Date.now()}.webp`);
-  let heroPhotoUrl = await generateYouTubeSceneVisual(fluxPrompt, heroPhotoPath, '9:16');
+  let heroPhotoUrl = await generateYouTubeSceneVisual(artDirectedPrompt, heroPhotoPath, '9:16');
   if (!heroPhotoUrl) {
     const categoryCardPath = path.resolve(`public/images/categories/${category}.webp`);
     heroPhotoUrl = fs.existsSync(categoryCardPath) ? categoryCardPath : path.resolve('public/images/categories/general.webp');

@@ -16,7 +16,7 @@ import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engi
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 
-import { generateDocumentaryScript, generateVideoMetadata, getCategoryFluxPrompt } from '../engine/script-writer.mjs';
+import { generateDocumentaryScript, generateVideoMetadata, getCategoryFluxPrompt, generateArtDirectedVisualPrompt } from '../engine/script-writer.mjs';
 import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
@@ -130,7 +130,23 @@ async function main() {
     heroImageSrc = fs.existsSync(localCard) ? localCard : path.resolve('public/images/tntoday/general.webp');
   }
 
-  // Pre-fetch category-specific FLUX background for chapter slides
+  // Pre-fetch AI Art-Directed 16:9 visual plate for thumbnail & chapter slides
+  try {
+    const artDirectedPrompt = await generateArtDirectedVisualPrompt({
+      title: articleTitleEn,
+      category: categorySlug,
+      aspectRatio: '16:9',
+      variant: 'A'
+    });
+    const thumbHeroPath = path.join(outDir, `long_hero_flux_${Date.now()}.webp`);
+    const generatedHero = await generateYouTubeSceneVisual(artDirectedPrompt, thumbHeroPath, '16:9');
+    if (generatedHero) {
+      heroImageSrc = generatedHero;
+    }
+  } catch (err) {
+    console.warn('[THUMBNAIL HERO WARN]', err.message);
+  }
+
   const categoryFluxPrompt = getCategoryFluxPrompt(categorySlug);
 
   // 3. Synthesize In-Depth 5-Act Investigative Documentary Script via Gemini

@@ -165,13 +165,17 @@ export async function generateShortsThumbnail({
       height: 100%;
       object-fit: cover;
       object-position: center center;
-      filter: contrast(1.15) saturate(1.3) brightness(0.65);
-      transform: scale(1.05);
+      /* Photoshop Camera Raw Emulation: High-contrast punch & vibrance */
+      filter: contrast(1.26) saturate(1.4) brightness(0.72);
+      transform: scale(1.06);
     }
     .visual-gradient {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle at center, rgba(3,7,18,0.4) 0%, rgba(3,7,18,0.85) 65%, #030712 100%);
+      /* Ambient Occlusion Vignette & Split Toning */
+      background:
+        radial-gradient(circle at 50% 45%, rgba(0,0,0,0) 25%, rgba(3,7,18,0.72) 65%, #030712 100%),
+        linear-gradient(180deg, rgba(3,7,18,0.3) 0%, rgba(3,7,18,0.1) 40%, rgba(3,7,18,0.95) 90%, #030712 100%);
     }
 
     /* Top Floating Branding */
