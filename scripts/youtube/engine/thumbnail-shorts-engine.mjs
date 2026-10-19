@@ -386,3 +386,58 @@ export async function generateShortsThumbnail({
   console.log(`[SHORTS THUMBNAIL ✓] Rendered high-CTR 9:16 viral card: ${renderedPath}`);
   return renderedPath;
 }
+
+/**
+ * Generates both Variant A (Curiosity Question) and Variant B (Shock / Urgency Proof)
+ * for autonomous A/B click-through-rate optimization.
+ *
+ * @param {Object} params
+ * @param {string} params.titleTa
+ * @param {string} [params.category]
+ * @param {string} params.heroImageUrl
+ * @param {string} params.outputDir
+ * @param {string} [params.baseName]
+ * @returns {Promise<{ variantA: string, variantB: string }>}
+ */
+export async function generateShortsThumbnailPair({
+  titleTa,
+  category = 'சட்ட உரிமைகள்',
+  heroImageUrl,
+  outputDir,
+  baseName = `short_${Date.now()}`
+}) {
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
+  const pathA = path.join(outputDir, `${baseName}_variantA.png`);
+  const pathB = path.join(outputDir, `${baseName}_variantB.png`);
+
+  // Variant A: High-Stakes Curiosity Question
+  await generateShortsThumbnail({
+    titleTa,
+    category,
+    heroImageUrl,
+    outputPath: pathA
+  });
+
+  // Variant B: Urgency & Data Shock Formula
+  const lines = formatThumbnailTamilLines(titleTa);
+  const shockL1 = 'அவசர எச்சரிக்கை!';
+  const shockL2 = lines.line1 || lines.line2 || 'முக்கிய அறிவிப்பு';
+  const shockL3 = lines.line3 || 'உடனே சரிபார்க்கவும்';
+  const shockL4 = 'முழு விவரம்';
+
+  await generateShortsThumbnail({
+    titleTa,
+    line1: shockL1,
+    line2: shockL2,
+    line3: shockL3,
+    line4: shockL4,
+    category: 'உடனடி எச்சரிக்கை',
+    heroImageUrl,
+    outputPath: pathB
+  });
+
+  console.log(`[A/B THUMBNAILS READY ✓] Variant A (Curiosity): ${pathA} | Variant B (Shock): ${pathB}`);
+  return { variantA: pathA, variantB: pathB };
+}
+

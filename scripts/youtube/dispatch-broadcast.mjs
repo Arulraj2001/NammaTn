@@ -3,16 +3,19 @@
 // VizhiTN 90-Day Intelligent Broadcast Dispatcher & Anti-Delay Router
 // Resolves true IST clock, checks 90-day calendar, guards against duplicates via Supabase log.
 
+import fs from 'fs';
 import { spawn } from 'node:child_process';
 import path from 'path';
 import { getTodayIst, getNowIst, getScheduledUploadsForDate, getScheduledUploadForSlot, getExpectedUploadsSoFar } from './engine/calendar-reader.mjs';
 import { isBroadcastCompletedToday } from './engine/broadcast-logger.mjs';
+import { setYouTubeThumbnail, getVideoStatistics } from './engine/youtube-client.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
     process.loadEnvFile('.env.local');
   }
 } catch (_) {}
+
 
 function runPipeline(scriptRelativePath, args = []) {
   return new Promise((resolve, reject) => {
@@ -72,11 +75,74 @@ async function handleSlot(format, isDryRun, force) {
   await runPipeline(script, args);
 }
 
+/**
+ * Autonomous A/B Thumbnail Optimization Auditor
+ * Checks videos published >= 4 hours ago. If viewCount < 25 and Variant B exists,
+ * automatically swaps the thumbnail to Variant B via YouTube Data API.
+ */
+async function auditAndAutoSwapThumbnails() {
+  console.log('\n[A/B THUMBNAIL AUDITOR] Auditing recent broadcasts for CTR auto-swap...');
+  try {
+    const historyPath = path.resolve('scripts/youtube/calendar/broadcast-history.json');
+    if (!fs.existsSync(historyPath)) return;
+    const history = JSON.parse(fs.readFileSync(historyPath, 'utf-8'));
+    const now = Date.now();
+    let swapCount = 0;
+
+    for (const record of history) {
+      if (!record.youtube_video_id || record.youtube_video_id === 'DRY_RUN_MOCK_ID') continue;
+      const meta = record.metadata || {};
+      if (meta.ab_swapped) continue;
+      if (!meta.thumbnail_b_path || !fs.existsSync(meta.thumbnail_b_path)) continue;
+
+      // Check age: must be at least 4 hours old
+      const publishedAt = new Date(record.created_at || record.broadcast_date).getTime();
+      const ageHours = (now - publishedAt) / (1000 * 3600);
+      if (ageHours < 4) {
+        console.log(`[A/B AUDIT] Video ${record.youtube_video_id} is ${ageHours.toFixed(1)}h old (evaluates at >= 4h).`);
+        continue;
+      }
+
+      console.log(`[A/B AUDIT] Checking video stats for ${record.youtube_video_id} ("${record.title}")...`);
+      const stats = await getVideoStatistics(record.youtube_video_id);
+      if (!stats) continue;
+
+      console.log(`[A/B AUDIT] Video ${record.youtube_video_id} stats: ${stats.viewCount} views in ${ageHours.toFixed(1)} hours.`);
+      if (stats.viewCount < 25) {
+        console.warn(`[A/B THUMBNAIL SWAP ⚡] Video ${record.youtube_video_id} has < 25 views (${stats.viewCount}). Swapping to Variant B!`);
+        await setYouTubeThumbnail(record.youtube_video_id, meta.thumbnail_b_path);
+        meta.ab_swapped = true;
+        meta.ab_swapped_at = new Date().toISOString();
+        meta.views_at_swap = stats.viewCount;
+        swapCount++;
+      } else {
+        console.log(`[A/B AUDIT ✓] Video ${record.youtube_video_id} performing well (${stats.viewCount} views). Retaining Variant A.`);
+        meta.ab_swapped = true; // Evaluated
+      }
+    }
+
+    if (swapCount > 0) {
+      fs.writeFileSync(historyPath, JSON.stringify(history, null, 2), 'utf-8');
+      console.log(`[A/B THUMBNAIL AUDITOR ✓] Saved ${swapCount} thumbnail swap(s) to history.`);
+    }
+  } catch (err) {
+    console.warn('[A/B THUMBNAIL AUDITOR ERROR]', err.message);
+  }
+}
+
 async function main() {
   const isDryRun = process.argv.includes('--dry-run');
   const force = process.argv.includes('--force');
   const isBackfill = process.argv.includes('--backfill');
+  const isAuditOnly = process.argv.includes('--audit-thumbnails');
   const slotArg = process.argv.find(a => a.startsWith('--slot='))?.split('=')[1] || 'auto';
+
+  // Run autonomous A/B thumbnail audit
+  if (isAuditOnly) {
+    await auditAndAutoSwapThumbnails();
+    return;
+  }
+
 
   const now = getNowIst();
   const todayIst = now.date;
@@ -157,6 +223,9 @@ async function main() {
 
   console.log(`[AUTO ROUTER] Target slot for ${now.hours}:${now.minutes} IST is: "${targetFormat}"`);
   await handleSlot(targetFormat, isDryRun, force);
+
+  // Passive A/B testing evaluation
+  await auditAndAutoSwapThumbnails();
 }
 
 main().catch(err => {

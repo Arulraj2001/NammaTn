@@ -286,26 +286,46 @@ export async function postPinnedComment(videoId, commentText) {
     const commentThreadId = insertData.id;
     console.log(`[PINNED COMMENT] Posted comment thread: ${commentThreadId}`);
 
-    // Step 2: Pin the comment using video update (moderationStatus = 'published', isPublic)
-    const pinRes = await fetch(`https://www.googleapis.com/youtube/v3/comments?part=snippet`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        snippet: {
-          parentId: commentThreadId,
-          textOriginal: '' // pinning is done via moderationStatus on the thread
-        }
-      })
-    });
-
-    // Note: YouTube API does not have a direct "pin" endpoint — pinning is
-    // done via the YouTube Studio UI or the liveChatMessages API for live streams.
-    // The comment is still posted prominently as a top-level channel comment.
-    console.log(`[PINNED COMMENT ✓] Civic CTA comment posted on video ${videoId}`);
+    // Channel owner comment thread appears prominently at the top of the video's comments
+    console.log(`[ENGAGEMENT COMMENT ✓] Channel owner debate prompt active on video ${videoId}`);
+    return { commentThreadId, success: true };
   } catch (err) {
     console.log(`[PINNED COMMENT NOTICE] ${err.message} — skipping pinned comment.`);
+    return { success: false, error: err.message };
   }
 }
+
+/**
+ * Fetches real-time view, like, and comment statistics for a video
+ * @param {string} videoId
+ * @returns {Promise<{ viewCount: number, likeCount: number, commentCount: number }|null>}
+ */
+export async function getVideoStatistics(videoId) {
+  if (!videoId || videoId === 'DRY_RUN_MOCK_ID') return null;
+
+  try {
+    const accessToken = await getFreshAccessToken();
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}`, {
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+
+    if (!res.ok) {
+      console.warn(`[YOUTUBE STATS WARN] Failed to fetch stats for ${videoId}: HTTP ${res.status}`);
+      return null;
+    }
+
+    const data = await res.json();
+    const stats = data.items?.[0]?.statistics;
+    if (!stats) return null;
+
+    return {
+      viewCount: parseInt(stats.viewCount || '0', 10),
+      likeCount: parseInt(stats.likeCount || '0', 10),
+      commentCount: parseInt(stats.commentCount || '0', 10)
+    };
+  } catch (err) {
+    console.warn(`[YOUTUBE STATS ERROR] Could not retrieve stats: ${err.message}`);
+    return null;
+  }
+}
+

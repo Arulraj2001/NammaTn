@@ -16,7 +16,8 @@ import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubti
 import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
-import { generateShortsThumbnail } from '../engine/thumbnail-shorts-engine.mjs';
+import { generateShortsThumbnail, generateShortsThumbnailPair } from '../engine/thumbnail-shorts-engine.mjs';
+import { generateSeoVideoFilename } from '../engine/seo-filename.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
 import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
 import { getTodayIst } from '../engine/calendar-reader.mjs';
@@ -104,9 +105,20 @@ async function main() {
 
   console.log(`[LIVE POST] Area: "${area}" | Department: "${urgentPost.assigned_department || 'Govt'}" | Title: "${rawTitle}"`);
 
-  // 2. Draft Spoken 3-Beat Live Script (Target: 35-45s)
+  // 2. Draft Spoken 3-Beat Live Script with 3-Second Retention Hook
+  let curiosityLiveHook = '';
+  if (category === 'electricity') {
+    curiosityLiveHook = `${area} பகுதியில இன்று திடீர் மின்தடை அறிவிப்பு! உங்கள் பகுதி இருக்கான்னு உடனே செக் பண்ணுங்க:`;
+  } else if (category === 'water-sanitation') {
+    curiosityLiveHook = `${area} குடிநீர் விநியோகத்தில் அவசர மாற்றம்! மக்கள் கவனத்திற்கு:`;
+  } else if (category === 'transport') {
+    curiosityLiveHook = `${area} வழித்தடத்தில் அவசர போக்குவரத்து மாற்றம்! பயணிகள் கவனத்திற்கு:`;
+  } else {
+    curiosityLiveHook = `${area} மக்களுக்கான நேரடி அவசர கள அறிவிப்பு!`;
+  }
+
   const scene1Script = [
-    `${area} மக்களுக்கான நேரடி கள அறிவிப்பு! ${spokenTitle}.`
+    `${curiosityLiveHook} ${spokenTitle}.`
   ];
 
   const locInfo = urgentPost.location_text ? `பாதிக்கப்பட்ட பகுதிகள்: ${urgentPost.location_text}.` : '';
@@ -151,14 +163,20 @@ async function main() {
     heroPhotoUrl = fs.existsSync(localCard) ? localCard : path.resolve('public/images/categories/general.webp');
   }
 
-  const thumbPath = path.join(outDir, `live_thumb_${Date.now()}.png`);
+  // Generate High-CTR A/B Vertical Thumbnails
+  const thumbBase = `thumb_live_${urgentPost.slug || Date.now()}`;
+  let thumbPath = path.join(outDir, `${thumbBase}_variantA.png`);
+  let thumbnailBPath = path.join(outDir, `${thumbBase}_variantB.png`);
   try {
-    await generateShortsThumbnail({
+    const pair = await generateShortsThumbnailPair({
       titleTa: rawTitle,
       category: `${theme.icon} ${area} நேரடி நிலவரம்`,
       heroImageUrl: heroPhotoUrl,
-      outputPath: thumbPath
+      outputDir: outDir,
+      baseName: thumbBase
     });
+    thumbPath = pair.variantA;
+    thumbnailBPath = pair.variantB;
   } catch (err) {
     console.warn('[THUMBNAIL WARN] Could not generate thumbnail:', err.message);
   }
@@ -220,9 +238,18 @@ async function main() {
   generateAssSubtitleFile(generateCaptionsFromClauses(scene2Script, s2Dur), s2SubPath, '9:16');
   generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
 
-  // 7. Video Assembly
+  // 7. Video Assembly with Dynamic SEO Filename
   const brollClip = await fetchFreeBrollClip(category, outDir, '9:16');
-  const videoOutputPath = path.join(outDir, `vizhitn_live_short_${Date.now()}.mp4`);
+  const seoFilename = generateSeoVideoFilename({
+    title: rawTitle,
+    district,
+    area,
+    category,
+    format: 'live-short',
+    dateStr: todayIst
+  });
+  const videoOutputPath = path.join(outDir, seoFilename);
+  console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
 
   const scenes = [
     { imagePath: s1FramePath, videoPath: brollClip, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: s1SubPath },
@@ -280,7 +307,12 @@ async function main() {
         title: ytTitle,
         youtubeVideoId: uploadResult.videoId,
         youtubeUrl: uploadResult.videoUrl,
-        metadata: { district, category }
+        metadata: {
+          district,
+          category,
+          thumbnail_b_path: fs.existsSync(thumbnailBPath) ? thumbnailBPath : null,
+          ab_swapped: false
+        }
       });
 
       if (fs.existsSync(thumbPath)) {
@@ -288,7 +320,7 @@ async function main() {
       }
       await postPinnedComment(
         uploadResult.videoId,
-        `🚨 ${area} மக்கள் கவனத்திற்கு! இந்த பிரச்சனை உங்க ஏரியாலயும் இருந்தா vizhitn.in-ல report பண்ணுங்க 👇\n🔴 vizhitn.in`
+        `🚨 ${area} மக்கள் கவனத்திற்கு! உங்கள் பகுதியிலும் இந்த பிரச்சனை இருக்கிறதா? கீழே கமெண்ட் செய்யுங்கள் 👇\n📌 பிறருக்கு உதவ உடனே Share செய்யுங்கள் ↗️\n🔴 நேரடி கள புகார் பதிவு: vizhitn.in`
       );
     }
 

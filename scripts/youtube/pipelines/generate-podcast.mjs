@@ -14,6 +14,8 @@ import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { getBrandLogoDataUri, getHostAvatarDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
+import { generateLongThumbnailPair } from '../engine/thumbnail-engine.mjs';
+import { generateSeoVideoFilename } from '../engine/seo-filename.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
 import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
@@ -202,8 +204,15 @@ async function main() {
 
   console.log(`\n[PODCAST STATS] Total episode length: ${(totalDurationSec / 60).toFixed(1)} mins (${totalDurationSec.toFixed(0)} seconds) across ${processedSegments.length} dynamic speaker cuts`);
 
-  // 5. Assemble Master 16:9 Video
-  const videoOutputPath = path.join(outDir, `vizhitn_podcast_${topic.id}_${Date.now()}.mp4`);
+  // 5. Assemble Master 16:9 Video with Dynamic SEO Filename
+  const seoFilename = generateSeoVideoFilename({
+    title: topic.seriesNameEn || topic.id,
+    category: 'public-safety',
+    format: 'podcast',
+    dateStr: todayIst
+  });
+  const videoOutputPath = path.join(outDir, seoFilename);
+  console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
   assemblePodcastVideo({
     segments: processedSegments,
     outputPath: videoOutputPath
@@ -223,17 +232,22 @@ async function main() {
     process.exit(0);
   }
 
-  // 6. Render Custom 16:9 High-CTR Thumbnail
-  const thumbnailPath = path.join(outDir, `vizhitn_podcast_thumb_${topic.id}_${Date.now()}.png`);
-  console.log('\n[THUMBNAIL] Rendering custom 1280x720 high-CTR podcast thumbnail...');
+  // 6. Render Custom 16:9 High-CTR A/B Thumbnails
+  const thumbBase = `thumb_podcast_${topic.id}_${Date.now()}`;
+  let thumbnailPath = path.join(outDir, `${thumbBase}_variantA.png`);
+  let thumbnailBPath = path.join(outDir, `${thumbBase}_variantB.png`);
+  console.log('\n[THUMBNAIL] Rendering custom 1280x720 high-CTR A/B podcast thumbnails...');
   try {
-    await generatePodcastThumbnail({
+    const pair = await generateLongThumbnailPair({
       titleTa: topic.thumbnailText || scriptData.thumbnailHookTa || topic.episodeTitleTa,
-      seriesNameTa: topic.seriesNameTa,
-      episodeBadge: 'VIZHI UNCUT',
+      subtitleTa: 'விழி தமிழ்நாடு சிறப்பு புலனாய்வு விவாதம்',
+      category: 'VIZHI UNCUT PODCAST',
       heroImageUrl: heroVisualUrl,
-      outputPath: thumbnailPath
+      outputDir: outDir,
+      baseName: thumbBase
     });
+    thumbnailPath = pair.variantA;
+    thumbnailBPath = pair.variantB;
   } catch (tErr) {
     console.warn('[THUMBNAIL WARN] Could not render thumbnail:', tErr.message);
   }
@@ -285,7 +299,11 @@ async function main() {
         title: ytTitle,
         youtubeVideoId: uploadResult.videoId,
         youtubeUrl: uploadResult.videoUrl,
-        metadata: { topicId: topic.id }
+        metadata: {
+          topicId: topic.id,
+          thumbnail_b_path: fs.existsSync(thumbnailBPath) ? thumbnailBPath : null,
+          ab_swapped: false
+        }
       });
 
       if (fs.existsSync(thumbnailPath)) {
@@ -294,7 +312,7 @@ async function main() {
 
       await postPinnedComment(
         uploadResult.videoId,
-        `🎙️ இந்த எபிசோடை உங்கள் குடும்பத்தினருக்கு பகிருங்கள் (Share) ↗️\nஉங்க ஏரியாவில இந்த மாதிரி பிரச்சனை இருந்தா vizhitn.in-ல் நேரடியா report பண்ணுங்க 👇\n🔴 vizhitn.in`
+        `🎙️ இந்த விவாதம் பற்றிய உங்கள் கருத்து என்ன? உங்கள் பகுதியிலும் இந்த மாதிரி சம்பவம் நடந்திருக்கிறதா? கீழே கமெண்ட் செய்யுங்கள் 👇\n📌 பிறருக்கு உதவ உடனே Share செய்யுங்கள் ↗️\n🔴 நேரடி கள புகார் பதிவு: vizhitn.in`
       );
     }
 

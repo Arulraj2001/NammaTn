@@ -10,7 +10,8 @@ import { normalizeAcronymsToSpokenTamil, sanitizeClauseText } from '../engine/ta
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleLongFormVideo, getAudioDuration } from '../engine/video-composer.mjs';
-import { generateLongVideoThumbnail } from '../engine/thumbnail-engine.mjs';
+import { generateLongVideoThumbnail, generateLongThumbnailPair } from '../engine/thumbnail-engine.mjs';
+import { generateSeoVideoFilename } from '../engine/seo-filename.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
@@ -293,7 +294,15 @@ async function main() {
   console.log(`\n[INFO] Total feature length: ${(totalVideoDuration / 60).toFixed(1)} mins (${totalVideoDuration.toFixed(0)}s across ${processedChapters.length} visual beats)`);
 
   // 5. Assemble Final 16:9 Long-Form MP4 with Dynamic Ken Burns & Audio Ducking
-  const videoOutputPath = path.join(outDir, `vizhitn_feature_${article.slug || Date.now()}.mp4`);
+  const seoFilename = generateSeoVideoFilename({
+    title: article.slug || article.title_en || articleTitleTa,
+    district: article.district_focus || article.district_slug,
+    category: categorySlug,
+    format: 'feature',
+    dateStr: todayIst
+  });
+  const videoOutputPath = path.join(outDir, seoFilename);
+  console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
   console.log('[COMPOSER] Assembling full 16:9 feature documentary with FFmpeg...');
   assembleLongFormVideo({
     chapters: processedChapters,
@@ -316,24 +325,29 @@ async function main() {
   }
 
   // 8. Build SEO metadata
-  const { title: ytTitle, description: ytDesc, tags } = generateVideoMetadata({
+  const { title: ytTitle, description: ytDesc, tags, pinnedComment: autoComment } = generateVideoMetadata({
     article,
     script: docScript,
     isShort: false,
     chapterTimestamps
   });
 
-  // 9. Generate Custom High-CTR 16:9 Thumbnail
-  const thumbnailPath = path.join(outDir, `vizhitn_thumb_${article.slug || Date.now()}.png`);
-  console.log('[THUMBNAIL] Rendering custom 16:9 high-CTR thumbnail...');
+  // 9. Generate Custom High-CTR 16:9 A/B Thumbnails
+  const thumbBase = `thumb_long_${article.slug || Date.now()}`;
+  let thumbnailPath = path.join(outDir, `${thumbBase}_variantA.png`);
+  let thumbnailBPath = path.join(outDir, `${thumbBase}_variantB.png`);
+  console.log('[THUMBNAIL] Rendering custom 16:9 high-CTR A/B thumbnail pair...');
   try {
-    await generateLongVideoThumbnail({
+    const pair = await generateLongThumbnailPair({
       titleTa: article.thumbnail_text || docScript.thumbnailHookTa || articleTitleTa,
       subtitleTa: 'முழு கள ஆய்வு & அரசு ஆவணங்கள்',
       category: (categorySlug || 'SPECIAL REPORT').toUpperCase(),
       heroImageUrl: heroImageSrc,
-      outputPath: thumbnailPath
+      outputDir: outDir,
+      baseName: thumbBase
     });
+    thumbnailPath = pair.variantA;
+    thumbnailBPath = pair.variantB;
   } catch (e) {
     console.log('[THUMBNAIL] Thumbnail generation skipped:', e.message);
   }
@@ -359,16 +373,20 @@ async function main() {
         title: ytTitle,
         youtubeVideoId: uploadResult.videoId,
         youtubeUrl: uploadResult.videoUrl,
-        metadata: { slug: article.slug, category: categorySlug }
+        metadata: {
+          slug: article.slug,
+          category: categorySlug,
+          thumbnail_b_path: fs.existsSync(thumbnailBPath) ? thumbnailBPath : null,
+          ab_swapped: false
+        }
       });
 
       if (fs.existsSync(thumbnailPath)) {
         await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
       }
-      await postPinnedComment(
-        uploadResult.videoId,
-        `📍 இந்த பிரச்சனை உங்க ஏரியாலயும் இருக்கா? vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற ஆயிரம் பேரை protect பண்ணும். 🔴 vizhitn.in`
-      );
+      const debateComment = autoComment ||
+        `💬 இந்த விவகாரம் பற்றி உங்கள் கருத்து என்ன? உங்கள் பகுதியிலும் இந்த பிரச்சனை உள்ளதா? கீழே கமெண்ட் பண்ணுங்க 👇\n📌 பிறருக்கு உதவ உடனே Share செய்யுங்கள் ↗️\n🔴 நேரடி கள புகார் பதிவு: vizhitn.in`;
+      await postPinnedComment(uploadResult.videoId, debateComment);
     }
 
     console.log('====================================================');

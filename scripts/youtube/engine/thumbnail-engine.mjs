@@ -327,3 +327,55 @@ export function generateShortsThumbnail({
   renderHtmlToImage(htmlContent, outputPath, { width: 1080, height: 1920 });
   return outputPath;
 }
+
+/**
+ * Generates both Variant A (Curiosity Question Hook) and Variant B (Official Evidence/Shock Proof)
+ * for 16:9 Long-Form Feature Documentaries and Podcasts.
+ *
+ * @param {Object} params
+ * @param {string} params.titleTa
+ * @param {string} [params.subtitleTa]
+ * @param {string} [params.category]
+ * @param {string} params.heroImageUrl
+ * @param {string} params.outputDir
+ * @param {string} [params.baseName]
+ * @returns {Promise<{ variantA: string, variantB: string }>}
+ */
+export async function generateLongThumbnailPair({
+  titleTa,
+  subtitleTa = 'முழு கள ஆய்வு & அரசு ஆவணங்கள்',
+  category = 'SPECIAL REPORT',
+  heroImageUrl,
+  outputDir,
+  baseName = `long_${Date.now()}`
+}) {
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
+  const pathA = path.join(outputDir, `${baseName}_variantA.png`);
+  const pathB = path.join(outputDir, `${baseName}_variantB.png`);
+
+  // Variant A: Curiosity Question
+  await generateLongVideoThumbnail({
+    titleTa,
+    subtitleTa,
+    category,
+    heroImageUrl,
+    outputPath: pathA
+  });
+
+  // Variant B: Proof / Evidence Shock Hook
+  const shockTitle = titleTa.includes('?') ? titleTa.replace('?', '!') : `${titleTa} — உண்மை என்ன?`;
+  const shockSub = 'அரசு ஆவணங்கள் & நேரடி ஆதாரம்';
+
+  await generateLongVideoThumbnail({
+    titleTa: shockTitle,
+    subtitleTa: shockSub,
+    category: 'EVIDENCE INVESTIGATION',
+    heroImageUrl,
+    outputPath: pathB
+  });
+
+  console.log(`[16:9 A/B THUMBNAILS READY ✓] Variant A: ${pathA} | Variant B: ${pathB}`);
+  return { variantA: pathA, variantB: pathB };
+}
+

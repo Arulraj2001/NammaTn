@@ -15,7 +15,8 @@ import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
-import { generateShortsThumbnail } from '../engine/thumbnail-shorts-engine.mjs';
+import { generateShortsThumbnail, generateShortsThumbnailPair } from '../engine/thumbnail-shorts-engine.mjs';
+import { generateSeoVideoFilename } from '../engine/seo-filename.mjs';
 import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
@@ -141,12 +142,25 @@ async function main() {
   // ─── 2. SCRIPT — 4-Beat Dynamic Visual Progression ────────────────────────
   // TARGET BUDGET: S1≈7s | S2≈10s | S3≈16s | S4≈12s = ~45s total (under 60s Shorts ceiling)
 
-  // BEAT 1 — THE HOOK (0:00–0:07): Urgent headline
+  // BEAT 1 — THE HOOK (0:00–0:07): Urgent curiosity hook tailored by category
   const firstTitle = normalizeAcronymsToSpokenTamil(leadPost.title_ta || leadPost.title_en || '');
-  const hookOpener = leadPost.urgency_level === 'critical' || leadPost.urgency_level === 'high'
-    ? `${area} பகுதியில இன்னைக்கு ${theme.icon} ${firstTitle}`
-    : `${area} பகுதியில ${theme.icon} ${firstTitle}`;
-  const scene1Script = [ hookOpener.slice(0, 120) ];
+  let curiosityHook = '';
+  if (category === 'electricity') {
+    curiosityHook = `உங்க ஏரியாவில இன்னைக்கு திடீர்னு கரண்ட் கட் ஆக போகுதா? இந்த லிஸ்ட்ல உங்க தெரு இருக்கான்னு உடனே செக் பண்ணுங்க!`;
+  } else if (category === 'water-sanitation') {
+    curiosityHook = `குடிநீர் சப்ளைல திடீர் பிரச்சனை! உங்க பகுதியில இன்னைக்கு தண்ணி வராம போகுமா?`;
+  } else if (category === 'transport') {
+    curiosityHook = `இன்னைக்கு இந்த ரூட்ல கிளம்புறவங்க உடனே கவனியுங்கள்!`;
+  } else if (category === 'public-safety') {
+    curiosityHook = `இந்த புது விதமான மோசடியில் உங்கள் பணம் போயிடாம இருக்க உடனே உஷாரா இருங்க!`;
+  } else if (category === 'government-schemes') {
+    curiosityHook = `ரேஷன் கார்டு மற்றும் அரசு திட்டங்களில் இந்த புது ரூல்ஸ் உங்களுக்கு தெரியுமா?`;
+  } else {
+    curiosityHook = `${area} மக்கள் உடனே கவனியுங்கள்! உங்கள் பகுதியில் இன்று முக்கிய அறிவிப்பு:`;
+  }
+
+  const hookOpener = `${curiosityHook} ${firstTitle}`;
+  const scene1Script = [ hookOpener.slice(0, 150) ];
 
   // BEAT 2 — GROUND REALITY & B-ROLL (0:07–0:17): Location and ground context
   const groundDetails = leadPost.location_text ? `பாதிக்கப்பட்ட பகுதிகள்: ${leadPost.location_text}.` : '';
@@ -305,21 +319,35 @@ async function main() {
     console.log('[CAPTIONS WARN] Subtitle generation error:', subErr.message);
   }
 
-  // ─── 10. Generate High-CTR Vertical Thumbnail ────────────────────────────
-  const thumbnailPath = path.join(outDir, `vizhitn_thumb_short_${Date.now()}.png`);
+  // ─── 10. Generate High-CTR A/B Vertical Thumbnails ───────────────────────
+  const thumbBase = `thumb_short_${leadPost.slug || Date.now()}`;
+  let thumbnailPath = path.join(outDir, `${thumbBase}_variantA.png`);
+  let thumbnailBPath = path.join(outDir, `${thumbBase}_variantB.png`);
   try {
-    await generateShortsThumbnail({
+    const pair = await generateShortsThumbnailPair({
       titleTa: leadPost.thumbnail_text || leadPost.title_ta || leadPost.title_en || firstTitle,
       category: theme.label,
       heroImageUrl: heroPhotoUrl || path.resolve('public/images/categories/general.webp'),
-      outputPath: thumbnailPath
+      outputDir: outDir,
+      baseName: thumbBase
     });
+    thumbnailPath = pair.variantA;
+    thumbnailBPath = pair.variantB;
   } catch (e) {
     console.warn('[THUMBNAIL WARN]:', e.message);
   }
 
   // ─── 11. Assemble 4-Beat Multi-Scene Short with Dynamic Motion ────────────
-  const videoOutputPath = path.join(outDir, `vizhitn_short_${Date.now()}.mp4`);
+  const seoFilename = generateSeoVideoFilename({
+    title: leadPost.title_en || leadPost.title_ta || firstTitle,
+    district: leadPost.district_slug,
+    area: leadPost.area_name,
+    category,
+    format: 'short',
+    dateStr: dateStr
+  });
+  const videoOutputPath = path.join(outDir, seoFilename);
+  console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
   console.log('[COMPOSER] Assembling 4-Beat Civic Short with sidechain ducking & kinetic captions...');
 
   const scenes = [
@@ -351,7 +379,7 @@ async function main() {
   }
 
   // ─── 14. Build SEO Metadata ───────────────────────────────────────────────
-  const { title: autoTitle, description: autoDesc, tags } = generateVideoMetadata({
+  const { title: autoTitle, description: autoDesc, tags, pinnedComment: autoComment } = generateVideoMetadata({
     article: leadPost,
     script: null,
     isShort: true,
@@ -384,15 +412,20 @@ async function main() {
         title: finalTitle,
         youtubeVideoId: uploadResult.videoId,
         youtubeUrl: uploadResult.videoUrl,
-        metadata: { district: leadPost.district_slug, category: leadPost.category_slug }
+        metadata: {
+          district: leadPost.district_slug,
+          category: leadPost.category_slug,
+          thumbnail_b_path: fs.existsSync(thumbnailBPath) ? thumbnailBPath : null,
+          ab_swapped: false
+        }
       });
 
       if (fs.existsSync(thumbnailPath)) {
         await setYouTubeThumbnail(uploadResult.videoId, thumbnailPath);
       }
-      await postPinnedComment(uploadResult.videoId,
-        `📍 உங்க ஏரியால இது நடக்குதா? vizhitn.in-ல report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
-      );
+      const discussionComment = autoComment ||
+        `💬 உங்கள் ஏரியாவிலும் இந்த பிரச்சனை உள்ளதா? உங்க கருத்து என்ன? கீழே சொல்லுங்கள் 👇\n📌 பிறருக்கு உதவ உடனே Share செய்யுங்கள் ↗️\n🔴 vizhitn.in`;
+      await postPinnedComment(uploadResult.videoId, discussionComment);
     }
 
     console.log('====================================================');

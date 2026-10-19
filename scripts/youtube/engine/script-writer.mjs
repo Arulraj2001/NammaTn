@@ -134,40 +134,67 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
   ].filter(Boolean).slice(0, 15);
 
   // --- Description ---
-  const chaptersBlock = chapterTimestamps.length > 0
-    ? `\n📌 அத்தியாயங்கள் / Chapters:\n${chapterTimestamps.join('\n')}\n`
+  let defaultChapters = chapterTimestamps;
+  if (!isShort && (!defaultChapters || defaultChapters.length === 0)) {
+    defaultChapters = [
+      '0:00 கள ஆய்வு அறிமுகம் (Introduction)',
+      '1:15 அரசு ஆணை & பின்னணி (Background & Official Orders)',
+      '2:45 பாதிக்கப்பட்ட மக்கள் & கள நிலவரம் (Ground Reality)',
+      '4:30 துறைசார் அதிகாரிகள் பதில் (Department Response)',
+      '6:10 அதிகாரப்பூர்வ தீர்வு & உதவி எண் (Action Steps & Helplines)'
+    ];
+  }
+
+  const chaptersBlock = defaultChapters.length > 0
+    ? `\n📌 அத்தியாயங்கள் / Chapters:\n${defaultChapters.join('\n')}\n`
     : '';
 
   const aiDisclosure = `\nℹ️ YouTube Disclosure: This video combines automated public domain archival footage, data visualization, and synthetic voice technology to provide citizen awareness.\n`;
 
   const description = isShort
-    ? `📍 மாவட்டம்: ${districtLabel} | 🏛️ துறை: ${dept} | 📞 உதவி: ${helpline}\n\n` +
-      `${article.content_ta?.slice(0, 200) || article.content_en?.slice(0, 200) || titleTa}\n\n` +
-      `━━━━━━━━━━━━━━━━━━━━━\n` +
-      `🔴 உங்க ஏரியால பிரச்சனை இருக்கா?\n` +
-      `vizhitn.in இல் தமிழ்நாடு அரசு செய்திகளை நேரடியாக படிங்க.\n` +
-      `━━━━━━━━━━━━━━━━━━━━━\n\n` +
-      `🏷️ Tags: Tamil Nadu news today, TN government updates, ${districtLabel} news, ${category} Tamil Nadu, civic issues Tamil, vizhitn\n` +
+    ? `⚡ ${titleTa}\n\n` +
+      `📍 மாவட்டம்: ${districtLabel} | 🏛️ துறை: ${dept} | 📞 அதிகாரப்பூர்வ உதவி: ${helpline}\n\n` +
+      `📝 கள விவரங்கள்:\n${article.content_ta || article.content_en || article.summary_ta || titleTa}\n\n` +
+      `📌 பொது மக்கள் கவனத்திற்கு:\n` +
+      `உங்கள் பகுதியில் இந்த சேவை பாதிப்பு அல்லது பிரச்சனை ஏற்பட்டால் உடனடியாக மேலே உள்ள அதிகாரப்பூர்வ உதவி எண்ணை தொடர்பு கொண்டு புகார் பதிவு செய்யுங்கள்.\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `🔴 உங்கள் ஏரியாவிலும் இந்த பிரச்சனை உள்ளதா?\n` +
+      `தமிழ்நாடு முழுவதும் நடக்கும் நேரடி கள நிகழ்வுகள், மின் தடை மற்றும் அரசு அறிவிப்புகளை உடனே தெரிந்துகொள்ள vizhitn.in-ஐ பார்வையிடுங்கள்.\n` +
+      `📲 YouTube App-ல் சப்ஸ்கிரைப் செய்ய: https://vizhitn.in/r/yt\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `🔎 முக்கிய தேடல் சொற்கள் (Search Terms): ${districtLabel} news today, ${category} Tamil Nadu, TN government announcements, ${dept} update, civic alert Tamil, vizhitn\n` +
       aiDisclosure + '\n' +
       hashtags
     : `🔍 ${titleTa} — முழு கள ஆய்வு மற்றும் அரசு ஆவணங்கள் விவரம்!\n\n` +
-      `${article.summary_ta || article.summary_en || ''}\n` +
+      `வழங்குபவர்: கவிதா (VizhiTN புலனாய்வு செய்தியாளர்)\n\n` +
+      `📝 முழுமையான பின்னணி & கள விசாரணை:\n` +
+      `${article.summary_ta || article.summary_en || article.content_ta?.slice(0, 500) || ''}\n` +
       chaptersBlock +
       `\n🏛️ பொறுப்புத் துறை: ${dept}\n` +
-      `📞 அரசு உதவி எண்: ${helpline}\n\n` +
-      `━━━━━━━━━━━━━━━━━━━━━\n` +
+      `📞 அரசு அவசர உதவி மையம்: ${helpline}\n` +
+      `🌐 அதிகாரப்பூர்வ போர்டல்: https://vizhitn.in/tn-today/${article.slug || ''}\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
       `🔴 உங்க ஏரியால பிரச்சனை இருக்கா?\n` +
-      `vizhitn.in-ல நேரடியா பதிவு பண்ணுங்க!\n` +
-      `💬 இந்த திட்டம் பற்றி உங்கள் கருத்து என்ன? கமெண்டில் சொல்லுங்கள் 👇\n` +
-      `━━━━━━━━━━━━━━━━━━━━━\n\n` +
-      `🌐 முழு கட்டுரை: https://vizhitn.in/tn-today/${article.slug || ''}\n\n` +
-      `🏷️ Tags: Tamil Nadu news, TN government, ${districtLabel} civic issues, Tamil documentary, vizhitn\n` +
+      `vizhitn.in-ல் நீங்களே நேரடியாக களப் புகாரை பதிவு செய்யலாம். உங்கள் ஒரு பதிவு உங்கள் பகுதியில் உள்ள ஆயிரக்கணக்கான மக்களுக்கு விழிப்புணர்வை தரும்.\n` +
+      `📲 YouTube App-ல் தொடர: https://vizhitn.in/r/yt\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `🔎 Search Tags: Tamil Nadu investigative report, ${districtLabel} civic issues, ${dept} news, Tamil documentary, vizhitn news\n` +
       aiDisclosure + '\n' +
       hashtags;
 
-  const pinnedComment = `💬 உங்கள் பகுதியிலும் இந்த பிரச்சனை உள்ளதா? உங்க கருத்து என்ன? கீழே கமெண்ட் பண்ணுங்க 👇\n` +
-    `📌 நண்பர்களுக்கும் குடும்பத்தினருக்கும் பகிருங்கள் (Share) ↗️\n` +
-    `🔗 முழு ஆதாரங்கள் & கள நிலவரம்: https://vizhitn.in/post/${article.slug || ''}`;
+  // Discussion firestarter pinned comment tailored by category
+  let debatePrompt = `💬 உங்கள் பகுதியிலும் இந்த பிரச்சனை உள்ளதா? அல்லது அரசு அதிகாரிகள் நடவடிக்கை எடுத்துள்ளார்களா? கீழே கமெண்ட் செய்யுங்கள்! 👇`;
+  if (category === 'electricity') {
+    debatePrompt = `💬 உங்கள் பகுதியில் அடிக்கடி மின்தடை அல்லது வோல்டேஜ் பிரச்சனை இருக்கிறதா? உங்கள் ஊர் மற்றும் தெரு பெயரை கீழே கமெண்ட் செய்யுங்கள்! 👇`;
+  } else if (category === 'water-sanitation') {
+    debatePrompt = `💬 உங்கள் ஏரியாவில் குடிநீர் சப்ளை சீராக வருகிறதா? உங்கள் பகுதி நிலவரத்தை கீழே கமெண்ட் செய்யுங்கள்! 👇`;
+  } else if (category === 'transport' || category === 'road-infrastructure') {
+    debatePrompt = `💬 உங்கள் பகுதியில் இந்த சாலை அல்லது போக்குவரத்து பிரச்சனை எத்தனை நாட்களாக உள்ளது? உங்கள் அனுபவத்தை கீழே பகிருங்கள்! 👇`;
+  }
+
+  const pinnedComment = `${debatePrompt}\n\n` +
+    `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Share செய்யுங்கள் ↗️\n` +
+    `🔴 நேரடி கள புகாரை நீங்களே பதிவு செய்ய: https://vizhitn.in`;
 
   return { title, description, tags, hashtags, pinnedComment };
 }

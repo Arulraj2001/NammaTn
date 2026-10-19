@@ -14,11 +14,13 @@ import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engi
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
 import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 
-import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
-import { generateShortsThumbnail } from '../engine/thumbnail-shorts-engine.mjs';
+import { generateShortsThumbnail, generateShortsThumbnailPair } from '../engine/thumbnail-shorts-engine.mjs';
+import { generateSeoVideoFilename } from '../engine/seo-filename.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
 import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
+import { getTodayIst } from '../engine/calendar-reader.mjs';
+import { recordBroadcastSuccess } from '../engine/broadcast-logger.mjs';
 
 // Load .env.local if running in local environment
 try {
@@ -90,15 +92,20 @@ async function main() {
     heroPhotoUrl = fs.existsSync(localCard) ? localCard : path.resolve('public/images/categories/general.webp');
   }
 
-  // 5. Generate High-CTR Vertical Thumbnail (1080x1920)
-  const thumbPath = path.join(outDir, `rights_thumb_${Date.now()}.png`);
+  // 5. Generate High-CTR A/B Vertical Thumbnails (1080x1920)
+  const thumbBase = `thumb_rights_${topic.id}_${Date.now()}`;
+  let thumbPath = path.join(outDir, `${thumbBase}_variantA.png`);
+  let thumbnailBPath = path.join(outDir, `${thumbBase}_variantB.png`);
   try {
-    await generateShortsThumbnail({
+    const pair = await generateShortsThumbnailPair({
       titleTa: topic.titleTa,
       category: topic.category || 'சட்ட உரிமைகள்',
       heroImageUrl: heroPhotoUrl,
-      outputPath: thumbPath
+      outputDir: outDir,
+      baseName: thumbBase
     });
+    thumbPath = pair.variantA;
+    thumbnailBPath = pair.variantB;
   } catch (thumbErr) {
     console.warn('[THUMBNAIL WARN] Could not generate rights short thumbnail:', thumbErr.message);
   }
@@ -177,8 +184,13 @@ async function main() {
   });
 
   // 9. Assemble Multi-Scene Video with Ken Burns Motion + Kinetic Subtitles
-  const videoOutputPath = path.join(outDir, `vizhitn_rights_${topic.id}_${Date.now()}.mp4`);
-  console.log('[COMPOSER] Assembling 3-Scene Citizen Rights Video with dynamic motion & captions...');
+  const seoFilename = generateSeoVideoFilename({
+    title: topic.titleEn || topic.titleTa,
+    category: 'government-schemes',
+    format: 'rights-short'
+  });
+  const videoOutputPath = path.join(outDir, seoFilename);
+  console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
 
   const scenes = [
     { imagePath: s1FramePath, videoPath: brollClip, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, subtitlePath: s1SubPath },
@@ -246,13 +258,27 @@ async function main() {
 
     if (uploadResult?.videoId && !uploadResult.dryRun) {
       recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: ytTitle });
+      await recordBroadcastSuccess({
+        broadcastDate: getTodayIst(),
+        format: 'rights-shorts',
+        timeIst: '01:30 PM',
+        title: ytTitle,
+        youtubeVideoId: uploadResult.videoId,
+        youtubeUrl: uploadResult.videoUrl,
+        metadata: {
+          topicId: topic.id,
+          thumbnail_b_path: fs.existsSync(thumbnailBPath) ? thumbnailBPath : null,
+          ab_swapped: false
+        }
+      });
+
       // 10. Attach High-CTR Custom Thumbnail
       if (fs.existsSync(thumbPath)) {
         await setYouTubeThumbnail(uploadResult.videoId, thumbPath);
       }
       await postPinnedComment(
         uploadResult.videoId,
-        `⚖️ இதே மாதிரி பிரச்சனை உங்களுக்கும் வந்தா — vizhitn.in-ல நேரடியா report பண்ணுங்க 👇\nஉங்க ஒரு post உங்க பக்கத்துல இருக்கிற 1000 பேரை protect பண்ணும். 🔴 vizhitn.in`
+        `⚖️ உங்களுக்கும் இந்த மாதிரி பிரச்சனை ஏற்பட்டிருக்கா? உங்கள் அனுபவத்தை கீழே சொல்லுங்கள் 👇\n📌 பிறருக்கு உதவ உடனே Share செய்யுங்கள் ↗️\n🔴 நேரடி கள புகார் பதிவு: vizhitn.in`
       );
     }
 
