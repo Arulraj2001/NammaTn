@@ -22,7 +22,7 @@ function formatAssTime(seconds) {
  */
 export function cleanCaptionText(text) {
   if (!text) return '';
-  let cleaned = String(text).trim();
+  let cleaned = String(text).normalize('NFC').trim();
 
   // Strip leading list numbers: "1. ", "2. ", "2 ", "1) ", "2) ", "- ", "* "
   cleaned = cleaned.replace(/^[\s\d\.\)\:\-\*\•\–\—]+(?=[^\d\s\.\)\:\-\*\•\–\—])/g, '').trim();
@@ -219,7 +219,7 @@ PlayResY: ${playResY}
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Noto Sans Tamil,${fontSize},&H00FFFFFF,&H0000FFFF,&H00000000,&H95000000,-1,0,0,0,100,100,0,0,1,${outlineWidth},${shadowDepth},2,${marginL},${marginR},${marginV},1
+Style: Default,Nirmala UI,${fontSize},&H00FFFFFF,&H0000FFFF,&H00000000,&H95000000,-1,0,0,0,100,100,0,0,1,${outlineWidth},${shadowDepth},2,${marginL},${marginR},${marginV},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text

@@ -180,18 +180,44 @@ export async function uploadToYouTube({
   console.log(`[YOUTUBE] Uploading ${(fileSize / (1024 * 1024)).toFixed(2)} MB to YouTube...`);
   const fileBuffer = fs.readFileSync(videoFilePath);
 
-  const uploadRes = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: {
-      'Content-Length': fileSize.toString(),
-      'Content-Type': 'video/mp4'
-    },
-    body: fileBuffer
-  });
+  let uploadRes;
+  let uploadData;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      uploadRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Length': fileSize.toString(),
+          'Content-Type': 'video/mp4'
+        },
+        body: fileBuffer
+      });
 
-  const uploadData = await uploadRes.json();
-  if (!uploadRes.ok || !uploadData.id) {
-    throw new Error(`Upload failed: ${JSON.stringify(uploadData)}`);
+      if (uploadRes.ok) {
+        uploadData = await uploadRes.json();
+        if (uploadData?.id) break;
+      }
+
+      if (uploadRes.status >= 500 && attempt < 3) {
+        console.warn(`[YOUTUBE RETRY] Server returned ${uploadRes.status} on attempt ${attempt}. Retrying in ${attempt * 3}s...`);
+        await new Promise(r => setTimeout(r, attempt * 3000));
+        continue;
+      }
+
+      uploadData = await uploadRes.json().catch(() => ({}));
+      break;
+    } catch (networkErr) {
+      if (attempt < 3) {
+        console.warn(`[YOUTUBE RETRY] Network error (${networkErr.message}) on attempt ${attempt}. Retrying in ${attempt * 3}s...`);
+        await new Promise(r => setTimeout(r, attempt * 3000));
+      } else {
+        throw networkErr;
+      }
+    }
+  }
+
+  if (!uploadRes || !uploadRes.ok || !uploadData?.id) {
+    throw new Error(`Upload failed: ${JSON.stringify(uploadData || {})}`);
   }
 
   const videoId = uploadData.id;

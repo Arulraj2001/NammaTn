@@ -162,9 +162,10 @@ export function generateContactSheet(videoPath, outputPath) {
     const outDir = path.dirname(outputPath);
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
-    // Extract 9 tiles spaced throughout the video
-    // tile=3x3, downscaled for compact audit preview
-    const cmd = `"${ffmpeg}" -ss 00:00:01 -i "${videoPath}" -vf "thumbnail=90,scale=360:640:force_original_aspect_ratio=decrease,pad=360:640:(ow-iw)/2:(oh-ih)/2,tile=3x3" -frames:v 1 -y "${outputPath}"`;
+    // Extract 9 tiles evenly spaced across the entire video duration
+    const probe = probeVideo(videoPath);
+    const dur = Math.max(5, probe.durationSec || 30);
+    const cmd = `"${ffmpeg}" -i "${videoPath}" -vf "fps=9/${dur.toFixed(2)},scale=360:640:force_original_aspect_ratio=decrease,pad=360:640:(ow-iw)/2:(oh-ih)/2,tile=3x3" -frames:v 1 -y "${outputPath}"`;
     execSync(cmd, { stdio: ['pipe', 'pipe', 'pipe'] });
 
     if (fs.existsSync(outputPath) && fs.statSync(outputPath).size > 0) {

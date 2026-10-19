@@ -79,22 +79,28 @@ export async function generateArtDirectedVisualPrompt({
   try {
     const ai = new GoogleGenAI({ apiKey });
     const promptInstructions = `
-You are an expert YouTube Thumbnail Art Director specialized in ultra-high CTR thumbnails (MrBeast, Netflix documentaries, Vox style) for Tamil Nadu investigative journalism.
+You are a world-class documentary photojournalist and editorial art director (Reuters, BBC News, The Hindu, National Geographic) specialized in authentic investigative journalism for Tamil Nadu, India.
 
 Video Topic: "${title}"
 Category: "${category}"
 Format: "${aspectRatio}"
-Variant Goal: "${variant === 'A' ? 'High-stakes Curiosity & Personal Conflict (Resident/citizen reacting in shock to unexpected crisis)' : 'High-impact Proof & Urgency (Close-up of official evidence, glowing digital meter/bill, red warning indicators)'}"
+Variant Goal: "${variant === 'A' ? 'Wide Establishing Ground Scene (Authentic environment directly representing the topic)' : 'Close-up Forensic Proof Evidence (Physical evidence, screen, document, meter, or tool directly representing the problem)'}"
 
 TASK:
-Write a single-paragraph FLUX image generation prompt (in English, 40 to 65 words) that describes an intense, cinematic real-world photographic scene.
+Write a single-paragraph FLUX image generation prompt (in English, 40 to 60 words) that describes an authentic, gritty, cinematic documentary photograph.
 
-STRICT ART DIRECTION RULES:
-1. Show the ACTION/CONFLICT: Don't just show an object. Show the human interaction or tangible evidence (e.g. resident in shock holding an electric bill, dry kitchen tap with empty pot, smartphone screen glowing with a scam warning).
-2. Lighting & Style: High contrast, dramatic rim lighting, vibrant saturation on warning elements (yellow, neon red, amber), cinematic shallow depth of field, 8k documentary realism.
-3. Composition: The main subject should be offset to leave the center/left clean and uncluttered for high-contrast Tamil typography overlay.
-4. NO TEXT INSIDE IMAGE: Do NOT ask the AI to render English or Tamil text or letters.
-5. Return ONLY the final prompt paragraph. No conversational intro, no quotes, no markdown.
+STRICT EDITORIAL RULES:
+1. STRICT TOPIC RELEVANCE: Depict the EXACT subject of the news story:
+   - For electricity/power cuts: TANGEDCO utility pole, power lines, transformer, electrical substation, lineman at work.
+   - For water/sanitation: Metrowater valve, drinking water pipeline leak, distribution tanker, municipal drainage.
+   - For cyber crime/phone scams/fake jobs: Concerned South Indian citizen in an urban room looking at their smartphone screen, or cyber police advisory command room, close-up of mobile banking alert or WhatsApp message interface.
+   - For roads/transport: CMRL metro train, MTC bus, road pothole repair with steam roller, asphalt paving.
+   - For ration/schemes: Citizen with Smart Ration Card at e-Sevai centre, Taluk office counter, official certificate.
+2. NO SCREAMING FACES OR CARICATURES: ABSOLUTELY NEVER generate screaming people, wide-open mouths, or exaggerated cartoonish shock. If any person is present, they must be dignified, serious, and authentic (e.g. concerned Tamil citizen, field technician, police officer).
+3. Lighting & Style: Natural cinematic documentary lighting, photorealistic 35mm film texture, high dynamic range, depth of field, 8k realism.
+4. Composition: Clean composition leaving the upper-third and center clear for broadcast news typography overlays.
+5. NO TEXT OR WATERMARKS: Do NOT include English or Tamil text, letters, or numbers in the image.
+6. Return ONLY the prompt paragraph. No intro, no quotes, no markdown.
 `;
 
     for (const model of CANDIDATE_MODELS) {
@@ -103,7 +109,7 @@ STRICT ART DIRECTION RULES:
           model,
           contents: promptInstructions,
           config: {
-            temperature: 0.7,
+            temperature: 0.6,
             maxOutputTokens: 120
           }
         });
@@ -123,8 +129,8 @@ STRICT ART DIRECTION RULES:
 
   const baseFallback = getCategoryFluxPrompt(category);
   return variant === 'B'
-    ? `${baseFallback}, emergency red warning indicator, close-up high contrast evidence, dramatic cinematic documentary photo, 8k, photorealistic`
-    : `${baseFallback}, person looking in shock and curiosity, dramatic side lighting, high saturation, hyperrealistic photojournalism`;
+    ? `${baseFallback}, close-up authentic civic evidence, dramatic cinematic documentary photo, 8k, photorealistic, no text`
+    : `${baseFallback}, authentic Tamil Nadu street documentary photojournalism, cinematic natural lighting, 8k realism, serious documentary`;
 }
 
 

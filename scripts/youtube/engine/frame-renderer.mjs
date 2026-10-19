@@ -30,7 +30,7 @@ export function renderHtmlToImage(htmlContent, outputPngPath, options = {}) {
 
   try {
     const fileUrl = `file:///${tempHtmlPath.replace(/\\/g, '/')}`;
-    const cmd = `"${browserPath}" --headless=new --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=${width},${height} --screenshot="${outputPngPath}" "${fileUrl}"`;
+    const cmd = `"${browserPath}" --headless=new --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --default-background-color=00000000 --window-size=${width},${height} --screenshot="${outputPngPath}" "${fileUrl}"`;
 
     execSync(cmd, { stdio: 'pipe', timeout: 30000 });
 

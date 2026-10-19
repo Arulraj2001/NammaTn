@@ -99,12 +99,23 @@ async function main() {
   const rawTitle = urgentPost.title_ta || urgentPost.title_en || 'முக்கிய அறிவிப்பு';
   const spokenTitle = normalizeAcronymsToSpokenTamil(rawTitle);
 
-  const helpline = (urgentPost.assigned_department || '').includes('TANGEDCO') ? 'மின்வாரியம்: 1912' :
-                   (urgentPost.assigned_department || '').includes('Metrowater') ? 'மெட்ரோவாட்டர்: 1913' :
-                   (urgentPost.assigned_department || '').includes('Police') ? 'காவல்துறை: 103 / 100' :
-                   'உதவி மையம்: 1100 / 1912';
+  const extractedNum = (urgentPost.assigned_department || '').match(/(\d{4,6}[-\s]?\d*|\b1\d{3}\b)/)?.[0];
+  const helplineNumber = extractedNum ||
+                         ((urgentPost.assigned_department || '').includes('TANGEDCO') ? '1912' :
+                          (urgentPost.assigned_department || '').includes('Metrowater') ? '1913' :
+                          (urgentPost.assigned_department || '').includes('Police') ? '103' :
+                          (urgentPost.assigned_department || '').includes('Civil') ? '1967' :
+                          '1100');
 
-  console.log(`[LIVE POST] Area: "${area}" | Department: "${urgentPost.assigned_department || 'Govt'}" | Title: "${rawTitle}"`);
+  const deptLower = (urgentPost.assigned_department || '').toLowerCase();
+  const helplineVoice = extractedNum ? `உதவி எண் ${extractedNum}` :
+                        deptLower.includes('tangedco') ? 'மின்வாரியம் 1912' :
+                        deptLower.includes('metrowater') ? 'மெட்ரோவாட்டர் 1913' :
+                        deptLower.includes('cyber') ? 'சைபர் கிரைம் 1930' :
+                        deptLower.includes('police') ? 'காவல்துறை 103' :
+                        'அரசு உதவி மையம் 1100';
+
+  console.log(`[LIVE POST] Area: "${area}" | Department: "${urgentPost.assigned_department || 'Govt'}" | Helpline: "${helplineNumber}" | Title: "${rawTitle}"`);
 
   // 2. Draft Spoken 3-Beat Live Script with 3-Second Retention Hook
   let curiosityLiveHook = '';
@@ -128,141 +139,11 @@ async function main() {
   ];
 
   const scene3Script = [
-    `உடனடி உதவி மற்றும் புகார்களுக்கு ${helpline}-ஐ அழைக்கவும்.`,
-    `தமிழ்நாட்டின் அன்றாட அரசு எச்சரிக்கைகள் மற்றும் கள நிலவரங்களை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணிக்கோங்க!`
+    `உடனடி உதவி மற்றும் புகார்களுக்கு ${helplineVoice}-ஐ அழைக்கவும்.`,
+    `தமிழ்நாட்டின் அன்றாட அரசு எச்சரிக்கைகள் மற்றும் கள நிலவரங்களை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணுங்க!`
   ];
 
-  // 3. Synthesize Speech
-  console.log('[TTS] Synthesizing Scene 1 audio...');
-  const s1AudioPath = path.join(outDir, `live_s1_audio_${Date.now()}.mp3`);
-  await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
-  const s1Dur = getAudioDuration(s1AudioPath);
-
-  console.log('[TTS] Synthesizing Scene 2 audio...');
-  const s2AudioPath = path.join(outDir, `live_s2_audio_${Date.now()}.mp3`);
-  await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
-  const s2Dur = getAudioDuration(s2AudioPath);
-
-  console.log('[TTS] Synthesizing Scene 3 audio...');
-  const s3AudioPath = path.join(outDir, `live_s3_audio_${Date.now()}.mp3`);
-  await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
-  const s3Dur = getAudioDuration(s3AudioPath);
-
-  const totalDur = s1Dur + s2Dur + s3Dur;
-  console.log(`[AUDIO STATS] S1: ${s1Dur.toFixed(1)}s, S2: ${s2Dur.toFixed(1)}s, S3: ${s3Dur.toFixed(1)}s | Total: ${totalDur.toFixed(1)}s`);
-
-  // 4. Generate Visuals: AI Art-Directed Conflict Scene Visual (FLUX)
-  const artDirectedPrompt = await generateArtDirectedVisualPrompt({
-    title: rawTitle,
-    category,
-    aspectRatio: '9:16',
-    variant: 'A'
-  });
-  const heroPhotoPath = path.join(outDir, `live_flux_hero_${Date.now()}.webp`);
-  let heroPhotoUrl = await generateYouTubeSceneVisual(artDirectedPrompt, heroPhotoPath, '9:16');
-
-  if (!heroPhotoUrl) {
-    const localCard = path.resolve(`public/images/categories/${category}.webp`);
-    heroPhotoUrl = fs.existsSync(localCard) ? localCard : path.resolve('public/images/categories/general.webp');
-  }
-
-  // Generate High-CTR A/B Vertical Thumbnails
-  const thumbBase = `thumb_live_${urgentPost.slug || Date.now()}`;
-  let thumbPath = path.join(outDir, `${thumbBase}_variantA.png`);
-  let thumbnailBPath = path.join(outDir, `${thumbBase}_variantB.png`);
-  try {
-    const pair = await generateShortsThumbnailPair({
-      titleTa: rawTitle,
-      category: `${theme.icon} ${area} நேரடி நிலவரம்`,
-      heroImageUrl: heroPhotoUrl,
-      outputDir: outDir,
-      baseName: thumbBase
-    });
-    thumbPath = pair.variantA;
-    thumbnailBPath = pair.variantB;
-  } catch (err) {
-    console.warn('[THUMBNAIL WARN] Could not generate thumbnail:', err.message);
-  }
-
-  // 5. Render HTML Frames
-  const brandLogoDataUri = getBrandLogoDataUri();
-  const dateStr = new Date().toLocaleDateString('ta-IN', { day: 'numeric', month: 'short' });
-
-  // Beat 1: Hook Frame
-  const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
-  let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
-  tplS1 = tplS1
-    .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
-    .replace('{{SCENE_PHOTO_SRC}}', toImageSource(heroPhotoUrl))
-    .replaceAll('{{HOOK_HEADLINE_TA}}', rawTitle)
-    .replace('{{DATE_TEXT}}', dateStr)
-    .replace('{{CATEGORY_COLOR}}', theme.color)
-    .replace('{{CATEGORY_ICON}}', theme.icon)
-    .replace('{{CATEGORY_LABEL}}', theme.label)
-    .replace('{{DISTRICT_NAME}}', area.toUpperCase())
-    .replace(/\{\{URGENCY_CLASS\}\}/g, urgentPost.urgency_level === 'critical' ? 'pill-critical' :
-              urgentPost.urgency_level === 'high' ? 'pill-high' : 'pill-alert');
-
-  const s1FramePath = path.join(outDir, `live_s1_frame_${Date.now()}.png`);
-  renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
-
-  // Beat 2: Ground Reality B-Roll Overlay
-  const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-broll-overlay.html');
-  let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
-  tplS2 = tplS2
-    .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
-    .replace('{{SCENE_PHOTO_SRC}}', toImageSource(heroPhotoUrl))
-    .replace('{{LOCATION_TEXT}}', `${area} | தமிழ்நாடு`)
-    .replace('{{CATEGORY_COLOR}}', theme.color)
-    .replace('{{CATEGORY_ICON}}', theme.icon)
-    .replace('{{CATEGORY_LABEL}}', theme.label)
-    .replace('{{HEADLINE_TA}}', rawTitle)
-    .replace('{{SUBHEADLINE_TA}}', urgentPost.content_ta || urgentPost.content_en || locInfo)
-    .replace('{{SOURCE_ATTRIBUTION}}', `துறை: ${urgentPost.assigned_department || 'தமிழ்நாடு அரசு'}`);
-
-  const s2FramePath = path.join(outDir, `live_s2_frame_${Date.now()}.png`);
-  renderHtmlToImage(tplS2, s2FramePath, { width: 1080, height: 1920 });
-
-  // Beat 3: Helpline Action Card
-  const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
-  let tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
-  let extractedNum = (urgentPost.assigned_department || '').match(/(\d{4,6}[-\s]?\d*|\b1\d{3}\b)/)?.[0];
-  const helplineNumber = extractedNum ||
-                         ((urgentPost.assigned_department || '').includes('TANGEDCO') ? '1912' :
-                          (urgentPost.assigned_department || '').includes('Metrowater') ? '1913' :
-                          (urgentPost.assigned_department || '').includes('Police') ? '103' :
-                          (urgentPost.assigned_department || '').includes('Civil') ? '1967' :
-                          '1100');
-  const assignedDept = (urgentPost.assigned_department || 'அரசு துறை அவசர மையம்')
-    .replace(/\(Helpline:.*?\)/i, '')
-    .trim();
-
-  tplS3 = tplS3
-    .replaceAll('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
-    .replaceAll('{{ASSIGNED_DEPT}}', assignedDept)
-    .replaceAll('{{HELPLINE_NUMBER}}', helplineNumber)
-    .replaceAll('{{DISTRICT_NAME}}', area.toUpperCase())
-    .replaceAll('{{CATEGORY_COLOR}}', theme.color)
-    .replaceAll('{{CATEGORY_ICON}}', theme.icon);
-
-  const s3FramePath = path.join(outDir, `live_s3_frame_${Date.now()}.png`);
-  renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
-
-  // 6. Subtitles
-  const s1SubPath = path.join(outDir, `live_s1_sub_${Date.now()}.ass`);
-  const s2SubPath = path.join(outDir, `live_s2_sub_${Date.now()}.ass`);
-  const s3SubPath = path.join(outDir, `live_s3_sub_${Date.now()}.ass`);
-
-  generateAssSubtitleFile(generateCaptionsFromClauses(scene1Script, s1Dur), s1SubPath, '9:16');
-  generateAssSubtitleFile(generateCaptionsFromClauses(scene2Script, s2Dur), s2SubPath, '9:16');
-  generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
-
-  // 7. Video Assembly with Dynamic SEO Filename
-  const brollClip = await fetchFreeBrollClip({
-    category,
-    aspectRatio: '9:16',
-    durationSec: totalDur
-  });
+  const isPublishLatest = process.argv.includes('--publish-latest');
   const seoFilename = generateSeoVideoFilename({
     title: rawTitle,
     district,
@@ -272,25 +153,173 @@ async function main() {
     dateStr: todayIst
   });
   const videoOutputPath = path.join(outDir, seoFilename);
-  console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
 
-  const scenes = [
-    { imagePath: s1FramePath, videoPath: brollClip, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: s1SubPath },
-    { imagePath: s2FramePath, videoPath: brollClip, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: s2SubPath },
-    { imagePath: s3FramePath, videoPath: brollClip, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: s3SubPath }
-  ];
+  const thumbBase = `thumb_live_${urgentPost.slug || Date.now()}`;
+  let thumbPath = path.join(outDir, `${thumbBase}_variantA.png`);
+  let thumbnailBPath = path.join(outDir, `${thumbBase}_variantB.png`);
 
-  assembleMultiSceneShortsVideo({
-    scenes,
-    outputPath: videoOutputPath,
-    thumbnailPath: fs.existsSync(thumbPath) ? thumbPath : undefined
-  });
+  let s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath;
+  let photoS1Path, photoS2Path, s1SubPath, s2SubPath, s3SubPath;
 
-  // 8. QC & Quota Checks
-  const qcReport = runQualityControl({ videoPath: videoOutputPath, isShort: true, generateSheet: true });
-  if (!qcReport.passed) {
-    console.error('[QC BLOCKED] Video failed broadcast quality checks. Aborting publishing.');
-    process.exit(1);
+  if (isPublishLatest && fs.existsSync(videoOutputPath)) {
+    console.log(`[PUBLISH LATEST ✓] Found existing verified video: ${videoOutputPath}`);
+    console.log('[PUBLISH LATEST ✓] Skipping re-render and publishing directly...');
+  } else {
+    // 3. Synthesize Speech
+    console.log('[TTS] Synthesizing Scene 1 audio...');
+    s1AudioPath = path.join(outDir, `live_s1_audio_${Date.now()}.mp3`);
+    await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+    const s1Dur = getAudioDuration(s1AudioPath);
+
+    console.log('[TTS] Synthesizing Scene 2 audio...');
+    s2AudioPath = path.join(outDir, `live_s2_audio_${Date.now()}.mp3`);
+    await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+    const s2Dur = getAudioDuration(s2AudioPath);
+
+    console.log('[TTS] Synthesizing Scene 3 audio...');
+    s3AudioPath = path.join(outDir, `live_s3_audio_${Date.now()}.mp3`);
+    await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+    const s3Dur = getAudioDuration(s3AudioPath);
+
+    const totalDur = s1Dur + s2Dur + s3Dur;
+    console.log(`[AUDIO STATS] S1: ${s1Dur.toFixed(1)}s, S2: ${s2Dur.toFixed(1)}s, S3: ${s3Dur.toFixed(1)}s | Total: ${totalDur.toFixed(1)}s`);
+
+    // 4. Generate Visuals: Beat 1 Wide Scene (FLUX Variant A) & Beat 2 Forensic Proof (FLUX Variant B)
+    const promptS1 = await generateArtDirectedVisualPrompt({
+      title: rawTitle,
+      category,
+      aspectRatio: '9:16',
+      variant: 'A'
+    });
+    photoS1Path = path.join(outDir, `live_s1_photo_${Date.now()}.webp`);
+    let photoS1Url = await generateYouTubeSceneVisual(promptS1, photoS1Path, '9:16');
+
+    if (!photoS1Url) {
+      const localCard = path.resolve(`public/images/categories/${category}.webp`);
+      photoS1Url = fs.existsSync(localCard) ? localCard : path.resolve('public/images/categories/general.webp');
+    }
+
+    const promptS2 = await generateArtDirectedVisualPrompt({
+      title: rawTitle,
+      category,
+      aspectRatio: '9:16',
+      variant: 'B'
+    });
+    photoS2Path = path.join(outDir, `live_s2_photo_${Date.now()}.webp`);
+    let photoS2Url = await generateYouTubeSceneVisual(promptS2, photoS2Path, '9:16');
+    if (!photoS2Url) {
+      photoS2Url = photoS1Url;
+    }
+
+    // Generate High-CTR A/B Vertical Thumbnails
+    try {
+      const pair = await generateShortsThumbnailPair({
+        titleTa: rawTitle,
+        category: `${theme.icon} ${area} நேரடி நிலவரம்`,
+        heroImageUrl: photoS1Url,
+        outputDir: outDir,
+        baseName: thumbBase
+      });
+      thumbPath = pair.variantA;
+      thumbnailBPath = pair.variantB;
+    } catch (err) {
+      console.warn('[THUMBNAIL WARN] Could not generate thumbnail:', err.message);
+    }
+
+    // 5. Render HTML Frames
+    const brandLogoDataUri = getBrandLogoDataUri();
+    const dateStr = new Date().toLocaleDateString('ta-IN', { day: 'numeric', month: 'short' });
+
+    // Beat 1: Hook Frame (Wide Ground Reality)
+    const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
+    let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
+    tplS1 = tplS1
+      .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+      .replace('{{SCENE_PHOTO_SRC}}', toImageSource(photoS1Url))
+      .replaceAll('{{HOOK_HEADLINE_TA}}', rawTitle)
+      .replace('{{DATE_TEXT}}', dateStr)
+      .replaceAll('{{CATEGORY_COLOR}}', theme.color)
+      .replaceAll('{{CATEGORY_ICON}}', theme.icon)
+      .replaceAll('{{CATEGORY_LABEL}}', theme.label)
+      .replaceAll('{{DISTRICT_NAME}}', area.toUpperCase())
+      .replace(/\{\{URGENCY_CLASS\}\}/g, urgentPost.urgency_level === 'critical' ? 'pill-critical' :
+                urgentPost.urgency_level === 'high' ? 'pill-high' : 'pill-alert');
+
+    s1FramePath = path.join(outDir, `live_s1_frame_${Date.now()}.png`);
+    renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
+
+    // Beat 2: Ground Reality Close-Up Evidence Plate
+    const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-broll-overlay.html');
+    let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
+    tplS2 = tplS2
+      .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+      .replace('{{SCENE_PHOTO_SRC}}', toImageSource(photoS2Url))
+      .replaceAll('{{LOCATION_TEXT}}', `${area} | தமிழ்நாடு`)
+      .replaceAll('{{CATEGORY_COLOR}}', theme.color)
+      .replaceAll('{{CATEGORY_ICON}}', theme.icon)
+      .replaceAll('{{CATEGORY_LABEL}}', theme.label)
+      .replaceAll('{{HEADLINE_TA}}', rawTitle)
+      .replaceAll('{{SUBHEADLINE_TA}}', urgentPost.content_ta || urgentPost.content_en || locInfo)
+      .replaceAll('{{SOURCE_ATTRIBUTION}}', `துறை: ${urgentPost.assigned_department || 'தமிழ்நாடு அரசு'}`);
+
+    s2FramePath = path.join(outDir, `live_s2_frame_${Date.now()}.png`);
+    renderHtmlToImage(tplS2, s2FramePath, { width: 1080, height: 1920 });
+
+    // Beat 3: Helpline Action Card
+    const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
+    let tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
+    const assignedDept = (urgentPost.assigned_department || 'அரசு துறை அவசர மையம்')
+      .replace(/\(Helpline:.*?\)/i, '')
+      .trim();
+
+    tplS3 = tplS3
+      .replaceAll('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+      .replaceAll('{{ASSIGNED_DEPT}}', assignedDept)
+      .replaceAll('{{HELPLINE_NUMBER}}', helplineNumber)
+      .replaceAll('{{DISTRICT_NAME}}', area.toUpperCase())
+      .replaceAll('{{CATEGORY_COLOR}}', theme.color)
+      .replaceAll('{{CATEGORY_ICON}}', theme.icon);
+
+    s3FramePath = path.join(outDir, `live_s3_frame_${Date.now()}.png`);
+    renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
+
+    // 6. Subtitles
+    s1SubPath = path.join(outDir, `live_s1_sub_${Date.now()}.ass`);
+    s2SubPath = path.join(outDir, `live_s2_sub_${Date.now()}.ass`);
+    s3SubPath = path.join(outDir, `live_s3_sub_${Date.now()}.ass`);
+
+    generateAssSubtitleFile(generateCaptionsFromClauses(scene1Script, s1Dur), s1SubPath, '9:16');
+    generateAssSubtitleFile(generateCaptionsFromClauses(scene2Script, s2Dur), s2SubPath, '9:16');
+    generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
+
+    // 7. Video Assembly with Dynamic SEO Filename
+    const brollClip = await fetchFreeBrollClip({
+      category,
+      aspectRatio: '9:16',
+      durationSec: totalDur
+    });
+    console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
+
+    // Use real video clip if downloaded from Pexels/Pixabay, or dynamic Ken Burns 30fps camera motion on editorial plates
+    const isRealVideoBroll = brollClip && !brollClip.includes('procedural') && fs.existsSync(brollClip) && fs.statSync(brollClip).size > 100000;
+    const scenes = [
+      { imagePath: s1FramePath, videoPath: isRealVideoBroll ? brollClip : null, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: s1SubPath },
+      { imagePath: s2FramePath, videoPath: isRealVideoBroll ? brollClip : null, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: s2SubPath },
+      { imagePath: s3FramePath, videoPath: isRealVideoBroll ? brollClip : null, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: s3SubPath }
+    ];
+
+    assembleMultiSceneShortsVideo({
+      scenes,
+      outputPath: videoOutputPath,
+      thumbnailPath: fs.existsSync(thumbPath) ? thumbPath : undefined
+    });
+
+    // 8. QC & Quota Checks
+    const qcReport = runQualityControl({ videoPath: videoOutputPath, isShort: true, generateSheet: true });
+    if (!qcReport.passed) {
+      console.error('[QC BLOCKED] Video failed broadcast quality checks. Aborting publishing.');
+      process.exit(1);
+    }
   }
 
   const quota = checkQuotaAvailable('VIDEO_UPLOAD');
@@ -303,12 +332,21 @@ async function main() {
   const ytTitle = `🚨 ${area} Live: ${rawTitle}`.slice(0, 95);
   const ytDesc = `⚡ ${area} நேரடி கள நிலவரம் & அதிகாரப்பூர்வ அறிவிப்பு:\n\n${rawTitle}\n\n` +
     `📍 விவரங்கள்: ${urgentPost.content_ta || urgentPost.content_en}\n` +
-    `📞 அதிகாரப்பூர்வ உதவி: ${helpline}\n\n` +
+    `📞 அதிகாரப்பூர்வ உதவி: ${helplineNumber}\n\n` +
     `🔴 உங்கள் ஏரியாவிலும் இந்த பிரச்சனை உள்ளதா? vizhitn.in இணையதளத்தில் நேரடியாக பதிவு செய்யுங்கள்!\n\n` +
     `🌐 முழு விவரங்கள்: https://vizhitn.in\n\n` +
     `#TamilShorts #VizhiTN #${area.replace(/\s+/g, '')} #TamilNaduNews #CivicAlert #Shorts`;
 
   const tags = ['VizhiTN', area, district, 'Tamil Nadu Civic Alert', 'Breaking News Tamil', 'Shorts', theme.label];
+
+  if (isDryRun) {
+    console.log('====================================================');
+    console.log('[DRY RUN] Local generation completed successfully!');
+    console.log(`Video output: ${videoOutputPath}`);
+    console.log('[DRY RUN] Skipped YouTube upload & Meta cross-post.');
+    console.log('====================================================');
+    return;
+  }
 
   let uploadResult = null;
   try {
@@ -317,7 +355,7 @@ async function main() {
       title: ytTitle,
       description: ytDesc,
       tags,
-      privacyStatus: isDryRun ? 'unlisted' : 'public',
+      privacyStatus: 'public',
       isShort: true
     });
 
@@ -359,7 +397,7 @@ async function main() {
   try {
     const metaCaption = `🚨 ${area} நேரடி எச்சரிக்கை: ${rawTitle}\n\n` +
       `📍 கள நிலவரம்: ${urgentPost.content_ta || urgentPost.content_en}\n` +
-      `📞 உதவி மையம் / புகார்: ${helpline}\n\n` +
+      `📞 உதவி மையம் / புகார்: ${helplineNumber}\n\n` +
       `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & கள நிலவரங்களை உடனே தெரிந்து கொள்ள @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
       `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
       `🌐 உங்கள் பகுதி பிரச்சனையை நீங்களே பதிவு செய்ய: https://vizhitn.in\n\n` +
@@ -377,9 +415,9 @@ async function main() {
     console.warn('[META SOCIAL WARN] Meta social cross-post error:', metaErr.message);
   } finally {
     // Cleanup temp files
-    const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, heroPhotoPath, thumbPath, s1SubPath, s2SubPath, s3SubPath];
+    const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, photoS1Path, photoS2Path, s1SubPath, s2SubPath, s3SubPath];
     for (const t of temps) {
-      try { if (fs.existsSync(t)) fs.unlinkSync(t); } catch {}
+      try { if (t && fs.existsSync(t)) fs.unlinkSync(t); } catch {}
     }
   }
 }
