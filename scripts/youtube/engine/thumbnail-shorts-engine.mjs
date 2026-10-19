@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { renderHtmlToImage } from './frame-renderer.mjs';
 import { getBrandLogoDataUri } from './brand-assets.mjs';
+import { toImageSource } from './cloudflare-visuals.mjs';
 
 /**
  * Splits a Tamil title or dispute into 3 to 4 punchy, high-impact thumbnail lines
@@ -120,9 +121,7 @@ export async function generateShortsThumbnail({
   const l4 = line4 || lines.line4;
   const mark = lines.isQuestion ? '?' : '!';
 
-  const resolvedHero = heroImageUrl && fs.existsSync(heroImageUrl)
-    ? `file:///${heroImageUrl.replace(/\\/g, '/')}`
-    : (heroImageUrl || '');
+  const resolvedHero = toImageSource(heroImageUrl);
 
   const htmlContent = `<!DOCTYPE html>
 <html lang="ta">

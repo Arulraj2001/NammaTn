@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { renderHtmlToImage } from './frame-renderer.mjs';
 import { getBrandLogoDataUri, getHostAvatarDataUri } from './brand-assets.mjs';
+import { toImageSource } from './cloudflare-visuals.mjs';
 
 /**
  * Generates an ultra-high CTR 1280x720 YouTube Thumbnail PNG
@@ -34,9 +35,7 @@ export async function generateLongVideoThumbnail({
   const hostAvatarDataUri = host ? getHostAvatarDataUri(host) : '';
   const fontPath = path.resolve('public/fonts/NotoSansTamil-Bold.ttf').replace(/\\/g, '/');
 
-  const resolvedHero = heroImageUrl && fs.existsSync(heroImageUrl)
-    ? `file:///${heroImageUrl.replace(/\\/g, '/')}`
-    : (heroImageUrl || '');
+  const resolvedHero = toImageSource(heroImageUrl);
 
   const htmlContent = `<!DOCTYPE html>
 <html lang="ta">

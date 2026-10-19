@@ -10,7 +10,7 @@ import { normalizeAcronymsToSpokenTamil } from '../engine/tamil-phonetics.mjs';
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video-composer.mjs';
-import { generateYouTubeSceneVisual } from '../engine/cloudflare-visuals.mjs';
+import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
 import { generateArtDirectedVisualPrompt } from '../engine/script-writer.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
@@ -186,48 +186,48 @@ async function main() {
 
   // 5. Render HTML Frames
   const brandLogoDataUri = getBrandLogoDataUri();
+  const dateStr = new Date().toLocaleDateString('ta-IN', { day: 'numeric', month: 'short' });
+
+  // Beat 1: Hook Frame
   const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
   let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
   tplS1 = tplS1
     .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+    .replace('{{SCENE_PHOTO_SRC}}', toImageSource(heroPhotoUrl))
+    .replaceAll('{{HOOK_HEADLINE_TA}}', rawTitle)
+    .replace('{{DATE_TEXT}}', dateStr)
     .replace('{{CATEGORY_COLOR}}', theme.color)
     .replace('{{CATEGORY_ICON}}', theme.icon)
-    .replace('{{CATEGORY_LABEL}}', `${area.toUpperCase()} LIVE ALERT`)
-    .replace('{{ALERT_HOOK_TA}}', rawTitle)
-    .replace('{{HERO_IMAGE_SRC}}', heroPhotoUrl)
-    .replace('{{DISTRICT_BADGE}}', area.toUpperCase())
-    .replace('{{AREA_BADGE}}', 'LIVE UPDATE')
-    .replace('{{DATE_TIME_STRING}}', new Date().toLocaleDateString('ta-IN', { day: 'numeric', month: 'short' }));
+    .replace('{{CATEGORY_LABEL}}', theme.label)
+    .replace('{{DISTRICT_NAME}}', area.toUpperCase())
+    .replace(/\{\{URGENCY_CLASS\}\}/g, urgentPost.urgency_level === 'critical' ? 'pill-critical' :
+              urgentPost.urgency_level === 'high' ? 'pill-high' : 'pill-alert');
 
   const s1FramePath = path.join(outDir, `live_s1_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS1, s1FramePath, { width: 1080, height: 1920 });
 
-  const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-2-breakdown.html');
+  // Beat 2: Ground Reality B-Roll Overlay
+  const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-broll-overlay.html');
   let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
   tplS2 = tplS2
     .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+    .replace('{{SCENE_PHOTO_SRC}}', toImageSource(heroPhotoUrl))
+    .replace('{{LOCATION_TEXT}}', `${area} | தமிழ்நாடு`)
     .replace('{{CATEGORY_COLOR}}', theme.color)
     .replace('{{CATEGORY_ICON}}', theme.icon)
     .replace('{{CATEGORY_LABEL}}', theme.label)
-    .replace('{{BREAKDOWN_HEADING_TA}}', 'பாதிக்கப்பட்ட பகுதிகள் & கள விவரங்கள்')
-    .replace('{{BREAKDOWN_BODY_TA}}', urgentPost.content_ta || urgentPost.content_en || locInfo)
-    .replace('{{MAP_LOCATION_LABEL}}', urgentPost.location_text || area)
-    .replace('{{IMPACT_SEVERITY_BADGE}}', (urgentPost.urgency_level || 'HIGH').toUpperCase());
+    .replace('{{HEADLINE_TA}}', rawTitle)
+    .replace('{{SUBHEADLINE_TA}}', urgentPost.content_ta || urgentPost.content_en || locInfo)
+    .replace('{{SOURCE_ATTRIBUTION}}', `துறை: ${urgentPost.assigned_department || 'தமிழ்நாடு அரசு'}`);
 
   const s2FramePath = path.join(outDir, `live_s2_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS2, s2FramePath, { width: 1080, height: 1920 });
 
+  // Beat 3: Helpline Action Card
   const tplS3Path = path.resolve('scripts/youtube/templates/shorts/scene-3-helpline.html');
   let tplS3 = fs.readFileSync(tplS3Path, 'utf-8');
   tplS3 = tplS3
-    .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
-    .replace('{{CATEGORY_COLOR}}', theme.color)
-    .replace('{{CATEGORY_ICON}}', theme.icon)
-    .replace('{{CATEGORY_LABEL}}', theme.label)
-    .replace('{{HELPLINE_PHONE}}', helpline)
-    .replace('{{OFFICIAL_PORTAL_URL}}', 'vizhitn.in')
-    .replace('{{CTA_PUNCHLINE_TA}}', 'உங்க ஏரியாலயும் இது நடக்குதா? vizhitn.in-ல நேரடியா report பண்ணுங்க!')
-    .replace('{{DEPARTMENT_NAME_EN}}', urgentPost.assigned_department || 'Tamil Nadu Civic Administration');
+    .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri);
 
   const s3FramePath = path.join(outDir, `live_s3_frame_${Date.now()}.png`);
   renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
@@ -242,7 +242,11 @@ async function main() {
   generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
 
   // 7. Video Assembly with Dynamic SEO Filename
-  const brollClip = await fetchFreeBrollClip(category, outDir, '9:16');
+  const brollClip = await fetchFreeBrollClip({
+    category,
+    aspectRatio: '9:16',
+    durationSec: totalDur
+  });
   const seoFilename = generateSeoVideoFilename({
     title: rawTitle,
     district,
