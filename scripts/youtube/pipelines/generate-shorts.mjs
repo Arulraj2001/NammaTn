@@ -11,7 +11,7 @@ import { generateVideoMetadata, getCategoryFluxPrompt, generateArtDirectedVisual
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video-composer.mjs';
-import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
+import { generateYouTubeSceneVisual, generateProceduralBackdrop, toImageSource } from '../engine/cloudflare-visuals.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
@@ -233,8 +233,7 @@ async function main() {
     photoS1Path = path.join(outDir, `short_s1_photo_${Date.now()}.webp`);
     let photoS1Url = await generateYouTubeSceneVisual(promptS1, photoS1Path, '9:16');
     if (!photoS1Url) {
-      const localCard = path.resolve(`public/images/categories/${category}.webp`);
-      photoS1Url = fs.existsSync(localCard) ? localCard : path.resolve('public/images/categories/general.webp');
+      photoS1Url = generateProceduralBackdrop(path.join(outDir, `short_s1_proc_${Date.now()}.png`));
     }
 
     const promptS2 = await generateArtDirectedVisualPrompt({
@@ -246,7 +245,7 @@ async function main() {
     photoS2Path = path.join(outDir, `short_s2_photo_${Date.now()}.webp`);
     let photoS2Url = await generateYouTubeSceneVisual(promptS2, photoS2Path, '9:16');
     if (!photoS2Url) {
-      photoS2Url = photoS1Url;
+      photoS2Url = generateProceduralBackdrop(path.join(outDir, `short_s2_proc_${Date.now()}.png`));
     }
 
     // ─── 5. Generate High-CTR A/B Vertical Thumbnails ───────────────────────

@@ -269,7 +269,10 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       let subFilter = '';
       if (sc.subtitlePath && fs.existsSync(sc.subtitlePath)) {
         const relSub = path.relative(process.cwd(), sc.subtitlePath).replace(/\\/g, '/');
-        subFilter = `,ass='${relSub}'`;
+        const fontsDir = 'scripts/youtube/assets/fonts';
+        subFilter = fs.existsSync(fontsDir)
+          ? `,ass=filename='${relSub}':fontsdir='${fontsDir}'`
+          : `,ass='${relSub}'`;
       }
 
       let args;

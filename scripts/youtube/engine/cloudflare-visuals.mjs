@@ -12,66 +12,134 @@ const CLOUDFLARE_MODEL = process.env.CLOUDFLARE_IMAGE_MODEL || '@cf/black-forest
  * @param {string} prompt - Detailed scene description
  * @param {string} outputFilePath - Destination image path
  * @param {'9:16'|'16:9'} [aspectRatio='9:16']
+/**
+ * Fetches image from Pollinations AI (FLUX model, zero API key required)
+ */
+async function fetchPollinationsVisual(prompt, outputFilePath, width, height) {
+  try {
+    console.log('[POLLINATIONS FLUX] Calling free FLUX image generation...');
+    const cleanPrompt = `${prompt}, realistic photography, Tamil Nadu India ground reality, authentic documentary news photo, 8k, cinematic lighting, no text, no watermark, no words`;
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=${width}&height=${height}&nologo=true&model=flux`;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
+
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+
+    if (!res.ok) throw new Error(`Pollinations returned HTTP ${res.status}`);
+    const buffer = Buffer.from(await res.arrayBuffer());
+    if (buffer.length < 5000) throw new Error('Pollinations returned too small buffer');
+
+    fs.writeFileSync(outputFilePath, buffer);
+    console.log(`[POLLINATIONS SUCCESS] Scene image generated: ${outputFilePath} (${(buffer.length / 1024).toFixed(1)} KB)`);
+    return outputFilePath;
+  } catch (err) {
+    console.warn(`[POLLINATIONS WARN] Fallback failed: ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Generates an ultra-clean procedural cinematic dark-ambient backdrop
+ * (Guarantees 100% clean background with ZERO text)
+ */
+export function generateProceduralBackdrop(outputFilePath, width = 1080, height = 1920) {
+  try {
+    const { getFfmpegBinaryPath } = require('./video-composer.mjs');
+    const ffmpeg = getFfmpegBinaryPath();
+    const filter = `testsrc2=d=1:s=${width}x${height}:r=1,boxblur=luma_radius=180:luma_power=3,hue=h=215:s=1.2,eq=contrast=1.3:brightness=-0.35,format=yuv420p`;
+    const { execFileSync } = require('child_process');
+    execFileSync(ffmpeg, ['-y', '-f', 'lavfi', '-i', filter, '-vframes', '1', outputFilePath], { stdio: 'pipe' });
+    if (fs.existsSync(outputFilePath) && fs.statSync(outputFilePath).size > 1000) {
+      console.log(`[PROCEDURAL BACKDROP] Generated clean atmospheric scene backdrop: ${outputFilePath}`);
+      return outputFilePath;
+    }
+  } catch (err) {
+    console.warn(`[PROCEDURAL WARN] Failed to generate procedural backdrop: ${err.message}`);
+  }
+  return null;
+}
+
+/**
+ * Generates an editorial scene visual via Cloudflare Workers AI FLUX
+ * with automatic fallback to secondary Cloudflare keys and Pollinations AI FLUX.
+ *
+ * @param {string} prompt - Detailed scene description
+ * @param {string} outputFilePath - Destination image path
+ * @param {'9:16'|'16:9'} [aspectRatio='9:16']
  * @returns {Promise<string>} output file path
  */
 export async function generateYouTubeSceneVisual(prompt, outputFilePath, aspectRatio = '9:16') {
-  const accountId = process.env.YOUTUBE_CLOUDFLARE_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID;
-  const apiToken = process.env.YOUTUBE_CLOUDFLARE_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
-
   const outDir = path.dirname(outputFilePath);
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
-  if (!accountId || !apiToken) {
-    console.log('[VISUALS] No Cloudflare API keys configured. Using local fallback editorial visual.');
-    return null;
-  }
-
-  // Dimension tailoring for FLUX
   const width = aspectRatio === '9:16' ? 576 : 1024;
   const height = aspectRatio === '9:16' ? 1024 : 576;
 
-  const endpoint = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${CLOUDFLARE_MODEL}`;
-
-  try {
-    console.log(`[CLOUDFLARE FLUX] Generating ${aspectRatio} scene image...`);
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        prompt: `${prompt}, realistic photo, Tamil Nadu India setting, authentic documentary journalism style, hyper-detailed, 8k, cinematic natural lighting, no text, no watermark`
-      })
-    });
-
-    if (!response.ok) {
-      console.warn(`[CLOUDFLARE WARN] Image generation returned ${response.status}. Using fallback.`);
-      return null;
+  // Credential candidate pairs in order of preference
+  const credentialPairs = [
+    {
+      id: process.env.YOUTUBE_CLOUDFLARE_ACCOUNT_ID,
+      token: process.env.YOUTUBE_CLOUDFLARE_API_TOKEN,
+      name: 'YouTube Dedicated'
+    },
+    {
+      id: process.env.CLOUDFLARE_ACCOUNT_ID,
+      token: process.env.CLOUDFLARE_API_TOKEN,
+      name: 'Primary Cloudflare'
     }
+  ].filter(c => c.id && c.token);
 
-    const contentType = response.headers.get('content-type') || '';
-    let imageBuffer;
+  for (const cred of credentialPairs) {
+    const endpoint = `https://api.cloudflare.com/client/v4/accounts/${cred.id}/ai/run/${CLOUDFLARE_MODEL}`;
+    try {
+      console.log(`[CLOUDFLARE FLUX] Generating ${aspectRatio} image via ${cred.name}...`);
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${cred.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: `${prompt}, realistic photo, Tamil Nadu India setting, authentic documentary journalism style, hyper-detailed, 8k, cinematic natural lighting, no text, no watermark`
+        })
+      });
 
-    if (contentType.includes('application/json')) {
-      const data = await response.json();
-      if (data.result && data.result.image) {
-        imageBuffer = Buffer.from(data.result.image, 'base64');
-      } else {
-        return null;
+      if (!response.ok) {
+        console.warn(`[CLOUDFLARE WARN] ${cred.name} returned HTTP ${response.status}. Trying next tier...`);
+        continue;
       }
-    } else {
-      const arrayBuffer = await response.arrayBuffer();
-      imageBuffer = Buffer.from(arrayBuffer);
-    }
 
-    fs.writeFileSync(outputFilePath, imageBuffer);
-    console.log(`[CLOUDFLARE SUCCESS] Visual saved: ${outputFilePath}`);
-    return outputFilePath;
-  } catch (err) {
-    console.warn(`[CLOUDFLARE ERROR] ${err.message}. Using fallback visual.`);
-    return null;
+      const contentType = response.headers.get('content-type') || '';
+      let imageBuffer;
+
+      if (contentType.includes('application/json')) {
+        const data = await response.json();
+        if (data.result && data.result.image) {
+          imageBuffer = Buffer.from(data.result.image, 'base64');
+        } else {
+          continue;
+        }
+      } else {
+        const arrayBuffer = await response.arrayBuffer();
+        imageBuffer = Buffer.from(arrayBuffer);
+      }
+
+      fs.writeFileSync(outputFilePath, imageBuffer);
+      console.log(`[CLOUDFLARE SUCCESS] Visual saved (${cred.name}): ${outputFilePath}`);
+      return outputFilePath;
+    } catch (err) {
+      console.warn(`[CLOUDFLARE ERROR] ${cred.name} failed: ${err.message}`);
+    }
   }
+
+  // Tier 2 Fallback: Pollinations AI FLUX (Free, Zero API keys)
+  const pollResult = await fetchPollinationsVisual(prompt, outputFilePath, width, height);
+  if (pollResult) return pollResult;
+
+  // Tier 3 Fallback: Procedural clean cinematic backdrop (Guaranteed ZERO cut-off text)
+  return generateProceduralBackdrop(outputFilePath, width, height);
 }
 
 /**
