@@ -295,6 +295,15 @@ async function main() {
     'Tamil Documentary'
   ])).slice(0, 15);
 
+  if (isDryRun) {
+    console.log('====================================================');
+    console.log('[DRY RUN] Podcast local generation completed successfully!');
+    console.log(`Video output: ${videoOutputPath}`);
+    console.log('[DRY RUN] Skipped YouTube upload & Meta cross-post.');
+    console.log('====================================================');
+    return;
+  }
+
   // 8. Upload to YouTube
   let uploadResult = null;
   try {

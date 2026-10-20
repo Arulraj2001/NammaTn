@@ -58,7 +58,10 @@ export function assemblePodcastVideo({ segments, acts, outputPath }) {
 
     if (seg.subPath && fs.existsSync(seg.subPath)) {
       const escapedSub = escapeFfmpegSubFilterPath(seg.subPath);
-      vfFilter += `,ass='${escapedSub}'`;
+      const fontsDir = 'scripts/youtube/assets/fonts';
+      vfFilter += fs.existsSync(fontsDir)
+        ? `,ass=filename='${escapedSub}':fontsdir='${fontsDir}'`
+        : `,ass='${escapedSub}'`;
     }
 
     const cmd = `"${ffmpeg}" -y -loop 1 -framerate 30 -i "${seg.slidePath}" -i "${mixedAudioPath}" -vf "${vfFilter}" -c:v libx264 -preset fast -crf 22 -c:a aac -b:a 192k -shortest "${segMp4Path}"`;

@@ -5,7 +5,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 import { normalizeAcronymsToSpokenTamil, sanitizeClauseText } from './tamil-phonetics.mjs';
 import { getFfmpegBinaryPath, getAudioDuration } from './video-composer.mjs';
 import { cleanCaptionText, chunkSentenceForCaptions, parseVttTiming, generateCaptionsFromTimedSegments } from './captions-engine.mjs';
@@ -44,7 +44,7 @@ const VOICE_PROSODY = {
 };
 
 /**
- * Synthesizes a single dialogue turn using edge-tts with optional VTT subtitle output
+ * Synthesizes a single dialogue turn using edge-tts with progressive fallbacks
  */
 function synthesizeTurnAudio(text, outputPath, vttPath = null, speaker = 'karthik', emotion = 'default') {
   const python = getPythonBinary();
@@ -54,20 +54,53 @@ function synthesizeTurnAudio(text, outputPath, vttPath = null, speaker = 'karthi
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  const safeText = text.replace(/'/g, "\\'");
-  const vttArg = vttPath ? ` --write-subtitles "${vttPath.replace(/\\/g, '/')}"` : '';
-  const cmd = `${python} -m edge_tts --voice "${config.voice}" --rate="${prosody.rate}" --pitch="${prosody.pitch}" --text '${safeText}' --write-media "${outputPath.replace(/\\/g, '/')}"${vttArg}`;
+  // Use a temporary UTF-8 text file to eliminate all shell quoting, newline, and character escaping issues
+  const tempTextFile = path.join(dir, `_temp_turn_text_${Date.now()}_${Math.random().toString(36).substring(7)}.txt`);
+  fs.writeFileSync(tempTextFile, text, 'utf-8');
 
+  // Progressive fallback configurations in case Edge TTS rejects pitch or has transient rate-limiting
+  const attempts = [
+    { rate: prosody.rate, pitch: prosody.pitch, withVtt: !!vttPath },
+    { rate: prosody.rate, pitch: '+0Hz', withVtt: !!vttPath },
+    { rate: '+0%', pitch: '+0Hz', withVtt: false }
+  ];
+
+  let lastErr = null;
   try {
-    execSync(cmd, { stdio: 'pipe', timeout: 45000, windowsHide: true });
-  } catch {
-    const safeTextDq = text.replace(/"/g, '\\"');
-    const cmdDq = `${python} -m edge_tts --voice "${config.voice}" --rate="${prosody.rate}" --pitch="${prosody.pitch}" --text "${safeTextDq}" --write-media "${outputPath.replace(/\\/g, '/')}"${vttArg}`;
-    execSync(cmdDq, { stdio: 'pipe', timeout: 45000, windowsHide: true });
+    for (let attemptIdx = 0; attemptIdx < attempts.length; attemptIdx++) {
+      const att = attempts[attemptIdx];
+      const args = [
+        '-m', 'edge_tts',
+        '--voice', config.voice,
+        '--rate', att.rate,
+        '--pitch', att.pitch,
+        '--file', tempTextFile,
+        '--write-media', outputPath
+      ];
+      if (att.withVtt && vttPath) {
+        args.push('--write-subtitles', vttPath);
+      }
+
+      try {
+        execFileSync(python, args, { stdio: 'pipe', timeout: 45000, windowsHide: true });
+        if (fs.existsSync(outputPath) && fs.statSync(outputPath).size > 1000) {
+          return; // Success!
+        }
+      } catch (err) {
+        lastErr = err;
+        console.warn(`[PODCAST TTS WARN] Turn synthesis attempt ${attemptIdx + 1}/${attempts.length} failed (${err.message.trim()}). Retrying with fallback prosody...`);
+        // Brief pause before retry to allow socket cool-down
+        try { execSync('node -e "setTimeout(()=>{}, 1500)"', { stdio: 'ignore' }); } catch (_) {}
+      }
+    }
+  } finally {
+    if (fs.existsSync(tempTextFile)) {
+      try { fs.unlinkSync(tempTextFile); } catch {}
+    }
   }
 
-  if (!fs.existsSync(outputPath)) {
-    throw new Error(`[PODCAST TTS] edge-tts produced no output for turn: ${text.slice(0, 40)}`);
+  if (!fs.existsSync(outputPath) || fs.statSync(outputPath).size < 1000) {
+    throw new Error(`[PODCAST TTS] edge-tts produced no output for turn: ${text.slice(0, 40)}. Error: ${lastErr?.message || 'unknown'}`);
   }
 }
 
