@@ -56,7 +56,7 @@ export function getNowIst() {
  */
 export function getScheduledUploadsForDate(dateStr = getTodayIst()) {
   const cal = loadCalendar();
-  return cal.byDate?.[dateStr] || [];
+  return (cal.byDate?.[dateStr] || []).filter(u => u.format !== 'long-form');
 }
 
 /**

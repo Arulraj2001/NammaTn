@@ -52,7 +52,6 @@ async function handleSlot(format, isDryRun, force) {
   }
 
   const scriptMap = {
-    'long-form': 'scripts/youtube/pipelines/generate-long-video.mjs',
     'podcast': 'scripts/youtube/pipelines/generate-podcast.mjs',
     'civic-shorts': 'scripts/youtube/pipelines/generate-shorts.mjs',
     'live-shorts': 'scripts/youtube/pipelines/generate-live-shorts.mjs'
@@ -210,14 +209,11 @@ async function main() {
 
   let targetFormat = null;
 
-  if (now.hours < 12) {
-    // Morning window (06:30 - 11:59 IST): Long-Form
-    targetFormat = 'long-form';
-  } else if (now.hours < 16) {
-    // Lunchtime window (12:00 - 15:59 IST): Live Civic Short
+  if (now.hours < 15) {
+    // Daytime window (06:00 - 14:59 IST): Live Civic Short
     targetFormat = 'live-shorts';
   } else if (now.hours < 19) {
-    // Evening podcast window (16:00 - 18:59 IST): Vizhi Uncut Duo Podcast
+    // Evening podcast window (15:00 - 18:59 IST): Vizhi Uncut Duo Podcast
     targetFormat = 'podcast';
   } else {
     // Night short window (19:00 - 23:59 IST): 90-Day Calendar Civic Short

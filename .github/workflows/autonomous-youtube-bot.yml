@@ -2,19 +2,15 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Mon, Wed, Fri ~07:00 AM IST (01:22 UTC): 90-Day Long-Form Documentary (39 videos)
-    - cron: '22 1 * * 1,3,5'
-    # 2. Mon, Wed, Fri ~08:45 AM IST (03:18 UTC): Morning Safety Catch-Up Sweeper
-    - cron: '18 3 * * 1,3,5'
-    # 3. Daily ~01:25 PM IST (07:52 UTC): Daily Live Civic Pulse Short (Today's Real-Time Alerts)
+    # 1. Daily ~01:25 PM IST (07:52 UTC): Daily Live Civic Pulse Short (Today's Real-Time Alerts)
     - cron: '52 7 * * *'
-    # 4. Daily ~02:18 PM IST (08:48 UTC): Midday Safety Catch-Up Sweeper
+    # 2. Daily ~02:18 PM IST (08:48 UTC): Midday Safety Catch-Up Sweeper
     - cron: '48 8 * * *'
-    # 5. Tue, Thu, Sat ~05:55 PM IST (12:22 UTC): 90-Day Vizhi Uncut Duo Podcast (38 episodes)
+    # 3. Tue, Thu, Sat ~05:55 PM IST (12:22 UTC): 90-Day Vizhi Uncut Duo Podcast (38 episodes)
     - cron: '22 12 * * 2,4,6'
-    # 6. Daily ~07:25 PM IST (13:52 UTC): 90-Day Daily Civic Lifeline Alert Short (90 shorts)
+    # 4. Daily ~07:25 PM IST (13:52 UTC): 90-Day Daily Civic Lifeline Alert Short (90 shorts)
     - cron: '52 13 * * *'
-    # 7. Daily ~08:48 PM IST (15:18 UTC): Evening Safety Catch-Up Sweeper
+    # 5. Daily ~08:48 PM IST (15:18 UTC): Evening Safety Catch-Up Sweeper
     - cron: '18 15 * * *'
 
   workflow_dispatch:
@@ -26,15 +22,10 @@ on:
           - auto
           - live-shorts
           - civic-shorts
-          - long-form
           - podcast
           - backfill
           - all
         default: 'auto'
-      target_slug:
-        description: 'Article Slug for Long-Form (optional, leaves empty for latest)'
-        required: false
-        default: ''
       dry_run:
         description: 'Dry Run Mode (true = render video only, no YouTube upload)'
         type: boolean
@@ -104,15 +95,13 @@ jobs:
           if [ "$PIPELINE" = "backfill" ]; then
             SLOT_ARG="--backfill"
           elif [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
-            if [ "$SCHEDULE" = "22 1 * * 1,3,5" ]; then
-              SLOT_ARG="--slot=long-form"
-            elif [ "$SCHEDULE" = "52 7 * * *" ]; then
+            if [ "$SCHEDULE" = "52 7 * * *" ]; then
               SLOT_ARG="--slot=live-shorts"
             elif [ "$SCHEDULE" = "22 12 * * 2,4,6" ]; then
               SLOT_ARG="--slot=podcast"
             elif [ "$SCHEDULE" = "52 13 * * *" ]; then
               SLOT_ARG="--slot=civic-shorts"
-            elif [ "$SCHEDULE" = "18 3 * * 1,3,5" ] || [ "$SCHEDULE" = "48 8 * * *" ] || [ "$SCHEDULE" = "18 15 * * *" ]; then
+            elif [ "$SCHEDULE" = "48 8 * * *" ] || [ "$SCHEDULE" = "18 15 * * *" ]; then
               SLOT_ARG="--backfill"
             else
               SLOT_ARG="--slot=auto"
