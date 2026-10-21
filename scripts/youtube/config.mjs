@@ -41,8 +41,10 @@ export const YOUTUBE_CONFIG = {
   voices: {
     tamilFemale: 'ta-IN-PallaviNeural',   // Kavitha: Systems decoder & legal analyst
     tamilMale: 'ta-IN-ValluvarNeural',    // Karthik: Relatable investigative reporter
-    defaultRate: '+1%',                  // Calibrated pacing for smooth bilingual Tanglish delivery
-    defaultPitch: '+0Hz'
+    defaultRate: '+2%',                  // Long-form documentary pacing
+    defaultPitch: '+2Hz',                // Slight pitch lift — sounds more energetic, less robotic
+    shortsRate: '+10%',                  // Shorts: fast-paced, alert, energetic delivery
+    shortsPitch: '+4Hz'                  // Shorts: higher pitch = urgency & attention-grabbing
   },
 
   // Visual Theme Tokens

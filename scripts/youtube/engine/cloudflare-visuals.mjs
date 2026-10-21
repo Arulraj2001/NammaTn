@@ -74,8 +74,11 @@ export async function generateYouTubeSceneVisual(prompt, outputFilePath, aspectR
   const outDir = path.dirname(outputFilePath);
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
-  const width = aspectRatio === '9:16' ? 576 : 1024;
-  const height = aspectRatio === '9:16' ? 1024 : 576;
+  // Higher resolution → less FFmpeg upscale → sharper final frames
+  // 768×1360 for 9:16 (1.4x upscale to 1080×1920 vs old 2x from 576×1024)
+  // 1280×720 for 16:9 (native 720p, no upscale needed)
+  const width  = aspectRatio === '9:16' ? 768 : 1280;
+  const height = aspectRatio === '9:16' ? 1360 : 720;
 
   // Credential candidate pairs in order of preference
   const credentialPairs = [

@@ -2,9 +2,15 @@
 <html lang="ta">
 <head>
   <meta charset="UTF-8">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@700;800;900&family=Plus+Jakarta+Sans:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Noto Sans Tamil';
+      src: url('file:///{{FONTS_DIR}}/NotoSansTamil-Bold.ttf') format('truetype');
+      font-weight: 700 900;
+      font-style: normal;
+      font-display: block;
+    }
+  </style>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -83,10 +89,10 @@
       letter-spacing: 1px;
     }
 
-    /* ── Hero Helpline Card (Safe Y = 280px to Y = 820px, Safe Right = 180px) ── */
+    /* ── Hero Helpline Card (Safe Y = 260px to Y = 620px, Safe Right = 180px) ── */
     .hero-helpline-card {
       position: absolute;
-      top: 280px;
+      top: 260px;
       left: 48px;
       right: 180px; /* Safe from Like/Share vertical column */
       z-index: 20;
@@ -94,14 +100,14 @@
       backdrop-filter: blur(24px);
       border: 1.5px solid rgba(255, 255, 255, 0.2);
       border-left: 6px solid #ef4444;
-      border-radius: 30px;
-      padding: 34px 34px;
+      border-radius: 28px;
+      padding: 26px 30px;
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 18px;
+      gap: 14px;
     }
 
     .card-top-chip {
@@ -111,23 +117,23 @@
       background: rgba(220, 38, 38, 0.2);
       border: 1.5px solid #ef4444;
       color: #fca5a5;
-      padding: 6px 20px;
+      padding: 5px 18px;
       border-radius: 9999px;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 900;
       letter-spacing: 1px;
     }
 
     .dept-title {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 900;
-      line-height: 1.3;
+      line-height: 1.25;
       color: #ffffff;
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
     }
 
     .dept-sub {
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 700;
       color: #94a3b8;
     }
@@ -137,8 +143,8 @@
       width: 100%;
       background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
       color: #ffffff;
-      padding: 20px 28px;
-      border-radius: 22px;
+      padding: 16px 24px;
+      border-radius: 20px;
       border: 2px solid rgba(255, 255, 255, 0.35);
       box-shadow: 0 12px 35px rgba(220, 38, 38, 0.65);
       display: flex;
@@ -147,17 +153,17 @@
       gap: 16px;
     }
     .hl-call-icon {
-      font-size: 40px;
+      font-size: 38px;
     }
     .hl-giant-number {
-      font-size: 52px;
+      font-size: 50px;
       font-weight: 900;
       letter-spacing: 2px;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     }
 
     .hl-status-footer {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
       color: #4ade80;
       display: flex;
@@ -165,10 +171,78 @@
       gap: 8px;
     }
 
-    /* ── Community Portal Card (Y = 860px, Safe Right = 180px) ── */
+    /* ── Follow & Subscribe Social CTA Card (Y = 640px, Safe Right = 180px) ── */
+    .follow-cta-card {
+      position: absolute;
+      top: 640px;
+      left: 48px;
+      right: 180px;
+      z-index: 20;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(153, 27, 27, 0.95) 100%);
+      backdrop-filter: blur(20px);
+      border: 2px solid #f87171;
+      border-radius: 24px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 15px 45px rgba(220, 38, 38, 0.5), 0 0 30px rgba(239, 68, 68, 0.25);
+    }
+    .follow-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .follow-brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sub-bell-icon {
+      font-size: 22px;
+    }
+    .follow-handle {
+      font-size: 22px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+    .follow-sub-pill {
+      background: #ffffff;
+      color: #b91c1c;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      letter-spacing: 0.8px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+    .follow-tagline {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fee2e2;
+    }
+    .follow-action-btn {
+      background: #ffffff;
+      color: #b91c1c;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      white-space: nowrap;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Community Portal Card (Y = 780px, Safe Right = 180px) ── */
     .portal-card {
       position: absolute;
-      top: 860px;
+      top: 780px;
       left: 48px;
       right: 180px;
       z-index: 20;
@@ -176,8 +250,8 @@
       backdrop-filter: blur(20px);
       border: 1.5px solid rgba(56, 189, 248, 0.35);
       border-left: 6px solid #38bdf8;
-      border-radius: 24px;
-      padding: 22px 28px;
+      border-radius: 22px;
+      padding: 18px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -189,13 +263,13 @@
       gap: 4px;
     }
     .portal-url {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
       color: #38bdf8;
       letter-spacing: -0.5px;
     }
     .portal-desc {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: #cbd5e1;
     }
@@ -203,9 +277,9 @@
       background: rgba(56, 189, 248, 0.15);
       border: 1px solid #38bdf8;
       color: #38bdf8;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 800;
-      padding: 6px 16px;
+      padding: 5px 14px;
       border-radius: 9999px;
       white-space: nowrap;
     }
@@ -226,7 +300,7 @@
     <div class="badge-helpline-pill">📞 அவசர உதவி மையம்</div>
   </div>
 
-  <!-- Hero Helpline Card (Y = 280px to Y = 820px) -->
+  <!-- Hero Helpline Card (Y = 260px) -->
   <div class="hero-helpline-card">
     <div class="card-top-chip">அதிகாரப்பூர்வ உதவி எண்</div>
     <h2 class="dept-title">{{ASSIGNED_DEPT}}</h2>
@@ -243,7 +317,22 @@
     </div>
   </div>
 
-  <!-- Community Portal Card (Y = 860px) -->
+  <!-- Follow & Subscribe Social CTA Card (Y = 640px) -->
+  <div class="follow-cta-card">
+    <div class="follow-left">
+      <div class="follow-brand-row">
+        <span class="sub-bell-icon">🔔</span>
+        <span class="follow-handle">@VizhiTN</span>
+        <span class="follow-sub-pill">SUBSCRIBE</span>
+      </div>
+      <div class="follow-tagline">தினசரி தமிழ்நாடு அரசு & குடிமை எச்சரிக்கைகள்</div>
+    </div>
+    <div class="follow-action-btn">
+      <span>Follow 🔔</span>
+    </div>
+  </div>
+
+  <!-- Community Portal Card (Y = 780px) -->
   <div class="portal-card">
     <div class="portal-left">
       <span class="portal-url">🌐 vizhitn.in</span>

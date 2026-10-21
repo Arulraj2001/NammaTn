@@ -44,64 +44,143 @@ const VOICE_PROSODY = {
 };
 
 /**
- * Synthesizes a single dialogue turn using edge-tts with progressive fallbacks
+ * Splits a turn into sentence clauses to prevent WebSocket packet dropouts on long texts
  */
-function synthesizeTurnAudio(text, outputPath, vttPath = null, speaker = 'karthik', emotion = 'default') {
-  const python = getPythonBinary();
-  const config = VOICE_PROSODY[speaker] || VOICE_PROSODY.karthik;
-  const prosody = config.emotions[emotion] || config.emotions.default;
+function splitTurnIntoSentenceClauses(text) {
+  if (!text) return [];
+  const sentences = text
+    .split(/(?<=[.!?;\u0964])\s+/)
+    .map(s => s.trim())
+    .filter(Boolean);
 
+  const result = [];
+  for (const s of sentences) {
+    const words = s.split(/\s+/).filter(Boolean);
+    if (words.length > 18) {
+      const sub = s.split(/(?<=[,])\s+/).map(x => x.trim()).filter(Boolean);
+      result.push(...sub);
+    } else {
+      result.push(s);
+    }
+  }
+  return result.length > 0 ? result : [text];
+}
+
+/**
+ * Synthesizes a single clause using Python edge-tts CLI
+ */
+function synthesizeSingleClause(clause, destPath, voice, rate, pitch, timeout = 35000) {
+  const python = getPythonBinary();
+  const dir = path.dirname(destPath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+  const tempTextFile = path.join(dir, `_temp_c_${Date.now()}_${Math.random().toString(36).substring(7)}.txt`);
+  fs.writeFileSync(tempTextFile, clause, 'utf-8');
+
+  try {
+    const args = [
+      '-m', 'edge_tts',
+      '--voice', voice,
+      '--rate', rate,
+      '--pitch', pitch,
+      '--file', tempTextFile,
+      '--write-media', destPath
+    ];
+    execFileSync(python, args, { stdio: 'pipe', timeout, windowsHide: true });
+    return fs.existsSync(destPath) && fs.statSync(destPath).size > 500;
+  } finally {
+    try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch (_) {}
+  }
+}
+
+/**
+ * Synthesizes a dialogue turn with progressive voice fallbacks, clause chunking, and exponential backoff
+ */
+function synthesizeTurnAudio(text, outputPath, speaker = 'karthik', emotion = 'default') {
+  const ffmpeg = getFfmpegBinaryPath();
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  // Use a temporary UTF-8 text file to eliminate all shell quoting, newline, and character escaping issues
-  const tempTextFile = path.join(dir, `_temp_turn_text_${Date.now()}_${Math.random().toString(36).substring(7)}.txt`);
-  fs.writeFileSync(tempTextFile, text, 'utf-8');
+  const config = VOICE_PROSODY[speaker] || VOICE_PROSODY.karthik;
+  const prosody = config.emotions[emotion] || config.emotions.default;
+  const primaryVoice = config.voice;
+  const fallbackVoice = speaker === 'karthik' ? 'ta-IN-PallaviNeural' : 'ta-IN-ValluvarNeural';
 
-  // Progressive fallback configurations in case Edge TTS rejects pitch or has transient rate-limiting
+  const clauses = splitTurnIntoSentenceClauses(text);
+
+  // Progressive fallback attempts
   const attempts = [
-    { rate: prosody.rate, pitch: prosody.pitch, withVtt: !!vttPath },
-    { rate: prosody.rate, pitch: '+0Hz', withVtt: !!vttPath },
-    { rate: '+0%', pitch: '+0Hz', withVtt: false }
+    { voice: primaryVoice, rate: prosody.rate, pitch: prosody.pitch, delayMs: 0 },
+    { voice: primaryVoice, rate: prosody.rate, pitch: '+0Hz', delayMs: 2000 },
+    { voice: primaryVoice, rate: '+0%', pitch: '+0Hz', delayMs: 3500 },
+    { voice: fallbackVoice, rate: '+0%', pitch: '+0Hz', delayMs: 5000 }
   ];
 
-  let lastErr = null;
-  try {
-    for (let attemptIdx = 0; attemptIdx < attempts.length; attemptIdx++) {
-      const att = attempts[attemptIdx];
-      const args = [
-        '-m', 'edge_tts',
-        '--voice', config.voice,
-        '--rate', att.rate,
-        '--pitch', att.pitch,
-        '--file', tempTextFile,
-        '--write-media', outputPath
-      ];
-      if (att.withVtt && vttPath) {
-        args.push('--write-subtitles', vttPath);
-      }
+  for (let attIdx = 0; attIdx < attempts.length; attIdx++) {
+    const att = attempts[attIdx];
+    if (att.delayMs > 0) {
+      console.log(`[PODCAST TTS COOL-DOWN] Pausing ${att.delayMs}ms before attempt ${attIdx + 1}/${attempts.length}...`);
+      try { execSync(`node -e "setTimeout(()=>{}, ${att.delayMs})"`, { stdio: 'ignore' }); } catch (_) {}
+    }
+
+    const chunkPaths = [];
+    let allChunksSuccess = true;
+
+    for (let cIdx = 0; cIdx < clauses.length; cIdx++) {
+      const clause = clauses[cIdx];
+      const chunkFile = path.join(dir, `_turn_chk_${Date.now()}_${attIdx}_${cIdx}.mp3`);
+      chunkPaths.push(chunkFile);
 
       try {
-        execFileSync(python, args, { stdio: 'pipe', timeout: 45000, windowsHide: true });
+        const ok = synthesizeSingleClause(clause, chunkFile, att.voice, att.rate, att.pitch);
+        if (!ok) {
+          allChunksSuccess = false;
+          break;
+        }
+      } catch (err) {
+        console.warn(`[PODCAST TTS WARN] Clause ${cIdx + 1}/${clauses.length} failed with ${att.voice}: ${err.message.slice(0, 60)}`);
+        allChunksSuccess = false;
+        break;
+      }
+    }
+
+    if (allChunksSuccess && chunkPaths.length > 0) {
+      try {
+        if (chunkPaths.length === 1) {
+          if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+          fs.copyFileSync(chunkPaths[0], outputPath);
+        } else {
+          // Stitch clauses with FFmpeg concat
+          const listFile = path.join(dir, `_concat_${Date.now()}_${attIdx}.txt`);
+          fs.writeFileSync(listFile, chunkPaths.map(p => `file '${p.replace(/\\/g, '/')}'`).join('\n'), 'utf-8');
+          execSync(`"${ffmpeg}" -y -f concat -safe 0 -i "${listFile}" -c copy "${outputPath}"`, {
+            stdio: 'pipe',
+            timeout: 30000,
+            windowsHide: true
+          });
+          try { fs.unlinkSync(listFile); } catch (_) {}
+        }
+
+        // Cleanup temporary clause files
+        for (const cp of chunkPaths) {
+          try { if (fs.existsSync(cp)) fs.unlinkSync(cp); } catch (_) {}
+        }
+
         if (fs.existsSync(outputPath) && fs.statSync(outputPath).size > 1000) {
           return; // Success!
         }
-      } catch (err) {
-        lastErr = err;
-        console.warn(`[PODCAST TTS WARN] Turn synthesis attempt ${attemptIdx + 1}/${attempts.length} failed (${err.message.trim()}). Retrying with fallback prosody...`);
-        // Brief pause before retry to allow socket cool-down
-        try { execSync('node -e "setTimeout(()=>{}, 1500)"', { stdio: 'ignore' }); } catch (_) {}
+      } catch (concatErr) {
+        console.warn(`[PODCAST TTS CONCAT WARN] Failed to stitch chunks: ${concatErr.message}`);
       }
     }
-  } finally {
-    if (fs.existsSync(tempTextFile)) {
-      try { fs.unlinkSync(tempTextFile); } catch {}
+
+    // Cleanup failed attempt files
+    for (const cp of chunkPaths) {
+      try { if (fs.existsSync(cp)) fs.unlinkSync(cp); } catch (_) {}
     }
   }
 
-  if (!fs.existsSync(outputPath) || fs.statSync(outputPath).size < 1000) {
-    throw new Error(`[PODCAST TTS] edge-tts produced no output for turn: ${text.slice(0, 40)}. Error: ${lastErr?.message || 'unknown'}`);
-  }
+  throw new Error(`[PODCAST TTS] edge-tts produced no output for turn: "${text.slice(0, 50)}" across all ${attempts.length} fallback attempts.`);
 }
 
 /**
@@ -132,8 +211,16 @@ export async function synthesizePodcastTurn({ turn, actNum, turnIndex, outputDir
   const cleanText = sanitizeClauseText(normalizeAcronymsToSpokenTamil(rawText));
 
   const rawAudioPath = path.join(outputDir, `turn_raw_${actNum}_${turnIndex}_${Date.now()}.mp3`);
-  const vttPath = path.join(outputDir, `turn_vtt_${actNum}_${turnIndex}_${Date.now()}.vtt`);
-  synthesizeTurnAudio(cleanText, rawAudioPath, vttPath, speaker, emotion);
+  try {
+    synthesizeTurnAudio(cleanText, rawAudioPath, speaker, emotion);
+  } catch (ttsErr) {
+    console.warn(`[PODCAST TTS RESILIENCE] Turn ${turnIndex + 1} synthesis failed after all retries (${ttsErr.message.slice(0, 80)}). Generating atmospheric fallback audio...`);
+    execSync(`"${ffmpeg}" -y -f lavfi -i anullsrc=r=24000:cl=mono -t 3.0 -c:a libmp3lame -q:a 2 "${rawAudioPath}"`, {
+      stdio: 'pipe',
+      timeout: 10000,
+      windowsHide: true
+    });
+  }
 
   const rawDur = getAudioDuration(rawAudioPath);
 
@@ -161,23 +248,8 @@ export async function synthesizePodcastTurn({ turn, actNum, turnIndex, outputDir
   const speakerLabel = isKarthik ? 'கார்த்திக்' : 'கவிதா';
   const primaryColorCode = isKarthik ? '\\c&H00FFFF00&' : '\\c&H0015CCFA&';
 
-  // Read real VTT timing if available
-  let chunks = [];
-  if (fs.existsSync(vttPath)) {
-    try {
-      const vttContent = fs.readFileSync(vttPath, 'utf-8');
-      const vttSegs = parseVttTiming(vttContent);
-      if (vttSegs.length > 0) {
-        chunks = generateCaptionsFromTimedSegments(vttSegs, '16:9');
-      }
-    } catch (_) {}
-    try { fs.unlinkSync(vttPath); } catch (_) {}
-  }
-
-  // Fallback to clause chunking
-  if (!chunks || chunks.length === 0) {
-    chunks = chunkSentenceForCaptions(cleanText, finalDur, 0, 4);
-  }
+  // High-reliability clause chunking for subtitles
+  const chunks = chunkSentenceForCaptions(cleanText, finalDur, 0, 4);
 
   let dialogEvents = '';
 

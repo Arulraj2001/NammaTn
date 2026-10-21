@@ -5,6 +5,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { toTanglish } from './tamil-phonetics.mjs';
 
 /**
  * Formats seconds into ASS timestamp: H:MM:SS.cc
@@ -47,7 +48,8 @@ export function cleanCaptionText(text) {
  * Long-form: 4 to 6 words (Vox broadcast style)
  */
 export function chunkSentenceForCaptions(sentence, totalDurationSec, startTimeOffset = 0, wordsPerChunk = 3) {
-  const cleanedSentence = cleanCaptionText(sentence);
+  const tanglish = toTanglish(sentence);
+  const cleanedSentence = cleanCaptionText(tanglish);
   const words = cleanedSentence.split(/\s+/).filter(Boolean);
   if (words.length === 0) return [];
 
@@ -170,9 +172,8 @@ export function generateCaptionsFromClauses(clauses, totalDurationSec, aspectRat
  * @returns {string} outputPath
  */
 export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:16') {
-  const isShort = aspectRatio === '9:16';
-  const playResX = isShort ? 1080 : 1920;
-  const playResY = isShort ? 1920 : 1080;
+  // Captions disabled project-wide per user preference
+  return null;
 
   // Shorts (9:16): High-impact 62px display font centered in mobile optical safe zone (MarginV: 620)
   // Sits cleanly above the bottom audio track name, caption text, and interaction buttons
@@ -190,7 +191,7 @@ export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:1
     const startStr = formatAssTime(seg.start);
     const endStr = formatAssTime(seg.end);
 
-    const cleanText = cleanCaptionText(seg.text);
+    const cleanText = toTanglish(cleanCaptionText(seg.text));
     if (!cleanText) return;
 
     const words = cleanText.split(/\s+/).filter(Boolean);
@@ -219,7 +220,87 @@ PlayResY: ${playResY}
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Noto Sans Tamil,${fontSize},&H00FFFFFF,&H0000FFFF,&H00000000,&H95000000,-1,0,0,0,100,100,0,0,1,${outlineWidth},${shadowDepth},2,${marginL},${marginR},${marginV},1
+Style: Default,Arial Black,${fontSize},&H00FFFFFF,&H0000FFFF,&H00000000,&H95000000,-1,0,0,0,100,100,0,0,1,${outlineWidth},${shadowDepth},2,${marginL},${marginR},${marginV},1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+${dialogEvents}
+`;
+
+  const outDir = path.dirname(outputPath);
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(outputPath, assContent, 'utf-8');
+  return outputPath;
+}
+
+/**
+ * Generates TRUE word-by-word karaoke captions (CapCut / MrBeast / Hormozi style)
+ * Each word gets its OWN Dialogue line timed to its exact VTT speech timestamp.
+ * Active word = NEON YELLOW — all other words disappear (one at a time pop effect).
+ *
+ * @param {Array<{ text: string, startSec: number, endSec: number }>} timedSegments
+ * @param {string} outputPath
+ * @param {'9:16'|'16:9'} [aspectRatio='9:16']
+ * @returns {string} outputPath
+ */
+export function generateKaraokeCaptions(timedSegments, outputPath, aspectRatio = '9:16') {
+  // Captions disabled project-wide per user preference
+  return null;
+  const fontSize = isShort ? 72 : 42;
+  const marginV  = isShort ? 580 : 120;
+  const marginLR = isShort ? 80 : 60;
+  const outlineW = isShort ? 7.0 : 4.0;
+  const shadowD  = isShort ? 5.5 : 2.5;
+
+  function fmtAss(sec) {
+    const h  = Math.floor(sec / 3600);
+    const m  = Math.floor((sec % 3600) / 60);
+    const s  = Math.floor(sec % 60);
+    const cs = Math.floor((sec % 1) * 100);
+    return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(cs).padStart(2,'0')}`;
+  }
+
+  let dialogEvents = '';
+
+  for (const seg of timedSegments) {
+    const rawTanglish = toTanglish(cleanCaptionText(seg.text));
+    const words = rawTanglish.split(/\s+/).filter(Boolean);
+    if (words.length === 0) continue;
+
+    const segDur = Math.max(0.2, seg.endSec - seg.startSec);
+    const validWords = words.map(w => cleanCaptionText(w)).filter(Boolean);
+    if (validWords.length === 0) continue;
+
+    const totalChars = validWords.reduce((sum, w) => sum + Math.max(2, w.length), 0);
+    // Subtitles lead audio by 60ms for instant perceptual sync (matches human eye processing time)
+    let currentOffset = Math.max(0, seg.startSec - 0.06);
+
+    validWords.forEach((cleanWord) => {
+      const wordWeight = Math.max(2, cleanWord.length);
+      const wordDur = segDur * (wordWeight / totalChars);
+      const wordStart = currentOffset;
+      const wordEnd = Math.min(seg.endSec, wordStart + wordDur - 0.03);
+      currentOffset += wordDur;
+
+      // Scale-pop animation: word pops in big, settles to normal size
+      // \t(0,100,\fscx115\fscy115) → \t(100,200,\fscx100\fscy100)
+      const popAnim = `{\\fscx100\\fscy100\\t(0,100,\\fscx115\\fscy115)\\t(100,200,\\fscx100\\fscy100)\\c&H0000E6FF&\\3c&H00000000&}`;
+      dialogEvents += `Dialogue: 0,${fmtAss(wordStart)},${fmtAss(wordEnd)},Karaoke,,0,0,0,,${popAnim}${cleanWord}\n`;
+    });
+  }
+
+  const assContent = `[Script Info]
+Title: VizhiTN Karaoke Captions
+ScriptType: v4.00+
+WrapStyle: 1
+ScaledBorderAndShadow: yes
+YCbCr Matrix: TV.709
+PlayResX: ${playResX}
+PlayResY: ${playResY}
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Karaoke,Arial Black,${fontSize},&H0000E6FF,&H0000FFFF,&H00000000,&HAA000000,-1,0,0,0,100,100,1.5,0,1,${outlineW},${shadowD},2,${marginLR},${marginLR},${marginV},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text

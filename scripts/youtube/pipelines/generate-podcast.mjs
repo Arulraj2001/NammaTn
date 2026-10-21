@@ -216,6 +216,11 @@ async function main() {
       });
 
       totalDurationSec += turnResult.durationSec;
+
+      // Inter-turn cool-down to prevent cloud runner IP rate-limiting
+      if (j < turns.length - 1 || i < acts.length - 1) {
+        await new Promise(r => setTimeout(r, 1200));
+      }
     }
   }
 

@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync, execFileSync } from 'child_process';
 import { YOUTUBE_CONFIG } from '../config.mjs';
-import { normalizeAcronymsToSpokenTamil, splitIntoSpokenClauses } from './tamil-phonetics.mjs';
+import { normalizeAcronymsToSpokenTamil, splitIntoSpokenClauses, addUrgencyPauses } from './tamil-phonetics.mjs';
 import { getFfmpegBinaryPath } from './video-composer.mjs';
 
 // ── Detect Python edge-tts CLI ────────────────────────────────────────────────
@@ -115,6 +115,11 @@ export async function synthesizeSpeech(input, outputFilePath, options = {}) {
   }
 
   if (clauses.length === 0) throw new Error('[TTS] No valid clauses provided for synthesis');
+
+  // Apply urgency pause markers to every clause before synthesis
+  // Inserts strategic commas/exclamations that edge-tts interprets as stress cues
+  const mode = options.mode || 'short';
+  clauses = clauses.map(c => addUrgencyPauses(c, mode));
 
   console.log(`[TTS ENGINE] Sliced narration into ${clauses.length} micro-chunks for glitch-free delivery.`);
 

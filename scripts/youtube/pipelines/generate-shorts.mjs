@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { YOUTUBE_CONFIG } from '../config.mjs';
-import { normalizeAcronymsToSpokenTamil } from '../engine/tamil-phonetics.mjs';
+import { normalizeAcronymsToSpokenTamil, splitIntoSpokenClauses } from '../engine/tamil-phonetics.mjs';
 import { generateVideoMetadata, getCategoryFluxPrompt, generateArtDirectedVisualPrompt } from '../engine/script-writer.mjs';
 import { synthesizeSpeech } from '../engine/tts-engine.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
@@ -18,7 +18,7 @@ import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { generateShortsThumbnail, generateShortsThumbnailPair } from '../engine/thumbnail-shorts-engine.mjs';
 import { generateSeoVideoFilename } from '../engine/seo-filename.mjs';
 import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
-import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
+import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile, generateKaraokeCaptions } from '../engine/captions-engine.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
 import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
 import { getScheduledUploadForSlot, getTodayIst } from '../engine/calendar-reader.mjs';
@@ -61,6 +61,68 @@ function getCategoryTheme(slug) {
   return CATEGORY_THEME[slug] || CATEGORY_THEME['general'];
 }
 
+/**
+ * Generates unique AI-written 3-beat Tamil script for each Short via Gemini.
+ * Falls back to hardcoded template strings if API is unavailable.
+ */
+async function generateAIShortScript({ title, area, category, helplineVoice, assigned_department, location_text, content_ta }) {
+  const apiKey = process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const { GoogleGenAI } = await import('@google/genai');
+    const ai = new GoogleGenAI({ apiKey });
+
+    const prompt = `நீ VizhiTN என்ற தமிழ்நாடு குடிமை செய்தி ஊடகத்திற்கான YouTube Shorts scriptwriter.
+தமிழ்நாடு மக்களுக்கான அதிவேக 16-18 வினாடி Viral Civic Short script எழுது.
+
+தகவல்கள்:
+தலைப்பு: "${title}"
+பகுதி: ${area}
+வகை: ${category}
+துறை: ${assigned_department || 'தமிழ்நாடு அரசு'}
+ஸ்தலம்: ${location_text || area}
+உள்ளடக்கம்: ${content_ta || title}
+ஹெல்ப்லைன்: ${helplineVoice}
+
+★ VizhiTN 8-Rule Script Constitution (Strict Enforcement):
+1. Lead with Specificity (Beat 1 Hook): முதல் 3-4 வார்த்தைகளில் என்ன பாதிப்பு (தண்ணி மோட்டார் ஓடாது / கரண்ட் இருக்காது / பஸ் வராது / டிராபிக்ல மாட்டுவீங்க) என்று தொடங்கி "— ஏன்னு தெரியுமா?" என்று கேள்வியோடு முடி. "உடனே உஷாரா இருங்க" போன்ற generic வார்த்தைகள் முற்றிலும் தடை!
+2. One Fact Per Beat (Beat 2 Ground Reality): எங்கு (பகுதி) என்று மட்டும் சொல். நேரம்/மணியை வாயால் பேசாதே (நேரம் திரையில் கார்டில் காண்பிக்கப்படும்). 1 மூச்சில் சொல்லக்கூடிய 1 சிறிய வாக்கியம் மட்டுமே.
+3. Brand CTA & Helpline (Beat 3 Ending): உதவி எண்ணை சொல்லி, 'தினசரி அரசு எச்சரிக்கைகளுக்கு இப்பவே VizhiTN-ஐ Follow & Subscribe பண்ணுங்க!' என்று கட்டாயமாக சொல்லி, பின் 'அடுத்த செய்தி உங்க ஏரியாவான்னு தெரிஞ்சுக்க வேணுமா—' என்ற கேள்வியோடு முடி. (முக்கியம்: 'VizhiTN-ஐ Follow பண்ணுங்க மற்றும் Subscribe' என்ற வார்த்தைகள் விடுபடவே கூடாது!)
+4. Write for the Ear: குறுகிய, எளிய பேச்சுத் தமிழ் (Colloquial Tamil).
+5. நீளம்: Beat 1 (7-9 வார்த்தைகள்), Beat 2 (8-10 வார்த்தைகள்), Beat 3 (12-16 வார்த்தைகள்: உதவி எண் + VizhiTN Follow & Subscribe + கேள்வி).
+
+JSON மட்டும் திரும்ப அனுப்பு:
+{"beat1": "...", "beat2": "...", "beat3": "..."}`.trim();
+
+    // Try candidate models in reliability order
+    const CANDIDATES = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
+    let raw = '';
+
+    for (const model of CANDIDATES) {
+      try {
+        const result = await ai.models.generateContent({
+          model,
+          contents: prompt,
+          generationConfig: { responseMimeType: 'application/json', temperature: 0.7, maxOutputTokens: 512 }
+        });
+        raw = result.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (raw) break;
+      } catch (modelErr) {
+        console.warn(`[AI SCRIPT] Model ${model} failed: ${modelErr.message.slice(0, 60)}`);
+      }
+    }
+    const parsed = JSON.parse(raw.trim());
+    if (parsed.beat1 && parsed.beat2 && parsed.beat3) {
+      console.log('[AI SCRIPT] Unique Gemini-written 3-beat script generated.');
+      return parsed;
+    }
+  } catch (err) {
+    console.warn(`[AI SCRIPT WARN] Gemini script failed — using template fallback: ${err.message}`);
+  }
+  return null;
+}
+
 async function main() {
   console.log('====================================================');
   console.log('VizhiTN — Daily Civic Alert Short (Hook → Truth → Power)');
@@ -72,8 +134,8 @@ async function main() {
 
   const todayIst = getTodayIst();
 
-  // Deduplication Guard: Never upload duplicate short for today's slot unless forced
-  if (!process.argv.includes('--force')) {
+  // Deduplication Guard: Never upload duplicate short for today's slot unless forced (bypassed in dry-run)
+  if (!process.argv.includes('--force') && !isDryRun) {
     const status = await isBroadcastCompletedToday('civic-shorts', todayIst);
     if (status.published) {
       console.log(`[DEDUP GUARD ✓] Daily Civic Short already broadcast today (${status.existingRecord?.youtube_video_id || 'recorded'}). Exiting.`);
@@ -152,35 +214,50 @@ async function main() {
   const now = new Date();
   const dateStr = now.toLocaleDateString('ta-IN', { day: 'numeric', month: 'short' });
 
-  // ─── 2. SCRIPT — 3-Beat Dynamic Visual Progression ────────────────────────
-  let curiosityHook = '';
+  // ─── 2. SCRIPT — AI-written unique 3-beat (Gemini-first, template-fallback) ──
+  const aiScript = await generateAIShortScript({
+    title: rawTitle,
+    area,
+    category,
+    helplineVoice,
+    assigned_department: leadPost.assigned_department,
+    location_text: leadPost.location_text,
+    content_ta: leadPost.content_ta
+  });
+
+  // Fallback template hooks — used only when Gemini API is unavailable
+  // Rotating CTA loop bank (Ambiguous, stands alone if swiped, loops cleanly if replayed)
+  const ROTATING_LOOP_CTAS = [
+    `உங்க ஏரியாவிலும் இது மாதிரி நடக்குதான்னு உடனே தெரிஞ்சுக்க வேணுமா—`,
+    `பக்கத்து வீட்டுக்காரங்களுக்கு முன்னாடியே இந்த தகவல் தெரியணுமா—`,
+    `அடுத்த முக்கியமான கள நிலவரத்தை மிஸ் பண்ணாம தெரிஞ்சுக்க வேணுமா—`,
+    `தமிழ்நாட்டின் உண்மை கள நிலவரங்களை உடனே தெரிஞ்சுக்க ஆசையா—`
+  ];
+  const chosenLoopCTA = ROTATING_LOOP_CTAS[Math.floor(Date.now() / 86400000) % ROTATING_LOOP_CTAS.length];
+
+  // Specific tangible stake per category (Rule 1: Specificity beats generic urgency)
+  let stakeHook = '';
   if (category === 'electricity') {
-    curiosityHook = `உங்க ஏரியாவில இன்னைக்கு திடீர்னு கரண்ட் கட் ஆக போகுதா? இந்த லிஸ்ட்ல உங்க தெரு இருக்கான்னு உடனே செக் பண்ணுங்க:`;
+    stakeHook = `இன்னைக்கு ${area}-ல தண்ணி மோட்டார் ஓடாது — ஏன்னு தெரியுமா?`;
   } else if (category === 'water-sanitation') {
-    curiosityHook = `குடிநீர் விநியோகத்தில் அவசர மாற்றம்! மக்கள் கவனத்திற்கு:`;
+    stakeHook = `நாளைக்கு காலைல உங்க வீட்டு ஓவர்ஹெட் டேங்க் காலியாகிடும் — ஏன் தெரியுமா?`;
   } else if (category === 'transport') {
-    curiosityHook = `இன்னைக்கு இந்த வழித்தடத்தில் கிளம்புறவங்க உடனே கவனியுங்கள்!`;
+    stakeHook = `இன்னைக்கு இந்த ரூட்ல போனா அரை மணி நேரம் டிராபிக்ல மாட்டுவீங்க — ஏன்னு தெரியுமா?`;
   } else if (category === 'public-safety') {
-    curiosityHook = `இந்த புது விதமான மோசடியில் பணம் போயிடாம உடனே உஷாரா இருங்க!`;
-  } else if (category === 'government-schemes') {
-    curiosityHook = `ரேஷன் கார்டு மற்றும் அரசு திட்டங்களில் இந்த புது ரூல்ஸ் உங்களுக்கு தெரியுமா?`;
+    stakeHook = `போனுக்கு வர்ற இந்த போலி மெசேஜை நம்பி பணத்தை விட்றாதீங்க — ஏன்னா...`;
   } else {
-    curiosityHook = `${area} மக்கள் உடனே கவனியுங்கள்! உங்கள் பகுதியில் நேரடி கள அறிவிப்பு:`;
+    stakeHook = `இன்னைக்கு ${area}-ல ஒரு முக்கியமான சேவை முடங்கப்போகுது — ஏன்னு தெரியுமா?`;
   }
 
-  const scene1Script = [
-    `${curiosityHook} ${spokenTitle}.`
-  ];
+  const fallbackGround = leadPost.location_text
+    ? `பராமரிப்பு பணி காரணமா ${leadPost.location_text} பகுதியில மின்சாரம் நிறுத்தப்படுது.`
+    : `பராமரிப்பு பணி காரணமா ${area} சுற்றுவட்டார பகுதியில மின்சாரம் நிறுத்தப்படுது.`;
 
-  const groundDetails = leadPost.location_text ? `பாதிக்கப்பட்ட பகுதிகள்: ${leadPost.location_text}.` : '';
-  const scene2Script = [
-    `${area} கள நிலவரம்: ${spokenTitle}. ${groundDetails} அதிகாரிகள் துரித ஆய்வு மேற்கொண்டு வருகிறார்கள்.`
-  ];
+  const fallbackCTA = `${helplineVoice}-ஐ அழையுங்க. தினசரி அரசு எச்சரிக்கைகளுக்கு இப்பவே VizhiTN-ஐ Follow & Subscribe பண்ணுங்க! ${chosenLoopCTA}`;
 
-  const scene3Script = [
-    `உடனடி உதவி மற்றும் புகார்களுக்கு ${helplineVoice}-ஐ அழைக்கவும்.`,
-    `தமிழ்நாட்டின் அன்றாட அரசு எச்சரிக்கைகள் மற்றும் கள நிலவரங்களை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணுங்க!`
-  ];
+  const scene1Script = splitIntoSpokenClauses(aiScript?.beat1 || stakeHook, 4);
+  const scene2Script = splitIntoSpokenClauses(aiScript?.beat2 || fallbackGround, 4);
+  const scene3Script = splitIntoSpokenClauses(aiScript?.beat3 || fallbackCTA, 4);
 
   const isPublishLatest = process.argv.includes('--publish-latest');
   const seoFilename = generateSeoVideoFilename({
@@ -207,18 +284,36 @@ async function main() {
     // ─── 3. Synthesize Audio for 3 beats ─────────────────────────────────
     console.log('[TTS] Synthesizing Beat 1 — The Hook...');
     s1AudioPath = path.join(outDir, `short_s1_audio_${Date.now()}.mp3`);
-    await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+5%' });
+    const s1Tts = await synthesizeSpeech(scene1Script, s1AudioPath, {
+      voice: YOUTUBE_CONFIG.voices.tamilFemale,
+      rate: YOUTUBE_CONFIG.voices.shortsRate,
+      pitch: YOUTUBE_CONFIG.voices.shortsPitch,
+      mode: 'short'
+    });
     const s1Dur = getAudioDuration(s1AudioPath);
+    const s1TimedSegs = s1Tts.timedSegments || [];
 
     console.log('[TTS] Synthesizing Beat 2 — Ground Reality...');
     s2AudioPath = path.join(outDir, `short_s2_audio_${Date.now()}.mp3`);
-    await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+    const s2Tts = await synthesizeSpeech(scene2Script, s2AudioPath, {
+      voice: YOUTUBE_CONFIG.voices.tamilFemale,
+      rate: YOUTUBE_CONFIG.voices.shortsRate,
+      pitch: YOUTUBE_CONFIG.voices.shortsPitch,
+      mode: 'short'
+    });
     const s2Dur = getAudioDuration(s2AudioPath);
+    const s2TimedSegs = s2Tts.timedSegments || [];
 
     console.log('[TTS] Synthesizing Beat 3 — Helpline Action...');
     s3AudioPath = path.join(outDir, `short_s3_audio_${Date.now()}.mp3`);
-    await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+    const s3Tts = await synthesizeSpeech(scene3Script, s3AudioPath, {
+      voice: YOUTUBE_CONFIG.voices.tamilFemale,
+      rate: YOUTUBE_CONFIG.voices.shortsRate,
+      pitch: YOUTUBE_CONFIG.voices.shortsPitch,
+      mode: 'short'
+    });
     const s3Dur = getAudioDuration(s3AudioPath);
+    const s3TimedSegs = s3Tts.timedSegments || [];
 
     const totalDur = s1Dur + s2Dur + s3Dur;
     console.log(`[AUDIO] S1: ${s1Dur.toFixed(1)}s | S2: ${s2Dur.toFixed(1)}s | S3: ${s3Dur.toFixed(1)}s | Total: ${totalDur.toFixed(1)}s`);
@@ -267,9 +362,11 @@ async function main() {
     const brandLogoDataUri = getBrandLogoDataUri();
 
     // Beat 1: Hook Frame (Wide Ground Reality with Obsidian Breaking News Card)
+    const fontsDir = path.resolve('public/fonts').replace(/\\/g, '/');
     const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
     let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
     tplS1 = tplS1
+      .replace('{{FONTS_DIR}}', fontsDir)
       .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
       .replace('{{SCENE_PHOTO_SRC}}', toImageSource(photoS1Url))
       .replaceAll('{{HOOK_HEADLINE_TA}}', rawTitle)
@@ -287,7 +384,12 @@ async function main() {
     // Beat 2: Ground Reality Close-Up Evidence Plate
     const tplS2Path = path.resolve('scripts/youtube/templates/shorts/scene-broll-overlay.html');
     let tplS2 = fs.readFileSync(tplS2Path, 'utf-8');
+    // Extract visual timing text (hours strictly shown on card, not spoken twice)
+    const timingMatch = (leadPost.content_ta || leadPost.title_ta || '').match(/(\d{1,2}(?::\d{2})?\s*(?:AM|PM|காலை|மதியம்|முதல்)?\s*[-–toமுதல்]\s*\d{1,2}(?::\d{2})?\s*(?:AM|PM|மணி)?)/i);
+    const timingText = timingMatch ? timingMatch[0] : 'காலை 9:00 முதல் மதியம் 2:00 வரை';
+
     tplS2 = tplS2
+      .replace('{{FONTS_DIR}}', fontsDir)
       .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
       .replace('{{SCENE_PHOTO_SRC}}', toImageSource(photoS2Url))
       .replaceAll('{{LOCATION_TEXT}}', `${area} | தமிழ்நாடு`)
@@ -295,6 +397,7 @@ async function main() {
       .replaceAll('{{CATEGORY_ICON}}', theme.icon)
       .replaceAll('{{CATEGORY_LABEL}}', theme.label)
       .replaceAll('{{HEADLINE_TA}}', rawTitle)
+      .replaceAll('{{TIMING_TEXT}}', timingText)
       .replaceAll('{{SUBHEADLINE_TA}}', leadPost.content_ta || leadPost.content_en || groundDetails)
       .replaceAll('{{SOURCE_ATTRIBUTION}}', `துறை: ${leadPost.assigned_department || 'தமிழ்நாடு அரசு'}`);
 
@@ -309,6 +412,7 @@ async function main() {
       .trim();
 
     tplS3 = tplS3
+      .replaceAll('{{FONTS_DIR}}', fontsDir)
       .replaceAll('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
       .replaceAll('{{ASSIGNED_DEPT}}', assignedDept)
       .replaceAll('{{HELPLINE_NUMBER}}', helplineNumber)
@@ -319,33 +423,43 @@ async function main() {
     s3FramePath = path.join(outDir, `short_s3_frame_${Date.now()}.png`);
     renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
 
-    // ─── 7. Generate Millisecond-Accurate Subtitles ──────────────────────────
-    s1SubPath = path.join(outDir, `short_s1_sub_${Date.now()}.ass`);
-    s2SubPath = path.join(outDir, `short_s2_sub_${Date.now()}.ass`);
-    s3SubPath = path.join(outDir, `short_s3_sub_${Date.now()}.ass`);
-
-    try {
-      generateAssSubtitleFile(generateCaptionsFromClauses(scene1Script, s1Dur), s1SubPath, '9:16');
-      generateAssSubtitleFile(generateCaptionsFromClauses(scene2Script, s2Dur), s2SubPath, '9:16');
-      generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
-    } catch (subErr) {
-      console.log('[CAPTIONS WARN] Subtitle generation error:', subErr.message);
-    }
+    // ─── 7. Captions Disabled (Clean visuals, zero on-screen text clutter) ──
+    s1SubPath = null;
+    s2SubPath = null;
+    s3SubPath = null;
 
     // ─── 8. Assemble 3-Beat Multi-Scene Short with Dynamic Motion ────────────
-    const brollClip = await fetchFreeBrollClip({
-      category,
-      aspectRatio: '9:16',
-      durationSec: totalDur
-    });
-    console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
-    console.log('[COMPOSER] Assembling 3-Beat Civic Short with Ken Burns 30 FPS motion...');
+    // Fetch 3 DIFFERENT B-roll clips — one per scene (no repeating background)
+    const categoryKws = {
+      'electricity': ['power lines transmission tower', 'electrician substation work', 'emergency phone helpline call'],
+      'water-sanitation': ['water pipe street repair', 'drinking water tap flow', 'person calling helpline phone'],
+      'road-infrastructure': ['highway traffic india aerial', 'road pothole repair work', 'emergency phone call help'],
+      'transport': ['metro train station platform', 'city bus traffic street', 'person calling phone help'],
+      'public-safety': ['police car emergency lights', 'cyber security computer screen', 'emergency helpline phone'],
+      'healthcare': ['hospital corridor doctor', 'medicine pharmacy clinic', 'ambulance emergency phone'],
+      'education': ['school classroom students', 'college exam writing', 'phone helpline guidance'],
+      'agriculture': ['paddy field farmer india', 'irrigation canal water', 'farmer phone helpline'],
+      'environment': ['river lake nature clean', 'tree plantation workers', 'environmental phone report'],
+      'government-schemes': ['government office documents', 'ration card distribution queue', 'helpline phone call'],
+      'local-development': ['building construction crane', 'urban road infrastructure', 'municipal phone helpline'],
+      'general': ['indian city street crowd', 'government office public', 'emergency helpline phone call']
+    };
+    const kwSet = categoryKws[category] || categoryKws['general'];
 
-    const isRealVideoBroll = brollClip && !brollClip.includes('procedural') && fs.existsSync(brollClip) && fs.statSync(brollClip).size > 100000;
+    const [brollS1, brollS2, brollS3] = await Promise.all([
+      fetchFreeBrollClip({ category, aspectRatio: '9:16', durationSec: s1Dur, query: kwSet[0] }),
+      fetchFreeBrollClip({ category, aspectRatio: '9:16', durationSec: s2Dur, query: kwSet[1] }),
+      fetchFreeBrollClip({ category, aspectRatio: '9:16', durationSec: s3Dur, query: kwSet[2] })
+    ]);
+
+    const isValidBroll = (p) => p && !p.includes('procedural') && fs.existsSync(p) && fs.statSync(p).size > 100000;
+    console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
+    console.log('[COMPOSER] Assembling 3-Beat Civic Short (Clean Visuals — No Captions)...');
+
     const scenes = [
-      { imagePath: s1FramePath, videoPath: isRealVideoBroll ? brollClip : null, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: s1SubPath },
-      { imagePath: s2FramePath, videoPath: isRealVideoBroll ? brollClip : null, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: s2SubPath },
-      { imagePath: s3FramePath, videoPath: isRealVideoBroll ? brollClip : null, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: s3SubPath }
+      { imagePath: s1FramePath, videoPath: isValidBroll(brollS1) ? brollS1 : null, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: null },
+      { imagePath: s2FramePath, videoPath: isValidBroll(brollS2) ? brollS2 : null, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: null },
+      { imagePath: s3FramePath, videoPath: isValidBroll(brollS3) ? brollS3 : null, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: null }
     ];
 
     assembleMultiSceneShortsVideo({
@@ -387,6 +501,10 @@ async function main() {
     console.log('====================================================');
     console.log('[DRY RUN] Local generation completed successfully!');
     console.log(`Video output: ${videoOutputPath}`);
+    const contactSheet = videoOutputPath.replace(/\.mp4$/i, '_contact_sheet.png');
+    if (fs.existsSync(contactSheet)) console.log(`Contact sheet: ${contactSheet}`);
+    if (fs.existsSync(thumbnailPath)) console.log(`Thumbnail A: ${thumbnailPath}`);
+    if (fs.existsSync(thumbnailBPath)) console.log(`Thumbnail B: ${thumbnailBPath}`);
     console.log('[DRY RUN] Skipped YouTube upload & Meta cross-post.');
     console.log('====================================================');
     return;

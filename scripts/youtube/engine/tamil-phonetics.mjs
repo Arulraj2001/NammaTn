@@ -97,7 +97,9 @@ export function normalizeAcronymsToSpokenTamil(text) {
     { regex: /\bPortal\b/gi, replacement: 'portal' },
     { regex: /\bWebsite\b/gi, replacement: 'website' },
     { regex: /\bHelpline\b/gi, replacement: 'helpline' },
-    { regex: /\bvizhitn\.in\b/gi, replacement: 'விழி டிஎன் டாட் இன்' }
+    { regex: /\bvizhitn\.in\b/gi, replacement: 'விழி டிஎன் டாட் இன்' },
+    { regex: /VizhiTN-ஐ|VizhiTN-யை/gi, replacement: 'விழி டிஎன்-ஐ' },
+    { regex: /\bVizhiTN\b/gi, replacement: 'விழி டிஎன்' }
   ];
 
   let result = text;
@@ -113,12 +115,18 @@ export function normalizeAcronymsToSpokenTamil(text) {
 }
 
 /**
- * Splits text into 3 to 6-second spoken clauses based on natural breath and punctuation pauses
+ * Splits text into 2 to 4-word spoken micro-clauses based on punctuation and natural breathing pauses.
+ * Essential for millisecond-accurate audio/caption synchronization.
+ *
+ * @param {string} text - Raw narration text
+ * @param {number} [maxWords=4] - Max words per audio micro-chunk
+ * @returns {string[]} Array of short clauses
  */
-export function splitIntoSpokenClauses(text) {
+export function splitIntoSpokenClauses(text, maxWords = 4) {
   if (!text) return [];
   const clean = text.replace(/\s+/g, ' ').trim();
-  const rawSegments = clean.split(/(?<=[.!?।])\s+|(?<=[,;])\s+/);
+  // Split on punctuation (. ! ? , ; : ... or danda)
+  const rawSegments = clean.split(/(?<=[.!?।,\;:\-])\s+|(?<=\.\.\.)\s+/);
 
   const clauses = [];
   let current = '';
@@ -127,9 +135,23 @@ export function splitIntoSpokenClauses(text) {
     const trimmed = seg.trim();
     if (!trimmed) continue;
 
-    const wordCount = (current + ' ' + trimmed).trim().split(/\s+/).length;
-    if (wordCount <= 12) {
-      current = current ? `${current} ${trimmed}` : trimmed;
+    const words = trimmed.split(/\s+/).filter(Boolean);
+    // If this segment has more than maxWords, break it into maxWords chunks
+    if (words.length > maxWords) {
+      if (current) {
+        clauses.push(current);
+        current = '';
+      }
+      for (let i = 0; i < words.length; i += maxWords) {
+        clauses.push(words.slice(i, i + maxWords).join(' '));
+      }
+      continue;
+    }
+
+    const combined = (current + ' ' + trimmed).trim();
+    const wordCount = combined.split(/\s+/).length;
+    if (wordCount <= maxWords) {
+      current = combined;
     } else {
       if (current) clauses.push(current);
       current = trimmed;
@@ -137,7 +159,7 @@ export function splitIntoSpokenClauses(text) {
   }
 
   if (current) clauses.push(current);
-  return clauses;
+  return clauses.map(c => c.trim()).filter(Boolean);
 }
 
 /**
@@ -276,3 +298,196 @@ export function createConversationalShortsScript(posts, districtName = 'தம�
 
   return parts;
 }
+
+/**
+ * Adds natural urgency rhythm to Tamil TTS text.
+ * edge-tts doesn't support full SSML but responds to:
+ * - Commas → short pause (~200ms)
+ * - Ellipsis → longer pause (~500ms)
+ * - Exclamation → rising pitch hint
+ * This function inserts strategic commas and punctuation around
+ * high-urgency Tamil civic words so the voice slows and stresses them.
+ *
+ * @param {string} text - Tamil narration text
+ * @param {'short'|'long'} [mode='short'] - 'short' for Shorts (more punchy), 'long' for documentary
+ * @returns {string} Text with urgency rhythm markers
+ */
+export function addUrgencyPauses(text, mode = 'short') {
+  if (!text) return '';
+
+  // Words that should be preceded by a micro-pause for stress effect
+  const urgencyWords = [
+    // High-alert civic words
+    'அவசரம்', 'அவசர', 'எச்சரிக்கை', 'கவனம்', 'கவனியுங்கள்',
+    'உடனடியாக', 'உடனே', 'உஷார்', 'உஷாரா',
+    // Action words
+    'அழைக்கவும்', 'செய்யுங்கள்', 'பண்ணுங்க', 'பதிவு',
+    // Status words
+    'நிறுத்தம்', 'தடை', 'மாற்றம்', 'சேதம்', 'கோளாறு',
+    // Helpline triggers
+    '1912', '1913', '1930', '1100', '1070', '1077', '103',
+  ];
+
+  let result = text;
+
+  // Insert a comma-pause before urgency words (edge-tts treats commas as ~200ms pause)
+  for (const word of urgencyWords) {
+    // Only add comma if not already preceded by punctuation
+    const pattern = new RegExp(`([^,\\.!?\\s])\\s+(${word})`, 'g');
+    result = result.replace(pattern, `$1, $2`);
+  }
+
+  if (mode === 'short') {
+    // For Shorts: add exclamation stress after key action phrases
+    result = result
+      .replace(/கவனியுங்கள்([^!])/g, 'கவனியுங்கள்!$1')
+      .replace(/உஷாரா இருங்க([^!])/g, 'உஷாரா இருங்க!$1')
+      .replace(/உடனே செக் பண்ணுங்க([^!])/g, 'உடனே செக் பண்ணுங்க!$1');
+  }
+
+  return result;
+}
+
+// ── Tamil to High-Retention Tanglish Caption Converter ────────────────────────
+
+const TANGLISH_VOWELS = {
+  '\u0B85': 'A', '\u0B86': 'AA', '\u0B87': 'I', '\u0B88': 'EE',
+  '\u0B89': 'U', '\u0B8A': 'OO', '\u0B8E': 'E', '\u0B8F': 'AE',
+  '\u0B90': 'AI', '\u0B92': 'O', '\u0B93': 'OA', '\u0B94': 'AU',
+  '\u0B83': 'K'
+};
+
+const TANGLISH_CONSONANTS = {
+  '\u0B95': 'K', '\u0B99': 'NG', '\u0B9A': 'S', '\u0B9E': 'NJ',
+  '\u0B9F': 'T', '\u0BA3': 'N', '\u0BA4': 'TH', '\u0BA8': 'N',
+  '\u0BA9': 'N', '\u0BAA': 'P', '\u0BAE': 'M', '\u0BAF': 'Y',
+  '\u0BB0': 'R', '\u0BB1': 'R', '\u0BB2': 'L', '\u0BB3': 'L',
+  '\u0BB4': 'ZH', '\u0BB5': 'V', '\u0B9C': 'J', '\u0BB7': 'SH',
+  '\u0BB8': 'S', '\u0BB9': 'H'
+};
+
+const TANGLISH_SIGNS = {
+  '\u0BBE': 'AA', '\u0BBF': 'I', '\u0BC0': 'EE', '\u0BC1': 'U',
+  '\u0BC2': 'OO', '\u0BC6': 'E', '\u0BC7': 'E', '\u0BC8': 'AI',
+  '\u0BCA': 'O', '\u0BCB': 'O', '\u0BCC': 'AU'
+};
+
+const TANGLISH_VIRAMA = '\u0BCD';
+
+const TANGLISH_DICTIONARY = [
+  // Civic & Utilities
+  [/EB\s*மின்வாரியம்|மின்வாரியம்/gi, 'EB'],
+  [/மின்தடை|பவர்\s*கட்|கரண்ட்\s*கட்/gi, 'POWER CUT'],
+  [/மின்சார\s*புகார்களுக்கு/gi, 'POWER COMPLAINTS-KU'],
+  [/மின்சார|மின்சாரம்/gi, 'POWER'],
+  [/மின்னகம்/gi, 'MINNALAGAM'],
+  [/உதவி\s*எண்/gi, 'HELPLINE'],
+  [/உதவி\s*மையம்/gi, 'HELPLINE'],
+  [/உதவி/gi, 'HELP'],
+  [/புகார்களுக்கு/gi, 'COMPLAINTS-KU'],
+  [/புகார்/gi, 'COMPLAINT'],
+  [/அரசு\s*திட்டம்/gi, 'GOVT SCHEME'],
+  [/குடிநீர்/gi, 'DRINKING WATER'],
+  [/சாலை/gi, 'ROAD'],
+  [/போக்குவரத்து/gi, 'TRAFFIC'],
+  [/காவல்துறை/gi, 'POLICE'],
+  [/ஆணையம்/gi, 'COMMISSION'],
+  [/மாநகராட்சி/gi, 'CORPORATION'],
+  [/நகராட்சி/gi, 'MUNICIPALITY'],
+
+  // Locations
+  [/திருச்சியில/gi, 'TRICHY-LA'],
+  [/திருச்சி/gi, 'TRICHY'],
+  [/சென்னையில/gi, 'CHENNAI-LA'],
+  [/சென்னை/gi, 'CHENNAI'],
+  [/கோவையில/gi, 'COIMBATORE-LA'],
+  [/கோயம்புத்தூர்|கோவை/gi, 'COIMBATORE'],
+  [/மதுரையில/gi, 'MADURAI-LA'],
+  [/மதுரை/gi, 'MADURAI'],
+  [/சேலத்துல/gi, 'SALEM-LA'],
+  [/சேலம்/gi, 'SALEM'],
+  [/தமிழ்நாடு/gi, 'TAMIL NADU'],
+
+  // Spoken Vocabulary & Connectors
+  [/இருக்கீங்களா/gi, 'IRUKKEENGALA?'],
+  [/தெரியுமா/gi, 'THERIYUMA?'],
+  [/இன்னைக்கு/gi, 'INNAIKU'],
+  [/இன்று/gi, 'INNAIKU'],
+  [/நாளைக்கு/gi, 'NAALAIKU'],
+  [/நாளை/gi, 'NAALAI'],
+  [/நேற்று/gi, 'NETHIKU'],
+  [/பகுதிகளில்/gi, 'AREAS-LA'],
+  [/பகுதிகள்/gi, 'AREAS'],
+  [/பகுதி/gi, 'AREA'],
+  [/ஏரியாவுல|ஏரியாவில்/gi, 'AREA-LA'],
+  [/ஆகப்போகுது/gi, 'AAGA POGUDHU'],
+  [/செய்யப்படுவதாக/gi, 'SEYYAPPADUVADHAGA'],
+  [/அறிவித்துள்ளது/gi, 'ANNOUNCED'],
+  [/அறிவிப்பு/gi, 'ALERT'],
+  [/தொடர்பு\s*கொள்ளுங்க/gi, 'CONTACT PANNUMGA'],
+  [/தொடர்பு/gi, 'CONTACT'],
+  [/தகவல்களுக்கு/gi, 'UPDATES-KU'],
+  [/தகவல்/gi, 'INFO'],
+  [/கவனியுங்கள்/gi, 'NOTICE PANNUMGA'],
+  [/கவனம்/gi, 'BE ALERT'],
+  [/உடனே/gi, 'UDANE'],
+  [/பண்ணுங்க/gi, 'PANNUMGA'],
+  [/பாருங்க/gi, 'PAARUNGA'],
+  [/கேளுங்க/gi, 'KAELUNGA'],
+  [/போன்ற/gi, 'PONRA'],
+  [/அதன்/gi, 'ADHAN'],
+  [/மற்றும்/gi, 'MATTRUM'],
+  [/அருகாமை/gi, 'NEARBY'],
+  [/மக்கள்/gi, 'MAKKAL'],
+  [/உங்கள்/gi, 'UNGA'],
+  [/உங்க/gi, 'UNGA']
+];
+
+/**
+ * Converts Tamil script to punchy, conversational Tanglish in English Latin characters.
+ * Perfect for high-engagement mobile video captions (Shorts, Reels, TikTok, YouTube).
+ *
+ * @param {string} text - Raw spoken Tamil text
+ * @returns {string} Clean uppercase Tanglish caption text
+ */
+export function toTanglish(text) {
+  if (!text) return '';
+  let str = String(text);
+
+  // 1. High-retention conversational civic dictionary
+  for (const [regex, rep] of TANGLISH_DICTIONARY) {
+    str = str.replace(regex, rep);
+  }
+
+  // 2. Transliterate remaining Tamil syllables to English letters
+  let out = '';
+  const chars = Array.from(str);
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+    if (TANGLISH_VOWELS[ch]) {
+      out += TANGLISH_VOWELS[ch];
+    } else if (TANGLISH_CONSONANTS[ch]) {
+      const next = chars[i + 1];
+      if (next === TANGLISH_VIRAMA) {
+        out += TANGLISH_CONSONANTS[ch];
+        i++; // skip virama
+      } else if (TANGLISH_SIGNS[next]) {
+        out += TANGLISH_CONSONANTS[ch] + TANGLISH_SIGNS[next];
+        i++; // skip sign
+      } else {
+        out += TANGLISH_CONSONANTS[ch] + 'A';
+      }
+    } else if (ch !== TANGLISH_VIRAMA && !TANGLISH_SIGNS[ch]) {
+      out += ch;
+    }
+  }
+
+  // 3. Post clean-ups: remove grammatical suffix artifacts, uppercase
+  return out
+    .replace(/-ஐ\b|-AI\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toUpperCase();
+}
+
+
