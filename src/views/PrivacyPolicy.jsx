@@ -46,16 +46,7 @@ const PRIVACY_CHAPTERS = [
       "குக்கீகள்: நீங்கள் பாதுகாப்பாக உள்நுழைந்திருக்கவும், உங்கள் மொழி விருப்பத்தை (ஆங்கிலம்/தமிழ்) நினைவில் கொள்ளவும் பயன்படும் குக்கீகள்."
     ]
   },
-  {
-    id: "bribe-anonymity",
-    icon: Lock,
-    en: "3. Absolute Anonymity: Bribe Tracker & Whistleblower Data",
-    ta: "3. முழுமையான ரகசியம்: லஞ்சக் கண்காணிப்பு & விசில்ப்ளோவர் பாதுகாப்பு",
-    summary_en: "Bribe Tracker reports are strictly anonymous for statistical public audit. No names, phone numbers, or IP records are linked to bribe audits.",
-    summary_ta: "லஞ்சக் கண்காணிப்புப் பதிவுகள் முற்றிலும் அநாமதேயமானவை. பெயர், எண் அல்லது ஐபி முகவரி எக்காரணம் கொண்டும் லஞ்சப் புகார்களுடன் இணைக்கப்படாது.",
-    content_en: "The VizhiTN Bribe Tracker (/bribe-tracker) is designed strictly to create regional statistical transparency indexes regarding government department demands (e.g., Revenue, RTO, TANGEDCO, Registration). When you log a bribe demand, our database strictly separates the submission from your account session. We do not store or display your name, phone number, or network IP address on bribe audit records. Individual officers are not named or defamed; data is compiled solely at departmental and regional levels.",
-    content_ta: "VizhiTN லஞ்சக் கண்காணிப்பு தளம் அரசுத் துறைகளின் (வருவாய், RTO, மின்வாரியம், பத்திரப்பதிவு) வெளிப்படைத்தன்மை குறியீட்டை உருவாக்குவதற்காக மட்டுமே வடிவமைக்கப்பட்டுள்ளது. லஞ்சக் கோரிக்கையை நீங்கள் பதிவிடும் போது, உங்கள் கணக்குடன் அது இணைக்கப்படாமல் முற்றிலும் தனித்து சேமிக்கப்படுகிறது. பெயர், தொலைபேசி எண், ஐபி முகவரி எதுவும் சேமிக்கப்படுவதில்லை."
-  },
+
   {
     id: "emergency-sos-data",
     icon: AlertTriangle,
@@ -157,7 +148,7 @@ export default function PrivacyPolicy() {
 
   usePageMeta({
     title: "Privacy Policy | VizhiTN — Citizen Data Protection & DPDPA Disclosures",
-    description: "Read how VizhiTN protects citizen data, enforces zero passive GPS tracking, safeguards anonymous bribe reports, and complies with India's DPDPA 2023.",
+    description: "Read how VizhiTN protects citizen data, enforces zero passive GPS tracking, safeguards whistleblower identity, and complies with India's DPDPA 2023.",
     canonical: "https://www.vizhitn.in/privacy-policy",
   });
 
@@ -192,8 +183,8 @@ export default function PrivacyPolicy() {
 
             <p className="text-xs sm:text-base text-slate-300 leading-relaxed mb-6">
               {T(
-                "We believe civic transparency starts with absolute respect for citizen privacy. Discover our zero-passive-tracking guarantee, anonymous bribe audit safeguards, and statutory data rights across Tamil Nadu.",
-                "குடிமை வெளிப்படைத்தன்மை என்பது மக்களின் தனியுரிமையை மதிப்பதில் தொடங்குகிறது. ஜிபிஎஸ் பின்னணி கண்காணிப்பு இன்மை, லஞ்சப் புகார்களின் ரகசியத்தன்மை மற்றும் உங்கள் சட்டப்பூர்வ உரிமைகளை அறியுங்கள்."
+                "We believe civic transparency starts with absolute respect for citizen privacy. Discover our zero-passive-tracking guarantee, citizen confidentiality safeguards, and statutory data rights across Tamil Nadu.",
+                "குடிமை வெளிப்படைத்தன்மை என்பது மக்களின் தனியுரிமையை மதிப்பதில் தொடங்குகிறது. ஜிபிஎஸ் பின்னணி கண்காணிப்பு இன்மை, பொதுமக்களின் ரகசியத்தன்மை மற்றும் உங்கள் சட்டப்பூர்வ உரிமைகளை அறியுங்கள்."
               )}
             </p>
 
@@ -203,7 +194,7 @@ export default function PrivacyPolicy() {
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5 font-semibold text-blue-300">
-                <Lock className="w-4 h-4" /> {T("Anonymous Bribe Audits", "100% அநாமதேய லஞ்சப் பதிவு")}
+                <Lock className="w-4 h-4" /> {T("DPDPA 2023 Compliant", "DPDPA 2023 பாதுகாப்பு")}
               </span>
               <span>•</span>
               <span className="text-slate-400">
@@ -222,8 +213,8 @@ export default function PrivacyPolicy() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={T(
-                "Search privacy terms (e.g. GPS, cookies, bribe, delete account)...",
-                "தேடுங்கள் (குக்கீகள், லஞ்சப் பதிவு, கணக்கு நீக்குதல், ஜிபிஎஸ்)..."
+                "Search privacy terms (e.g. GPS, cookies, account, security)...",
+                "தேடுங்கள் (குக்கீகள், தனியுரிமை, கணக்கு நீக்குதல், ஜிபிஎஸ்)..."
               )}
               className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-white"
             />

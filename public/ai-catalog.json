@@ -13,13 +13,6 @@
       "type": "dataset"
     },
     {
-      "id": "mla-tracker",
-      "name": "17th Legislative Assembly Tracker",
-      "description": "Sitting MLAs, district representatives, and political developments for the 2026-2031 term.",
-      "url": "https://www.vizhitn.in/tn-politics",
-      "type": "directory"
-    },
-    {
       "id": "tn-today",
       "name": "TN Today Editorial Articles",
       "description": "Daily verified news coverage of Tamil Nadu governance, state infrastructure, and welfare schemes.",

@@ -18,9 +18,8 @@ const MAIN_NAV = [
   { path: "/", en: "📍 Map", ta: "📍 வரைபடம்" },
   { path: "/explore", en: "⚡ Live Feed", ta: "⚡ நேரடி ஊட்டம்" },
   { path: "/tn-today", en: "📰 TN Today", ta: "📰 TN Today" },
-  { path: "/tn-politics", en: "🗳️ TN Politics", ta: "🗳️ அரசியல்" },
+  { path: "/power-cuts-today-tamil-nadu", en: "⚡ Power Cuts", ta: "⚡ மின்தடை" },
   { path: "/trending", en: "🔥 Trending", ta: "🔥 டிரெண்டிங்" },
-  { path: "/bribes", en: "🚨 Bribe Log", ta: "🚨 லஞ்சப் பதிவு" },
 ];
 
 
@@ -29,13 +28,10 @@ const MEGA_COLUMNS = [
     en_title: "Alerts & Live",
     ta_title: "எச்சரிக்கைகள் & நேரலை",
     items: [
-      { path: "/tn-politics/today", icon: Clock, en: "Today's Govt Digest", ta: "இன்றைய அரசு அறிக்கை", desc_en: "Daily 7 PM G.O.s & cabinet actions", desc_ta: "தினசரி 7 மணி அரசாணைகள் & முடிவுகள்" },
-      { path: "/tn-politics/cm-vijay", icon: Building2, en: "CM Vijay Tracker", ta: "முதல்வர் விஜய் கண்காணிப்பு", desc_en: "Schemes & administration", desc_ta: "திட்டங்கள் & அரசு சாதனைகள்" },
       { path: "/power-cuts-today-tamil-nadu", icon: Zap, en: "Power Cuts Today", ta: "இன்றைய மின்தடை", desc_en: "Live TANGEDCO power cuts", desc_ta: "நேரடி மின் தடை தகவல்கள்" },
       { path: "/school-college-holiday-alerts", icon: AlertTriangle, en: "Holiday Alerts", ta: "பள்ளி விடுமுறை", desc_en: "Rain & Collector orders", desc_ta: "ஆட்சியர் விடுமுறை அறிவிப்புகள்" },
       { path: "/situations", icon: Zap, en: "Live Situations", ta: "நேரடி நிலைமைகள்", desc_en: "Real-time alerts & updates", desc_ta: "நேரடி பகுதி எச்சரிக்கைகள்" },
       { path: "/scams", icon: Shield, en: "Scam Alerts", ta: "மோசடி எச்சரிக்கை", desc_en: "Local scam & fraud alerts", desc_ta: "உள்ளூர் மோசடி எச்சரிக்கைகள்" },
-      { path: "/bribes", icon: AlertTriangle, en: "Bribe Tracker", ta: "லஞ்சப் பதிவு", desc_en: "Citizen corruption reports", desc_ta: "லஞ்சப் புகார்கள் கண்காணிப்பு" },
     ],
   },
   {

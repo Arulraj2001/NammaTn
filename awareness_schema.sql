@@ -343,14 +343,14 @@ INSERT INTO awareness_resource (id, title_en, title_ta, description_en, descript
   3
 ),
 (
-  'res-dvac', 'DVAC Anti-Corruption Helpline 1064', 'லஞ்ச ஒழிப்புத் துறை 1064',
-  'Report bribery demands or corruption by government officials confidentially to the Directorate of Vigilance.',
-  'அரசு ஊழியர்கள் லஞ்சம் கேட்டால் லஞ்ச ஒழிப்பு மற்றும் கண்காணிப்பு இயக்ககத்தில் ரகசியமாக புகார் அளிக்கவும்.',
-  'ShieldAlert', '#DC2626', 'cat-emergency',
-  '["Toll-Free Hotline 1064", "Confidential Trap Operations", "Online Complaint Submission", "Whistleblower Identity Protection"]'::jsonb,
-  '["இலவச உதவி எண் 1064", "ரகசிய பொறி நடவடிக்கை", "ஆன்லைன் புகார் சமர்ப்பிப்பு", "புகாரளிப்பவர் ரகசிய பாதுகாப்பு"]'::jsonb,
-  'Report Bribery 1064', 'லஞ்சம் புகார் செய்ய 1064', 'tel:1064', 'primary',
-  'DVAC Official Site', 'DVAC இணையதளம்', 'https://www.dvac.tn.gov.in', 'secondary',
+  'res-consumer', 'National Consumer Helpline 1915', 'தேசிய நுகர்வோர் உதவி எண் 1915',
+  'File complaints against unfair trade practices, overcharging, substandard goods, or service delays.',
+  'போலிப் பொருட்கள், கூடுதல் விலை அல்லது சேவை குறைபாடுகளுக்கு நுகர்வோர் குறைதீர்க்கும் எண்.',
+  'ShieldCheck', '#2563EB', 'cat-civic',
+  '["Toll-Free Hotline 1915", "Online Grievance on consumerhelpline.gov.in", "SMS to 8130009809", "National Consumer Court Guidance"]'::jsonb,
+  '["இலவச உதவி எண் 1915", "இணைய வழி புகார் consumerhelpline.gov.in", "8130009809 எண்ணுக்கு எஸ்எம்எஸ்", "நுகர்வோர் நீதிமன்ற வழிகாட்டுதல்"]'::jsonb,
+  'Lodge Grievance 1915', 'புகார் செய்ய 1915', 'tel:1915', 'primary',
+  'NCH Official Portal', 'நுகர்வோர் இணையதளம்', 'https://consumerhelpline.gov.in', 'secondary',
   4
 ),
 (
@@ -676,18 +676,18 @@ INSERT INTO awareness_guide (id, title_en, title_ta, problem_type_en, problem_ty
   'Zap', true, true, 3
 ),
 (
-  'guide-bribe-demand',
-  'What to do if a Government Official Demands a Bribe for a Public Service',
-  'அரசு அலுவலகத்தில் சான்றிதழ் அல்லது சேவை பெற லஞ்சம் கேட்டால் என்ன செய்ய வேண்டும்?',
-  'Anti-Corruption', 'லஞ்ச ஒழிப்பு',
-  '["Step 1: Do NOT pay the bribe amount.", "Step 2: Discretely note officer name, designation, office room number, and exact demand amount.", "Step 3: Record audio, video, or save messaging evidence if safe to do so.", "Step 4: Call DVAC Anti-Corruption Helpline 1064 or visit District Vigilance Officer at Collectorate.", "Step 5: DVAC will lay a secret trap operation with phenolphthalein-marked currency notes to arrest corrupt officer red-handed."]'::jsonb,
-  '["படி 1: எந்தக் காரணத்தைக் கொண்டும் லஞ்சப் பணம் கொடுக்காதீர்கள்.", "படி 2: அதிகாரி பெயர், பதவி, அறை எண் மற்றும் கேட்ட தொகையைக் குறித்துக் கொள்ளவும்.", "படி 3: சாத்தியமானால் ஆடியோ அல்லது வீடியோ ஆதாரங்களைப் பதிவு செய்யவும்.", "படி 4: லஞ்ச ஒழிப்புத் துறை 1064 என்ற எண்ணில் தொடர்பு கொள்ளவும்.", "படி 5: லஞ்ச ஒழிப்புத் துறையினர் ரகசியப் பொறி வைத்து லஞ்சம் வாங்கும் அதிகாரியை கையும் களவுமாக பிடிப்பார்கள்."]'::jsonb,
-  'Directorate of Vigilance and Anti-Corruption (DVAC)', 'லஞ்ச ஒழிப்பு மற்றும் கண்காணிப்பு இயக்ககம் (DVAC)',
-  '["DVAC Toll-Free Helpline: 1064", "DVAC Headquarters Chennai: 044-24615929", "VizhiTN Anonymous Bribe Tracker"]'::jsonb,
-  '["https://www.dvac.tn.gov.in"]',
-  '["e-Sevai Application Reference Number", "Officer designation details", "Audio/video or written proof"]'::jsonb,
-  '["விண்ணப்ப பதிவு எண்", "அதிகாரியின் பதவி விபரம்", "ஆடியோ/வீடியோ ஆதாரம்"]'::jsonb,
-  'ShieldAlert', true, true, 4
+  'guide-consumer-grievance',
+  'How to File a Consumer Grievance Against Defective Goods or Service Delay',
+  'குறைபாடுள்ள பொருட்கள் அல்லது சேவை தாமதத்திற்கு நுகர்வோர் புகார் அளிப்பது எப்படி?',
+  'Consumer Rights', 'நுகர்வோர் உரிமை',
+  '["Step 1: Gather bill, invoice, warranty card, and customer support ticket logs.", "Step 2: Dial National Consumer Helpline 1915 or register on consumerhelpline.gov.in.", "Step 3: Submit seller details, transaction receipt, and requested refund or replacement.", "Step 4: Receive NCH grievance docket number and track mediation within 45 days.", "Step 5: If unresolved, escalate to District Consumer Disputes Redressal Commission via e-Daakhil portal."]'::jsonb,
+  '["படி 1: ரசீது, வாரண்டி அட்டை மற்றும் முந்தைய புகார் எண்களை சேகரிக்கவும்.", "படி 2: தேசிய நுகர்வோர் உதவி எண் 1915 அழைக்கவும் அல்லது consumerhelpline.gov.in தளத்தில் பதிவு செய்யவும்.", "படி 3: விற்பனையாளர் விவரம் மற்றும் கோரப்படும் இழப்பீட்டை உள்ளிடவும்.", "படி 4: புகார் பதிவு எண்ணைப் பெற்று 45 நாட்களுக்குள் தீர்வு பெறவும்.", "படி 5: தீர்வு கிடைக்காவிட்டால் e-Daakhil மூலம் மாவட்ட நுகர்வோர் நீதிமன்றத்தை அணுகவும்."]'::jsonb,
+  'Department of Consumer Affairs', 'நுகர்வோர் விவகாரங்கள் துறை',
+  '["National Consumer Helpline: 1915", "NCH WhatsApp: 88000 01915", "e-Daakhil Portal: edaakhil.nic.in"]'::jsonb,
+  '["https://consumerhelpline.gov.in"]',
+  '["Purchase Invoice / Bill copy", "Warranty Card / Service Job Sheet", "Payment Transaction ID / Bank Statement"]'::jsonb,
+  '["கொள்முதல் ரசீது நகல்", "வாரண்டி அட்டை", "வங்கி பணப்பரிவர்த்தனை ஆதாரம்"]'::jsonb,
+  'ShieldCheck', true, true, 4
 ),
 (
   'guide-cyber-fraud',
@@ -779,11 +779,11 @@ INSERT INTO awareness_faq (id, question_en, question_ta, answer_en, answer_ta, c
 ),
 (
   'faq-4',
-  'How do I report bribery or corrupt officers without facing harassment?',
-  'அச்சுறுத்தல் இன்றி அரசு லஞ்ச அதிகாரிகளை எப்படி பாதுகாப்பாக புகார் செய்வது?',
-  'You can report bribery 100% anonymously. Call the Directorate of Vigilance and Anti-Corruption (DVAC) toll-free hotline 1064 or post anonymously on VizhiTN. Never pay cash bribes. DVAC officers conduct confidential trap operations using marked currency to catch corrupt officials red-handed while protecting whistleblower identities under law.',
-  'லஞ்ச ஒழிப்புத் துறையின் (DVAC) இலவச எண் 1064 மூலம் அல்லது VizhiTN தளத்தில் அநாமதேயமாக புகார் செய்யலாம். லஞ்சப் பணம் கொடுக்காமல் ரகசியமாக புகார் அளித்தால் லஞ்ச ஒழிப்புத் துறையினர் ரகசியமாகச் செயல்பட்டு லஞ்சம் வாங்கும் அதிகாரியைக் கையும் களவுமாகப் பிடிப்பார்கள்.',
-  'Anti-Corruption', 'லஞ்ச ஒழிப்பு', 4, true
+  'How do I report scheduled or unscheduled power outages to TANGEDCO?',
+  'டான்ஜெட்கோ மின்வெட்டு குறித்து எவ்வாறு புகார் செய்வது?',
+  'You can report power cuts 24x7 by calling Minnagam helpline 1912 or sending a WhatsApp message to 94987 94987 with your 12-digit consumer number. Line workers are dispatched within 60 to 120 minutes for local feeder tripping and blown fuses.',
+  'டான்ஜெட்கோ மின்னகம் 1912 என்ற 24 மணி நேர எண்ணை அழைத்தோ அல்லது 94987 94987 வாட்ஸ்அப் எண் மூலமாகவோ உங்கள் 12 இலக்க மின் நுகர்வோர் எண்ணைக் குறிப்பிட்டு புகார் செய்யலாம். 1 முதல் 2 மணி நேரத்திற்குள் பழுது சரிசெய்யப்படும்.',
+  'Electricity & Utilities', 'மின்சாரம் & பயன்பாடுகள்', 4, true
 ),
 (
   'faq-5',
@@ -830,7 +830,7 @@ INSERT INTO awareness_emergency_contact (id, department_en, department_ta, numbe
 ('emg-5', 'Childline (Child Protection)', 'குழந்தைகள் உதவி எண்', '1098', 'For child abuse prevention, runaway children, and child labor rescue.', 'குழந்தைகள் பாதுகாப்பு, துஷ்பிரயோகம் தடுப்பு மற்றும் குழந்தை தொழிலாளர் மீட்பு.', false, null, true, 5),
 ('emg-6', 'Chief Minister Helpline', 'முதலமைச்சர் குறைதீர்க்கும் எண்', '1100', 'Toll-free single window hotline for public civic grievances and complaints.', 'பொதுமக்கள் குறைகள் மற்றும் அரசுத் துறை புகார்களுக்கான இலவச எண்.', false, null, true, 6),
 ('emg-7', 'Cyber Crime Helpline', 'சைபர் குற்றங்கள் தடுப்பு எண்', '1930', 'To report financial cyber fraud, UPI theft, and online scam account freezing.', 'ஆன்லைன் வங்கி மோசடி, UPI திருட்டு புகார்களுக்கான சைபர் க்ரைம் எண்.', false, null, true, 7),
-('emg-8', 'DVAC Anti-Corruption Hotline', 'லஞ்ச ஒழிப்புத் துறை உதவி எண்', '1064', 'To report bribery demands by government officials confidentially.', 'அரசு ஊழியர்கள் லஞ்சம் கேட்டால் ரகசியமாக புகார் செய்ய.', false, null, true, 8),
+('emg-8', 'National Consumer Helpline', 'தேசிய நுகர்வோர் உதவி எண்', '1915', 'Toll-free consumer grievance redressal for defective products and unfair trade.', 'குறைபாடுள்ள பொருட்கள் மற்றும் நுகர்வோர் குறைதீர்க்கும் இலவச எண்.', false, null, true, 8),
 ('emg-9', 'TANGEDCO Minnagam Power Cut', 'மின்சார வாரிய பழுது நீக்க எண்', '1912', '24x7 electricity breakdown, transformer failure, and fuse-of-call support.', '24x7 மின்வெட்டு, டிரான்ஸ்பார்மர் பழுது மற்றும் மின்சாரப் புகார்கள்.', false, null, true, 9),
 ('emg-10', 'Health & Medical Counseling', 'சுகாதார ஆலோசனை உதவி எண்', '104', 'Free 24x7 doctor medical advice, mental health counseling, and health queries.', '24 மணி நேர இலவச மருத்துவ ஆலோசனைகள் மற்றும் மனநல வழிகாட்டுதல்.', false, null, true, 10),
 ('emg-11', 'Disaster Management Control Room', 'பேரிடர் மேலாண்மை மையம்', '1077', 'District level flood, cyclone, and heavy rain disaster response control room.', 'மழை, வெள்ளம் மற்றும் புயல் பேரிடர் அவசரக் கட்டுப்பாட்டு மையம்.', false, null, true, 11),

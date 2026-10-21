@@ -40,7 +40,7 @@ const FILTER_CATEGORIES = [
   { id: "utilities", label_en: "Electricity & Power", label_ta: "மின்சாரம்" },
   { id: "water", label_en: "Water & Sewage", label_ta: "குடிநீர்" },
   { id: "civil_supplies", label_en: "Ration & Civil Supplies", label_ta: "ரேஷன் கடை" },
-  { id: "anti_corruption", label_en: "Anti-Bribery (DVAC)", label_ta: "லஞ்ச ஒழிப்பு" },
+  { id: "consumer", label_en: "Consumer & RTI", label_ta: "நுகர்வோர் & RTI" },
   { id: "healthcare", label_en: "Emergency & Health", label_ta: "மருத்துவ அவசரம்" },
   { id: "cyber_crime", label_en: "Cyber Crime", label_ta: "சைபர் கிரைம்" },
   { id: "property", label_en: "Property & Municipal", label_ta: "சொத்து வரி" },
@@ -93,7 +93,7 @@ export default function AwarenessGuides() {
             <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
               {T(
                 "Verified step-by-step Standard Operating Procedures (SOPs), copyable phone call scripts, official 24x7 helplines, and escalation paths for Tamil Nadu citizens.",
-                "மின் தடை, குடிநீர் தட்டுப்பாடு, ரேஷன் முறைகேடு, லஞ்சக் கோரிக்கை போன்ற அன்றாட பிரச்சினைகளுக்கு அதிகாரப்பூர்வ தீர்வு முறைகள் மற்றும் உதவி எண்கள்."
+                "மின் தடை, குடிநீர் தட்டுப்பாடு, ரேஷன் முறைகேடு போன்ற அன்றாட பிரச்சினைகளுக்கு அதிகாரப்பூர்வ தீர்வு முறைகள் மற்றும் உதவி எண்கள்."
               )}
             </p>
           </div>
@@ -107,8 +107,8 @@ export default function AwarenessGuides() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={T(
-                  "Search problems (e.g. 1912, power cut, ration, water, bribe, patta)...",
-                  "பிரச்சினைகளைத் தேடுங்கள் (எ.கா: மின் தடை, ரேஷன், லஞ்சம், பட்டா)..."
+                  "Search problems (e.g. 1912, power cut, ration, water, patta)...",
+                  "பிரச்சினைகளைத் தேடுங்கள் (எ.கா: மின் தடை, ரேஷன், பட்டா)..."
                 )}
                 className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
@@ -275,7 +275,7 @@ export default function AwarenessGuides() {
             </h3>
             <p className="mt-3 text-sm text-blue-100 leading-relaxed">
               {T(
-                "If statutory response timeframes have passed or an official demanded a bribe, report it on VizhiTN. Public evidence creates collective accountability.",
+                "If statutory response timeframes have passed or an official delays without reason, report it on VizhiTN. Public evidence creates collective accountability.",
                 "அரசு குறித்த காலக்கெடுவுக்குள் நடவடிக்கை எடுக்காவிட்டால், VizhiTN தளத்தில் ஆதாரங்களுடன் புகார் பதிவிட்டு துறைசார் மேலதிகாரிகளுக்கு தெரியப்படுத்துங்கள்."
               )}
             </p>

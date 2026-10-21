@@ -24,7 +24,6 @@ export function normalizeAcronymsToSpokenTamil(text) {
     { regex: /\bCorporation\b/gi, replacement: 'corporation' },
     { regex: /\bNHAI\b/gi, replacement: 'NHAI நெடுஞ்சாலை' },
     { regex: /\bMinnalagam\b/gi, replacement: 'மின்னகம் Helpline' },
-    { regex: /\bDVAC\b/gi, replacement: 'DVAC லஞ்ச ஒழிப்புத் துறை' },
     { regex: /\bRTO\b/gi, replacement: 'RTO office' },
     { regex: /\bVAO\b/gi, replacement: 'VAO office' },
 
@@ -220,18 +219,18 @@ export const CITIZEN_DISPUTE_TOPICS = [
     hashtags: ['#TrafficRules', '#TrafficPoliceTamil', '#MotorVehicleAct', '#VizhiTN', '#TamilShorts', '#CitizenRightsTamil', '#Shorts']
   },
   {
-    id: 'patta-transfer-bribe',
-    titleTa: 'பட்டா மாறுதலுக்கு லஞ்சம் கேட்டா யாருக்கு புகார் செய்யணும்?',
-    titleEn: 'Bribe demanded for Patta transfer at Taluk Office? DVAC Helpline',
-    seoTitleBilingual: 'Taluk Office Patta Bribe Law | பட்டா மாறுதலுக்கு லஞ்சம் கேட்டா புகார்! #Shorts #VizhiTN',
+    id: 'patta-transfer-delay',
+    titleTa: 'பட்டா மாறுதல் ஆன்லைனில் தாமதமானால் யாருக்கு புகார் செய்யணும்?',
+    titleEn: 'Patta transfer delayed at Taluk Office? Legal escalation steps',
+    seoTitleBilingual: 'Taluk Office Patta Transfer Delay | பட்டா பெயர் மாற்றம் தாமதம் தீர்வு! #Shorts #VizhiTN',
     category: 'அரசு சேவைகள்',
-    hookTa: 'விஏஓ அல்லது தாலுகா ஆபீஸ்ல பட்டா பெயர் மாற்ற லஞ்சம் கேக்குறாங்களா? ஒரு ரூபாய் கூட தராதீங்க!',
-    step1Behave: 'நேரடியா லஞ்சம் கொடுக்க மறுத்துடுங்க. முதல்ல e-Sevai மையம் வழியா பட்டா மாறுதலுக்கு ஆன்லைன்ல விண்ணப்பிச்சு அப்ளிகேஷன் நம்பர் வாங்கி வெச்சுக்கோங்க.',
+    hookTa: 'விஏஓ அல்லது தாலுகா ஆபீஸ்ல பட்டா பெயர் மாற்ற தாமதம் பண்றாங்களா? சட்டப்படி என்ன தீர்வு?',
+    step1Behave: 'முதல்ல e-Sevai மையம் வழியா பட்டா மாறுதலுக்கு ஆன்லைன்ல விண்ணப்பிச்சு அப்ளிகேஷன் நம்பர் வாங்கி வெச்சுக்கோங்க.',
     step2Evidence: 'விண்ணப்பித்து 15 நாட்களுக்கு மேல் ஆகியும் காரணமில்லாம தாமதித்தால், ஆன்லைன் அக்னாலெட்ஜ்மென்ட் காப்பியை எடுத்துக்கோங்க.',
-    step3Legal: 'நேரடியா லஞ்சம் கேட்டா லஞ்ச ஒழிப்புத் துறையின் 24 மணி நேர இலவச உதவி எண் 1064-க்கு கால் பண்ணுங்க. அல்லது சிஎம் செல் 1100-ல புகார் பதிவு பண்ணுங்க.',
-    helplineText: 'லஞ்ச ஒழிப்புத் துறை (DVAC): 1064 | சிஎம் செல்: 1100',
-    keywords: ['patta transfer bribe complaint tamil', 'dvac toll free number 1064', 'taluk office patta change delay solution', 'esevai patta transfer status', 'viva vao bribe complaint', 'vizhitn', 'anti corruption tamil nadu'],
-    hashtags: ['#PattaTransfer', '#DVAC1064', '#AntiCorruption', '#TalukOffice', '#VizhiTN', '#TamilShorts', '#CitizenRightsTamil', '#Shorts']
+    step3Legal: 'காரணமில்லாம தாமதித்தால் சிஎம் செல் 1100 அல்லது வருவாய் கோட்டாட்சியர் (RDO) அலுவலகத்தில் மேல்முறையீடு செய்யலாம்.',
+    helplineText: 'சிஎம் செல் உதவி எண்: 1100 | e-Sevai: 1800 425 6000',
+    keywords: ['patta transfer status tamil', 'taluk office patta change delay solution', 'esevai patta transfer status', 'vizhitn', 'revenue department tamil nadu'],
+    hashtags: ['#PattaTransfer', '#TalukOffice', '#VizhiTN', '#TamilShorts', '#CitizenRightsTamil', '#Shorts']
   },
   {
     id: 'neighbor-parking-nuisance',

@@ -15,11 +15,7 @@ const FOOTER_COLUMNS = [
     links: [
       { path: "/power-cuts-today-tamil-nadu", en: "Power Cuts Today",     ta: "இன்றைய மின்தடை" },
       { path: "/school-college-holiday-alerts", en: "Holiday Alerts",    ta: "பள்ளி விடுமுறை" },
-      { path: "/tn-politics", en: "TN Politics",          ta: "தமிழக அரசியல்" },
-      { path: "/tn-politics/today", en: "Today's Govt Digest (7 PM)", ta: "இன்றைய அரசு அறிக்கை (7 PM)" },
-      { path: "/tn-politics/cm-vijay", en: "CM Vijay Tracker", ta: "முதல்வர் விஜய் கண்காணிப்பு" },
       { path: "/create",      en: "Create Civic Receipt", ta: "குடிமை ரசீது உருவாக்கு" },
-      { path: "/bribes",      en: "Bribe Tracker",        ta: "லஞ்சக் கண்காணிப்பு" },
       { path: "/explore",     en: "Explore",              ta: "ஆராய்க" },
       { path: "/trending",    en: "Trending",             ta: "டிரெண்டிங்" },
       { path: "/situations",  en: "Live Situations",      ta: "நேரடி நிகழ்வுகள்" },

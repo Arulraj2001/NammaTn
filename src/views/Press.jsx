@@ -20,8 +20,6 @@ export default function Press() {
     { label_en: "Districts Covered", label_ta: "மாவட்டங்கள்", value: "38", sub_en: "All revenue districts", sub_ta: "அனைத்து 38 மாவட்டங்கள்" },
     { label_en: "Active Civic Reports", label_ta: "குடிமைப் புகார்கள்", value: "650+", sub_en: "GPS & photo verified", sub_ta: "புகைப்பட சான்றுடன்" },
     { label_en: "TN Today Articles", label_ta: "செய்தி கட்டுரைகள்", value: "166+", sub_en: "In-depth investigative", sub_ta: "ஆழமான புலனாய்வு" },
-    { label_en: "TN Politics Posts", label_ta: "அரசியல் பதிவுகள்", value: "38+", sub_en: "Assembly & party tracker", sub_ta: "சட்டமன்றம் & அரசியல்" },
-    { label_en: "MLA Trackers", label_ta: "எம்.எல்.ஏ கண்காணிப்பு", value: "38", sub_en: "All 38 districts", sub_ta: "38 மாவட்டங்கள்" },
     { label_en: "Total Sitemap URLs", label_ta: "தளப்பக்கங்கள்", value: "1,400+", sub_en: "Indexed public URLs", sub_ta: "பொது இணைப்புகள்" },
     { label_en: "Languages", label_ta: "மொழிகள்", value: "EN + TA", sub_en: "Bilingual coverage", sub_ta: "இருமொழி சேவை" },
   ];
@@ -44,22 +42,6 @@ export default function Press() {
       tag: "Editorial"
     },
     {
-      title_en: "TN Politics Tracker",
-      title_ta: "தமிழக அரசியல் களம்",
-      desc_en: "Statewide political dispatches, TVK government tracker, and DMK opposition watch.",
-      desc_ta: "தமிழக சட்டமன்ற மற்றும் அரசியல் கட்சிகளின் கள நிலவரம்.",
-      href: "/tn-politics",
-      tag: "Governance"
-    },
-    {
-      title_en: "MLA Performance Tracker",
-      title_ta: "சட்டமன்ற உறுப்பினர் கண்காணிப்பு",
-      desc_en: "District-by-district constituency metrics and legislative development accountability.",
-      desc_ta: "தொகுதி வாரியாக மக்கள் பிரதிநிதிகளின் செயல்பாடுகள்.",
-      href: "/tn-politics/mla",
-      tag: "Accountability"
-    },
-    {
       title_en: "Power Cuts Today Tamil Nadu",
       title_ta: "இன்றைய மின்தடை அறிவிப்புகள்",
       desc_en: "Live scheduled substation shutdowns from TANGEDCO across all 38 districts.",
@@ -76,12 +58,12 @@ export default function Press() {
       tag: "Citizen Rights"
     },
     {
-      title_en: "Bribe Tracker",
-      title_ta: "லஞ்சப் பதிவேடு",
-      desc_en: "Anonymous public ledger documenting bribery demands across government departments.",
-      desc_ta: "அரசு அலுவலகங்களில் கோரப்படும் லஞ்சம் குறித்த ரகசியப் பதிவு.",
-      href: "/bribes",
-      tag: "Transparency"
+      title_en: "Cyber Scam Radar & 1930 Hotline",
+      title_ta: "சைபர் மோசடி தடுப்பு & 1930 உதவி எண்",
+      desc_en: "Real-time alerts on fake EB bill SMS, Telegram scams, and 1930 Golden Hour freeze guides.",
+      desc_ta: "போலி மின்கட்டண குறுஞ்செய்தி, வங்கி மோசடி எச்சரிக்கைகள் மற்றும் 1930 வழிகாட்டிகள்.",
+      href: "/scams",
+      tag: "Public Safety"
     },
     {
       title_en: "Helplines Directory",
@@ -135,7 +117,7 @@ export default function Press() {
               </p>
             </div>
             <div className="hidden sm:block text-xs font-semibold text-slate-700 dark:text-slate-400">
-              {T("Coverage: Power cuts, water, roads, politics, bribes, scams, helplines, schemes, rights", "மின்வெட்டு, குடிநீர், சாலை, அரசியல், லஞ்சம், திட்டங்கள்")}
+              {T("Coverage: Power cuts, water, roads, scams, helplines, schemes, citizen rights", "மின்வெட்டு, குடிநீர், சாலை, மோசடி தடுப்பு, உதவி எண்கள், திட்டங்கள்")}
             </div>
           </div>
 

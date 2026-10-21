@@ -15,7 +15,6 @@ const CATEGORY_COLORS = {
   'local-development': { bg: '#431407', border: '#f97316', text: '#fb923c', icon: '🏗️', label: 'LOCAL DEV', label_ta: 'உள்ளாட்சி மேம்பாடு' },
   'transport': { bg: '#0c4a6e', border: '#0ea5e9', text: '#38bdf8', icon: '🚌', label: 'TRANSPORT', label_ta: 'போக்குவரத்து' },
   'agriculture': { bg: '#1a2e05', border: '#84cc16', text: '#a3e635', icon: '🌾', label: 'AGRICULTURE', label_ta: 'வேளாண்மை' },
-  'tn-politics': { bg: '#2e1065', border: '#8b5cf6', text: '#a78bfa', icon: '🗳️', label: 'TN POLITICS', label_ta: 'தமிழ்நாடு அரசியல்' },
   'economy': { bg: '#2e1065', border: '#f59e0b', text: '#fbbf24', icon: '💰', label: 'ECONOMY', label_ta: 'பொருளாதாரம் & தொழில்' },
   'infrastructure': { bg: '#172554', border: '#3b82f6', text: '#60a5fa', icon: '🏗️', label: 'INFRASTRUCTURE', label_ta: 'உள்கட்டமைப்பு' },
   'general': { bg: '#1e293b', border: '#64748b', text: '#94a3b8', icon: '💬', label: 'CIVIC NOTICE', label_ta: 'மக்கள் தகவல்' }

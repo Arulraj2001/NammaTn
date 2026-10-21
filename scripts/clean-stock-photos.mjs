@@ -153,7 +153,7 @@ async function clean() {
 
   // --- 3. REVALIDATE FRONTEND CACHES ---
   console.log('\n[3/3] Triggering instant revalidation at /api/revalidate...');
-  const pathsToRevalidate = ['/tn-today', '/explore', '/', '/tn-politics'];
+  const pathsToRevalidate = ['/tn-today', '/explore', '/'];
   const revalidateSecret = process.env.REVALIDATE_SECRET || process.env.AUTO_PUBLISH_SECRET;
   for (const p of pathsToRevalidate) {
     try {

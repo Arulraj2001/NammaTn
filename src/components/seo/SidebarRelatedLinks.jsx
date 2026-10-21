@@ -60,16 +60,6 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
           <Link
-            href="/bribes"
-            className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-400 hover:bg-red-100 transition-colors text-xs font-bold"
-          >
-            <span className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4" />
-              {T("Report Corruption / Bribe Demand", "லஞ்சப் புகார் அளிக்குக")}
-            </span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-          <Link
             href="/scams"
             className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-400 hover:bg-amber-100 transition-colors text-xs font-bold"
           >

@@ -15,7 +15,7 @@ const FAQ_CATEGORIES = [
   { id: "all", label_en: "All Topics", label_ta: "அனைத்தும்" },
   { id: "Complaints", label_en: "Grievances & Complaints", label_ta: "புகார்கள்" },
   { id: "Portals", label_en: "Government Portals", label_ta: "இணையதளங்கள்" },
-  { id: "Anti-Corruption", label_en: "Anti-Corruption (DVAC)", label_ta: "ஊழல் தடுப்பு" },
+  { id: "Consumer", label_en: "Consumer Grievances", label_ta: "நுகர்வோர் குறைகள்" },
   { id: "Schemes", label_en: "Welfare Schemes", label_ta: "திட்டங்கள்" },
   { id: "Ration Card", label_en: "Ration & Civil Supplies", label_ta: "ரேஷன் அட்டை" },
   { id: "Healthcare", label_en: "Health & CMCHIS", label_ta: "சுகாதாரம்" },
@@ -70,8 +70,8 @@ export default function AwarenessFaqs() {
             </h1>
             <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
               {T(
-                "Verified answers on RTI filing rules, ration card procedures, CMCHIS hospital claims, police FIR rights, and anti-bribery reporting in Tamil Nadu.",
-                "RTI மனு, ரேஷன் அட்டை உறுப்பினர் சேர்த்தல், இலவச மருத்துவக் காப்பீடு, காவல் நிலைய FIR உரிமைகள் மற்றும் லஞ்ச ஒழிப்பு நடைமுறைகள்."
+                "Verified answers on RTI filing rules, ration card procedures, CMCHIS hospital claims, police FIR rights, and public grievance resolution in Tamil Nadu.",
+                "RTI மனு, ரேஷன் அட்டை உறுப்பினர் சேர்த்தல், இலவச மருத்துவக் காப்பீடு, காவல் நிலைய FIR உரிமைகள் மற்றும் அரசு குறைதீர்ப்பு நடைமுறைகள்."
               )}
             </p>
           </div>
@@ -85,8 +85,8 @@ export default function AwarenessFaqs() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={T(
-                  "Search questions (e.g. RTI, ration card, CMCHIS, FIR, bribe, EB)...",
-                  "கேள்விகளைத் தேடுங்கள் (எ.கா: RTI, ரேஷன், காப்பீடு, FIR, லஞ்சம்)..."
+                  "Search questions (e.g. RTI, ration card, CMCHIS, FIR, EB)...",
+                  "கேள்விகளைத் தேடுங்கள் (எ.கா: RTI, ரேஷன், காப்பீடு, FIR, மின்சாரம்)..."
                 )}
                 className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               />

@@ -10,7 +10,6 @@ export async function POST(request) {
     const urls = body.urls || [
       'https://www.vizhitn.in/',
       'https://www.vizhitn.in/tn-today',
-      'https://www.vizhitn.in/tn-politics',
       'https://www.vizhitn.in/school-college-holiday-alerts',
       'https://www.vizhitn.in/power-cuts-today-tamil-nadu',
       'https://www.vizhitn.in/esevai',

@@ -367,23 +367,13 @@ export default function AwarenessSchemeDetail({ scheme }) {
                 </a>
               )}
 
-              {/* Link back to CM Vijay Governance Tracker */}
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-                <Link
-                  href="/tn-politics/cm-vijay"
-                  className="w-full inline-flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20 text-amber-900 dark:text-amber-300 text-xs font-bold transition-colors"
-                >
-                  <span>🏛️ {T("CM Vijay Governance Tracker", "முதல்வர் விஜய் அரசு கண்காணிப்பகம்")}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
             </div>
 
-            {/* Bribe / Delay Escalation Alert */}
+            {/* Application Delay Escalation Alert */}
             <div className="bg-slate-100/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-xs space-y-2">
               <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
                 <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
-                <span>{T("Application Delayed or Bribe Asked?", "மனு தாமதமா? லஞ்சம் கேட்கப்பட்டதா?")}</span>
+                <span>{T("Application Delayed or Service Issue?", "விண்ணப்பம் தாமதமா? சிக்கல் உள்ளதா?")}</span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                 {T(

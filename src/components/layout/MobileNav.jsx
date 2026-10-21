@@ -27,11 +27,7 @@ const MOBILE_MENU_GROUPS = [
     items: [
       { path: "/dashboard", icon: BarChart2, en: "Dashboard", ta: "டாஷ்போர்டு", desc_en: "Live transparency stats", desc_ta: "நேரடி புள்ளிவிவரங்கள்" },
       { path: "/tn-today", icon: Newspaper, en: "TN Today", ta: "TN Today", desc_en: "Tamil Nadu's daily headline", desc_ta: "தினடைய தமிழ்நாடு தலைவரிசை" },
-      { path: "/tn-politics", icon: Newspaper, en: "TN Politics", ta: "அரசியல்", desc_en: "Political news & MLA tracker", desc_ta: "அரசியல் மற்றும் MLA கண்காணிப்பு" },
-      { path: "/tn-politics/today", icon: Newspaper, en: "Today's Govt Digest (7 PM)", ta: "இன்றைய அரசு அறிக்கை", desc_en: "Daily 7 PM G.O.s & cabinet actions", desc_ta: "தினசரி 7 மணி அரசாணைகள் & முடிவுகள்" },
-      { path: "/tn-politics/cm-vijay", icon: Building2, en: "CM Vijay Tracker", ta: "முதல்வர் விஜய் கண்காணிப்பு", desc_en: "Schemes & administration tracker", desc_ta: "திட்டங்கள் & அரசு சாதனைகள்" },
       { path: "/trending", icon: TrendingUp, en: "Trending", ta: "டிரெண்டிங்", desc_en: "Most discussed issues", desc_ta: "அதிகம் விவாதிக்கப்பட்டவை" },
-      { path: "/bribes", icon: AlertTriangle, en: "Bribe Tracker", ta: "லஞ்சக் கண்காணிப்பு", desc_en: "Track local corruption reports", desc_ta: "லஞ்சப் புகார்களை கண்காணிக்கவும்" },
       { path: "/ask", icon: MessageCircle, en: "Ask Local", ta: "கேளுங்கள்", desc_en: "Ask area-based questions", desc_ta: "பகுதி கேள்விகள் கேளுங்கள்" },
       { path: "/power-cuts-today-tamil-nadu", icon: Zap, en: "Power Cuts Today", ta: "இன்றைய மின்தடை", desc_en: "Live TANGEDCO power shutdowns", desc_ta: "நேரடி மின்தடை விவரங்கள்" },
       { path: "/school-college-holiday-alerts", icon: AlertTriangle, en: "Holiday Alerts", ta: "பள்ளி விடுமுறை", desc_en: "Collector holiday announcements", desc_ta: "மாவட்ட ஆட்சியர் விடுமுறை" },

@@ -7,7 +7,7 @@ import {
   MessageSquare, Store, Phone, ArrowRight, HelpCircle, Sparkles,
   Search, ShieldAlert, CheckCircle2, ChevronDown, ChevronUp,
   AlertTriangle, Trophy, Eye, Clock, Users, ArrowUpRight,
-  ShieldCheck, Share2, Compass, Check
+  Shield, ShieldCheck, Share2, Compass, Check
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -103,30 +103,30 @@ const CORE_PILLARS = [
     pro_tip_ta: "முக்கிய குறிப்பு: 112 எண் சிம் கார்டில் பேலன்ஸ் இன்றியும் இயங்கும்; தானியங்கி ஜிபிஎஸ் இருப்பிடத்தை கண்டறியும்."
   },
   {
-    id: "bribes_and_scams",
-    icon: Scale,
+    id: "scams_radar",
+    icon: Shield,
     color: "bg-purple-600",
     text_color: "text-purple-600 dark:text-purple-400",
     border_color: "border-purple-200 dark:border-purple-900/50",
     bg_light: "bg-purple-50/60 dark:bg-purple-950/20",
-    title_en: "Audit Bribes & Radar Local Scams",
-    title_ta: "லஞ்சக் கண்காணிப்பு & மோசடி எச்சரிக்கை",
-    desc_en: "Log bribery demands anonymously to build regional transparency indexes, and stay protected against fake EB bill SMS & cyber fraud.",
-    desc_ta: "அரசு அலுவலக லஞ்சக் கோரிக்கைகளை அநாமதேயமாக பதிவிடுங்கள்; போலி EB பில், பகுதிநேர வேலை மோசடிகளில் இருந்து பாதுகாப்போம்.",
-    action_href: "/bribe-tracker",
-    action_label_en: "Explore Bribe Tracker",
-    action_label_ta: "லஞ்சக் கண்காணிப்பு பார்க்க",
+    title_en: "Cyber Scam Radar & 1930 Helpline",
+    title_ta: "சைபர் மோசடி ரேடார் & 1930 உதவி எண்",
+    desc_en: "Stay protected against fake EB bill SMS, part-time job Telegram traps, Aadhaar biometric cloning, and learn 1930 Golden Hour freeze steps.",
+    desc_ta: "போலி மின் கட்டண SMS, டெலிகிராம் பகுதிநேர வேலை மோசடிகள், ஆதார் பயோமெட்ரிக் பூட்டுதல் மற்றும் 1930 உதவி எண் வழிகாட்டிகள்.",
+    action_href: "/scams",
+    action_label_en: "Explore Scam Radar",
+    action_label_ta: "மோசடி ரேடார் பார்க்க",
     steps_en: [
-      { num: "01", title: "100% Anonymous Logging", text: "On /bribe-tracker, log the department (RTO, Revenue, TANGEDCO), amount demanded, and whether Paid or Refused." },
-      { num: "02", title: "No Personal Data Stored", text: "Your name, phone number, and IP address are never tied to bribe audit records to protect citizen safety." },
-      { num: "03", title: "DVAC Direct Line 1064", text: "If facing active extortion by government officials, dial DVAC toll-free hotline 1064 directly." },
-      { num: "04", title: "Check Scam Radar", text: "Visit /scams to learn about fake EB power cut APK downloads, police challan SMS scams, and call 1930 within 2 hours." }
+      { num: "01", title: "Spot Fake SMS & Links", text: "Learn how scammers spoof EB power cut notices, APK downloads, and traffic challan links." },
+      { num: "02", title: "1930 Golden Hour Rule", text: "If money is transferred fraudulently, dial 1930 immediately within 120 minutes to freeze the destination account." },
+      { num: "03", title: "Lock Aadhaar Biometrics", text: "Use the mAadhaar app to lock your fingerprint biometrics against unauthorized AePS withdrawals." },
+      { num: "04", title: "File at cybercrime.gov.in", text: "Lodge formal complaints with bank transaction IDs and chat screenshots for cyber police investigation." }
     ],
     steps_ta: [
-      { num: "01", title: "100% ரகசிய பதிவு", text: "/bribe-tracker பக்கத்தில் துறை (RTO, வருவாய், மின்வாரியம்), லஞ்சத் தொகை மற்றும் கொடுத்ததா/மறுக்கப்பட்டதா என்பதை பதிவு செய்க." },
-      { num: "02", title: "தனிநபர் விவரங்கள் சேமிக்கப்படாது", text: "பொதுமக்கள் பாதுகாப்பிற்காக பெயர், தொலைபேசி எண் எதுவும் லஞ்ச பதிவுகளில் சேமிக்கப்படுவதில்லை." },
-      { num: "03", title: "DVAC உதவி எண் 1064", text: "அரசு ஊழியர்கள் லஞ்சம் கேட்டு வற்புறுத்தினால் லஞ்ச ஒழிப்புத் துறையின் 1064 எண்ணிற்கு புகார் செய்யலாம்." },
-      { num: "04", title: "மோசடி எச்சரிக்கை ரேடார்", text: "/scams பக்கத்தில் போலி EB பில் குறுஞ்செய்தி, வங்கி மோசடிகளை அறிந்து 1930 எண்ணிற்கு உடனே அழைக்கலாம்." }
+      { num: "01", title: "போலி SMS அடையாளம் காணுதல்", text: "மின் இணைப்பு துண்டிப்பு குறுஞ்செய்திகள் மற்றும் போலி APK செயலிகளை பதிவிறக்கம் செய்யாதீர்கள்." },
+      { num: "02", title: "1930 அவசர உதவி எண்", text: "பணம் இழந்த 2 மணி நேரத்திற்குள் 1930 என்ற எண்ணை அழைத்தால் வங்கி பரிவர்த்தனையை முடக்க முடியும்." },
+      { num: "03", title: "ஆதார் கைரேகை பூட்டு", text: "mAadhaar செயலி மூலம் கைரேகை பயோமெட்ரிக் முறையை பூட்டி AePS திருட்டை தடுக்கவும்." },
+      { num: "04", title: "cybercrime.gov.in-ல் புகார்", text: "பரிவர்த்தனை எண்களுடன் தேசிய சைபர் தளத்தில் அதிகாரப்பூர்வ புகார் பதிவு செய்யலாம்." }
     ],
     pro_tip_en: "Pro Tip: If victimized by online financial fraud, dial 1930 within the 'Golden Hour' (under 120 minutes) to freeze the scammer's bank account.",
     pro_tip_ta: "முக்கிய குறிப்பு: ஆன்லைன் வங்கி மோசடி நடந்தால் 120 நிமிடங்களுக்குள் 1930 அழைத்தால் பணத்தை முடக்க முடியும்."
@@ -201,12 +201,10 @@ const PLATFORM_FEATURES_MATRIX = [
   { name_en: "Live Situations & Diversions", name_ta: "நேரடி கள நிலவரம் & போக்குவரத்து", route: "/situations", desc_en: "Subway waterlogging, train line blocks, festival diversions", desc_ta: "வெள்ளப் பெருக்கு, சுரங்கப்பாதை அடைப்பு, ரயில் ரத்து செய்திகள்", audience: "All Citizens" },
   { name_en: "Emergency Command Center", name_ta: "24x7 அவசர கட்டுப்பாட்டு மையம்", route: "/helplines", desc_en: "1-tap speed dials (112, 108, 1912, 1930) & District Disaster 1077", desc_ta: "அனைத்து அவசர உதவி எண்கள், பேரிடர் மற்றும் முதலுதவி நெறிமுறைகள்", audience: "24x7 Public" },
   { name_en: "Community SOS Help", name_ta: "சமுதாய அவசர உதவி மையம்", route: "/help", desc_en: "Blood requirement requests, ambulance help, missing persons", desc_ta: "ரத்த தான தேவை மற்றும் அவசர சமுதாய உதவி கோரிக்கைகள்", audience: "Volunteers & Citizens" },
-  { name_en: "Anonymous Bribe Tracker", name_ta: "லஞ்சக் கண்காணிப்புப் பலகை", route: "/bribe-tracker", desc_en: "Log bribery demands anonymously; direct DVAC helpline 1064", desc_ta: "அரசு அலுவலக லஞ்சக் கோரிக்கைகளை ரகசியமாக பதிவிட்டு கண்காணிக்க", audience: "Anonymous Public" },
   { name_en: "Scam Radar & Fraud Alerts", name_ta: "சைபர் மோசடி எச்சரிக்கை", route: "/scams", desc_en: "Fake EB bill SMS, part-time job fraud warnings, Cyber helpline 1930", desc_ta: "ஆன்லைன் நிதி மோசடிகள் மற்றும் சைபர் கிரைம் விழிப்புணர்வு", audience: "All Citizens" },
   { name_en: "Ask Local Q&A", name_ta: "உள்ளூரினரிடம் கேளுங்கள்", route: "/ask-local", desc_en: "Ask neighbours questions about local timings, roads, and facilities", desc_ta: "அப்பகுதி மக்களிடம் நேரடி சந்தேகங்களை கேட்டு தீர்க்க", audience: "Local Residents" },
   { name_en: "Local Business Listings", name_ta: "உள்ளூர் வணிகங்கள் & சேவைகள்", route: "/local-listings", desc_en: "Verified local electricians, plumbers, water suppliers & mechanics", desc_ta: "எலக்ட்ரீசியன், பிளம்பர், குடிநீர் லாரி சேவைகளின் தொடர்பு எண்கள்", audience: "Consumers & Pros" },
-  { name_en: "Civic Awareness & Rights", name_ta: "குடிமக்கள் உரிமைகள் & திட்டங்கள்", route: "/awareness", desc_en: "RTI Act 2005, police check rights, welfare schemes & portal guides", desc_ta: "RTI சட்டம், நுகர்வோர் உரிமை மற்றும் அரசு திட்ட வழிகாட்டிகள்", audience: "All Citizens" },
-  { name_en: "TN Politics & Governance", name_ta: "தமிழ்நாடு அரசியல் & கொள்கை மையம்", route: "/tn-politics", desc_en: "Assembly debates, welfare budget allocations, policy deep-dives", desc_ta: "அரசுத் திட்டங்கள், சட்டப்பேரவை விவாதங்கள் மற்றும் கொள்கை ஆய்வு", audience: "All Citizens" }
+  { name_en: "Civic Awareness & Rights", name_ta: "குடிமக்கள் உரிமைகள் & திட்டங்கள்", route: "/awareness", desc_en: "RTI Act 2005, police check rights, welfare schemes & portal guides", desc_ta: "RTI சட்டம், நுகர்வோர் உரிமை மற்றும் அரசு திட்ட வழிகாட்டிகள்", audience: "All Citizens" }
 ];
 
 // Frequently Asked Questions
@@ -216,12 +214,6 @@ const FAQS = [
     q_ta: "VizhiTN தளத்தில் புகாரளிப்பதற்கும் தகவல்களைப் பார்ப்பதற்கும் கட்டணம் உண்டா?",
     a_en: "VizhiTN is 100% free and open to all citizens of Tamil Nadu. There are no fees to file complaints, search power cut schedules, dial helplines, or post local questions.",
     a_ta: "VizhiTN தளம் தமிழ்நாடு பொதுமக்கள் அனைவருக்கும் 100% முற்றிலும் இலவசமானது. புகாரளிப்பது, மின்தடை அறிவது, அவசர எண்களை அழைப்பது என அனைத்திற்கும் எந்த கட்டணமும் இல்லை."
-  },
-  {
-    q_en: "Is my identity anonymous when I log a report on the Bribe Tracker?",
-    q_ta: "லஞ்சக் கண்காணிப்பில் பதிவு செய்யும்போது என் பெயர் ரகசியமாக இருக்குமா?",
-    a_en: "Yes. The Bribe Tracker is designed for statistical regional audit only. Your name, phone number, and IP address are never made public or associated with the report.",
-    a_ta: "ஆம். லஞ்சக் கண்காணிப்பு என்பது பிராந்திய புள்ளிவிவரங்களுக்காக மட்டுமே. உங்கள் பெயர், எண் அல்லது ஐபி முகவரி பொதுவெளியில் ஒருபோதும் காட்டப்படாது."
   },
   {
     q_en: "How are scheduled power cuts and rain holiday alerts verified?",
@@ -253,7 +245,7 @@ export default function HowToUse() {
 
   usePageMeta({
     title: "How to Use VizhiTN | Complete Citizen User Manual & Walkthrough",
-    description: "Learn how to file civic complaints with photos, track TANGEDCO power cuts, access 24x7 emergency hotlines, audit bribes anonymously, and find neighbourhood services across Tamil Nadu.",
+    description: "Learn how to file civic complaints with photos, track TANGEDCO power cuts, access 24x7 emergency hotlines, radar cyber scams, and find neighbourhood services across Tamil Nadu.",
   });
 
   const selectedPillar = useMemo(() => {
@@ -291,8 +283,8 @@ export default function HowToUse() {
 
             <p className="text-xs sm:text-base text-slate-300 leading-relaxed mb-6">
               {T(
-                "Learn how to photograph and resolve civic grievances, track daily TANGEDCO power cuts, dial 24x7 emergency helplines, audit bribes anonymously, and participate in your local neighbourhood.",
-                "சாலைப் பள்ளங்களை புகைப்படத்துடன் பதிவிடுவது, மின்தடை நேரம் அறிவது, 24x7 அவசர எண்கள் மற்றும் லஞ்சக் கண்காணிப்பை எவ்வாறு பயன்படுத்துவது என்பதை இங்கே அறிந்துகொள்ளலாம்."
+                "Learn how to photograph and resolve civic grievances, track daily TANGEDCO power cuts, dial 24x7 emergency helplines, radar cyber scams, and participate in your local neighbourhood.",
+                "சாலைப் பள்ளங்களை புகைப்படத்துடன் பதிவிடுவது, மின்தடை நேரம் அறிவது, 24x7 அவசர எண்கள் மற்றும் சைபர் மோசடி தடுப்பு வழிகாட்டிகளை இங்கே அறிந்துகொள்ளலாம்."
               )}
             </p>
 
@@ -304,8 +296,8 @@ export default function HowToUse() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={T(
-                  "Search a feature (e.g. pothole, power cut, bribe, blood, rain holiday, ask local)...",
-                  "தேடுங்கள் (மின்வெட்டு, லஞ்சம், ரத்த தானம், மழை விடுமுறை, கேள்வி கேட்க)..."
+                  "Search a feature (e.g. pothole, power cut, scam, blood, rain holiday, ask local)...",
+                  "தேடுங்கள் (மின்வெட்டு, மோசடி, ரத்த தானம், மழை விடுமுறை, கேள்வி கேட்க)..."
                 )}
                 className="w-full pl-10 pr-4 py-3 text-xs sm:text-sm bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-inner"
               />

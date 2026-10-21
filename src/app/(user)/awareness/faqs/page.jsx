@@ -6,7 +6,7 @@ const SITE_URL = 'https://www.vizhitn.in';
 
 export const metadata = {
   title: 'Tamil Nadu Citizen FAQs: Civic Procedures & Government Answers | VizhiTN',
-  description: 'Verified answers to the most common questions Tamil Nadu citizens ask: RTI filing, ration card updates, CMCHIS coverage, DVAC bribe reporting, police FIR rights, and new EB connections.',
+  description: 'Verified answers to the most common questions Tamil Nadu citizens ask: RTI filing, ration card updates, CMCHIS coverage, consumer rights, police FIR rights, and new EB connections.',
   alternates: { canonical: `${SITE_URL}/awareness/faqs` },
   robots: { index: true, follow: true },
   keywords: [
@@ -14,7 +14,7 @@ export const metadata = {
     'how to file rti in tamil nadu',
     'ration card new member apply tn',
     'cmchis eligibility faq',
-    'dvac bribe reporting phone number',
+    'consumer complaint procedure tamil nadu',
     'police refuse fir what to do',
   ],
   openGraph: {

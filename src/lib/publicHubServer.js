@@ -222,26 +222,6 @@ export async function getTrendingHubData(limit = 9) {
   }
 }
 
-export async function getActiveBribePosts(limit = 200) {
-  const supabase = createServerSupabase();
-  if (!supabase) return [];
-
-  try {
-    const { data, error } = await supabase
-      .from('post')
-      .select('*')
-      .eq('post_type', 'bribe')
-      .eq('status', 'active')
-      .order('created_date', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return (data || []).filter(isPubliclyVisible);
-  } catch (error) {
-    console.warn('[bribes] Server report fetch failed:', error.message);
-    return [];
-  }
-}
-
 export async function getPublicArea(slug) {
   const supabase = createServerSupabase();
   if (!slug) return null;

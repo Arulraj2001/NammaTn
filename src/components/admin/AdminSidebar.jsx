@@ -13,7 +13,6 @@ import { base44 } from "@/api/base44Client";
 const NAV = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { label: "TN Today", icon: Newspaper, path: "/admin/tn-today", badge: "CMS" },
-  { label: "MLA Tracker", icon: Shield, path: "/admin/mla-tracker", badge: "POLITICS" },
   { label: "Posts", icon: FileText, path: "/admin/posts" },
   { label: "Comments", icon: MessageSquare, path: "/admin/comments" },
   { label: "Reports", icon: Flag, path: "/admin/reports" },
@@ -28,7 +27,6 @@ const NAV = [
   { label: "Phase 8 Hub", icon: Globe, path: "/admin/phase8", badge: "NEW" },
   { label: "Contact Messages", icon: Mail, path: "/admin/contacts" },
   { label: "Civic Receipts", icon: FileText, path: "/admin/civic", badge: "NEW" },
-  { label: "Bribe Tracker", icon: AlertTriangle, path: "/admin/bribes", badge: "NEW" },
   { label: "Citizen Awareness", icon: BookOpen, path: "/admin/awareness", badge: "NEW" },
   { label: "Monetization", icon: Megaphone, path: "/admin/monetization", badge: "NEW" },
   { label: "Users", icon: UserCheck, path: "/admin/users" },

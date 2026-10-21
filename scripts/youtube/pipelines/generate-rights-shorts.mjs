@@ -1,6 +1,6 @@
 // scripts/youtube/pipelines/generate-rights-shorts.mjs
 // Daily 1:30 PM IST Citizen Legal & Practical Dispute Solution Engine (9:16 Shorts / Reels)
-// Covers everyday tenant, neighbor, police, bribery, consumer, and cyber disputes.
+// Covers everyday tenant, neighbor, police, property, consumer, and cyber disputes.
 
 import fs from 'fs';
 import path from 'path';

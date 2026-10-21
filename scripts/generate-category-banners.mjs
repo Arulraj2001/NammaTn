@@ -134,17 +134,6 @@ const CATEGORIES = [
     color: '#94A3B8',
     colorDark: '#0F172A',
     bgGrad: '#080D1A'
-  },
-  {
-    slug: 'tn-politics',
-    name_en: 'Tamil Nadu Governance & Politics',
-    name_ta: 'தமிழ்நாடு அரசியல் & சட்டமன்றம்',
-    dept: 'Tamil Nadu Legislative Assembly',
-    helpline: 'assembly.tn.gov.in',
-    icon: '🗳️',
-    color: '#8B5CF6',
-    colorDark: '#2E1065',
-    bgGrad: '#13072B'
   }
 ];
 

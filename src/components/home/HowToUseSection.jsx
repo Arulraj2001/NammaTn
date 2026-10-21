@@ -28,10 +28,10 @@ export default function HowToUseSection() {
     {
       icon: AlertTriangle,
       color: "bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400",
-      en_title: "3. Bribe Tracker",
-      ta_title: "3. லஞ்சக் கண்காணிப்பு",
-      en_desc: "Anonymously report bribe requests to compile transparent regional statistics.",
-      ta_desc: "வெளிப்படையான புள்ளிவிவரங்களை உருவாக்க லஞ்சக் கோரிக்கைகளை அநாமதேயமாகப் பதிவிடவும்."
+      en_title: "3. Scam Radar & Safety",
+      ta_title: "3. மோசடி தடுப்பு ரேடார்",
+      en_desc: "Real-time alerts for fake utility bill SMS, job scams, and online financial fraud protection.",
+      ta_desc: "போலி மின் கட்டண SMS, ஆன்லைன் பண மோசடிகள் பற்றிய எச்சரிக்கைகள் மற்றும் பாதுகாப்பு வழிகாட்டிகள்."
     },
     {
       icon: Users,

@@ -6,7 +6,7 @@ const SITE_URL = 'https://www.vizhitn.in';
 
 export const metadata = {
   title: 'Tamil Nadu Civic Problem Action Guides & Helplines | VizhiTN',
-  description: 'Official step-by-step action guides for Tamil Nadu citizens: TANGEDCO power cut 1912, Metro Water shortage, TNPDS ration cards, DVAC bribery traps, Cyber Crime 1930 & CMCHIS.',
+  description: 'Official step-by-step action guides for Tamil Nadu citizens: TANGEDCO power cut 1912, Metro Water shortage, TNPDS ration cards, Cyber Crime 1930 & CMCHIS.',
   alternates: { canonical: `${SITE_URL}/awareness/guides` },
   robots: { index: true, follow: true },
   keywords: [
@@ -14,7 +14,6 @@ export const metadata = {
     'tangedco power cut complaint',
     'metro water complaint chennai',
     'ration card complaints tn',
-    'dvac bribe reporting',
     'cyber crime 1930 tamil nadu',
     'patta chitta status',
   ],

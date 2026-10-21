@@ -101,12 +101,12 @@ export default function AwarenessRelatedLinks({ currentSection }) {
       color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50",
     },
     {
-      title_en: "Bribe Tracker Log",
-      title_ta: "லஞ்சக் கண்காணிப்பு",
-      href: "/bribes",
+      title_en: "Emergency & Helplines",
+      title_ta: "அரசு உதவி எண்கள்",
+      href: "/awareness/emergency",
       icon: AlertTriangle,
-      desc_en: "Track & report local corruption demands anonymously.",
-      desc_ta: "உள்ளூர் லஞ்சக் புகார்களைக் கண்காணிக்கவும்.",
+      desc_en: "Directory of 24x7 verified departmental control rooms across TN.",
+      desc_ta: "தமிழ்நாட்டின் 24x7 அரசு அவசர உதவி எண்கள் மற்றும் கட்டுப்பாட்டு அறைகள்.",
       color: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border-red-200 dark:border-red-800/50",
     },
     {

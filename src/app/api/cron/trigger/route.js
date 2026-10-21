@@ -3,12 +3,8 @@ import { NextResponse } from 'next/server';
 const WORKFLOW_MAP = {
   civic: 'autonomous-civic-bot.yml',
   tntoday: 'autonomous-tntoday-bot.yml',
-  politics: 'autonomous-politics-bot.yml',
-  digest: 'autonomous-daily-digest.yml',
   watchdog: 'autonomous-watchdog.yml',
   youtube: 'autonomous-youtube-bot.yml',
-  'youtube-long': 'autonomous-youtube-bot.yml',
-  'youtube-podcast': 'autonomous-youtube-bot.yml',
   'youtube-rights': 'autonomous-youtube-bot.yml',
   'youtube-shorts': 'autonomous-youtube-bot.yml'
 };

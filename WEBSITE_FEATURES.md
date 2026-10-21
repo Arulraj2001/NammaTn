@@ -9,7 +9,7 @@
 
 ## 1. Site Overview
 
-**Namma TN** (also branded as **VizhiTN / Vizhi TN 234**) is a hyper-local civic engagement, public accountability, and community intelligence web application designed for residents across all 38 districts of Tamil Nadu. The platform enables citizens to document local infrastructure defects (potholes, streetlights, garbage accumulation, water supply disruptions), generate trackable **Civic Receipts**, calculate issue credibility scores, and report government corruption/bribe requests. In addition to civic issue tracking, Namma TN functions as a regional news and community hub featuring daily Tamil Nadu headline articles (**TN Today**), emergency broadcasts, scam alerts, hyper-local Q&A ("Ask Local"), citizen awareness resources (rights, government schemes, portal links), and community listings for jobs, stays, and Resident Welfare Associations (RWAs).
+**Namma TN** (also branded as **VizhiTN / Vizhi TN 234**) is a hyper-local civic engagement, public accountability, and community intelligence web application designed for residents across all 38 districts of Tamil Nadu. The platform enables citizens to document local infrastructure defects (potholes, streetlights, garbage accumulation, water supply disruptions), generate trackable **Civic Receipts**, and calculate issue credibility scores. In addition to civic issue tracking, Namma TN functions as a regional news and community hub featuring daily Tamil Nadu headline articles (**TN Today**), emergency broadcasts, scam alerts, hyper-local Q&A ("Ask Local"), citizen awareness resources (rights, government schemes, portal links), and community listings for jobs, stays, and Resident Welfare Associations (RWAs).
 
 ---
 
@@ -22,7 +22,6 @@
 | **Community Verification & Fix Dispute** | Enables citizens to verify issue existence ("Confirm Issue"), report duplicates, or vote on claimed resolutions ("Confirm Fixed" vs "Still Not Fixed"). Calculates a citizen-driven Fix Confidence percentage. | Public (Session-tracked) & Logged-in | **Live** |
 | **Official Complaint Resolution Tracker** | Allows users to attach official government complaint reference numbers, filing dates, and official portal screenshots to a Civic Receipt to track resolution progress through a 9-step status lifecycle. | Public (View) / Logged-in (Update) | **Live** (Manual entry; no auto-sync with govt APIs) |
 | **TN Today (Regional News & Headline CMS)** | CMS and publishing module for daily Tamil Nadu news. Supports categories (infrastructure, governance, economy, healthcare, etc.), rich HTML content, "Why It Matters" callouts, key facts, timelines, official source links, and downloadable news poster graphics. | Public (Read) / Admin (Publish & Edit) | **Live** (71 articles in DB) |
-| **Bribe Reporting & Corruption Tracker** | Anonymous or public reporting of government bribe requests, capturing department, officer designation, specific location, bribe amount, bribe status (requested / paid / refused), and optional audio proof. Features a district-wise corruption analytics dashboard. | Public (View & Submit) / Admin (Moderate) | **Live** |
 | **Emergency Alerts & Community Help** | Real-time broadcast board for local emergencies (floods, medical emergencies, rescue help). Supports urgency indicators (low, medium, high, critical), GPS mapping, contact info visibility toggles, and community confirmation counters. | Public (View & Submit) / Admin (Moderate) | **Live** (5 items in DB) |
 | **Scam Alerts Board** | Public warning system for local financial, job, digital, or real-estate scams. Displays scam classification, warning severity, location, and community confirmation counts. | Public (View & Submit) / Admin (Moderate) | **Live** (5 items in DB) |
 | **Live Situation Updates** | Hyper-local real-time condition reports for traffic jams, power outages, rain/flooding, and office closures. | Public (View & Submit) / Admin (Moderate) | **Live** (10 items in DB) |
@@ -43,8 +42,8 @@
 ## 3. Content Types & High-Level Schemas
 
 ### 1. Post (`post`)
-* **Purpose:** Represents civic issues, complaints, discussions, and bribe reports.
-* **Key Fields:** `id`, `title_en`, `title_ta`, `content_en`, `content_ta`, `post_type` (`discussion` \| `complaint` \| `bribe_report`), `district_slug`, `area_slug`, `category_slug`, `is_anonymous`, `author_name`, `media_urls` (JSON array), `upvotes`, `downvotes`, `civic_receipt_id`, `location_text`, `urgency_level`, `civic_status` (`reported` \| `community_verified` \| `complaint_needed` \| `complaint_filed` \| `under_followup` \| `claimed_fixed` \| `citizen_verified_fixed` \| `unresolved_escalated` \| `community_solved` \| `duplicate_invalid`), `verification_count`, `citizen_fixed_count`, `still_not_fixed_count`, `official_complaint_id`, `complaint_filed_date`, `assigned_department`, `bribe_requested`, `bribe_amount`, `bribe_department`, `bribe_officer_designation`, `slug`, `seo_title`, `seo_description`, `is_publicly_visible`, `moderation_status`.
+* **Purpose:** Represents civic issues, complaints, and community discussions.
+* **Key Fields:** `id`, `title_en`, `title_ta`, `content_en`, `content_ta`, `post_type` (`discussion` \| `complaint`), `district_slug`, `area_slug`, `category_slug`, `is_anonymous`, `author_name`, `media_urls` (JSON array), `upvotes`, `downvotes`, `civic_receipt_id`, `location_text`, `urgency_level`, `civic_status` (`reported` \| `community_verified` \| `complaint_needed` \| `complaint_filed` \| `under_followup` \| `claimed_fixed` \| `citizen_verified_fixed` \| `unresolved_escalated` \| `community_solved` \| `duplicate_invalid`), `verification_count`, `citizen_fixed_count`, `still_not_fixed_count`, `official_complaint_id`, `complaint_filed_date`, `assigned_department`, `slug`, `seo_title`, `seo_description`, `is_publicly_visible`, `moderation_status`.
 
 ### 2. TN Today Article (`tn_today`)
 * **Purpose:** Curated news articles and daily headlines for Tamil Nadu.
@@ -95,11 +94,6 @@
 4. **Community Verification:** Visitors to the issue page (`/post/[slug]`) can click "Confirm Issue Exists", incrementing the verification counter.
 5. **Official Filing Update:** When a user manually files a complaint on an official government portal (e.g., CM Cell or ULB portal), they can return to Namma TN to submit their official complaint reference number and portal screenshot. The receipt status updates to `complaint_filed`.
 6. **Resolution & Dispute:** Once repair work is claimed, citizens submit photos and vote ("Confirm Fixed" vs "Still Not Fixed"). The system updates the Fix Confidence score until marked `citizen_verified_fixed`.
-
-### Flow 2: Reporting Corruption / Bribe Requests
-1. User opens `/bribes` or selects "Report Bribe".
-2. User provides department name, officer designation, location, bribe amount requested, bribe status (requested / paid / refused), and optional audio recording link.
-3. Post is published to the public Bribe Dashboard and aggregated into district corruption metrics.
 
 ### Flow 3: News Consumption & Poster Generation (TN Today)
 1. User browses news articles at `/tn-today` filtered by category.

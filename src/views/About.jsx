@@ -31,7 +31,7 @@ export default function About() {
 
   usePageMeta({
     title: "About VizhiTN | Tamil Nadu's Civic Proof & Public Intelligence Network",
-    description: "Learn about VizhiTN — our mission to document civic issues with photo evidence, provide daily power cut & rain alerts, audit bribes anonymously, and empower citizens across all 38 districts of Tamil Nadu.",
+    description: "Learn about VizhiTN — our mission to document civic issues with photo evidence, provide daily power cut & rain alerts, protect citizens from scams, and empower communities across all 38 districts of Tamil Nadu.",
   });
 
   const STATS = [
@@ -86,13 +86,13 @@ export default function About() {
       color: "bg-purple-600 text-white",
       border: "border-purple-200 dark:border-purple-900/60",
       bg: "bg-purple-50/50 dark:bg-purple-950/20",
-      title_en: "4. Bribe Audits & Hyperlocal Scam Defense",
-      title_ta: "4. லஞ்சக் கண்காணிப்பு & மோசடி தடுப்பு",
-      desc_en: "Anonymous bribery demand tracking to build regional integrity indices and direct routing to DVAC 1064, combined with real-time scam radar for fake EB bill SMS and online financial frauds (1930).",
-      desc_ta: "அரசு அலுவலக லஞ்சக் கோரிக்கைகளை அநாமதேயமாக பதிவு செய்தல், DVAC 1064 எண் மற்றும் போலி மின் கட்டண SMS, ஆன்லைன் நிதி மோசடிகளில் இருந்து பாதுகாக்கும் எச்சரிக்கை ரேடார் (1930).",
-      href: "/bribe-tracker",
-      link_text_en: "View Bribe Tracker →",
-      link_text_ta: "லஞ்சப் பலகை பார்க்க →"
+      title_en: "4. Hyperlocal Scam Defense & Cyber Safety",
+      title_ta: "4. இணைய மோசடி தடுப்பு & மக்கள் பாதுகாப்பு",
+      desc_en: "Real-time scam radar for fake EB bill SMS, fraudulent job schemes, and online financial frauds with direct routing to Cyber Crime Helpline (1930).",
+      desc_ta: "போலி மின் கட்டண SMS, ஏமாற்று வேலை வாய்ப்புகள் மற்றும் ஆன்லைன் நிதி மோசடிகளில் இருந்து பாதுகாக்கும் எச்சரிக்கை ரேடார் (1930).",
+      href: "/scams",
+      link_text_en: "View Scam Radar →",
+      link_text_ta: "மோசடி ரேடார் பார்க்க →"
     }
   ];
 
@@ -114,12 +114,12 @@ export default function About() {
       desc_ta: "வதந்திகளுக்கு இடமில்லை. மின்தடை செய்திகள் மின்வாரிய சுற்றறிக்கையின்படியும், பள்ளி விடுமுறைகள் மாவட்ட ஆட்சியர் உத்தரவின்படியும் மட்டுமே வெளியிடப்படுகின்றன."
     },
     {
-      badge: "WHISTLEBLOWER SHIELD",
+      badge: "PRIVACY FIRST",
       badge_color: "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300",
-      title_en: "Privacy & Anonymity First",
-      title_ta: "தனியுரிமை & அநாமதேயப் பாதுகாப்பு",
-      desc_en: "We believe citizens should never fear reprisal for reporting public bribery or civic negligence. Bribe tracker records strictly never store names, phone numbers, or IP logs.",
-      desc_ta: "பொது நலனுக்காக குரல் கொடுக்கும் மக்கள் அஞ்ச வேண்டியதில்லை. லஞ்சப் பதிவுகளில் பெயர், தொலைபேசி எண், ஐபி முகவரி எதுவும் சேமிக்கப்படுவதில்லை."
+      title_en: "Citizen Privacy & Protection",
+      title_ta: "தனியுரிமை & குடிமக்கள் பாதுகாப்பு",
+      desc_en: "We believe citizens should never fear reprisal for reporting public issues or civic negligence. Sensitive citizen reports strictly protect names, phone numbers, and IP logs.",
+      desc_ta: "பொது நலனுக்காக குரல் கொடுக்கும் மக்கள் அஞ்ச வேண்டியதில்லை. குடிமைப் பதிவுகளில் பெயர், தொலைபேசி எண், ஐபி முகவரி எதுவும் தேவையற்ற முறையில் சேமிக்கப்படுவதில்லை."
     }
   ];
 
@@ -141,8 +141,8 @@ export default function About() {
 
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed mb-8">
               {T(
-                "In Tamil Nadu, broken roads, contaminated water, unscheduled power cuts, and bribery demands often get ignored in official delays. VizhiTN (விழிTN) was born to give 7.2 crore citizens persistent public proof, real-time utility transparency, and verified accountability across all 38 districts.",
-                "சாலையில் உள்ள ஆபத்தான பள்ளங்கள், குடிநீர் குழாய் உடைப்பு, மின்தடை நேரம் மற்றும் லஞ்சக் கோரிக்கைகள் அதிகாரப்பூர்வ தாமதங்களில் அமுங்கிவிடக்கூடாது. 7.2 கோடி மக்களுக்கும் நிரந்தர குடிமை ஆதாரங்களை வழங்க உருவானதே VizhiTN (விழிTN)."
+                "In Tamil Nadu, broken roads, contaminated water, unscheduled power cuts, and municipal delays often affect daily life. VizhiTN (விழிTN) was born to give 7.2 crore citizens persistent public proof, real-time utility transparency, and verified accountability across all 38 districts.",
+                "சாலையில் உள்ள ஆபத்தான பள்ளங்கள், குடிநீர் குழாய் உடைப்பு, மின்தடை நேரம் மற்றும் நகராட்சி தாமதங்கள் மக்களின் அன்றாட வாழ்க்கையை பாதிக்கின்றன. 7.2 கோடி மக்களுக்கும் நிரந்தர குடிமை ஆதாரங்களை வழங்க உருவானதே VizhiTN (விழிTN)."
               )}
             </p>
 

@@ -97,15 +97,6 @@ const CATEGORY_BULLETINS = {
     accentText: 'text-lime-400',
     dept: 'Agriculture & Farmer Welfare',
   },
-  'tn-politics': {
-    icon: Scale,
-    label: 'TN Politics',
-    bg: 'bg-gradient-to-br from-purple-950 via-slate-900 to-fuchsia-950',
-    border: 'border-purple-700/50 hover:border-purple-400',
-    badge: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
-    accentText: 'text-purple-400',
-    dept: 'TN Legislative Assembly & Parties',
-  },
   'general': {
     icon: FileText,
     label: 'Civic Dispatch',
@@ -122,7 +113,6 @@ const isStaticPlaceholder = (url) => {
   const trimmed = url.trim().toLowerCase();
   return (
     trimmed.startsWith("/images/categories/") ||
-    trimmed.startsWith("/images/mlas/") ||
     trimmed === "/images/placeholder.webp" ||
     trimmed === "/images/default-post.webp" ||
     trimmed.includes("/api/og") ||

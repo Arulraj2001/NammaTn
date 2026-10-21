@@ -78,8 +78,6 @@ const AdminTnToday = lazy(() => import('@/views/admin/AdminTnToday'));
 const TnToday = lazy(() => import('@/views/TnToday'));
 const TnTodayArticle = lazy(() => import('@/views/TnTodayArticle'));
 const MyDashboard = lazy(() => import('@/pages/MyDashboard'));
-const BribeDashboard = lazy(() => import('@/views/BribeDashboard'));
-const AdminBribes = lazy(() => import('@/views/admin/AdminBribes'));
 // Legal + SEO pages
 const PrivacyPolicy  = lazy(() => import('@/views/PrivacyPolicy'));
 const About          = lazy(() => import('@/views/About'));
@@ -203,7 +201,6 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/create" element={<CreatePost />} />
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/bribes" element={<BribeDashboard />} />
         <Route path="/search" element={<Search />} />
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/trending" element={<Trending />} />
@@ -272,7 +269,6 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="monetization" element={<AdminMonetization />} />
         <Route path="seo" element={<AdminSEO />} />
         <Route path="tn-today" element={<AdminTnToday />} />
-        <Route path="bribes" element={<AdminBribes />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

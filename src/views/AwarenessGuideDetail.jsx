@@ -355,8 +355,8 @@ export default function AwarenessGuideDetail({ guide }) {
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
                 {T(
-                  "If your grievance has not been resolved within the statutory SLA timeframe or any officer demands a bribe, publish a citizen proof report on VizhiTN for public accountability and media escalation.",
-                  "அரசு குறித்த காலத்திற்குள் தீர்வு எட்டப்படாவிட்டாலோ அல்லது லஞ்சம் கோரப்பட்டாலோ VizhiTN தளத்தில் ஆதாரங்களுடன் பதிவிடுங்கள்."
+                  "If your grievance has not been resolved within the statutory SLA timeframe or officials refuse service, publish a citizen proof report on VizhiTN for public accountability and civic tracking.",
+                  "அரசு குறித்த காலத்திற்குள் தீர்வு எட்டப்படாவிட்டாலோ அல்லது சேவை மறுக்கப்பட்டாலோ VizhiTN தளத்தில் ஆதாரங்களுடன் பதிவிடுங்கள்."
                 )}
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
@@ -367,10 +367,10 @@ export default function AwarenessGuideDetail({ guide }) {
                   {T("Post Citizen Evidence on VizhiTN", "VizhiTN-ல் புகார் பதிவு செய்")}
                 </Link>
                 <Link
-                  href="/bribes"
+                  href="/awareness/emergency"
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 border border-amber-600/40 text-amber-900 dark:text-amber-300 font-bold text-xs rounded-xl hover:bg-amber-100/50 dark:hover:bg-amber-900/30 transition-colors"
                 >
-                  {T("Report Bribery on DVAC Tracker", "லஞ்சப் பதிவேடு")}
+                  {T("View Official Helplines", "அரசு உதவி எண்கள்")}
                 </Link>
               </div>
             </div>

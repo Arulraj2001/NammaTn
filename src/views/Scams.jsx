@@ -235,12 +235,6 @@ export default function Scams({ initialScams = [] }) {
                 >
                   {T("Create Civic Receipt", "குடிமை ரசீது உருவாக்கு")}
                 </Link>
-                <Link
-                  to="/bribes"
-                  className="inline-flex items-center text-xs font-bold border border-white/40 hover:bg-white/10 text-white px-3.5 py-1.5 rounded-xl transition-colors"
-                >
-                  ⚖ {T("Bribe Tracker Log", "லஞ்சப் புகார் கண்காணிப்பு")}
-                </Link>
                 <span className="text-rose-200/80 text-[11px] block sm:inline">
                   🔒 {T("Public awareness only. Posts are strictly moderated.", "பொது விழிப்புணர்விற்காக மட்டுமே.")}
                 </span>
@@ -784,22 +778,22 @@ export default function Scams({ initialScams = [] }) {
             {/* Civic Receipt CTA Card */}
             <div className="bg-gradient-to-br from-slate-900 to-rose-950 text-white rounded-2xl border border-rose-900/60 p-5 shadow-sm">
               <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-rose-400 bg-rose-950/80 px-2 py-0.5 rounded-md border border-rose-800 mb-2">
-                {T("Document Corruption / Cheating", "குடிமை சான்று")}
+                {T("Citizen Defense & Awareness", "குடிமை விழிப்புணர்வு")}
               </span>
               <h4 className="text-sm font-bold text-white mb-1.5">
-                {T("Demanded a Bribe or Token Fee?", "லஞ்சம் அல்லது முன்பணம் கேட்கப்பட்டதா?")}
+                {T("Targeted by a Cyber Scam?", "சைபர் மோசடிக்கு ஆளானீர்களா?")}
               </h4>
               <p className="text-xs text-slate-300 leading-relaxed mb-4">
                 {T(
-                  "Log anonymous bribe demands on our Bribe Tracker to protect future citizens and establish a public record.",
-                  "பெயர் வெளிப்படுத்தாமல் லஞ்சப் புகார்களைப் பதிவு செய்து மற்றவர்களைப் பாதுகாக்கவும்."
+                  "Dial 1930 immediately within the Golden Hour to freeze fraudulent transfers, or document the scam tactic on VizhiTN.",
+                  "பணம் இழந்த 2 மணி நேரத்திற்குள் 1930 என்ற எண்ணை அழைத்து வங்கி பரிவர்த்தனையை முடக்கவும்."
                 )}
               </p>
               <Link
-                to="/bribes"
+                to="/create"
                 className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md transition-all"
               >
-                {T("Open Bribe Tracker", "லஞ்சப் பதிவேட்டைத் திற")}
+                {T("Report Scam Tactic", "மோசடி முறையைப் பகிரவும்")}
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>

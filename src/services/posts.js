@@ -104,9 +104,8 @@ const VALID_POST_COLUMNS = new Set([
   'complaint_screenshot_url', 'assigned_department', 'escalation_level', 'timeline_events',
   'before_photos', 'claimed_fixed_photos', 'final_resolution_photos', 'is_community_solved',
   'is_publicly_visible', 'moderation_status', 'admin_note', 'resolution_quality_avg',
-  'resolution_quality_count', 'follow_up_count', 'evidence_update_count', 'bribe_requested',
-  'bribe_status', 'bribe_amount', 'bribe_department', 'bribe_officer_designation',
-  'bribe_specific_location', 'bribe_audio_url', 'slug', 'seo_title', 'seo_description',
+  'resolution_quality_count', 'follow_up_count', 'evidence_update_count',
+  'slug', 'seo_title', 'seo_description',
   'seo_keywords', 'canonical_url', 'is_indexable'
 ]);
 

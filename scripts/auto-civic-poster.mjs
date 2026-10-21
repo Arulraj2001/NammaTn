@@ -72,8 +72,7 @@ const VALID_POST_TYPES = [
   'local_update',
   'complaint',
   'appreciation',
-  'discussion',
-  'bribe'
+  'discussion'
 ];
 
 const VALID_URGENCY = ['low', 'medium', 'high', 'critical'];
@@ -435,7 +434,7 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
 2. "category_slug": MUST BE EXACTLY ONE OF:
    ["road-infrastructure", "water-sanitation", "electricity", "education", "healthcare", "environment", "public-safety", "government-schemes", "local-development", "transport", "agriculture", "general"]
 3. "district_slug": MUST BE ONE OF THE 38 VALID DISTRICT SLUGS (lowercase, e.g. "chennai", "coimbatore", "madurai", "tiruchirappalli", "salem", etc.)
-4. "post_type": MUST BE ONE OF: ["alert", "local_update", "complaint", "appreciation", "discussion", "bribe"]
+4. "post_type": MUST BE ONE OF: ["alert", "local_update", "complaint", "appreciation", "discussion"]
 5. "urgency_level": MUST BE ONE OF: ["low", "medium", "high", "critical"]
 6. "civic_status": MUST BE ONE OF: ["reported", "community_verified", "complaint_needed", "complaint_filed", "under_followup", "claimed_fixed", "citizen_verified_fixed", "resolved"]
 7. VERIFIED OFFICIAL HELPLINES:

@@ -40,7 +40,6 @@ const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 const CORE_HUBS = [
   `${SITE_URL}/`,
   `${SITE_URL}/tn-today`,
-  `${SITE_URL}/tn-politics`,
   `${SITE_URL}/explore`,
   `${SITE_URL}/power-cuts-today-tamil-nadu`,
   `${SITE_URL}/school-college-holiday-alerts`,
@@ -109,9 +108,9 @@ async function main() {
 
     postUrls = (posts || []).map(p => {
       const slug = p.slug?.trim() || p.id;
-      return p.category_slug === 'tn-politics' ? `${SITE_URL}/tn-politics/${slug}` : `${SITE_URL}/post/${slug}`;
+      return `${SITE_URL}/post/${slug}`;
     });
-    console.log(`[✓] Retrieved ${postUrls.length} active civic and political alert posts.`);
+    console.log(`[✓] Retrieved ${postUrls.length} active civic alert posts.`);
   } catch (err) {
     console.warn('[WARN] Could not fetch civic posts for IndexNow:', err.message);
   }

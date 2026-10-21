@@ -15,8 +15,7 @@ import { cn } from "@/lib/utils";
 import { fetchIncidentImage } from "@/lib/incidentImageService";
 
 const VALID_TYPES = [
-  "complaint", "civic", "appreciation", "local_update", "alert", "discussion", "bribe",
-  "speech_summary", "policy_explainer", "party_update", "mla_update", "performance_tracker", "controversy", "bylection", "weekly_digest"
+  "complaint", "civic", "appreciation", "local_update", "alert", "discussion"
 ];
 
 const SAMPLE_POSTS = [
@@ -137,9 +136,9 @@ const POST_FORMAT_SCHEMA = [
     "title_ta": "string (Optional - Title in Tamil)",
     "content_en": "string (Required - Content in English)",
     "content_ta": "string (Optional - Content in Tamil)",
-    "post_type": "complaint | local_update | appreciation | alert | discussion | bribe | speech_summary | policy_explainer | party_update | mla_update | performance_tracker | controversy | bylection | weekly_digest",
+    "post_type": "complaint | local_update | appreciation | alert | discussion",
     "district_slug": "chennai | coimbatore | madurai | salem | tiruchirappalli | etc.",
-    "category_slug": "road-infrastructure | water-sanitation | electricity | public-safety | environment | tn-politics",
+    "category_slug": "road-infrastructure | water-sanitation | electricity | public-safety | environment",
     "area_name": "string (e.g. Perungudi)",
     "area_slug": "string (e.g. perungudi)",
     "author_name": "string (Reporter / Author Name)",
@@ -162,13 +161,6 @@ const POST_FORMAT_SCHEMA = [
     "seo_keywords": "string (Comma-separated keywords)",
     "canonical_url": "string (Canonical URL)",
     "is_indexable": true,
-    "bribe_requested": false,
-    "bribe_status": "reported | under_review | verified",
-    "bribe_amount": 0,
-    "bribe_department": "string",
-    "bribe_officer_designation": "string",
-    "bribe_specific_location": "string",
-    "bribe_audio_url": "https://example.com/audio.mp3",
     "before_photos": ["https://example.com/before.jpg"],
     "claimed_fixed_photos": ["https://example.com/claimed.jpg"],
     "final_resolution_photos": ["https://example.com/resolved.jpg"],
@@ -259,13 +251,6 @@ function normalisePost(raw, idx) {
     seo_keywords: raw.seo_keywords || "",
     canonical_url: raw.canonical_url || "",
     is_indexable: raw.is_indexable !== undefined ? Boolean(raw.is_indexable) : true,
-    bribe_requested: Boolean(raw.bribe_requested),
-    bribe_status: raw.bribe_status || "",
-    bribe_amount: Number(raw.bribe_amount || 0),
-    bribe_department: raw.bribe_department || (raw.post_type === "bribe" ? (raw.assigned_department || raw.department_routing || raw.department || "") : ""),
-    bribe_officer_designation: raw.bribe_officer_designation || "",
-    bribe_specific_location: raw.bribe_specific_location || "",
-    bribe_audio_url: raw.bribe_audio_url || "",
     before_photos: Array.isArray(raw.before_photos) ? raw.before_photos : [],
     claimed_fixed_photos: Array.isArray(raw.claimed_fixed_photos) ? raw.claimed_fixed_photos : [],
     final_resolution_photos: Array.isArray(raw.final_resolution_photos) ? raw.final_resolution_photos : [],

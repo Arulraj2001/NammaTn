@@ -27,7 +27,7 @@ const SPEED_DIAL_HOTLINES = [
   { num: "181", label_en: "Women in Distress Helpline", label_ta: "பெண்கள் உதவி மையம் (24x7)", cat: "protection", bg: "bg-pink-500", text: "text-pink-700 dark:text-pink-400", border: "border-pink-200 dark:border-pink-900/50", desc_en: "Domestic violence, harassment, emergency shelter", desc_ta: "குடும்ப வன்முறை, பாலியல் தொல்லை, சட்ட உதவி" },
   { num: "1098", label_en: "Childline Emergency Support", label_ta: "குழந்தைகள் உதவி மையம் (1098)", cat: "protection", bg: "bg-teal-500", text: "text-teal-700 dark:text-teal-400", border: "border-teal-200 dark:border-teal-900/50", desc_en: "Child labor, missing children, cruelty & abuse", desc_ta: "குழந்தைத் தொழிலாளர், காணாமல் போன குழந்தைகள் மீட்பு" },
   { num: "104", label_en: "TN Health Information & Advice", label_ta: "மருத்துவ ஆலோசனை & முதலுதவி", cat: "medical", bg: "bg-emerald-500", text: "text-emerald-700 dark:text-emerald-400", border: "border-emerald-200 dark:border-emerald-900/50", desc_en: "Blood bank availability, poison info, doctor guidance", desc_ta: "ரத்த வங்கி விவரங்கள், விஷ முறிவு தகவல், மருத்துவர் ஆலோசனை" },
-  { num: "1064", label_en: "DVAC Anti-Corruption Line", label_ta: "லஞ்ச ஒழிப்பு & ஊழல் தடுப்பு (DVAC)", cat: "police", bg: "bg-slate-600", text: "text-slate-700 dark:text-slate-400", border: "border-slate-200 dark:border-slate-700", desc_en: "Report government officers demanding bribes", desc_ta: "அரசு அலுவலகங்களில் லஞ்சம் கேட்பவர்கள் மீது ரகசிய புகார்" },
+  { num: "1915", label_en: "National Consumer Helpline (NCH)", label_ta: "தேசிய நுகர்வோர் குறைதீர்க்கும் மையம்", cat: "utility", bg: "bg-blue-600", text: "text-blue-700 dark:text-blue-400", border: "border-blue-200 dark:border-blue-700", desc_en: "Official consumer dispute and grievance resolution line", desc_ta: "போலி பொருட்கள் மற்றும் சேவை குறைபாடுகளுக்கு நுகர்வோர் புகார்" },
 ];
 
 // Life-saving Golden Hour SOP Guides
@@ -234,7 +234,7 @@ const EMERGENCY_CATEGORIES = [
       { name_en: "Tamil Nadu Police Control Room", name_ta: "தமிழ்நாடு காவல் கட்டுப்பாட்டு அறை", number: "100", desc_en: "Crime, theft, harassment, physical danger, assault", desc_ta: "குற்றம், திருட்டு, ஆபத்து மற்றும் அவசர உதவி" },
       { name_en: "National Cyber Crime Helpline (Golden Hour Portal)", name_ta: "சைபர் கிரைம் உதவி எண் (ஆன்லைன் நிதி மோசடி)", number: "1930", desc_en: "Immediate freeze of stolen funds in OTP, UPI, credit card scams", desc_ta: "UPI, OTP, வங்கி நிதி மோசடி நடந்தால் உடனடி மீட்பு" },
       { name_en: "Traffic Police Control & Road Accidents", name_ta: "போக்குவரத்து காவல் கட்டுப்பாட்டு அறை", number: "103", desc_en: "Traffic gridlocks, hit-and-run, highway accidents", desc_ta: "போக்குவரத்து நெரிசல், விபத்துக்கள் தகவல்" },
-      { name_en: "Directorate of Vigilance & Anti-Corruption (DVAC)", name_ta: "ஊழல் தடுப்பு மற்றும் கண்காணிப்புப் பிரிவு (DVAC)", number: "1064", desc_en: "Bribery demands, corruption at government offices", desc_ta: "அரசு அலுவலகங்களில் லஞ்சம் மற்றும் ஊழல் புகார்கள்" },
+      { name_en: "National Consumer Helpline (NCH)", name_ta: "தேசிய நுகர்வோர் உதவி மையம்", number: "1915", desc_en: "Unfair trade practices, overcharging, and consumer disputes", desc_ta: "போலி பொருட்கள் மற்றும் நுகர்வோர் சேவை குறைபாடுகள்" },
       { name_en: "Railway Police & Passenger Security", name_ta: "ரயில்வே காவல் & பாதுகாப்பு உதவி", number: "139", desc_en: "Emergency security inside trains and platforms", desc_ta: "ரயில் பெட்டிகள் மற்றும் நிலையங்களில் அவசர உதவி" },
     ],
   },

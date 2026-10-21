@@ -154,9 +154,9 @@ const nextConfig = {
       // These aliases previously served identical content with no redirect,
       // creating duplicate crawl paths. Consolidate to the canonical slug.
       // We exclude system roots (category, explore, etc.) so :city does not intercept /category/*.
-      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|bribes|tn-today|tn-politics|api|_next)[^/]+)/electricity',            destination: '/:city/power-cut',    permanent: true },
-      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|bribes|tn-today|tn-politics|api|_next)[^/]+)/water-sanitation',       destination: '/:city/water-issue',  permanent: true },
-      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|bribes|tn-today|tn-politics|api|_next)[^/]+)/road-infrastructure',    destination: '/:city/road-problem', permanent: true },
+      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|tn-today|api|_next)[^/]+)/electricity',            destination: '/:city/power-cut',    permanent: true },
+      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|tn-today|api|_next)[^/]+)/water-sanitation',       destination: '/:city/water-issue',  permanent: true },
+      { source: '/:city((?!category|areas|explore|about|offices|stay|jobs|scams|help|trending|community|dashboard|districts|tn-today|api|_next)[^/]+)/road-infrastructure',    destination: '/:city/road-problem', permanent: true },
       // ── Category alias redirects: common category URLs → canonical routes ──
       { source: '/category/power-cut',         destination: '/category/electricity',        permanent: true },
       { source: '/category/power-cuts',        destination: '/category/electricity',        permanent: true },
@@ -172,7 +172,6 @@ const nextConfig = {
       { source: '/category/stay',              destination: '/explore',                     permanent: true },
       { source: '/stay',                       destination: '/explore',                     permanent: true },
       { source: '/stay/:path*',                destination: '/explore',                     permanent: true },
-      { source: '/category/politics',          destination: '/tn-politics',                 permanent: true },
 
       // ── Zombie & Legacy Slug Redirects (Bing Crawl Sanitization) ──
       { source: '/about-1',                                                 destination: '/about',                                                permanent: true },

@@ -16,7 +16,7 @@ export default function UniversalCrossLinks({ pageType }) {
   // Define cross-link presets based on pageType
   const getLinks = () => {
     switch (pageType) {
-      case "bribes":
+      case "transparency":
         return {
           title_en: "Related Transparency & Rights Tools",
           title_ta: "தொடர்புடைய வெளிப்படைத்தன்மை & சட்ட உரிமைகள்",
@@ -36,7 +36,6 @@ export default function UniversalCrossLinks({ pageType }) {
           items: [
             { title_en: "Consumer Protection Rights Act 2019", title_ta: "நுகர்வோர் பாதுகாப்பு சட்ட உரிமைகள்", href: "/awareness/right/consumer-protection-rights-2019", icon: Shield, desc_en: "File consumer court cases online without a lawyer.", desc_ta: "வழக்கறிஞர் இன்றி ஆன்லைனில் வழக்கு பதிவிடல்." },
             { title_en: "Traffic Check Driver Rights", title_ta: "வாகன சோதனையின் போது ஓட்டுநர் உரிமைகள்", href: "/awareness/article/traffic-police-vehicle-check-citizen-rights-guide", icon: FileText, desc_en: "DigiLocker validity & key seizure rules.", desc_ta: "டிஜிலாக்கர் செல்லுபடி & சாவி பிடுங்கத் தடை." },
-            { title_en: "Report Corruption on Bribe Tracker", title_ta: "லஞ்சப் புகார்களைப் பதிவு செய்க", href: "/bribes", icon: AlertTriangle, desc_en: "Anonymous corruption reporting in TN.", desc_ta: "பெயர் வெளிப்படுத்தாமல் லஞ்சப் புகார் அளித்தல்." },
             { title_en: "Ask Local Community", title_ta: "உள்ளூரினரிடம் கேளுங்கள்", href: "/ask", icon: MessageCircle, desc_en: "Verify suspicious deals with area locals.", desc_ta: "சந்தேகமான ஒப்பந்தங்களை சரிபார்க்கவும்." },
           ]
         };
@@ -60,7 +59,7 @@ export default function UniversalCrossLinks({ pageType }) {
             { title_en: "Patta, Chitta & EC Verification Guide", title_ta: "பட்டா, சிட்டா & வில்லங்கச் சான்றிதழ் வழிகாட்டி", href: "/awareness/article/patta-chitta-fmb-ec-land-records-guide-tamil-nadu", icon: FileText, desc_en: "Online land ownership records check.", desc_ta: "ஆன்லைனில் நில உரிமை ஆவணங்கள் சரிபார்த்தல்." },
             { title_en: "e-Sevai Online Certificates", title_ta: "இ-சேவை ஆன்லைன் சான்றிதழ்கள்", href: "/awareness/article/tamil-nadu-esevai-online-services-guide", icon: BookOpen, desc_en: "Step-by-step certificate application.", desc_ta: "சான்றிதழ்கள் விண்ணப்பிக்கும் படிநிலைகள்." },
             { title_en: "RTI Application Guide", title_ta: "RTI விண்ணப்பிக்கும் முறை", href: "/awareness/article/how-to-file-rti-application-tamil-nadu-guide", icon: Shield, desc_en: "Request government files legally.", desc_ta: "அரசு ஆவணங்களைப் பெற வழிகாட்டி." },
-            { title_en: "Bribe Tracker Log", title_ta: "லஞ்சக் கண்காணிப்பு", href: "/bribes", icon: AlertTriangle, desc_en: "Track local corruption reports.", desc_ta: "லஞ்சப் புகார்களைக் கண்காணிக்கவும்." },
+            { title_en: "Local Scam Alerts", title_ta: "மோசடி எச்சரிக்கைகள்", href: "/scams", icon: AlertTriangle, desc_en: "Track local scam reports.", desc_ta: "மோசடி எச்சரிக்கைகளை கண்காணிக்கவும்." },
           ]
         };
 
@@ -72,7 +71,7 @@ export default function UniversalCrossLinks({ pageType }) {
             { title_en: "Public Offices Directory", title_ta: "மாவட்ட அரசு அலுவலகங்கள்", href: "/offices", icon: Building2, desc_en: "Find VAO, EB, and Tahsildar offices.", desc_ta: "உள்ளூர் அரசு அலுவலகங்கள்." },
             { title_en: "Live Emergency Situations", title_ta: "நேரடி நிலைமைகள் & எச்சரிக்கைகள்", href: "/situations", icon: Zap, desc_en: "Real-time weather, power & road updates.", desc_ta: "நேரடி வானிலை மற்றும் சாலைத் தகவல்கள்." },
             { title_en: "TN Today State News", title_ta: "டிஎன் டுடே செய்திகள்", href: "/tn-today", icon: FileText, desc_en: "Daily verified state news and policies.", desc_ta: "தினசரி அரசு செய்திகள் மற்றும் திட்டங்கள்." },
-            { title_en: "Bribe Tracker Reports", title_ta: "லஞ்சக் கண்காணிப்புப் பதிவு", href: "/bribes", icon: AlertTriangle, desc_en: "View corruption reports by district.", desc_ta: "மாவட்ட லஞ்சப் புகார்களைக் காண." },
+            { title_en: "District Power Cuts", title_ta: "மாவட்ட மின்தடை", href: "/power-cuts-today-tamil-nadu", icon: Zap, desc_en: "Scheduled power shutdowns.", desc_ta: "மின்வாரிய பராமரிப்பு மின்தடை." },
           ]
         };
 
@@ -83,7 +82,7 @@ export default function UniversalCrossLinks({ pageType }) {
           items: [
             { title_en: "Citizen Statutory Rights", title_ta: "குடிமக்கள் சட்ட உரிமைகள்", href: "/awareness/rights", icon: Shield, desc_en: "RTI Act 2005 & Consumer Protection.", desc_ta: "தகவல் உரிமை & நுகர்வோர் பாதுகாப்பு." },
             { title_en: "Government Welfare Schemes", title_ta: "அரசு நலத்திட்டங்கள்", href: "/awareness/schemes", icon: Gift, desc_en: "Magalir Urimai, Pudhumai Penn & CMCHIS.", desc_ta: "மகளிர் உரிமை & புதுமைப் பெண்." },
-            { title_en: "Bribe Tracker Log", title_ta: "லஞ்சக் கண்காணிப்பு", href: "/bribes", icon: AlertTriangle, desc_en: "Anonymous corruption reporting.", desc_ta: "லஞ்சப் புகார்களைக் கண்காணிக்க." },
+            { title_en: "Local Scam Alerts", title_ta: "மோசடி எச்சரிக்கைகள்", href: "/scams", icon: AlertTriangle, desc_en: "Cyber & financial scam warnings.", desc_ta: "மோசடி தடுப்பு எச்சரிக்கைகள்." },
             { title_en: "Civic Leaderboard", title_ta: "குடிமை முன்னிலை பட்டியல்", href: "/leaderboard", icon: Trophy, desc_en: "Verified active civic contributors.", desc_ta: "குடிமை சாதனைகள் மற்றும் தீர்வுகள்." },
           ]
         };

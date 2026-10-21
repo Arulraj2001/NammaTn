@@ -111,11 +111,9 @@ export default async function sitemap() {
       if (TN_TODAY_CATEGORY_MAP[a.category]) publishedCategories.add(a.category);
       entries.push({
         url: `${SITE_URL}/tn-today/${a.slug}`,
-        ...(a.updated_date || a.publish_date
-          ? { lastModified: a.updated_date || a.publish_date }
-          : {}),
-        changeFrequency: 'daily',
-        priority: 0.9,
+        lastModified: a.updated_date || a.publish_date ? new Date(a.updated_date || a.publish_date) : new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.8,
       });
     });
 
@@ -126,64 +124,13 @@ export default async function sitemap() {
         priority: 0.5,
       });
     });
+  } catch (e) {
+    console.warn('[sitemap] Failed to fetch articles:', e.message);
+  }
 
-    // ── TN Politics hub and static pages ────────────────────────────────
-    const politicsStaticUrls = [
-      { url: `${SITE_URL}/tn-politics`, changeFrequency: 'daily', priority: 0.9, lastModified: new Date() },
-      { url: `${SITE_URL}/tn-politics/cm-vijay`, changeFrequency: 'daily', priority: 1.0, lastModified: new Date() },
-      ...['tvk','dmk','aiadmk','bjp-tn','ntk','pmk'].map(party => ({
-        url: `${SITE_URL}/tn-politics/party/${party}`,
-        changeFrequency: 'daily',
-        priority: 0.8,
-        lastModified: new Date()
-      }))
-    ];
-    politicsStaticUrls.forEach(u => entries.push(u));
-
-    // TN Politics MLA pages (38 districts)
-    const POLITICS_DISTRICT_SLUGS = [
-      'chennai','coimbatore','madurai','tiruchirappalli','salem',
-      'tirunelveli','vellore','erode','thoothukudi','thanjavur',
-      'dindigul','kancheepuram','nagapattinam','namakkal','nilgiris',
-      'perambalur','pudukkottai','ramanathapuram','ranipet','sivaganga',
-      'tenkasi','theni','tiruppur','tiruvallur','tiruvannamalai',
-      'tiruvarur','villupuram','virudhunagar','ariyalur','chengalpattu',
-      'cuddalore','dharmapuri','kallakurichi','karur','krishnagiri',
-      'mayiladuthurai','tirupattur'
-    ];
-
-    POLITICS_DISTRICT_SLUGS.forEach(slug => {
-      entries.push({
-        url: `${SITE_URL}/tn-politics/mla/${slug}`,
-        changeFrequency: 'monthly',
-        priority: 0.7,
-        lastModified: new Date()
-      });
-    });
-
-    // TN Politics posts from Supabase
-    try {
-      const { data: politicsPosts } = await supabase
-        .from('post')
-        .select('slug, id, updated_date, created_date')
-        .eq('category_slug', 'tn-politics')
-        .eq('status', 'active')
-        .eq('is_publicly_visible', true)
-        .order('created_date', { ascending: false })
-        .limit(500);
-
-      (politicsPosts || []).forEach(post => {
-        entries.push({
-          url: `${SITE_URL}/tn-politics/${post.slug || post.id}`,
-          changeFrequency: 'weekly',
-          priority: 0.8,
-          lastModified: new Date(post.updated_date || post.created_date)
-        });
-      });
-    } catch (e) {
-      console.warn('[sitemap] Failed to fetch politicsPosts:', e.message);
-    }
-
+  try {
+    const supabase = createServerSupabase();
+    if (!supabase) throw new Error('Supabase is not configured');
     // ── Posts (Civic Reports & Community Updates) ────────────────────────
     const { data: publicPosts } = await supabase
       .from('post')
@@ -193,8 +140,6 @@ export default async function sitemap() {
       .limit(1000);
 
     (publicPosts || []).forEach(p => {
-      // Politics posts are enumerated under /tn-politics/ above to prevent duplicate canonical conflicts
-      if (p.category_slug === 'tn-politics') return;
 
       // Exclude seed/test posts from sitemap to prevent "Excluded by noindex" and crawl budget waste
       const idStr = String(p.id || '');
@@ -343,14 +288,13 @@ export default async function sitemap() {
   [
     '/power-cuts-today-tamil-nadu', '/school-college-holiday-alerts',
     '/schemes', '/helplines', '/rights', '/rti', '/esevai',
-    '/tn-politics', '/tn-politics/today', '/tn-politics/cm-vijay',
-    '/tn-politics/weekly/2026-w41', '/tn-politics/monthly/2026-10'
+    '/scams', '/situations', '/trending'
   ].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,
       lastModified: new Date(),
-      changeFrequency: path.includes('today') ? 'hourly' : 'daily',
-      priority: path.includes('today') || path.includes('cm-vijay') ? 1.0 : 0.9,
+      changeFrequency: path.includes('power-cuts') || path.includes('holiday') ? 'hourly' : 'daily',
+      priority: path.includes('power-cuts') || path.includes('holiday') ? 1.0 : 0.9,
     });
   });
 
@@ -386,7 +330,7 @@ export default async function sitemap() {
     '/districts', '/areas', '/awareness', '/awareness/articles',
     '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',
     '/scams',
-    '/jobs', '/offices', '/bribes', '/trending', '/tn-today',
+    '/jobs', '/offices', '/trending', '/tn-today',
     '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
     '/support', '/rwa', '/csr',
     '/about', '/press', '/contact', '/privacy-policy', '/terms', '/how-to-use',

@@ -67,7 +67,7 @@ export async function GET() {
 
     // 2. Fetch database records from 'post' and 'tn_today'
     const [postsRes, tnRes] = await Promise.all([
-      supabase.from('post').select('id, title_en, media_urls, before_photos, final_resolution_photos, complaint_screenshot_url, bribe_audio_url').limit(3000),
+      supabase.from('post').select('id, title_en, media_urls, before_photos, final_resolution_photos, complaint_screenshot_url').limit(3000),
       supabase.from('tn_today').select('id, title, featured_image, social_image').limit(1000)
     ]);
 
@@ -93,7 +93,6 @@ export async function GET() {
       (p.before_photos || []).forEach(u => addRef(u, { type: 'post_before', id: p.id, title: p.title_en || 'Post #' + p.id }));
       (p.final_resolution_photos || []).forEach(u => addRef(u, { type: 'post_final', id: p.id, title: p.title_en || 'Post #' + p.id }));
       if (p.complaint_screenshot_url) addRef(p.complaint_screenshot_url, { type: 'post_screenshot', id: p.id, title: p.title_en || 'Post #' + p.id });
-      if (p.bribe_audio_url) addRef(p.bribe_audio_url, { type: 'post_audio', id: p.id, title: p.title_en || 'Post #' + p.id });
     });
 
     tnArticles.forEach(a => {
@@ -193,7 +192,7 @@ export async function POST(request) {
     // 2. If deleteFromDb is requested, scrub matching references from post and tn_today
     if (deleteFromDb) {
       const [postsRes, tnRes] = await Promise.all([
-        supabase.from('post').select('id, media_urls, before_photos, final_resolution_photos, complaint_screenshot_url, bribe_audio_url').limit(3000),
+        supabase.from('post').select('id, media_urls, before_photos, final_resolution_photos, complaint_screenshot_url').limit(3000),
         supabase.from('tn_today').select('id, featured_image, social_image').limit(1000)
       ]);
 
@@ -227,11 +226,6 @@ export async function POST(request) {
 
         if (p.complaint_screenshot_url && paths.some(path => p.complaint_screenshot_url.includes(path) || p.complaint_screenshot_url.includes(path.split('/').pop()))) {
           updates.complaint_screenshot_url = null;
-          changed = true;
-        }
-
-        if (p.bribe_audio_url && paths.some(path => p.bribe_audio_url.includes(path) || p.bribe_audio_url.includes(path.split('/').pop()))) {
-          updates.bribe_audio_url = null;
           changed = true;
         }
 

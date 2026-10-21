@@ -287,8 +287,8 @@ export default function AwarenessSchemes() {
             </h3>
             <p className="mt-3 text-sm text-indigo-100 leading-relaxed">
               {T(
-                "If an officer demands a bribe or your legitimate application has been stalled beyond the statutory timeframe, file an anonymous report on VizhiTN to trigger administrative review.",
-                "அரசு திட்டத்திற்கு தகுதி இருந்தும் மறுக்கப்பட்டாலோ அல்லது லஞ்சம் கோரப்பட்டாலோ, VizhiTN தளத்தில் பதிவிட்டு மாவட்ட ஆட்சியர் மற்றும் துறை கவனத்திற்கு கொண்டு செல்லுங்கள்."
+                "If your legitimate application has been stalled beyond the statutory timeframe or unfairly rejected, file a report on VizhiTN to trigger administrative review.",
+                "அரசு திட்டத்திற்கு தகுதி இருந்தும் மறுக்கப்பட்டாலோ அல்லது தேவையற்ற தாமதம் ஏற்பட்டாலோ, VizhiTN தளத்தில் பதிவிட்டு மாவட்ட ஆட்சியர் மற்றும் துறை கவனத்திற்கு கொண்டு செல்லுங்கள்."
               )}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">

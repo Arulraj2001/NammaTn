@@ -107,14 +107,6 @@ export default function Page() {
               </li>
               <li>
                 <Link
-                  href="/tn-politics"
-                  className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors flex items-center gap-1.5"
-                >
-                  <span>🏛️</span> TN Politics & Governance Hub
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/press"
                   className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline-offset-2 hover:underline transition-colors flex items-center gap-1.5"
                 >

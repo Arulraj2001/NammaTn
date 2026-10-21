@@ -37,8 +37,8 @@ const ROOT = new URL('../', import.meta.url).pathname;
 // watchdog therefore retries a completely missing batch once; it must never
 // pressure a bot to hit a volume quota or bypass its source-validation gate.
 const EXPECTED = {
-  morning: { civic: { min: 1 }, tntoday: { min: 1 }, politics: { min: 0 } },
-  evening: { civic: { min: 1 }, politics: { min: 1 }, tntoday: { min: 1 } },
+  morning: { civic: 1, tntoday: 1 },
+  evening: { civic: 1, tntoday: 1 },
 };
 
 const PULSE_ARG = {
@@ -48,10 +48,9 @@ const PULSE_ARG = {
 
 const SCRIPT = {
   civic: 'scripts/auto-civic-poster.mjs',
-  politics: 'scripts/auto-politics-poster.mjs',
   tntoday: 'scripts/auto-tntoday-poster.mjs',
 };
-const LABEL = { civic: 'Civic Bot', politics: 'Politics Bot', tntoday: 'TN Today Bot' };
+const LABEL = { civic: 'Civic Bot', tntoday: 'TN Today Bot' };
 
 function istDayBounds() {
   const now = new Date();
@@ -78,7 +77,7 @@ async function initSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-// Count of ACTIVE civic posts (non-politics) created during today's IST day.
+// Count of ACTIVE civic posts created during today's IST day.
 async function countCivicToday(client, bounds) {
   const { count, error } = await client
     .from('post')
@@ -87,24 +86,8 @@ async function countCivicToday(client, bounds) {
     .lt('created_date', bounds.todayEndISO)
     .eq('status', 'active')
     .eq('is_publicly_visible', true)
-    .eq('moderation_status', 'approved')
-    .neq('category_slug', 'tn-politics');
+    .eq('moderation_status', 'approved');
   if (error) throw new Error(`civic count failed: ${error.message}`);
-  return count ?? 0;
-}
-
-// Count of POLITICS posts created during today's IST day.
-async function countPoliticsToday(client, bounds) {
-  const { count, error } = await client
-    .from('post')
-    .select('id', { count: 'exact', head: true })
-    .gte('created_date', bounds.todayStartISO)
-    .lt('created_date', bounds.todayEndISO)
-    .eq('status', 'active')
-    .eq('is_publicly_visible', true)
-    .eq('moderation_status', 'approved')
-    .eq('category_slug', 'tn-politics');
-  if (error) throw new Error(`politics count failed: ${error.message}`);
   return count ?? 0;
 }
 
@@ -196,7 +179,7 @@ async function main() {
   console.log(`[INFO] IST day window: ${bounds.todayStartISO} .. ${bounds.todayEndISO}`);
 
   const expectations = EXPECTED[mode];
-  const countFns = { civic: countCivicToday, politics: countPoliticsToday, tntoday: countTntodayToday };
+  const countFns = { civic: countCivicToday, tntoday: countTntodayToday };
   const summary = [];
   const toRecover = [];
 

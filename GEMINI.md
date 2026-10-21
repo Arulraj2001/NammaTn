@@ -38,7 +38,6 @@
 * `complaint` (Citizen grievance patterns: potholes, garbage, water leaks)
 * `appreciation` (Commendation of sanitary workers, police, or civic bodies)
 * `discussion` (Community discussions on local civic decisions)
-* `bribe` (Reports on bribe demands or department corruption)
 
 ### Allowed `urgency_level`:
 `low` | `medium` | `high` | `critical`

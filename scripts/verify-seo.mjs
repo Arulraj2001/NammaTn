@@ -271,12 +271,8 @@ assert.doesNotMatch(officesPage, /ssr:\s*false/, 'The static offices directory m
 
 const trendingPage = await read('src/app/(user)/trending/page.jsx');
 const trendingView = await read('src/views/Trending.jsx');
-const bribesPage = await read('src/app/(user)/bribes/page.jsx');
-const bribesView = await read('src/views/BribeDashboard.jsx');
 assert.match(trendingPage, /getTrendingHubData/, 'Trending must fetch initial rankings on the server');
 assert.match(trendingView, /initialPosts=/, 'Trending posts must hydrate from server data');
-assert.match(bribesPage, /getActiveBribePosts/, 'Bribe transparency reports must fetch on the server');
-assert.match(bribesView, /initialData:\s*initialBribePosts/, 'Bribe reports must hydrate from server data');
 
 for (const section of ['emergency', 'faqs', 'guides', 'portals', 'schemes']) {
   const source = await read(`src/app/(user)/awareness/${section}/page.jsx`);

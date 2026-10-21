@@ -73,7 +73,6 @@ const VALID_CATEGORIES = [
 
 const CATEGORY_MAP = {
   national: "india",
-  politics: "governance",
   policy: "governance",
   global: "world",
   international: "world",

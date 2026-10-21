@@ -228,7 +228,7 @@ export default function HomeHero({ userLocation, setUserLocation }) {
                     {T("38 District Feeds", "38 மாவட்ட நுழைவுவாயில்")}
                   </p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    {T("Hyperlocal alerts & MLA info", "உள்ளூர் செய்திகள் & MLA விவரம்")}
+                    {T("Hyperlocal alerts & civic info", "உள்ளூர் எச்சரிக்கைகள் & தகவல்கள்")}
                   </p>
                 </div>
               </Link>

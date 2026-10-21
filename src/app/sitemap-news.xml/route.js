@@ -90,7 +90,7 @@ export async function GET() {
         const pubDate = p.created_date || new Date().toISOString();
         const rawTitle = p.seo_title || p.title_ta || p.title_en || p.title || 'Civic Report';
         const newsLang = p.title_ta ? 'ta' : 'en';
-        const postUrl = p.category_slug === 'tn-politics' ? `${SITE_URL}/tn-politics/${slug}` : `${SITE_URL}/post/${slug}`;
+        const postUrl = `${SITE_URL}/post/${slug}`;
         newsItems.push({
           url: postUrl,
           title: rawTitle,

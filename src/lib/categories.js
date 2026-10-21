@@ -10,8 +10,7 @@ export const CATEGORIES = [
   { slug: "local-development", name_en: "Local Development", name_ta: "உள்ளூர் வளர்ச்சி", icon: "🏗️", color: "orange" },
   { slug: "transport", name_en: "Transport", name_ta: "போக்குவரத்து", icon: "🚌", color: "sky" },
   { slug: "agriculture", name_en: "Agriculture", name_ta: "விவசாயம்", icon: "🌾", color: "lime" },
-  { slug: "general", name_en: "General", name_ta: "பொது", icon: "💬", color: "gray" },
-  { slug: "tn-politics", name_en: "TN Politics", name_ta: "தமிழ்நாடு அரசியல்", icon: "🗳️", color: "indigo" }
+  { slug: "general", name_en: "General", name_ta: "பொது", icon: "💬", color: "gray" }
 ];
 
 export const CATEGORY_ALIASES = {
@@ -27,8 +26,7 @@ export const CATEGORY_ALIASES = {
   'potholes': 'road-infrastructure',
   'scam': 'public-safety',
   'scams': 'public-safety',
-  'scam-alert': 'public-safety',
-  'politics': 'tn-politics',
+  'scam-alert': 'public-safety'
 };
 
 export const resolveCategorySlug = (slug) => {

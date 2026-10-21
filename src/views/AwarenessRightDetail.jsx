@@ -316,12 +316,12 @@ export default function AwarenessRightDetail({ right }) {
                 </div>
                 <div className="flex-1">
                   <h4 className="text-sm font-bold text-amber-950 dark:text-amber-300">
-                    {T("Rights Denied or Official Extortion?", "உரிமை மறுக்கப்பட்டதா அல்லது லஞ்சம் கேட்கப்பட்டதா?")}
+                    {T("Rights Denied or Service Delayed?", "உரிமை மறுக்கப்பட்டதா அல்லது தாமதிக்கப்பட்டதா?")}
                   </h4>
                   <p className="text-xs text-amber-800 dark:text-amber-400 mt-1 leading-relaxed">
                     {T(
-                      "In Tamil Nadu, no public officer can withhold statutory services or demand unauthorized speed money. If your application is rejected without written reasons or an officer demands a bribe, file an anonymous complaint on DVAC Helpline (1064) or document proof on VizhiTN.",
-                      "தமிழ்நாட்டில் எந்தவொரு அரசு அதிகாரியும் காரணமின்றி சேவையை மறுக்கவோ லஞ்சம் கோரவோ முடியாது. லஞ்சம் கேட்கப்பட்டால் DVAC உதவி எண் 1064 ஐ அழைக்கலாம் அல்லது VizhiTN தளத்தில் ஆதாரத்துடன் புகாரளிக்கலாம்."
+                      "In Tamil Nadu, no public officer can withhold statutory services without valid reasons. If your application is rejected without written reasons or indefinitely delayed, register an appeal with the Appellate Authority or document proof on VizhiTN.",
+                      "தமிழ்நாட்டில் எந்தவொரு அரசு அதிகாரியும் காரணமின்றி சேவையை மறுக்கவோ தாமதிக்கவோ முடியாது. காரணமின்றி தாமதிக்கப்பட்டால் மேல்முறையீட்டு அலுவலரிடம் முறையிடலாம் அல்லது VizhiTN தளத்தில் ஆதாரத்துடன் பதிவிடலாம்."
                     )}
                   </p>
                 </div>

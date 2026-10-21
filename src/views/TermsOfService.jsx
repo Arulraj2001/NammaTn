@@ -93,17 +93,7 @@ const TERMS_CHAPTERS = [
     content_en: "The emergency phone numbers (112, 108, 1912, 1930, 1070, 1077) and first-aid SOP guides hosted on VizhiTN are compiled from verified official Government of Tamil Nadu and Central directives. VIZHITN DOES NOT OPERATE EMERGENCY DISPATCH VANS, AMBULANCES, OR POLICE VEHICLES. In any active life-or-death crisis, road accident, fire, or live-wire electrocution, you must dial emergency cellular lines directly. VizhiTN disclaims all liability for telecom network outages, delayed departmental responses, or hospital bed unavailability.",
     content_ta: "தளத்தில் உள்ள அவசர எண்கள் (112, 108, 1912, 1930, 1070) மற்றும் முதலுதவி வழிகாட்டிகள் அரசு வழிகாட்டுதலின்படி தொகுக்கப்பட்டவை. VizhiTN ஆம்புலன்ஸ் அல்லது மீட்பு வாகனங்களை நேரடியாக இயக்குவதில்லை. விபத்து, தீ அல்லது மின்கம்பி ஆபத்தின் போது அரசு எண்களை நேரடியாக அழைக்கவும். தொலைத்தொடர்பு தாமதங்களுக்கு தளம் பொறுப்பாகாது."
   },
-  {
-    num: "7",
-    id: "bribe-tracker-terms",
-    icon: Lock,
-    en: "Anonymous Bribe Tracker Terms of Use",
-    ta: "லஞ்சக் கண்காணிப்பு பயன்பாட்டு விதிமுறைகள்",
-    summary_en: "Bribe reports must reflect genuine departmental extortion demands. Fabricating bribe claims against named individuals is prohibited.",
-    summary_ta: "லஞ்சப் பதிவுகள் உண்மை அனுபவத்தின் அடிப்படையில் இருக்க வேண்டும்; தனிநபர்களை குறிவைத்து பழிவாங்கும் நோக்கில் புனையப்படக்கூடாது.",
-    content_en: "The Bribe Tracker (/bribe-tracker) enables citizens to record regional bribery demands anonymously. Reports must describe the department, public office location, and amount demanded. Users agree NOT to submit defamatory accusations against named individual officers, personal vendetta entries, or fabricated corruption claims. While anonymous to the public, abusive spam attempts violating Indian law may be blocked at network boundary firewalls.",
-    content_ta: "லஞ்சக் கண்காணிப்பு தளம் பொதுமக்கள் தங்களுக்கு ஏற்பட்ட லஞ்சக் கோரிக்கைகளை அநாமதேயமாக பதிவு செய்ய உதவுகிறது. துறை, அலுவலக இருப்பிடம் மற்றும் தொகையை மட்டுமே குறிப்பிட வேண்டும். தனிநபர் அதிகாரிகளின் பெயர்களை வெளியிட்டு அவதூறு பரப்பக்கூடாது. சட்டத்தை மீறும் ஸ்பேம் பதிவுகள் தடுக்கப்படும்."
-  },
+
   {
     num: "8",
     id: "local-listings-terms",

@@ -62,8 +62,8 @@ export function createCivicPhotoPrompt(post = {}) {
   if (category === 'education' || t.includes('school') || t.includes('college')) {
     return `Documentary photograph of a Tamil Nadu government educational institution campus exterior with green trees, clean architecture, realistic daylight editorial photo, no text`;
   }
-  if (category === 'tn-politics' || t.includes('secretariat') || t.includes('assembly') || t.includes('minister')) {
-    return `Official documentary style photograph of the historic Tamil Nadu Secretariat Fort St. George administrative headquarters in Chennai, grand colonial building facade, clear blue sky, journalistic photo, no text`;
+  if (t.includes('secretariat') || t.includes('collectorate')) {
+    return `Official documentary style photograph of the historic Tamil Nadu administrative headquarters or district collectorate, dignified civil building facade, clear blue sky, journalistic photo, no text`;
   }
   if (category === 'government-schemes') {
     return `Realistic news photograph of a Tamil Nadu citizen service centre e-Sevai centre exterior in ${district}, citizens at public administration desk, dignified documentary journalism, no text`;

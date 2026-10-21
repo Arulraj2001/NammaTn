@@ -47,13 +47,12 @@ Allowed category_slug values (use ONLY these 12):
 - local-development
 - general
 
-Allowed post_type values (use ONLY these 6):
+Allowed post_type values (use ONLY these 5):
 - alert (time-sensitive: power cuts, road closures, rain warnings)
 - local_update (civic updates: camps, metro progress, local drives)
 - complaint (citizen grievance patterns)
 - appreciation (commendation of workers/civic bodies)
 - discussion (community discussions)
-- bribe (corruption reports)
 
 Allowed urgency_level: low | medium | high | critical
 Allowed civic_status: reported | community_verified | complaint_needed | complaint_filed | under_followup | claimed_fixed | citizen_verified_fixed

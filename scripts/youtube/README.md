@@ -44,11 +44,11 @@ scripts/youtube/
 ### 1. Slot 1: Citizen Rights & Dispute Guide (`yt:rights`)
 * **Schedule:** Daily at **01:30 PM IST** (Lunchtime slot).
 * **Format:** 1080×1920 (9:16 Vertical Short), 50–65s.
-* **Content:** Real-life disputes that ordinary citizens face (House owner advance, parking nuisance, traffic police rules, loan apps, bribes for Patta).
+* **Content:** Real-life disputes that ordinary citizens face (House owner advance, parking nuisance, traffic police rules, loan apps, Patta transfer delays).
 * **3-Step Structure:**
   1. **Step 1 (How to Behave):** De-escalate, stay calm, written notices.
   2. **Step 2 (Evidence Gathering):** WhatsApp proof, bank transactions, video records.
-  3. **Step 3 (Legal Sections & Helplines):** Exact Act (TNRRRL Act, MV Act, Section 133, DVAC 1064, Cyber 1930, CM Cell 1100).
+  3. **Step 3 (Legal Sections & Helplines):** Exact Act (TNRRRL Act, MV Act, Section 133, Consumer 1915, Cyber 1930, CM Cell 1100).
 
 ### 2. Slot 2: Daily Lifeline Civic Alert (`yt:shorts`)
 * **Schedule:** Daily at **07:30 PM IST** (Evening commute slot).

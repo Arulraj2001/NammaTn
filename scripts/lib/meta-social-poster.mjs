@@ -32,7 +32,6 @@ const VIRAL_HASHTAG_MAP = {
   'government-schemes': ['#KalaignarMagalirUrimai', '#SmartRationCard', '#ESevai', '#AadhaarCamp', '#TNGovtSchemes', '#TNWelfare'],
   'public-safety': ['#CyberCrime1930', '#TamilNaduPolice', '#ScamAlert', '#CyberSecurity', '#TNSafety'],
   'road-infrastructure': ['#TNRoads', '#SmartCity', '#Highways', '#CivicIssue', '#RoadSafety'],
-  'tn-politics': ['#TNPolitics', '#TNElection', '#TamilNewsLive', '#DMK', '#AIADMK', '#TVK', '#Vijay', '#Stalin'],
   education: ['#TNSchools', '#SchoolHoliday', '#ExamAlert', '#TamilNaduEducation', '#CollegeUpdate'],
   environment: ['#TNRain', '#ChennaiRains', '#IMDWeather', '#LakeRestoration', '#TamilNaduClimate'],
   healthcare: ['#TNHealth', '#GovtHospital', '#BloodDonation', '#HealthAlert', '#TamilNaduHealthcare'],
@@ -97,7 +96,7 @@ export function formatSocialCaption(post = {}) {
 
   const allHashtags = Array.from(new Set([...tier1Tags, ...tier2Tags, ...tier3Tags])).join(' ');
 
-  const targetUrl = `https://www.vizhitn.in/${post.slug ? (category === 'tn-politics' ? `tn-politics/${post.slug}` : `post/${post.slug}`) : ''}`;
+  const targetUrl = `https://www.vizhitn.in/${post.slug ? `post/${post.slug}` : ''}`;
 
   const lines = [
     searchAnchor,
@@ -291,8 +290,6 @@ export async function broadcastToSocials(post = {}, options = {}) {
   if (post.slug) {
     if (post.isTnToday || post.category === 'tn_today' || post.category_slug === 'tn-today') {
       link = `https://www.vizhitn.in/tn-today/${post.slug}`;
-    } else if (post.category_slug === 'tn-politics') {
-      link = `https://www.vizhitn.in/tn-politics/${post.slug}`;
     } else {
       link = `https://www.vizhitn.in/post/${post.slug}`;
     }

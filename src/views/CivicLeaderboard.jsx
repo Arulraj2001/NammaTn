@@ -207,7 +207,7 @@ export default function CivicLeaderboard({ initialPosts = [] }) {
         </div>
 
         {/* Universal SEO Cross-Links */}
-        <UniversalCrossLinks pageType="bribes" />
+        <UniversalCrossLinks pageType="transparency" />
       </div>
     </div>
   );

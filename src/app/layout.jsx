@@ -136,7 +136,7 @@ export default function RootLayout({ children }) {
             __html: `(function(){
   if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
     var p = window.location.pathname;
-    if (p.startsWith('/post/') || p.startsWith('/tn-today/') || p.startsWith('/tn-politics/') || p === '/') {
+    if (p.startsWith('/post/') || p.startsWith('/tn-today/') || p === '/') {
       window.addEventListener('load', function() {
         var s = document.createElement('script');
         s.async = true;

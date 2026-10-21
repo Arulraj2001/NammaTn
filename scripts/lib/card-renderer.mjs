@@ -16,7 +16,6 @@ const CATEGORY_STYLES = {
   'road-infrastructure': { bg: '#1d4ed8', border: '#3b82f6', label: 'ROAD & INFRA' },
   'government-schemes': { bg: '#4338ca', border: '#6366f1', label: 'GOVT SCHEMES' },
   'public-safety': { bg: '#b91c1c', border: '#ef4444', label: 'PUBLIC SAFETY' },
-  'tn-politics': { bg: '#581c87', border: '#9333ea', label: 'TN POLITICS' },
   transport: { bg: '#0369a1', border: '#0ea5e9', label: 'TRANSPORT' },
   general: { bg: '#334155', border: '#64748b', label: 'CIVIC NOTICE' }
 };

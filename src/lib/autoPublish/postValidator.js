@@ -37,7 +37,6 @@ const VALID_POST_TYPES = new Set([
   'complaint',
   'appreciation',
   'discussion',
-  'bribe',
 ]);
 
 const VALID_URGENCY_LEVELS = new Set(['low', 'medium', 'high', 'critical']);

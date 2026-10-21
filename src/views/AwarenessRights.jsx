@@ -47,17 +47,17 @@ const CRISIS_SCENARIOS = [
     target_slug: "police-vehicle-check-citizen-rights"
   },
   {
-    id: "bribe-delay",
+    id: "service-delay",
     emoji: "🏛️",
     category: "public_service",
     tag_en: "Govt Offices & SLAs",
     tag_ta: "அரசு அலுவலகம் & காலக்கெடு",
-    title_en: "Official Demands Bribe or Delays Certificate",
-    title_ta: "சான்றிதழ் தாமதம் அல்லது லஞ்சம் கேட்கும் சூழல்",
-    clause_en: "TN Citizen Service Charter & Prevention of Corruption Act (Sec 7)",
-    clause_ta: "தமிழ்நாடு குடிமக்கள் சாசனம் & ஊழல் தடுப்புச் சட்டம் (பிரிவு 7)",
-    script_en: "Sir, under the Tamil Nadu Citizen Charter, the prescribed statutory timeline for this service is 15 days. I have submitted all verified documents. Please provide me the official written daily file notings explaining the statutory delay. Under state zero-tolerance anti-corruption rules, demanding unofficial speed money is a non-bailable offense. I am registering this matter on DVAC Helpline 1064 and CM Helpline 1100.",
-    script_ta: "அரசு குடிமக்கள் சாசனத்தின்படி இந்த சான்றிதழுக்கான காலக்கெடு 15 நாட்கள் ஆகும். தேவையான அனைத்து ஆவணங்களும் சமர்ப்பிக்கப்பட்டுள்ளன. தாமதத்திற்கான காரணத்தை எழுத்துப்பூர்வமாக வழங்குங்கள். லஞ்சம் கேட்பது ஊழல் தடுப்புச் சட்டப்படி குற்றமாகும். இதை லஞ்ச ஒழிப்புத் துறை 1064 மற்றும் முதல்வர் உதவி எண் 1100-ல் பதிவு செய்கிறேன்.",
+    title_en: "Official Delays Certificate Beyond Statutory Timeline",
+    title_ta: "சான்றிதழ் தேவையற்ற தாமதம் மற்றும் சேவை மறுப்பு",
+    clause_en: "TN Citizen Service Charter & Right to Public Services",
+    clause_ta: "தமிழ்நாடு குடிமக்கள் சாசனம் & சேவை உரிமை",
+    script_en: "Sir, under the Tamil Nadu Citizen Charter, the prescribed statutory timeline for this service is 15 days. I have submitted all verified documents. Please provide me the official written daily file notings explaining the statutory delay. I am registering this service delay on CM Helpline 1100.",
+    script_ta: "அரசு குடிமக்கள் சாசனத்தின்படி இந்த சான்றிதழுக்கான காலக்கெடு 15 நாட்கள் ஆகும். தேவையான அனைத்து ஆவணங்களும் சமர்ப்பிக்கப்பட்டுள்ளன. தாமதத்திற்கான காரணத்தை எழுத்துப்பூர்வமாக வழங்குங்கள். இதை முதல்வர் உதவி எண் 1100-ல் பதிவு செய்கிறேன்.",
     cannot_do_en: [
       "Staff cannot hold verified applications beyond SLA without a written deficiency memo",
       "Offices cannot demand unofficial cash charges without government treasury receipts",
@@ -65,12 +65,12 @@ const CRISIS_SCENARIOS = [
     ],
     cannot_do_ta: [
       "முறையான காரணமின்றி காலக்கெடுவுக்கு மேல் கோப்பை நிலுவையில் வைக்க முடியாது",
-      "அரசு ரசீது இன்றி கூடுதல் கட்டணம் அல்லது லஞ்சம் கோர முடியாது",
+      "அரசு ரசீது இன்றி கூடுதல் கட்டணம் கோர முடியாது",
       "விண்ணப்பங்களை வாங்க மறுக்கவோ ஒப்புகை சீட்டு தர மறுக்கவோ முடியாது"
     ],
-    helpline: "1064",
-    helpline_name_en: "DVAC Anti-Corruption 24x7",
-    helpline_name_ta: "லஞ்ச ஒழிப்புத் துறை",
+    helpline: "1100",
+    helpline_name_en: "CM Helpline 1100",
+    helpline_name_ta: "முதலமைச்சர் உதவி மையம்",
     target_slug: "right-to-public-services-timebound"
   },
   {
@@ -255,7 +255,7 @@ const LEGAL_HELPLINES = [
   { number: "1915", name_en: "Consumer Helpline", name_ta: "நுகர்வோர் உதவி", desc: "Defective goods, e-commerce cheats, overpricing" },
   { number: "14567", name_en: "Elderline (Seniors)", name_ta: "முதியோர் உதவி", desc: "Elderly abuse, property disputes, maintenance" },
   { number: "181", name_en: "Women Helpline", name_ta: "பெண்கள் உதவி", desc: "Domestic violence, harassment, emergency shelter" },
-  { number: "1064", name_en: "DVAC Anti-Corruption", name_ta: "லஞ்ச ஒழிப்புத் துறை", desc: "Government bribe demands & extortion" },
+  { number: "1930", name_en: "Cyber Crime Helpline", name_ta: "சைபர் கிரைம் உதவி", desc: "Financial cyber fraud & online scam freezing" },
   { number: "1100", name_en: "CM Helpline", name_ta: "முதல்வர் உதவி எண்", desc: "Government certificate delays & civic complaints" },
   { number: "103", name_en: "Traffic Police Desk", name_ta: "போக்குவரத்து காவல்துறை", desc: "Traffic harassment & check complaints" },
   { number: "1912", name_en: "Minnalagam EB", name_ta: "மின்னகம் மின்தடை", desc: "TANGEDCO power cuts & transformer complaints" },

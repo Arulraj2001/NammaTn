@@ -131,7 +131,7 @@ export const getAllGuides = () => [
     verbal_script_ta: "வணக்கம் ஐயா. நியாயவிலைக் கடை எண் [Shop Number] குறித்து புகார் அளிக்கிறேன். எனது ஸ்மார்ட் கார்டு எண் [Card Number]. TNPDS தளத்தில் இருப்பு காட்டியும் கடை ஊழியர் பொருட்கள் இல்லை என மறுக்கிறார். உணவு வழங்கல் ஆய்வாளர் மூலம் ஆய்வு செய்யக் கோருகிறேன்.",
     steps_en: [
       "Open the TNPDS Mobile App to check live commodity stock allocated to your ration shop before visiting.",
-      "If the shop is locked during working hours (9 AM - 1 PM & 2 PM - 6 PM) or salesman demands cash bribes, note shop code.",
+      "If the shop is locked during working hours (9 AM - 1 PM & 2 PM - 6 PM) or salesman demands unauthorized charges, note shop code.",
       "For biometric fingerprint failure: demand OTP authentication via registered mobile number (salesman cannot deny).",
       "Dial State Civil Supplies Toll-Free Helpline 1967 or 1800-425-5901 to lodge official complaint.",
       "File written complaint with the Taluk Supply Officer (TSO) or District Supply Officer (DSO) at the District Collectorate."
@@ -153,50 +153,47 @@ export const getAllGuides = () => [
     ]
   },
   {
-    id: "bribery",
-    slug: "bribery",
-    title_en: "Report Government Bribery & Official Extortion (DVAC 1064)",
-    title_ta: "அரசு அலுவலக லஞ்சம் & மிரட்டல் புகார் (DVAC 1064)",
-    seo_title_en: "Report Bribery in Tamil Nadu: DVAC 1064, WhatsApp & Trap Procedure",
-    seo_title_ta: "தமிழ்நாட்டில் லஞ்ச புகார் அளிப்பது எப்படி: DVAC 1064 & லஞ்ச ஒழிப்பு பொறி",
-    seo_desc_en: "How to safely report government corruption and bribery in Tamil Nadu: DVAC Toll-Free 1064, confidential WhatsApp 94981 05884, phenolphthalein trap procedure & whistleblower safety.",
-    seo_desc_ta: "அரசு அதிகாரிகள் லஞ்சம் கேட்டால் பாதுகாப்பாக புகார் அளிக்கும் முறை: DVAC 1064 உதவி எண், ரகசிய வாட்ஸ்அப் 94981 05884 மற்றும் லஞ்ச ஒழிப்புத் துறை பொறி நடவடிக்கை.",
-    problem_type_en: "Bribery & Anti-Corruption",
-    problem_type_ta: "ஊழல் தடுப்பு & லஞ்சம்",
-    category: "anti_corruption",
-    department_en: "Directorate of Vigilance and Anti-Corruption (DVAC Tamil Nadu)",
-    department_ta: "ஊழல் தடுப்பு மற்றும் கண்காணிப்பு இயக்ககம் (DVAC)",
-    helpline_numbers: ["1064", "044-24615929"],
-    whatsapp_number: "94981 05884",
-    portal_url: "https://www.dvac.tn.gov.in",
-    sla_time_en: "Confidential Verification: 24 Hours | Trap: Planned discreetly",
-    sla_time_ta: "ரகசிய சரிபார்ப்பு: 24 மணி நேரம்",
-    summary_en: "Strict whistleblower guide to report public servants demanding speed money or kickbacks for certificates, patta, or registrations.",
-    summary_ta: "பட்டா, சான்றிதழ் அல்லது அரசு சேவைகளுக்கு லஞ்சம் கேட்கும் அரசு அதிகாரிகளை ரகசியமாக லஞ்ச ஒழிப்புத் துறையிடம் சிக்க வைக்கும் வழிகாட்டி.",
-    verbal_script_en: "Sir, I am calling DVAC Helpline 1064. A public servant, [Designation / Office Name, District], is refusing to process my legitimate application for [Service] and is demanding illegal gratification of [Amount]. I request confidential guidance to lay a vigilance trap.",
-    verbal_script_ta: "வணக்கம் ஐயா. DVAC உதவி எண் 1064-ஐ அழைக்கிறேன். [துறை மற்றும் அலுவலகத்தின் பெயர்]-ல் உள்ள அதிகாரி எனது நியாயமான பணிக்கு [தொகை] லஞ்சம் கேட்கிறார். அரசுப் பணத்தை லஞ்சம் கொடுக்காமல் அவரை சட்டப்படி நடவடிக்கை எடுக்க வழிகாட்டக் கோருகிறேன்.",
+    id: "consumer-grievance",
+    slug: "consumer-grievance",
+    title_en: "Resolve Consumer Grievances & Unfair Trade Practices (1915)",
+    title_ta: "நுகர்வோர் குறைதீர்ப்பு & ஆன்லைன் வணிக புகார் (1915)",
+    seo_title_en: "Consumer Grievance Tamil Nadu: National Consumer Helpline 1915 & e-Daakhil",
+    seo_title_ta: "தமிழ்நாடு நுகர்வோர் புகார்: தேசிய உதவி எண் 1915 & e-Daakhil வழிகாட்டி",
+    seo_desc_en: "Step-by-step guide to resolve defective products, e-commerce fraud, and deficiency of services in Tamil Nadu via National Consumer Helpline 1915 and e-Daakhil court filing.",
+    seo_desc_ta: "வாங்கிய பொருளில் குறைபாடு அல்லது ஏமாற்றப்பட்டால் தேசிய நுகர்வோர் உதவி எண் 1915 மற்றும் e-Daakhil மூலம் வழக்கு தொடரும் முறை.",
+    problem_type_en: "Consumer Protection",
+    problem_type_ta: "நுகர்வோர் பாதுகாப்பு",
+    category: "consumer",
+    department_en: "Department of Consumer Affairs & State Consumer Commission",
+    department_ta: "நுகர்வோர் பாதுகாப்புத் துறை & மாநில ஆணையம்",
+    helpline_numbers: ["1915", "1800-11-4000"],
+    portal_url: "https://edaakhil.nic.in",
+    sla_time_en: "Online Registration: Immediate | Redressal: 15-45 Days",
+    sla_time_ta: "பதிவு: உடனடி | தீர்வு: 15-45 நாட்கள்",
+    summary_en: "Comprehensive guide to resolve defective goods, airline refund delays, unfair trade practices, and banking disputes without paying advocate fees.",
+    summary_ta: "குறைபாடுள்ள பொருட்கள், பணப் பரிவர்த்தனை தோல்வி மற்றும் வணிக முறைகேடுகளுக்கு வழக்கறிஞர் இன்றி தீர்வு காணும் வழிகாட்டி.",
+    verbal_script_en: "Sir, I am calling National Consumer Helpline 1915. I purchased a product/service from [Company/Vendor Name] with invoice number [Bill Number]. The service has a severe deficiency and the vendor refuses refund or replacement. Kindly register a formal consumer grievance.",
+    verbal_script_ta: "வணக்கம் ஐயா. தேசிய நுகர்வோர் உதவி எண் 1915-ஐ அழைக்கிறேன். [நிறுவனத்தின் பெயர்]-ல் [பில் எண்] கொண்ட பொருளை வாங்கினேன். அதில் குறைபாடு உள்ளதால் நிறுவனத்திடம் மாற்றித் தர அல்லது பணத்தை திருப்பித் தர கோருகிறேன்.",
     steps_en: [
-      "Never pay the bribe. Both giving and taking bribes are punishable offenses under the Prevention of Corruption Act.",
-      "Note exact date, time, officer name, designation, room number, and the specific cash or favor demanded.",
-      "Call DVAC 24x7 Toll-Free Hotline at 1064 (Your call is encrypted and identity is kept 100% confidential).",
-      "Message DVAC confidential WhatsApp at 94981 05884 with details of the pending file or application number.",
-      "DVAC Superintendent of Police (SP) will coordinate a phenolphthalein chemical trap to catch the corrupt official red-handed.",
-      "Document the delay on VizhiTN Public Bribe Tracker to protect your civic rights."
+      "Preserve all tax invoices, payment receipts, warranty cards, and written email communications with the seller.",
+      "Call National Consumer Helpline at 1915 or send SMS/WhatsApp complaint for mediation.",
+      "Register your complaint on the INGRAM portal (consumerhelpline.gov.in) with purchase proof.",
+      "If unresolved through mediation, file a consumer case online on e-Daakhil (edaakhil.nic.in) without hiring an advocate.",
+      "Track hearing notices and orders directly on your registered mobile number."
     ],
     steps_ta: [
-      "லஞ்சம் கொடுக்காதீர்கள். லஞ்சம் கொடுப்பதும் வாங்குவதும் ஊழல் தடுப்புச் சட்டப்படி தண்டனைக்குரிய குற்றமாகும்.",
-      "அதிகாரியின் பெயர், பதவி, அலுவலக அறை எண் மற்றும் கோரப்பட்ட லஞ்சத் தொகையை ரகசியமாக குறித்துக்கொள்ளுங்கள்.",
-      "DVAC 24x7 இலவச உதவி எண் 1064-ஐ அழையுங்கள் (உங்கள் அடையாளம் 100% பாதுகாக்கப்படும்).",
-      "DVAC ரகசிய வாட்ஸ்அப் எண் 94981 05884-க்கு நிலுவையில் உள்ள கோப்பு விவரங்களை அனுப்பவும்.",
-      "லஞ்ச ஒழிப்புத் துறை டிஎஸ்பி உங்களைத் தொடர்புகொண்டு அதிகாரியை கையும் களவுமாகப் பிடிக்க ஏற்பாடு செய்வார்.",
-      "பாதுகாப்புடன் VizhiTN லஞ்சக் கண்காணிப்புப் பக்கத்தில் விபரங்களைப் பதிவு செய்யுங்கள்."
+      "பொருளின் ரசீது, உத்தரவாத அட்டை மற்றும் விற்பனையாளருடன் பேசிய மின்னஞ்சல் விவரங்களை பத்திரப்படுத்துங்கள்.",
+      "தேசிய நுகர்வோர் உதவி எண் 1915-ஐ அழைத்து சமரசப் பேச்சுவார்த்தைக்கு புகார் அளியுங்கள்.",
+      "consumerhelpline.gov.in தளத்தில் ரசீது நகலுடன் உங்கள் புகாரை சமர்ப்பியுங்கள்.",
+      "தீர்வு கிடைக்காவிட்டால் e-Daakhil தளம் மூலம் வழக்கறிஞர் இன்றி மாவட்ட நுகர்வோர் நீதிமன்றத்தில் வழக்கு தாக்கல் செய்யுங்கள்.",
+      "நீதிமன்ற உத்தரவுகளை உங்கள் மொபைல் மூலமாகவே கண்காணிக்கலாம்."
     ],
     faqs: [
       {
-        q_en: "Will my identity be revealed if I file a complaint with DVAC?",
-        q_ta: "DVAC-ல் புகார் அளித்தால் எனது பெயர் அல்லது முகவரி வெளிவருமா?",
-        a_en: "No. Under the Whistle Blowers Protection Act and DVAC operational protocols, the informant's identity is strictly confidential and protected by law.",
-        a_ta: "இல்லை. தகவல் கொடுப்பவர் பாதுகாப்பு சட்டப்படி உங்கள் பெயர், தொலைபேசி எண் உள்ளிட்ட எந்தவொரு விவரமும் முற்றிலும் ரகசியமாக வைக்கப்படும்."
+        q_en: "Is a lawyer mandatory to file a consumer court case in Tamil Nadu?",
+        q_ta: "நுகர்வோர் நீதிமன்றத்தில் வழக்கு தொடர வழக்கறிஞர் கட்டாயமா?",
+        a_en: "No. Under the Consumer Protection Act 2019, any citizen can argue their own case without hiring a lawyer, and filing can be completed online via e-Daakhil.",
+        a_ta: "தேவையில்லை. நுகர்வோர் பாதுகாப்புச் சட்டம் 2019-ன்படி பொதுமக்கள் நேரடியாகவே தங்கள் வழக்கை நடத்தலாம்."
       }
     ]
   },
@@ -383,8 +380,8 @@ export const getAllGuides = () => [
       {
         q_en: "Can a VAO or Tahsildar demand unofficial fees for online Patta transfer?",
         q_ta: "பட்டா மாறுதலுக்கு விஏஓ அல்லது வட்டாட்சியர் அரசு கட்டணத்தை விட கூடுதலாக பணம் கேட்க முடியுமா?",
-        a_en: "No. The official Tamil Nadu government fee is ₹60 for online application. Demanding any extra speed money is illegal under the Prevention of Corruption Act. Report to DVAC at 1064.",
-        a_ta: "முடியாது. ஆன்லைன் விண்ணப்பத்திற்கு அரசு கட்டணம் ₹60 மட்டுமே. லஞ்சம் கேட்டால் உடனே லஞ்ச ஒழிப்புத் துறை 1064 எண்ணில் புகார் அளியுங்கள்."
+        a_en: "No. The official Tamil Nadu government fee is ₹60 for online application. Demanding any extra fees or delaying service is strictly prohibited. Report grievances to CM Helpline at 1100.",
+        a_ta: "முடியாது. ஆன்லைன் விண்ணப்பத்திற்கு அரசு கட்டணம் ₹60 மட்டுமே. கூடுதல் கட்டணம் அல்லது காலதாமதம் ஏற்பட்டால் முதலமைச்சர் உதவி மையம் 1100 எண்ணில் புகார் அளியுங்கள்."
       }
     ]
   }
@@ -429,13 +426,13 @@ export const getAllFaqs = () => [
   },
   {
     id: "f4",
-    slug: "how-to-report-bribery-safely",
-    question_en: "How do I report bribery safely?",
-    question_ta: "லஞ்சத்தை எவ்வாறு பாதுகாப்பாக புகாரளிப்பது?",
-    answer_en: "Call the DVAC Anti-Corruption Helpline at 1064 (24×7, anonymous). File online at vigilance.tn.gov.in — your identity is protected. You can also record the conversation on your phone (legally permitted in Tamil Nadu for self-protection). Additionally, file an RTI at rtionline.gov.in asking why your service was delayed.",
-    answer_ta: "DVAC ஊழல் தடுப்பு உதவி 1064 (24×7, அடையாளம் வெளிப்படுத்தல் தேவையில்லை). vigilance.tn.gov.in ல் ஆன்லைனில் புகார். TN சட்டம் பதிவு செய்ய அனுமதிக்கிறது.",
-    category_en: "Anti-Corruption",
-    category_ta: "ஊழல் தடுப்பு",
+    slug: "how-to-track-tangedco-power-cuts",
+    question_en: "How do I report or track power cuts in my area?",
+    question_ta: "மின்வெட்டு மற்றும் மின்தடையை எவ்வாறு சரிபார்ப்பது?",
+    answer_en: "Call the Minnalagam 24x7 control room at 1912 or WhatsApp 94987 94987 with your Consumer Number. You can also view real-time scheduled maintenance shutdowns and live feeder statuses across all 38 districts directly on VizhiTN.",
+    answer_ta: "மின்னகம் 24x7 கட்டுப்பாட்டு மையம் 1912 அல்லது வாட்ஸ்அப் 94987 94987 எண்ணை அழைக்கலாம். மேலும் VizhiTN தளத்தில் தமிழ்நாடு முழுவதும் திட்டமிடப்பட்ட மின்தடை விவரங்களை நேரடியாகப் பார்க்கலாம்.",
+    category_en: "Electricity",
+    category_ta: "மின்சாரம்",
   },
   {
     id: "f5",
@@ -1110,10 +1107,10 @@ export const getAllSchemes = () => [
     is_featured: true,
     faqs: [
       {
-        q_en: "What should a farmer do if a DPC staff demands a bribe or bag commission?",
-        q_ta: "கொள்முதல் நிலையத்தில் மூட்டைக்கு பணம் அல்லது லஞ்சம் கேட்டால் என்ன செய்வது?",
-        a_en: "Strict zero-tolerance policy applies. Immediately dial the Vigilance & Anti-Corruption helpline at 044-22342142 or lodge a direct complaint to the District Collector via 1100.",
-        a_ta: "லஞ்சம் கேட்பது குற்றமாகும். உடனடியாக லஞ்ச ஒழிப்புத் துறை (044-22342142) அல்லது மாவட்ட ஆட்சியர் / 1100 உதவி எண்ணை அழைத்து புகார் அளிக்கலாம்."
+        q_en: "What should a farmer do if a DPC staff demands an unauthorized bag commission?",
+        q_ta: "கொள்முதல் நிலையத்தில் மூட்டைக்கு கமிஷன் பிடித்தம் செய்தால் என்ன செய்வது?",
+        a_en: "Strict zero-tolerance policy applies. Immediately dial the Civil Supplies & District Collector helpline via 1100 or 1967.",
+        a_ta: "கூடுதல் கட்டணம் கேட்பது குற்றமாகும். உடனடியாக மாவட்ட ஆட்சியர் / 1100 அல்லது 1967 உதவி எண்ணை அழைத்து புகார் அளிக்கலாம்."
       }
     ]
   },
@@ -1202,10 +1199,10 @@ export const getAllSchemes = () => [
     ]
   },
   {
-    id: "makkalodu-vijay-camps",
-    slug: "makkalodu-vijay-grievance-camps",
-    name_en: "Makkalodu Vijay Taluk Grievance Camps",
-    name_ta: "\"மக்களோடு விஜய்\" வட்டார மக்கள் குறைதீர்ப்பு முகாம்கள்",
+    id: "makkaludan-mudhalvar-camps",
+    slug: "makkaludan-mudhalvar-grievance-camps",
+    name_en: "Makkaludan Mudhalvar Taluk Grievance Camps",
+    name_ta: "\"மக்களுடன் முதல்வர்\" வட்டார மக்கள் குறைதீர்ப்பு முகாம்கள்",
     category_en: "Governance",
     category_ta: "நிர்வாகம்",
     department_en: "Revenue and Disaster Management Department",
@@ -1541,15 +1538,15 @@ export const getAllEmergencyContacts = () => [
     category_ta: "குழந்தைகள் பாதுகாப்பு",
   },
   {
-    id: "emergency-1064",
-    slug: "1064",
-    name_en: "DVAC Anti-Corruption & Bribery Helpline (1064)",
-    name_ta: "லஞ்ச ஒழிப்பு மற்றும் கண்காணிப்புத் துறை (1064)",
-    number: "1064",
-    description_en: "Direct Directorate of Vigilance and Anti-Corruption line to report government officers demanding bribes or indulging in graft.",
-    description_ta: "அரசு அலுவலகங்களில் லஞ்சம் கேட்பவர்கள் மீது ரகசியமாக புகார் அளிக்க உதவும் இலவச எண்.",
-    category_en: "Anti-Corruption",
-    category_ta: "ஊழல் தடுப்பு",
+    id: "emergency-1915",
+    slug: "1915",
+    name_en: "National Consumer Helpline (1915)",
+    name_ta: "தேசிய நுகர்வோர் உதவி எண் (1915)",
+    number: "1915",
+    description_en: "National toll-free consumer grievance helpline for unfair trade, deficient services, and dispute mediation.",
+    description_ta: "குறைபாடுள்ள பொருட்கள், நுகர்வோர் சேவை குறைபாடுகள் மற்றும் புகார்களுக்கு இலவச உதவி எண்.",
+    category_en: "Consumer Grievance",
+    category_ta: "நுகர்வோர் குறைதீர்வு",
   },
 ];
 
