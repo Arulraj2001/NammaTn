@@ -15,6 +15,7 @@ import CategoryStatsPanel from "@/components/category/CategoryStatsPanel";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { injectFAQStructuredData } from "@/lib/seo";
 import AdSlot from "@/components/ads/AdSlot";
+import { toCdnMediaUrl } from "@/lib/cdn";
 
 const SORT_OPTIONS = [
   { value: "-created_date", en: "Newest", ta: "புதியவை" },
@@ -243,7 +244,7 @@ export default function CategoryDetail({ initialSlug, initialData }) {
                 <div>
                   {article.featured_image && (
                     <div className="mb-2.5 h-24 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
-                      <img src={article.featured_image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <img src={toCdnMediaUrl(article.featured_image)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     </div>
                   )}
                   <span className="text-[10px] font-extrabold uppercase bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded font-mono block w-fit mb-2">

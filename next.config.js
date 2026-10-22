@@ -81,6 +81,41 @@ const nextConfig = {
           },
         ],
       },
+      // ── Cloudflare Edge CDN Caching for Supabase Media (Zero Egress) ──
+      {
+        source: '/media/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, s-maxage=31536000, immutable',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'max-age=31536000',
+          },
+          {
+            key: 'Cloudflare-CDN-Cache-Control',
+            value: 'max-age=31536000',
+          },
+        ],
+      },
+      {
+        source: '/storage/v1/object/public/media/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, s-maxage=31536000, immutable',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'max-age=31536000',
+          },
+          {
+            key: 'Cloudflare-CDN-Cache-Control',
+            value: 'max-age=31536000',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [
@@ -127,6 +162,20 @@ const nextConfig = {
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
         ],
+      },
+    ];
+  },
+
+  // ── Edge Proxy Rewrites (Cloudflare caches Supabase assets for 1 year) ──
+  async rewrites() {
+    return [
+      {
+        source: '/media/:path*',
+        destination: 'https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:path*',
+      },
+      {
+        source: '/storage/v1/object/public/media/:path*',
+        destination: 'https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:path*',
       },
     ];
   },

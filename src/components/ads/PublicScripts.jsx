@@ -29,6 +29,49 @@ function AnalyticsTracker() {
   return null;
 }
 
+function AdSenseLoader() {
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const saved = localStorage.getItem('VizhiTN_adsense_config');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.enabled && parsed?.pub_id) {
+          window.__ADSENSE_PUB_ID__ = parsed.pub_id;
+          window.__ADSENSE_SLOTS__ = {
+            banner: parsed.slot_banner || '',
+            sidebar: parsed.slot_sidebar || '',
+            infeed: parsed.slot_infeed || '',
+          };
+
+          // Inject meta tag if missing in head
+          let meta = document.querySelector('meta[name="google-adsense-account"]');
+          if (!meta) {
+            meta = document.createElement('meta');
+            meta.name = 'google-adsense-account';
+            meta.content = parsed.pub_id;
+            document.head.appendChild(meta);
+          }
+
+          // Inject script tag if missing in head
+          let script = document.querySelector(`script[src*="adsbygoogle.js"]`);
+          if (!script) {
+            script = document.createElement('script');
+            script.async = true;
+            script.crossOrigin = 'anonymous';
+            script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${parsed.pub_id}`;
+            document.head.appendChild(script);
+          }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  return null;
+}
+
 export default function PublicScripts() {
   return (
     <>
@@ -49,6 +92,9 @@ export default function PublicScripts() {
       </Script>
       <Suspense fallback={null}>
         <AnalyticsTracker />
+      </Suspense>
+      <Suspense fallback={null}>
+        <AdSenseLoader />
       </Suspense>
     </>
   );

@@ -21,7 +21,7 @@ import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile, generateKaraokeCaptions } from '../engine/captions-engine.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
 import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
-import { getScheduledUploadForSlot, getTodayIst } from '../engine/calendar-reader.mjs';
+import { getScheduledUploadForSlot, getTodayIst, getEpisodeFromDatabase, updateEpisodeStatusInDb } from '../engine/calendar-reader.mjs';
 import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
 
 // Load .env.local if running locally
@@ -545,6 +545,19 @@ async function main() {
       const discussionComment = autoComment ||
         `💬 உங்கள் ஏரியாவிலும் இந்த பிரச்சனை உள்ளதா? உங்க கருத்து என்ன? கீழே சொல்லுங்கள் 👇\n📌 பிறருக்கு உதவ உடனே Share செய்யுங்கள் ↗️\n🔴 vizhitn.in`;
       await postPinnedComment(uploadResult.videoId, discussionComment);
+
+      try {
+        const dbEpisode = await getEpisodeFromDatabase(todayIst);
+        if (dbEpisode?.episode_number) {
+          await updateEpisodeStatusInDb(dbEpisode.episode_number, {
+            shorts_youtube_video_id: uploadResult.videoId,
+            shorts_youtube_url: uploadResult.videoUrl
+          });
+          console.log(`[SUPABASE DB ✓] Linked companion short to Day #${dbEpisode.episode_number}`);
+        }
+      } catch (err) {
+        console.warn('[SUPABASE DB WARN] Could not link companion short to content_episodes:', err.message);
+      }
     }
 
     console.log('====================================================');

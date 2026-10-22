@@ -41,6 +41,7 @@ const AdminMedia = lazy(() => import('@/pages/admin/AdminMedia'));
 const AdminSettings = lazy(() => import('@/pages/admin/AdminSettings'));
 const AdminModeration = lazy(() => import('@/pages/admin/AdminModeration'));
 const AdminModerationSettings = lazy(() => import('@/pages/admin/AdminModerationSettings'));
+const AdminYouTubeStudio = lazy(() => import('@/views/admin/AdminYouTubeStudio'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Search = lazy(() => import('@/pages/Search'));
 const Bookmarks = lazy(() => import('@/pages/Bookmarks'));
@@ -269,6 +270,7 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="monetization" element={<AdminMonetization />} />
         <Route path="seo" element={<AdminSEO />} />
         <Route path="tn-today" element={<AdminTnToday />} />
+        <Route path="youtube-studio" element={<AdminYouTubeStudio />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

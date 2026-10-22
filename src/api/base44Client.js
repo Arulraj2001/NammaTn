@@ -2,6 +2,7 @@
 // Translates legacy Base44 SDK calls into native Supabase client queries.
 
 import { supabase } from "@/api/supabaseClient";
+import { toCdnMediaUrl } from "@/lib/cdn";
 
 function camelToSnake(str) {
   return str
@@ -199,7 +200,7 @@ const integrationsMock = {
       if (file_url && !file_url.includes('/storage/v1/object/public/')) {
         file_url = file_url.replace('/storage/v1/object/media/', '/storage/v1/object/public/media/');
       }
-      return { file_url };
+      return { file_url: toCdnMediaUrl(file_url) };
     }
   }
 };

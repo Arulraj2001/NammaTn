@@ -4,7 +4,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { uploadCardToStorage } from '../../lib/supabase-storage.mjs';
+import { uploadCardToStorage, deleteFromStorage } from '../../lib/supabase-storage.mjs';
 
 const GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
 const GRAPH_VIDEO_API_BASE = 'https://graph-video.facebook.com/v21.0';
@@ -91,9 +91,10 @@ export async function crossPostVideoToMetaSocials({
     errors: []
   };
 
-  // 2. Publish to Facebook Page Video (Uses graph-video.facebook.com endpoint)
   try {
-    console.log(`[META] Publishing to Facebook Page (${pageId})...`);
+    // 2. Publish to Facebook Page Video (Uses graph-video.facebook.com endpoint)
+    try {
+      console.log(`[META] Publishing to Facebook Page (${pageId})...`);
     // Retrieve page-specific access token if available
     let activePageToken = pageToken;
     try {
@@ -206,6 +207,14 @@ export async function crossPostVideoToMetaSocials({
     } catch (err) {
       console.warn(`[META INSTA ERROR] ${err.message}`);
       results.errors.push({ platform: 'instagram', error: err.message });
+    }
+  }
+  } finally {
+    // Clean up transit storage objects immediately once Meta ingestion is complete
+    const transitFiles = [videoFileName, thumbFileName].filter(Boolean);
+    if (transitFiles.length > 0) {
+      console.log(`[META TRANSIT CLEANUP] Purging transit storage files: ${transitFiles.join(', ')}...`);
+      await deleteFromStorage(transitFiles);
     }
   }
 

@@ -23,12 +23,14 @@ function createTimedFetch(timeoutMs) {
   };
 }
 
-export function createServerSupabase({ timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
+export function createServerSupabase({ timeoutMs = DEFAULT_TIMEOUT_MS, useServiceRole = false } = {}) {
   const url = process.env.NEXT_PUBLIC_VITE_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) return null;
+  const key = useServiceRole
+    ? (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY)
+    : process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
 
-  return createClient(url, anonKey, {
+  return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: { fetch: createTimedFetch(timeoutMs) },
   });

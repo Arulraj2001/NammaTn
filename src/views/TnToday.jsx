@@ -15,6 +15,7 @@ import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
 import { isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
 import NumberedPagination from "@/components/common/NumberedPagination";
+import { toCdnMediaUrl } from "@/lib/cdn";
 
 const VALID_EDITORIAL_GRAPHICS = new Set([
   'agriculture', 'economy', 'education', 'environment', 'general',
@@ -60,7 +61,7 @@ export function resolveEditorialImage(article) {
 
   // If remote CDN URL (Supabase storage)
   if (raw.startsWith("http://") || raw.startsWith("https://")) {
-    return raw;
+    return toCdnMediaUrl(raw);
   }
 
   return `/images/tntoday/${cat}.webp`;

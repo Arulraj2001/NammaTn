@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getDistrictBySlug } from "@/lib/districts";
+import { toCdnMediaUrl } from "@/lib/cdn";
 import { CATEGORIES } from "@/lib/categories";
 import PostCard from "@/components/posts/PostCard";
 import PostSkeleton from "@/components/posts/PostSkeleton";
@@ -663,7 +664,7 @@ export default function DistrictDetail({ initialSlug }) {
                   {article.featured_image && (
                     <div className="mb-2.5 h-28 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
                       <img
-                        src={article.featured_image}
+                        src={toCdnMediaUrl(article.featured_image)}
                         alt=""
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

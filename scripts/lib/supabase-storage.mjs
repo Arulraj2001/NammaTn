@@ -63,3 +63,24 @@ export async function uploadCardToStorage(buffer, fileName, contentType = 'image
   console.log(`[Storage] Successfully uploaded! Public URL:\n${publicUrl}`);
   return publicUrl;
 }
+
+/**
+ * Deletes transit objects from Supabase Storage 'media' bucket to ensure zero-accumulation
+ * @param {string|string[]} filePaths - relative path(s) inside media bucket
+ */
+export async function deleteFromStorage(filePaths) {
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
+  const paths = Array.isArray(filePaths) ? filePaths : [filePaths];
+  const cleanPaths = paths.map(p => p.replace(/^\/+/, ''));
+  try {
+    const { error } = await supabase.storage.from('media').remove(cleanPaths);
+    if (error) {
+      console.warn(`[Storage] Failed to remove transit files: ${error.message}`);
+    } else {
+      console.log(`[Storage ✓] Removed ${cleanPaths.length} transit files from Supabase (Zero-Accumulation).`);
+    }
+  } catch (err) {
+    console.warn(`[Storage] Cleanup warning: ${err.message}`);
+  }
+}

@@ -92,3 +92,55 @@ export function getExpectedUploadsSoFar(dateStr = getTodayIst()) {
     return now.totalMinutes >= itemMinutes;
   });
 }
+
+/**
+ * Queries Supabase content_episodes for today's episode metadata and custom script
+ * @param {string} [dateStr] - YYYY-MM-DD
+ * @returns {Promise<object|null>}
+ */
+export async function getEpisodeFromDatabase(dateStr = getTodayIst()) {
+  const url = process.env.NEXT_PUBLIC_VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(url, key);
+    const { data, error } = await supabase
+      .from('content_episodes')
+      .select('*')
+      .eq('scheduled_date', dateStr)
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('[CALENDAR DB WARN] Error querying content_episodes:', error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.warn('[CALENDAR DB WARN] Could not query content_episodes:', err.message);
+    return null;
+  }
+}
+
+/**
+ * Updates an episode status and publishing URLs in Supabase content_episodes
+ * @param {number} episodeNumber
+ * @param {object} updateFields
+ */
+export async function updateEpisodeStatusInDb(episodeNumber, updateFields) {
+  const url = process.env.NEXT_PUBLIC_VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
+  if (!url || !key || !episodeNumber) return;
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(url, key);
+    await supabase
+      .from('content_episodes')
+      .update({ ...updateFields, updated_at: new Date().toISOString() })
+      .eq('episode_number', episodeNumber);
+  } catch (err) {
+    console.warn('[CALENDAR DB WARN] Could not update content_episodes:', err.message);
+  }
+}
+

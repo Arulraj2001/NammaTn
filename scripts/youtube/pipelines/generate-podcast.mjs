@@ -20,8 +20,9 @@ import { generateSeoVideoFilename } from '../engine/seo-filename.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
 import { checkQuotaAvailable, recordQuotaUsage } from '../engine/quota-tracker.mjs';
-import { getScheduledUploadForSlot, getTodayIst } from '../engine/calendar-reader.mjs';
+import { getScheduledUploadForSlot, getTodayIst, getEpisodeFromDatabase, updateEpisodeStatusInDb } from '../engine/calendar-reader.mjs';
 import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
+import { buildScenePrompt } from '../engine/style-guide.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -53,11 +54,42 @@ async function main() {
     }
   }
 
-  // 1. Select Episode Topic from 90-Day Calendar or fallback to rotating catalog
+  // 1. Select Episode Topic from Supabase content_episodes, 90-Day Calendar, or fallback to rotating catalog
+  let dbEpisode = null;
+  try {
+    dbEpisode = await getEpisodeFromDatabase(todayIst);
+    if (dbEpisode) {
+      console.log(`[SUPABASE DB] Found scheduled episode for today: Day #${dbEpisode.episode_number} - "${dbEpisode.topic_title || dbEpisode.title_en || dbEpisode.title_ta}"`);
+    }
+  } catch (dbErr) {
+    console.warn('[SUPABASE DB] Could not check content_episodes:', dbErr.message);
+  }
+
   const calEntry = getScheduledUploadForSlot('podcast', todayIst);
   let topic;
 
-  if (calEntry && !topicIdFlag) {
+  if (dbEpisode && !topicIdFlag) {
+    const epTitle = dbEpisode.topic_title || dbEpisode.title_ta || dbEpisode.title_en || calEntry?.title || 'விழி அன்கட் பாட்காஸ்ட்';
+    topic = {
+      id: `db-podcast-ep-${dbEpisode.episode_number}`,
+      seriesId: 'vizhi-uncut',
+      seriesNameTa: 'விழி அன்கட் பாட்காஸ்ட்',
+      seriesNameEn: 'Vizhi Uncut Duo Podcast',
+      episodeTitleTa: epTitle,
+      episodeTitleEn: epTitle,
+      caseBrief: dbEpisode.seo_description || dbEpisode.description_en || dbEpisode.description_ta || calEntry?.description || '',
+      legalSectionOrTool: 'Citizen vigilance, verified public RTI data, official helpline numbers and community action.',
+      helplineText: 'முதல்வர் உதவி மையம் 1100 | மின்வாரிய உதவி 1912 | சைபர் கிரைம் 1930',
+      categoryColor: '#EF4444',
+      categoryIcon: '🎙️',
+      district: 'தமிழ்நாடு (Tamil Nadu)',
+      fluxPrompt: buildScenePrompt(epTitle, dbEpisode.category || 'finance', '16:9'),
+      thumbnailText: dbEpisode.thumbnail_text_overlay || calEntry?.thumbnail_text || 'உண்மை நிலவரம்',
+      hashtags: dbEpisode.tags ? dbEpisode.tags.map(t => `#${t.replace(/^#/, '')}`) : (calEntry?.hashtags || ['#VizhiTN']),
+      tags: dbEpisode.tags || (calEntry?.hashtags ? calEntry.hashtags.map(h => h.replace('#', '')) : ['VizhiTN']),
+      customScript: dbEpisode.podcast_script_content
+    };
+  } else if (calEntry && !topicIdFlag) {
     console.log(`[90-DAY CALENDAR] Sourcing scheduled podcast topic: "${calEntry.title}"`);
     topic = {
       id: `cal-podcast-${todayIst}`,
@@ -90,9 +122,25 @@ async function main() {
   console.log(`[EPISODE TOPIC] "${topic.episodeTitleEn}"`);
   console.log(`[LOCATION] ${topic.district} | Category Color: ${topic.categoryColor}`);
 
-  // 2. Synthesize 5-Act Duo Conversational Script via Gemini (Target: 8–12 mins)
-  console.log('\n[RESEARCH] Synthesizing 5-Act Karthik & Kavitha dialogue script via Gemini...');
-  const scriptData = await generatePodcastScript(topic);
+  // 2. Synthesize or Load 5-Act Duo Conversational Script
+  let scriptData = null;
+  if (topic.customScript) {
+    try {
+      scriptData = typeof topic.customScript === 'string' && topic.customScript.trim().startsWith('{')
+        ? JSON.parse(topic.customScript)
+        : null;
+      if (scriptData?.acts?.length) {
+        console.log(`[CUSTOM SCRIPT LOADED] Successfully loaded ${scriptData.acts.length} acts from content_episodes database!`);
+      }
+    } catch (e) {
+      console.warn('[CUSTOM SCRIPT PARSE WARN] Could not parse custom script JSON, generating via Gemini:', e.message);
+    }
+  }
+
+  if (!scriptData || !scriptData.acts || !scriptData.acts.length) {
+    console.log('\n[RESEARCH] Synthesizing 5-Act Karthik & Kavitha dialogue script via Gemini...');
+    scriptData = await generatePodcastScript(topic);
+  }
   const acts = scriptData.acts || [];
   console.log(`[SCRIPT READY] Total Acts: ${acts.length}`);
 
@@ -345,6 +393,16 @@ async function main() {
         uploadResult.videoId,
         `🎙️ இந்த விவாதம் பற்றிய உங்கள் கருத்து என்ன? உங்கள் பகுதியிலும் இந்த மாதிரி சம்பவம் நடந்திருக்கிறதா? கீழே கமெண்ட் செய்யுங்கள் 👇\n📌 பிறருக்கு உதவ உடனே Share செய்யுங்கள் ↗️\n🔴 நேரடி கள புகார் பதிவு: vizhitn.in`
       );
+
+      if (dbEpisode?.episode_number) {
+        await updateEpisodeStatusInDb(dbEpisode.episode_number, {
+          status: 'published',
+          youtube_video_id: uploadResult.videoId,
+          youtube_video_url: uploadResult.videoUrl,
+          published_at: new Date().toISOString()
+        });
+        console.log(`[SUPABASE DB ✓] Updated content_episodes Day #${dbEpisode.episode_number} to published status`);
+      }
     }
 
     console.log('\n====================================================');

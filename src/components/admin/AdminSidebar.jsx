@@ -3,7 +3,7 @@ import { Link, useLocation } from "@/lib/router-compat";
 import {
   LayoutDashboard, FileText, MessageSquare, Tag, MapPin,
   Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Mail, UserCheck, BookOpen, SearchCheck, Newspaper,
-  AlertTriangle
+  AlertTriangle, Video
 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { base44 } from "@/api/base44Client";
 
 const NAV = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
+  { label: "YouTube Studio", icon: Video, path: "/admin/youtube-studio", badge: "90D" },
   { label: "TN Today", icon: Newspaper, path: "/admin/tn-today", badge: "CMS" },
   { label: "Posts", icon: FileText, path: "/admin/posts" },
   { label: "Comments", icon: MessageSquare, path: "/admin/comments" },

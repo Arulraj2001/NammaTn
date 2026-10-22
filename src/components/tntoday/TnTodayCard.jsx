@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
+import { toCdnMediaUrl } from "@/lib/cdn";
 
 const CATEGORY_COLORS = {
   infrastructure: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800/30",
@@ -63,7 +64,7 @@ export default function TnTodayCard({ className }) {
           subtitle: article.subtitle || article.summary || ""
         }));
       } else {
-        setPosterSrc(rawImg);
+        setPosterSrc(toCdnMediaUrl(rawImg));
       }
     }
   }, [article]);

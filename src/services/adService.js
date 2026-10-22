@@ -11,11 +11,55 @@ const DEFAULT_ADSENSE_CONFIG = {
 // ─── AdSense Config Persistence ───────────────────────────────────────────────
 
 export async function getAdSenseConfig() {
+  // 1. Try fetching from server API (which reads Supabase site_settings)
+  try {
+    const res = await fetch("/api/admin/adsense", { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.config) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("VizhiTN_adsense_config", JSON.stringify(data.config));
+          if (data.config.pub_id) {
+            window.__ADSENSE_PUB_ID__ = data.config.pub_id;
+            window.__ADSENSE_SLOTS__ = {
+              banner: data.config.slot_banner,
+              sidebar: data.config.slot_sidebar,
+              infeed: data.config.slot_infeed,
+            };
+          }
+        }
+        return data.config;
+      }
+    }
+  } catch (err) {
+    // API failed, fallback to direct Supabase or local cache
+  }
+
+  // 2. Direct Supabase fallback
+  try {
+    const { data } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "adsense_config")
+      .limit(1)
+      .maybeSingle();
+
+    if (data?.value) {
+      const parsed = typeof data.value === "string" ? JSON.parse(data.value) : data.value;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("VizhiTN_adsense_config", JSON.stringify(parsed));
+      }
+      return parsed;
+    }
+  } catch (err) {
+    // direct DB query failed
+  }
+
+  // 3. Browser localStorage fallback
   try {
     const savedLocal = localStorage.getItem("VizhiTN_adsense_config");
     if (savedLocal) {
-      const parsed = JSON.parse(savedLocal);
-      return parsed;
+      return JSON.parse(savedLocal);
     }
   } catch (e) {
     // fallback
@@ -25,21 +69,37 @@ export async function getAdSenseConfig() {
 }
 
 export async function saveAdSenseConfig(config) {
+  // 1. Send to server API to persist in Supabase and sync public/ads.txt
+  const res = await fetch("/api/admin/adsense", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config),
+  });
+
+  const result = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to save AdSense settings to database");
+  }
+
+  const savedConfig = result.config || config;
+
+  // 2. Cache in localStorage & global window variables
   try {
-    localStorage.setItem("VizhiTN_adsense_config", JSON.stringify(config));
+    localStorage.setItem("VizhiTN_adsense_config", JSON.stringify(savedConfig));
     if (typeof window !== "undefined") {
-      window.__ADSENSE_PUB_ID__ = config.pub_id || "ca-pub-PLACEHOLDER";
+      window.__ADSENSE_PUB_ID__ = savedConfig.pub_id || "";
       window.__ADSENSE_SLOTS__ = {
-        banner: config.slot_banner,
-        sidebar: config.slot_sidebar,
-        infeed: config.slot_infeed,
+        banner: savedConfig.slot_banner,
+        sidebar: savedConfig.slot_sidebar,
+        infeed: savedConfig.slot_infeed,
       };
     }
   } catch (e) {
-    // fallback
+    // ignore local storage errors
   }
 
-  return true;
+  return result;
 }
 
 // ─── Custom Direct Banner Ads Service ─────────────────────────────────────────

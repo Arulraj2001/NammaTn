@@ -61,6 +61,17 @@ jobs:
       - name: Install Node Dependencies
         run: npm ci
 
+      - name: Cache Render Workspace and Visual Assets
+        uses: actions/cache@v4
+        with:
+          path: |
+            public/youtube_renders
+            /tmp/yt-render
+          key: yt-render-cache-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            yt-render-cache-${{ github.run_id }}-
+            yt-render-cache-
+
       - name: Execute YouTube Production Pipeline
         env:
           YOUTUBE_GEMINI_API_KEY: ${{ secrets.YOUTUBE_GEMINI_API_KEY }}

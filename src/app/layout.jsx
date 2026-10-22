@@ -4,9 +4,9 @@ import PublicScripts from '@/components/ads/PublicScripts';
 import '@/index.css';
 import { getClarityInitScript } from '@/lib/clarityScript';
 import { ORGANIZATION_ID, WEBSITE_ID } from '@/lib/schemaIdentity';
+import { getServerAdSenseConfig } from '@/lib/adsenseServer';
 
-// AdSense pub ID is injected at runtime by the admin panel via window.__ADSENSE_PUB_ID__
-// See: AdminMonetization.jsx → AdSense Settings tab
+// AdSense publisher ID is loaded dynamically from Supabase site_settings and admin panel
 
 const SITE_URL = 'https://www.vizhitn.in';
 const SITE_NAME = 'VizhiTN';
@@ -20,7 +20,7 @@ export const viewport = {
   colorScheme: 'light dark',
 };
 
-export const metadata = {
+const baseMetadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: 'VizhiTN - Tamil Nadu Civic Complaint & Community Platform',
@@ -86,7 +86,20 @@ export const metadata = {
   category: 'civic technology',
 };
 
-export default function RootLayout({ children }) {
+export async function generateMetadata() {
+  const adsenseConfig = await getServerAdSenseConfig();
+  const adsensePubId = adsenseConfig?.enabled && adsenseConfig?.pub_id ? adsenseConfig.pub_id : null;
+
+  return {
+    ...baseMetadata,
+    other: adsensePubId ? { 'google-adsense-account': adsensePubId } : {},
+  };
+}
+
+export default async function RootLayout({ children }) {
+  const adsenseConfig = await getServerAdSenseConfig();
+  const adsensePubId = adsenseConfig?.enabled && adsenseConfig?.pub_id ? adsenseConfig.pub_id : null;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -163,24 +176,27 @@ export default function RootLayout({ children }) {
             __html: `(function(){try{var t=localStorage.getItem('tn_theme')||'light';document.documentElement.classList.add(t);document.documentElement.classList.remove(t==='dark'?'light':'dark');}catch(e){}})();`,
           }}
         />
-        {/* Google AdSense script — publisher ID loaded from admin settings at runtime */}
-        <script
-          id="adsense-init"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(){
-                var pubId = typeof window !== 'undefined' && window.__ADSENSE_PUB_ID__;
-                if (pubId && pubId !== 'ca-pub-PLACEHOLDER') {
-                  var s = document.createElement('script');
-                  s.async = true;
-                  s.crossOrigin = 'anonymous';
-                  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + pubId;
-                  document.head.appendChild(s);
-                }
-              })();
-            `,
-          }}
-        />
+        {/* Google AdSense: account meta tag + script tag dynamically injected from admin settings */}
+        {adsensePubId && (
+          <>
+            <meta name="google-adsense-account" content={adsensePubId} />
+            <script
+              async
+              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePubId}`}
+              crossOrigin="anonymous"
+            />
+            <script
+              id="adsense-runtime-init"
+              dangerouslySetInnerHTML={{
+                __html: `window.__ADSENSE_PUB_ID__=${JSON.stringify(adsensePubId)};window.__ADSENSE_SLOTS__=${JSON.stringify({
+                  banner: adsenseConfig.slot_banner || '',
+                  sidebar: adsenseConfig.slot_sidebar || '',
+                  infeed: adsenseConfig.slot_infeed || '',
+                })};`,
+              }}
+            />
+          </>
+        )}
         {/* Microsoft Clarity: load only after analytics consent and never on private routes. */}
         <script
           id="clarity-init"

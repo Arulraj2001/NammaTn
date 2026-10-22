@@ -22,6 +22,7 @@ import { generateTnTodayPoster, isImagePrompt } from "@/lib/tntodayPosterGenerat
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
 import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
 import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
+import { toCdnMediaUrl } from "@/lib/cdn";
 
 const CATEGORY_CONFIG = {
   infrastructure: { label: "Infrastructure", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", emoji: "🏗️" },
@@ -507,7 +508,7 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
       );
 
       if (isValidRemote) {
-        setHeroImg(rawImg);
+        setHeroImg(toCdnMediaUrl(rawImg));
       } else {
         setHeroImg(`/images/tntoday/${cat}.webp`);
       }
