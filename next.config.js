@@ -176,12 +176,6 @@ const nextConfig = {
       // glob also matches the root `/`, producing an infinite self-redirect loop
       // (ERR_TOO_MANY_REDIRECTS) on the homepage. sitemap + internal links all
       // already emit the canonical no-slash form.
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'vizhitn.in' }],
-        destination: 'https://www.vizhitn.in/:path*',
-        permanent: true,
-      },
       { source: '/privacy', destination: '/privacy-policy', permanent: true },
       { source: '/tos',     destination: '/terms',           permanent: true },
       // Redirect old /district/:slug to canonical /:slug/ — route file removed to save crawl budget
