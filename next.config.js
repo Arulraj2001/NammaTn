@@ -237,8 +237,6 @@ const nextConfig = {
       '@radix-ui/react-popover', '@radix-ui/react-tabs',
       '@radix-ui/react-tooltip', 'date-fns', 'lodash',
     ],
-    // Inline critical CSS, defer non-critical CSS — eliminates render-blocking stylesheet
-    optimizeCss: true,
   },
 
   webpack: (config) => {
