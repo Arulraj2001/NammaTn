@@ -4,7 +4,22 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  CI = "false"
+  NPM_FLAGS = "--include=dev"
+
+[[redirects]]
+  from = "/media/*"
+  to = "https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/storage/v1/object/public/media/*"
+  to = "https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:splat"
+  status = 200
+  force = true
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
 

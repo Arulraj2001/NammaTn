@@ -4,7 +4,6 @@ import PublicScripts from '@/components/ads/PublicScripts';
 import '@/index.css';
 import { getClarityInitScript } from '@/lib/clarityScript';
 import { ORGANIZATION_ID, WEBSITE_ID } from '@/lib/schemaIdentity';
-import { getServerAdSenseConfig } from '@/lib/adsenseServer';
 
 // AdSense publisher ID is loaded dynamically from Supabase site_settings and admin panel
 
@@ -84,21 +83,15 @@ const baseMetadata = {
     google: 'IQBuc_fauRb_DOB4lJTKjuYjN9aeEMeWCwf5zGx_q2Q',
   },
   category: 'civic technology',
+  other: {
+    'google-adsense-account': 'ca-pub-6447285514660893',
+  },
 };
 
-export async function generateMetadata() {
-  const adsenseConfig = await getServerAdSenseConfig();
-  const adsensePubId = adsenseConfig?.enabled && adsenseConfig?.pub_id ? adsenseConfig.pub_id : null;
+export const metadata = baseMetadata;
 
-  return {
-    ...baseMetadata,
-    other: adsensePubId ? { 'google-adsense-account': adsensePubId } : {},
-  };
-}
-
-export default async function RootLayout({ children }) {
-  const adsenseConfig = await getServerAdSenseConfig();
-  const adsensePubId = adsenseConfig?.enabled && adsenseConfig?.pub_id ? adsenseConfig.pub_id : null;
+export default function RootLayout({ children }) {
+  const adsensePubId = 'ca-pub-6447285514660893';
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -176,7 +169,7 @@ export default async function RootLayout({ children }) {
             __html: `(function(){try{var t=localStorage.getItem('tn_theme')||'light';document.documentElement.classList.add(t);document.documentElement.classList.remove(t==='dark'?'light':'dark');}catch(e){}})();`,
           }}
         />
-        {/* Google AdSense: account meta tag + script tag dynamically injected from admin settings */}
+        {/* Google AdSense: account meta tag + script tag */}
         {adsensePubId && (
           <>
             <meta name="google-adsense-account" content={adsensePubId} />
@@ -184,16 +177,6 @@ export default async function RootLayout({ children }) {
               async
               src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePubId}`}
               crossOrigin="anonymous"
-            />
-            <script
-              id="adsense-runtime-init"
-              dangerouslySetInnerHTML={{
-                __html: `window.__ADSENSE_PUB_ID__=${JSON.stringify(adsensePubId)};window.__ADSENSE_SLOTS__=${JSON.stringify({
-                  banner: adsenseConfig.slot_banner || '',
-                  sidebar: adsenseConfig.slot_sidebar || '',
-                  infeed: adsenseConfig.slot_infeed || '',
-                })};`,
-              }}
             />
           </>
         )}

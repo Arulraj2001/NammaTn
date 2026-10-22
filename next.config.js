@@ -166,19 +166,6 @@ const nextConfig = {
     ];
   },
 
-  // ── Edge Proxy Rewrites (Cloudflare caches Supabase assets for 1 year) ──
-  async rewrites() {
-    return [
-      {
-        source: '/media/:path*',
-        destination: 'https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:path*',
-      },
-      {
-        source: '/storage/v1/object/public/media/:path*',
-        destination: 'https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:path*',
-      },
-    ];
-  },
 
   // ── Redirects for SEO (old URLs → new) ────────────────────────────────────
   async redirects() {
