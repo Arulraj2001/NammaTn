@@ -6,7 +6,7 @@
 import fs from 'fs';
 import { spawn } from 'node:child_process';
 import path from 'path';
-import { getTodayIst, getNowIst, getScheduledUploadsForDate, getScheduledUploadForSlot, getExpectedUploadsSoFar } from './engine/calendar-reader.mjs';
+import { getTodayIst, getNowIst, getScheduledUploadsForDate, getScheduledUploadForSlot, getExpectedUploadsSoFar, getEpisodeFromDatabase } from './engine/calendar-reader.mjs';
 import { isBroadcastCompletedToday } from './engine/broadcast-logger.mjs';
 import { setYouTubeThumbnail, getVideoStatistics } from './engine/youtube-client.mjs';
 
@@ -35,10 +35,16 @@ function runPipeline(scriptRelativePath, args = []) {
 async function handleSlot(format, isDryRun, force) {
   const todayIst = getTodayIst();
   const calEntry = getScheduledUploadForSlot(format, todayIst);
+  let dbEpisode = null;
+  if (format === 'podcast') {
+    try {
+      dbEpisode = await getEpisodeFromDatabase(todayIst);
+    } catch (_) {}
+  }
 
-  // For calendar-driven formats, ensure calendar entry exists unless forced
-  if (format !== 'live-shorts' && !calEntry && !force) {
-    console.log(`[DISPATCH] No calendar entry for format "${format}" on ${todayIst}. Skipping.`);
+  // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced
+  if (format !== 'live-shorts' && !calEntry && !dbEpisode && !force) {
+    console.log(`[DISPATCH] No calendar entry or database episode for format "${format}" on ${todayIst}. Skipping.`);
     return;
   }
 
@@ -66,9 +72,10 @@ async function handleSlot(format, isDryRun, force) {
   const args = [];
   if (isDryRun) args.push('--dry-run');
 
+  const title = dbEpisode?.topic_title || dbEpisode?.title_ta || dbEpisode?.title_en || calEntry?.title || 'Live Civic Alert';
   console.log(`\n====================================================`);
   console.log(`VIZHITN BROADCAST EXECUTION: ${format.toUpperCase()}`);
-  console.log(`Date: ${todayIst} | Title: "${calEntry?.title || 'Live Civic Alert'}"`);
+  console.log(`Date: ${todayIst} | Title: "${title}"`);
   console.log(`====================================================\n`);
 
   await runPipeline(script, args);
@@ -197,6 +204,16 @@ async function main() {
     const expected = getExpectedUploadsSoFar(todayIst);
     if (now.totalMinutes >= 810) {
       expected.push({ format: 'live-shorts', title: 'Daily Live Civic Short', time_ist: '01:30 PM' });
+    }
+    // Also include daily podcast if after 05:55 PM IST (1072 minutes) and in database or calendar
+    if (now.totalMinutes >= 1072) {
+      let ep = null;
+      try { ep = await getEpisodeFromDatabase(todayIst); } catch (_) {}
+      const hasPodcast = Boolean(ep || getScheduledUploadForSlot('podcast', todayIst));
+      if (hasPodcast) {
+        const pTitle = ep?.topic_title || ep?.title_ta || ep?.title_en || 'Daily Vizhi Uncut Podcast';
+        expected.push({ format: 'podcast', title: pTitle, time_ist: '05:55 PM' });
+      }
     }
     for (const item of expected) {
       const status = await isBroadcastCompletedToday(item.format, todayIst);

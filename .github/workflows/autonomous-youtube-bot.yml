@@ -6,8 +6,8 @@ on:
     - cron: '52 7 * * *'
     # 2. Daily ~02:18 PM IST (08:48 UTC): Midday Safety Catch-Up Sweeper
     - cron: '48 8 * * *'
-    # 3. Tue, Thu, Sat ~05:55 PM IST (12:22 UTC): 90-Day Vizhi Uncut Duo Podcast (38 episodes)
-    - cron: '22 12 * * 2,4,6'
+    # 3. Daily ~05:55 PM IST (12:22 UTC): 90-Day Vizhi Uncut Duo Podcast (90 daily episodes)
+    - cron: '22 12 * * *'
     # 4. Daily ~07:25 PM IST (13:52 UTC): 90-Day Daily Civic Lifeline Alert Short (90 shorts)
     - cron: '52 13 * * *'
     # 5. Daily ~08:48 PM IST (15:18 UTC): Evening Safety Catch-Up Sweeper
@@ -108,7 +108,7 @@ jobs:
           elif [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
             if [ "$SCHEDULE" = "52 7 * * *" ]; then
               SLOT_ARG="--slot=live-shorts"
-            elif [ "$SCHEDULE" = "22 12 * * 2,4,6" ]; then
+            elif [ "$SCHEDULE" = "22 12 * * *" ] || [ "$SCHEDULE" = "22 12 * * 2,4,6" ]; then
               SLOT_ARG="--slot=podcast"
             elif [ "$SCHEDULE" = "52 13 * * *" ]; then
               SLOT_ARG="--slot=civic-shorts"
