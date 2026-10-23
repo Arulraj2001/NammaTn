@@ -154,6 +154,16 @@ export default function PowerCutsToday({
               <p className="text-xs text-amber-200/80">
                 {T("Call for snapped wires, transformer blast, or no-power complaints.", "மின் கம்பிகள் அறுந்து விழுதல் அல்லது மின் தடையின் போது அழைக்கவும்.")}
               </p>
+              <Link
+                href="/tneb-bill-calculator"
+                className="mt-1 inline-flex items-center justify-between px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition shadow-sm"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>{T("TNEB Bill Calculator 2026", "மின் கட்டண கால்குலேட்டர்")}</span>
+                </span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </div>
         </div>

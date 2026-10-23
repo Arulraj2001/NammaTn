@@ -30,6 +30,14 @@ const baseMetadata = {
   authors: [{ name: 'VizhiTN Team', url: SITE_URL }],
   creator: 'VizhiTN',
   publisher: 'VizhiTN',
+  alternates: {
+    canonical: SITE_URL,
+    languages: {
+      'ta-IN': `${SITE_URL}?lang=ta`,
+      'en-IN': `${SITE_URL}?lang=en`,
+      'x-default': SITE_URL,
+    },
+  },
   robots: {
     index: true,
     follow: true,

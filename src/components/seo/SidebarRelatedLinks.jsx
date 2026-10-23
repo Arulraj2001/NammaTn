@@ -69,6 +69,30 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
             </span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
+          {currentSlug !== "tneb-bill-calculator" && (
+            <Link
+              href="/tneb-bill-calculator"
+              className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-300 hover:bg-amber-100 transition-colors text-xs font-bold"
+            >
+              <span className="flex items-center gap-2">
+                <Zap className="w-4 h-4 text-amber-500" />
+                {T("TNEB Bill Calculator 2026", "TNEB மின் கட்டண கால்குலேட்டர்")}
+              </span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
+          {currentSlug !== "patta-chitta-online-status" && (
+            <Link
+              href="/patta-chitta-online-status"
+              className="flex items-center justify-between p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/30 border-2 border-teal-200 dark:border-teal-900/60 text-teal-800 dark:text-teal-300 hover:bg-teal-100 transition-colors text-xs font-bold"
+            >
+              <span className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-teal-600" />
+                {T("Patta Chitta & EC Verification", "பட்டா சிட்டா & EC சரிபார்ப்பு")}
+              </span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
           <Link
             href="/helplines"
             className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors text-xs font-bold"
