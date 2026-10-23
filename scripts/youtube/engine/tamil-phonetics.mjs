@@ -6,99 +6,108 @@
 /**
  * Normalizes English government acronyms, dispute terms, and department codes into spoken Tamil
  */
+/**
+ * Normalizes English government acronyms, districts, and loan words into pure spoken Tamil script.
+ * Essential for edge-tts (ta-IN-PallaviNeural) to voice every word without skipping or glitching.
+ */
 export function normalizeAcronymsToSpokenTamil(text) {
   if (!text) return '';
 
   const replacements = [
-    // Government Departments & Utilities (Spoken Tanglish friendly)
-    { regex: /\bTANGEDCO\b/gi, replacement: 'EB மின்வாரியம்' },
-    { regex: /\bEB\b/gi, replacement: 'EB' },
-    { regex: /\bCMRL\b/gi, replacement: 'Chennai Metro' },
-    { regex: /\bMetro\b/gi, replacement: 'Metro' },
-    { regex: /\bMTC\b/gi, replacement: 'MTC bus' },
-    { regex: /\bSETC\b/gi, replacement: 'SETC bus' },
-    { regex: /\bTWAD\b/gi, replacement: 'TWAD குடிநீர் வாரியம்' },
-    { regex: /\bCMWSSB\b/gi, replacement: 'Metro Water' },
-    { regex: /\bMetrowater\b/gi, replacement: 'Metro Water' },
-    { regex: /\bGCC\b/gi, replacement: 'Chennai Corporation' },
-    { regex: /\bCorporation\b/gi, replacement: 'corporation' },
-    { regex: /\bNHAI\b/gi, replacement: 'NHAI நெடுஞ்சாலை' },
-    { regex: /\bMinnalagam\b/gi, replacement: 'மின்னகம் Helpline' },
-    { regex: /\bRTO\b/gi, replacement: 'RTO office' },
-    { regex: /\bVAO\b/gi, replacement: 'VAO office' },
+    // ── English Districts & Cities → Tamil Script ──
+    { regex: /\bTirunelveli(?:-la|-le|-ல)?\b/gi, replacement: 'திருநெல்வேலில' },
+    { regex: /\bChennai(?:-la|-le|-ல)?\b/gi, replacement: 'சென்னையில' },
+    { regex: /\bCoimbatore(?:-la|-le|-ல)?\b/gi, replacement: 'கோயம்புத்தூர்ல' },
+    { regex: /\bMadurai(?:-la|-le|-ல)?\b/gi, replacement: 'மதுரையில' },
+    { regex: /\b(?:Trichy|Tiruchirappalli)(?:-la|-le|-ல)?\b/gi, replacement: 'திருச்சியில' },
+    { regex: /\bSalem(?:-la|-le|-ல)?\b/gi, replacement: 'சேலம்ல' },
+    { regex: /\bErode(?:-la|-le|-ல)?\b/gi, replacement: 'ஈரோடுல' },
+    { regex: /\bVellore(?:-la|-le|-ல)?\b/gi, replacement: 'வேலூர்ல' },
+    { regex: /\b(?:Thoothukudi|Tuticorin)(?:-la|-le|-ல)?\b/gi, replacement: 'தூத்துக்குடில' },
+    { regex: /\bThanjavur(?:-la|-le|-ல)?\b/gi, replacement: 'தஞ்சாவூர்ல' },
+    { regex: /\bDindigul(?:-la|-le|-ல)?\b/gi, replacement: 'திண்டுக்கல்ல' },
+    { regex: /\bTiruppur(?:-la|-le|-ல)?\b/gi, replacement: 'திருப்பூர்ல' },
+    { regex: /\bKancheepuram(?:-la|-le|-ல)?\b/gi, replacement: 'காஞ்சிபுரம்ல' },
+    { regex: /\bChengalpattu(?:-la|-le|-ல)?\b/gi, replacement: 'செங்கல்பட்டுல' },
+    { regex: /\bTiruvallur(?:-la|-le|-ல)?\b/gi, replacement: 'திருவள்ளூர்ல' },
+    { regex: /\bCuddalore(?:-la|-le|-ல)?\b/gi, replacement: 'கடலூர்ல' },
+    { regex: /\bVillupuram(?:-la|-le|-ல)?\b/gi, replacement: 'விழுப்புரம்ல' },
+    { regex: /\bNagapattinam(?:-la|-le|-ல)?\b/gi, replacement: 'நாகப்பட்டினம்ல' },
+    { regex: /\bMayiladuthurai(?:-la|-le|-ல)?\b/gi, replacement: 'மயிலாடுதுறையில' },
+    { regex: /\bTiruvarur(?:-la|-le|-ல)?\b/gi, replacement: 'திருவாரூர்ல' },
+    { regex: /\bPudukkottai(?:-la|-le|-ல)?\b/gi, replacement: 'புதுக்கோட்டையில' },
+    { regex: /\bNamakkal(?:-la|-le|-ல)?\b/gi, replacement: 'நாமக்கல்' },
+    { regex: /\bDharmapuri(?:-la|-le|-ல)?\b/gi, replacement: 'தர்மபுரியில' },
+    { regex: /\bKrishnagiri(?:-la|-le|-ல)?\b/gi, replacement: 'கிருஷ்ணகிரியில' },
+    { regex: /\bNilgiris(?:-la|-le|-ல)?\b/gi, replacement: 'நீலகிரியில' },
+    { regex: /\bPerambalur(?:-la|-le|-ல)?\b/gi, replacement: 'பெரம்பலூர்ல' },
+    { regex: /\bAriyalur(?:-la|-le|-ல)?\b/gi, replacement: 'அரியலூர்ல' },
+    { regex: /\bKallakurichi(?:-la|-le|-ல)?\b/gi, replacement: 'கள்ளக்குறிச்சியில' },
+    { regex: /\bRanipet(?:-la|-le|-ல)?\b/gi, replacement: 'ராணிப்பேட்டையில' },
+    { regex: /\bTirupattur(?:-la|-le|-ல)?\b/gi, replacement: 'திருப்பத்தூர்ல' },
+    { regex: /\bTenkasi(?:-la|-le|-ல)?\b/gi, replacement: 'தென்காசியில' },
+    { regex: /\bVirudhunagar(?:-la|-le|-ல)?\b/gi, replacement: 'விருதுநகர்ல' },
+    { regex: /\bSivaganga(?:-la|-le|-ல)?\b/gi, replacement: 'சிவகங்கையில' },
+    { regex: /\bRamanathapuram(?:-la|-le|-ல)?\b/gi, replacement: 'ராமநாதபுரம்ல' },
+    { regex: /\bKarur(?:-la|-le|-ல)?\b/gi, replacement: 'கரூர்ல' },
+    { regex: /\bKanyakumari(?:-la|-le|-ல)?\b/gi, replacement: 'கன்னியாகுமரியில' },
 
-    // Everyday Legal & Dispute Terms
-    { regex: /\bCSR\b/gi, replacement: 'CSR receipt' },
-    { regex: /\bFIR\b/gi, replacement: 'FIR' },
-    { regex: /\bTNRRRL\b/gi, replacement: 'தமிழ்நாடு வாடகைதாரர் சட்டம்' },
-    { regex: /\bAdvance\b/gi, replacement: 'advance பணம்' },
-    { regex: /\bPatta\b/gi, replacement: 'பட்டா' },
-    { regex: /\bChitta\b/gi, replacement: 'சிட்டா' },
-    { regex: /\bDigiLocker\b/gi, replacement: 'DigiLocker app' },
+    // ── Government Departments & Utilities → Pure Spoken Tamil ──
+    { regex: /\bTANGEDCO\b/gi, replacement: 'மின்வாரியம்' },
+    { regex: /\bEB மின்வாரியம்\b/gi, replacement: 'மின்வாரியம்' },
+    { regex: /\bEB\b/gi, replacement: 'மின்வாரியம்' },
+    { regex: /\bCMRL\b/gi, replacement: 'மெட்ரோ ரயில்' },
+    { regex: /\bChennai Metro\b/gi, replacement: 'சென்னை மெட்ரோ' },
+    { regex: /\bMetro\b/gi, replacement: 'மெட்ரோ' },
+    { regex: /\bMTC bus\b/gi, replacement: 'எம்டிசி பேருந்து' },
+    { regex: /\bMTC\b/gi, replacement: 'எம்டிசி பேருந்து' },
+    { regex: /\bSETC bus\b/gi, replacement: 'எஸ்இடிசி பேருந்து' },
+    { regex: /\bSETC\b/gi, replacement: 'எஸ்இடிசி பேருந்து' },
+    { regex: /\bTWAD\b/gi, replacement: 'குடிநீர் வாரியம்' },
+    { regex: /\bCMWSSB\b/gi, replacement: 'மெட்ரோ வாட்டர்' },
+    { regex: /\bMetrowater\b/gi, replacement: 'மெட்ரோ வாட்டர்' },
+    { regex: /\bMetro Water\b/gi, replacement: 'மெட்ரோ வாட்டர்' },
+    { regex: /\bGCC\b/gi, replacement: 'சென்னை மாநகராட்சி' },
+    { regex: /\bCorporation\b/gi, replacement: 'மாநகராட்சி' },
+    { regex: /\bNHAI\b/gi, replacement: 'தேசிய நெடுஞ்சாலை' },
+    { regex: /\bMinnalagam Helpline\b/gi, replacement: 'மின்னகம் உதவி எண்' },
+    { regex: /\bMinnalagam\b/gi, replacement: 'மின்னகம்' },
+    { regex: /\bRTO\b/gi, replacement: 'ஆர்டிஓ' },
+    { regex: /\bVAO\b/gi, replacement: 'விஏஓ' },
 
-    // ── Grantha & Clumsy Tamil Transliterations → Crisp English Words ──
-    // Eliminates TTS stutters on "ஹ" (ha), "டிரா" (tra), "ப்ளை" (plai), etc.
-    { regex: /ஹவுஸ்|ஹவுசு/g, replacement: 'house' },
-    { regex: /டிராபிக்/g, replacement: 'traffic' },
-    { regex: /ரோடு|ரோட்டு/g, replacement: 'road' },
-    { regex: /கம்ப்ளைன்ட்|கம்ப்ளையிண்ட்|கம்ப்ளைண்ட்/g, replacement: 'complaint' },
-    { regex: /போலீஸ்\s*ஸ்டேஷன்/g, replacement: 'police station' },
-    { regex: /போலீஸ்|போலீசு/g, replacement: 'police' },
-    { regex: /கலெக்டர்/g, replacement: 'collector' },
-    { regex: /சப்ஸ்டேஷன்/g, replacement: 'substation' },
-    { regex: /டிரான்ஸ்பார்மர்/g, replacement: 'transformer' },
-    { regex: /முனிசிபாலிட்டி/g, replacement: 'municipality' },
-    { regex: /கார்ப்பரேஷன்/g, replacement: 'corporation' },
-    { regex: /ஹெல்ப்லைன்/g, replacement: 'helpline' },
-    { regex: /அப்டேட்ஸ்/g, replacement: 'updates' },
-    { regex: /அப்டேட்/g, replacement: 'update' },
-    { regex: /நோட்டீஸ்/g, replacement: 'notice' },
-    { regex: /கான்ட்ராக்டர்/g, replacement: 'contractor' },
-    { regex: /டெண்டர்/g, replacement: 'tender' },
-    { regex: /பட்ஜெட்/g, replacement: 'budget' },
-    { regex: /மீட்டர்/g, replacement: 'meter' },
-    { regex: /லைசன்ஸ்/g, replacement: 'license' },
-    { regex: /செக்\s*போஸ்ட்/g, replacement: 'check post' },
-    { regex: /ஆபீஸ்|ஆபீசு/g, replacement: 'office' },
-    { regex: /ஆபீசர்/g, replacement: 'officer' },
-    { regex: /இன்ஸ்பெக்டர்/g, replacement: 'inspector' },
-    { regex: /லைன்மேன்/g, replacement: 'linesman' },
-    { regex: /சீட்டிங்/g, replacement: 'cheating' },
-    { regex: /மெசேஜ்/g, replacement: 'message' },
-    { regex: /லிங்க்/g, replacement: 'link' },
-    { regex: /வீடியோ/g, replacement: 'video' },
-    { regex: /போஸ்ட்/g, replacement: 'post' },
-    { regex: /ஷார்ட்ஸ்/g, replacement: 'Shorts' },
-    { regex: /கரண்ட்\s*கட்|பவர்கட்/g, replacement: 'power cut' },
-    { regex: /பைப்லைன்/g, replacement: 'pipeline' },
-    { regex: /டிரைனேஜ்/g, replacement: 'drainage' },
-    { regex: /பிளாட்பார்ம்/g, replacement: 'platform' },
-    { regex: /சார்ஜ்/g, replacement: 'charge' },
-    { regex: /லேப்டாப்/g, replacement: 'laptop' },
-    { regex: /அக்ரிமென்ட்/g, replacement: 'agreement' },
-    { regex: /ரூல்ஸ்/g, replacement: 'rules' },
-    { regex: /டாக்குமென்ட்/g, replacement: 'document' },
-    { regex: /ஸ்கிரீன்ஷாட்/g, replacement: 'screenshot' },
-    { regex: /வாட்ஸ்அப்/g, replacement: 'WhatsApp' },
-    { regex: /ஸ்டெப்\s*1/g, replacement: 'Step 1' },
-    { regex: /ஸ்டெப்\s*2/g, replacement: 'Step 2' },
-    { regex: /ஸ்டெப்\s*3/g, replacement: 'Step 3' },
-    { regex: /ஸ்டெப்/g, replacement: 'step' },
-
-    // English Words -> Clean Spoken Form
-    { regex: /\bPower Cut\b/gi, replacement: 'power cut' },
-    { regex: /\bShutdown\b/gi, replacement: 'power cut' },
-    { regex: /\bMaintenance\b/gi, replacement: 'maintenance' },
-    { regex: /\bUpdate\b/gi, replacement: 'update' },
-    { regex: /\bUpdates\b/gi, replacement: 'updates' },
-    { regex: /\bAlert\b/gi, replacement: 'alert' },
-    { regex: /\bComplaint\b/gi, replacement: 'complaint' },
-    { regex: /\bPortal\b/gi, replacement: 'portal' },
-    { regex: /\bWebsite\b/gi, replacement: 'website' },
-    { regex: /\bHelpline\b/gi, replacement: 'helpline' },
+    // ── Common English Words → Natural Spoken Tamil Phonetics ──
+    { regex: /\bPower Cut\b/gi, replacement: 'கரண்ட் கட்' },
+    { regex: /\bpower cut\b/gi, replacement: 'கரண்ட் கட்' },
+    { regex: /\bShutdown\b/gi, replacement: 'மின்சாரம் நிறுத்தம்' },
+    { regex: /\bshutdown\b/gi, replacement: 'மின்சாரம் நிறுத்தம்' },
+    { regex: /\bMaintenance\b/gi, replacement: 'பராமரிப்பு பணி' },
+    { regex: /\bmaintenance\b/gi, replacement: 'பராமரிப்பு பணி' },
+    { regex: /\btraffic\b/gi, replacement: 'டிராபிக்' },
+    { regex: /\broad\b/gi, replacement: 'ரோடு' },
+    { regex: /\bcomplaint\b/gi, replacement: 'புகார்' },
+    { regex: /\bhelpline\b/gi, replacement: 'உதவி எண்' },
+    { regex: /\bHelpline\b/gi, replacement: 'உதவி எண்' },
+    { regex: /\bFollow & Subscribe\b/gi, replacement: 'ஃபாலோ மற்றும் சப்ஸ்கிரைப்' },
+    { regex: /\bFollow\b/gi, replacement: 'ஃபாலோ' },
+    { regex: /\bSubscribe\b/gi, replacement: 'சப்ஸ்கிரைப்' },
+    { regex: /\bcharge\b/gi, replacement: 'சார்ஜ்' },
+    { regex: /\bmotor\b/gi, replacement: 'மோட்டார்' },
+    { regex: /\bphone\b/gi, replacement: 'போன்' },
+    { regex: /\bmessage\b/gi, replacement: 'மெசேஜ்' },
+    { regex: /\blink\b/gi, replacement: 'லிங்க்' },
+    { regex: /\bvideo\b/gi, replacement: 'வீடியோ' },
+    { regex: /\bpost\b/gi, replacement: 'பதிவு' },
+    { regex: /\bShorts\b/gi, replacement: 'ஷார்ட்ஸ்' },
+    { regex: /\bupdates\b/gi, replacement: 'செய்திகள்' },
+    { regex: /\bupdate\b/gi, replacement: 'செய்தி' },
+    { regex: /\balert\b/gi, replacement: 'எச்சரிக்கை' },
+    { regex: /\bpolice\b/gi, replacement: 'போலீஸ்' },
+    { regex: /\boffice\b/gi, replacement: 'அலுவலகம்' },
+    { regex: /\binfo\b/gi, replacement: 'தகவல்' },
     { regex: /\bvizhitn\.in\b/gi, replacement: 'விழி டிஎன் டாட் இன்' },
-    { regex: /VizhiTN-ஐ|VizhiTN-யை/gi, replacement: 'விழி டிஎன்-ஐ' },
-    { regex: /\bVizhiTN\b/gi, replacement: 'விழி டிஎன்' }
+    { regex: /VizhiTN-ஐ|VizhiTN-யை|VizhiTN-இன்/gi, replacement: 'விழி டிஎன்-ஐ' },
+    { regex: /\bVizhiTN\b/gi, replacement: 'விழி டிஎன்' },
+    { regex: /\bTamil Nadu\b/gi, replacement: 'தமிழ்நாடு' }
   ];
 
   let result = text;
@@ -106,59 +115,52 @@ export function normalizeAcronymsToSpokenTamil(text) {
     result = result.replace(item.regex, item.replacement);
   }
 
+  // Clean remaining English hyphens like "-ல"
+  result = result.replace(/-ல\b/g, 'ல').replace(/-ஐ\b/g, 'ஐ').replace(/-க்கு\b/g, 'க்கு');
+
   result = result.replace(/(\d{1,2}):?00?\s*AM\s*(?:to|-)\s*(\d{1,2}):?00?\s*PM/gi, 'காலை $1 மணில இருந்து மதியம் $2 மணி வரைக்கும்');
   result = result.replace(/(\d{1,2}):?00?\s*AM/gi, 'காலை $1 மணிக்கு');
   result = result.replace(/(\d{1,2}):?00?\s*PM/gi, 'மதியம் $1 மணிக்கு');
 
-  return result;
+  return result.replace(/\s+/g, ' ').trim();
 }
 
 /**
- * Splits text into 2 to 4-word spoken micro-clauses based on punctuation and natural breathing pauses.
- * Essential for millisecond-accurate audio/caption synchronization.
+ * Splits text into natural sentence-level spoken clauses based on punctuation (. ! ?).
+ * NEVER chops short sentences mid-phrase to prevent audio stuttering and missing words.
  *
  * @param {string} text - Raw narration text
- * @param {number} [maxWords=4] - Max words per audio micro-chunk
- * @returns {string[]} Array of short clauses
+ * @param {number} [maxWords=25] - Max words before splitting on natural commas
+ * @returns {string[]} Array of natural spoken clauses
  */
-export function splitIntoSpokenClauses(text, maxWords = 4) {
+export function splitIntoSpokenClauses(text, maxWords = 25) {
   if (!text) return [];
   const clean = text.replace(/\s+/g, ' ').trim();
-  // Split on punctuation (. ! ? , ; : ... or danda)
-  const rawSegments = clean.split(/(?<=[.!?।,\;:\-])\s+|(?<=\.\.\.)\s+/);
+
+  // Split on full sentence terminators: . ! ? or danda
+  const sentences = clean
+    .split(/(?<=[.!?।])\s+/)
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  if (sentences.length === 0) return [clean];
 
   const clauses = [];
-  let current = '';
-
-  for (const seg of rawSegments) {
-    const trimmed = seg.trim();
-    if (!trimmed) continue;
-
-    const words = trimmed.split(/\s+/).filter(Boolean);
-    // If this segment has more than maxWords, break it into maxWords chunks
-    if (words.length > maxWords) {
-      if (current) {
-        clauses.push(current);
-        current = '';
-      }
-      for (let i = 0; i < words.length; i += maxWords) {
-        clauses.push(words.slice(i, i + maxWords).join(' '));
-      }
-      continue;
-    }
-
-    const combined = (current + ' ' + trimmed).trim();
-    const wordCount = combined.split(/\s+/).length;
-    if (wordCount <= maxWords) {
-      current = combined;
+  for (const sent of sentences) {
+    const words = sent.split(/\s+/).filter(Boolean);
+    // If a sentence is under maxWords, keep it completely whole for seamless neural prosody
+    if (words.length <= maxWords) {
+      clauses.push(sent);
     } else {
-      if (current) clauses.push(current);
-      current = trimmed;
+      // Only break extremely long compound sentences at commas
+      const subClauses = sent.split(/(?<=[,;:\-])\s+/).map(s => s.trim()).filter(Boolean);
+      for (const sub of subClauses) {
+        clauses.push(sub);
+      }
     }
   }
 
-  if (current) clauses.push(current);
-  return clauses.map(c => c.trim()).filter(Boolean);
+  return clauses.filter(Boolean);
 }
 
 /**
@@ -314,37 +316,17 @@ export function createConversationalShortsScript(posts, districtName = 'தம�
 export function addUrgencyPauses(text, mode = 'short') {
   if (!text) return '';
 
-  // Words that should be preceded by a micro-pause for stress effect
-  const urgencyWords = [
-    // High-alert civic words
-    'அவசரம்', 'அவசர', 'எச்சரிக்கை', 'கவனம்', 'கவனியுங்கள்',
-    'உடனடியாக', 'உடனே', 'உஷார்', 'உஷாரா',
-    // Action words
-    'அழைக்கவும்', 'செய்யுங்கள்', 'பண்ணுங்க', 'பதிவு',
-    // Status words
-    'நிறுத்தம்', 'தடை', 'மாற்றம்', 'சேதம்', 'கோளாறு',
-    // Helpline triggers
-    '1912', '1913', '1930', '1100', '1070', '1077', '103',
-  ];
-
   let result = text;
 
-  // Insert a comma-pause before urgency words (edge-tts treats commas as ~200ms pause)
-  for (const word of urgencyWords) {
-    // Only add comma if not already preceded by punctuation
-    const pattern = new RegExp(`([^,\\.!?\\s])\\s+(${word})`, 'g');
-    result = result.replace(pattern, `$1, $2`);
-  }
-
   if (mode === 'short') {
-    // For Shorts: add exclamation stress after key action phrases
+    // Add exclamation emphasis only at clean clause boundaries
     result = result
-      .replace(/கவனியுங்கள்([^!])/g, 'கவனியுங்கள்!$1')
-      .replace(/உஷாரா இருங்க([^!])/g, 'உஷாரா இருங்க!$1')
-      .replace(/உடனே செக் பண்ணுங்க([^!])/g, 'உடனே செக் பண்ணுங்க!$1');
+      .replace(/கவனியுங்கள்([^\!])/g, 'கவனியுங்கள்! $1')
+      .replace(/உஷாரா இருங்க([^\!])/g, 'உஷாரா இருங்க! $1')
+      .replace(/உடனே செக் பண்ணுங்க([^\!])/g, 'உடனே செக் பண்ணுங்க! $1');
   }
 
-  return result;
+  return result.replace(/\s+/g, ' ').trim();
 }
 
 // ── Tamil to High-Retention Tanglish Caption Converter ────────────────────────

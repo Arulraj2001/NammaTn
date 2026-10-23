@@ -111,6 +111,7 @@ JSON மட்டும் திரும்ப அனுப்பு:
       } catch (modelErr) {
         console.warn(`[AI SCRIPT] Model ${model} failed: ${modelErr.message.slice(0, 60)}`);
       }
+    }
     const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
     const parsed = JSON.parse(cleaned);
     if (parsed.beat1 && parsed.beat2 && parsed.beat3) {
@@ -255,9 +256,9 @@ async function main() {
 
   const fallbackCTA = `${helplineVoice}-ஐ அழையுங்க. தினசரி அரசு எச்சரிக்கைகளுக்கு இப்பவே VizhiTN-ஐ Follow & Subscribe பண்ணுங்க! ${chosenLoopCTA}`;
 
-  const scene1Script = splitIntoSpokenClauses(aiScript?.beat1 || stakeHook, 4);
-  const scene2Script = splitIntoSpokenClauses(aiScript?.beat2 || fallbackGround, 4);
-  const scene3Script = splitIntoSpokenClauses(aiScript?.beat3 || fallbackCTA, 4);
+  const scene1Script = aiScript?.beat1 || stakeHook;
+  const scene2Script = aiScript?.beat2 || fallbackGround;
+  const scene3Script = aiScript?.beat3 || fallbackCTA;
 
   const isPublishLatest = process.argv.includes('--publish-latest');
   const seoFilename = generateSeoVideoFilename({

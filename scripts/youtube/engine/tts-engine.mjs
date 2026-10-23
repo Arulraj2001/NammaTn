@@ -111,17 +111,21 @@ export async function synthesizeSpeech(input, outputFilePath, options = {}) {
     clauses = input.map(c => normalizeAcronymsToSpokenTamil(c)).filter(Boolean);
   } else {
     const normalized = normalizeAcronymsToSpokenTamil(input);
-    clauses = splitIntoSpokenClauses(normalized);
+    const wordCount = normalized.split(/\s+/).length;
+    if (wordCount <= 40) {
+      clauses = [normalized];
+    } else {
+      clauses = splitIntoSpokenClauses(normalized);
+    }
   }
 
   if (clauses.length === 0) throw new Error('[TTS] No valid clauses provided for synthesis');
 
   // Apply urgency pause markers to every clause before synthesis
-  // Inserts strategic commas/exclamations that edge-tts interprets as stress cues
   const mode = options.mode || 'short';
   clauses = clauses.map(c => addUrgencyPauses(c, mode));
 
-  console.log(`[TTS ENGINE] Sliced narration into ${clauses.length} micro-chunks for glitch-free delivery.`);
+  console.log(`[TTS ENGINE] Sliced narration into ${clauses.length} natural segments for continuous delivery.`);
 
   // Verify Python + edge-tts CLI is available
   const python = getPythonBinary();
@@ -207,7 +211,7 @@ export async function synthesizeSpeech(input, outputFilePath, options = {}) {
       fs.writeFileSync(concatListPath, lines, 'utf-8');
 
       execSync(
-        `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c copy "${outputFilePath}"`,
+        `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c:a libmp3lame -b:a 192k "${outputFilePath}"`,
         { stdio: 'pipe', timeout: 60000 }
       );
 

@@ -13,7 +13,7 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
 import { generateArtDirectedVisualPrompt } from '../engine/script-writer.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
-import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
+import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile, generateKaraokeCaptions } from '../engine/captions-engine.mjs';
 import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
@@ -129,19 +129,12 @@ async function main() {
     curiosityLiveHook = `${area} மக்களுக்கான நேரடி அவசர கள அறிவிப்பு!`;
   }
 
-  const scene1Script = [
-    `${curiosityLiveHook} ${spokenTitle}.`
-  ];
+  const scene1Script = `${curiosityLiveHook} ${spokenTitle}.`;
 
   const locInfo = urgentPost.location_text ? `பாதிக்கப்பட்ட பகுதிகள்: ${urgentPost.location_text}.` : '';
-  const scene2Script = [
-    `கள நிலவரம்: ${spokenTitle}. ${locInfo} அதிகாரிகள் துரித நடவடிக்கை எடுத்து வருகிறார்கள்.`
-  ];
+  const scene2Script = `கள நிலவரம்: ${spokenTitle}. ${locInfo} அதிகாரிகள் துரித நடவடிக்கை எடுத்து வருகிறார்கள்.`;
 
-  const scene3Script = [
-    `உடனடி உதவி மற்றும் புகார்களுக்கு ${helplineVoice}-ஐ அழைக்கவும்.`,
-    `தமிழ்நாட்டின் அன்றாட அரசு எச்சரிக்கைகள் மற்றும் கள நிலவரங்களை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணுங்க!`
-  ];
+  const scene3Script = `உடனடி உதவி மற்றும் புகார்களுக்கு ${helplineVoice}-ஐ அழைக்கவும். தமிழ்நாட்டின் அன்றாட அரசு எச்சரிக்கைகள் மற்றும் கள நிலவரங்களை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணுங்க!`;
 
   const isPublishLatest = process.argv.includes('--publish-latest');
   const seoFilename = generateSeoVideoFilename({
@@ -168,18 +161,21 @@ async function main() {
     // 3. Synthesize Speech
     console.log('[TTS] Synthesizing Scene 1 audio...');
     s1AudioPath = path.join(outDir, `live_s1_audio_${Date.now()}.mp3`);
-    await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+    const s1Tts = await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
     const s1Dur = getAudioDuration(s1AudioPath);
+    const s1TimedSegs = s1Tts?.timedSegments || [];
 
     console.log('[TTS] Synthesizing Scene 2 audio...');
     s2AudioPath = path.join(outDir, `live_s2_audio_${Date.now()}.mp3`);
-    await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+    const s2Tts = await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
     const s2Dur = getAudioDuration(s2AudioPath);
+    const s2TimedSegs = s2Tts?.timedSegments || [];
 
     console.log('[TTS] Synthesizing Scene 3 audio...');
     s3AudioPath = path.join(outDir, `live_s3_audio_${Date.now()}.mp3`);
-    await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
+    const s3Tts = await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+4%' });
     const s3Dur = getAudioDuration(s3AudioPath);
+    const s3TimedSegs = s3Tts?.timedSegments || [];
 
     const totalDur = s1Dur + s2Dur + s3Dur;
     console.log(`[AUDIO STATS] S1: ${s1Dur.toFixed(1)}s, S2: ${s2Dur.toFixed(1)}s, S3: ${s3Dur.toFixed(1)}s | Total: ${totalDur.toFixed(1)}s`);
@@ -288,9 +284,23 @@ async function main() {
     s2SubPath = path.join(outDir, `live_s2_sub_${Date.now()}.ass`);
     s3SubPath = path.join(outDir, `live_s3_sub_${Date.now()}.ass`);
 
-    generateAssSubtitleFile(generateCaptionsFromClauses(scene1Script, s1Dur), s1SubPath, '9:16');
-    generateAssSubtitleFile(generateCaptionsFromClauses(scene2Script, s2Dur), s2SubPath, '9:16');
-    generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
+    if (s1TimedSegs && s1TimedSegs.length > 0) {
+      generateKaraokeCaptions(s1TimedSegs, s1SubPath, '9:16');
+    } else {
+      generateAssSubtitleFile(generateCaptionsFromClauses([scene1Script], s1Dur), s1SubPath, '9:16');
+    }
+
+    if (s2TimedSegs && s2TimedSegs.length > 0) {
+      generateKaraokeCaptions(s2TimedSegs, s2SubPath, '9:16');
+    } else {
+      generateAssSubtitleFile(generateCaptionsFromClauses([scene2Script], s2Dur), s2SubPath, '9:16');
+    }
+
+    if (s3TimedSegs && s3TimedSegs.length > 0) {
+      generateKaraokeCaptions(s3TimedSegs, s3SubPath, '9:16');
+    } else {
+      generateAssSubtitleFile(generateCaptionsFromClauses([scene3Script], s3Dur), s3SubPath, '9:16');
+    }
 
     // 7. Video Assembly with Dynamic SEO Filename
     const brollClip = await fetchFreeBrollClip({
