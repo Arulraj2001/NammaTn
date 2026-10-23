@@ -111,6 +111,68 @@ async function resolveThumbnail(imageInput) {
 }
 
 /**
+ * Intelligently cleans and formats post content for WhatsApp broadcast.
+ * Strips HTML tags, removes duplicate source lists, extracts timing and street details,
+ * and ensures sentences terminate cleanly without awkward mid-word cutoffs.
+ */
+function cleanAndFormatWhatsAppBody(rawText = "") {
+  if (!rawText) return "";
+
+  // 1. Remove HTML tags, links, and official sources section
+  let text = String(rawText)
+    .replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, '') // Remove headers like <h2>Official sources</h2>
+    .replace(/<ul[^>]*>[\s\S]*?<\/ul>/gi, '')   // Remove lists
+    .replace(/<[^>]+>/g, ' ')                   // Strip remaining HTML tags
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!text) return "";
+
+  // 2. Identify sections if structured (e.g., Section 1 overview and Section 2 streets)
+  const streetMarkers = [
+    /(?:affected streets & areas|affected areas|streets affected|locations affected):?\s*(.*?)(?=(?:according to|for unresolved|residents are advised|$))/i,
+    /(?:பாதிக்கப்படும் பகுதிகள்|மின்தடை பகுதிகள்|தெருக்கள் விவரம்):?\s*(.*?)(?=(?:மின்வாரிய|புகார்களுக்கு|பொதுமக்கள்|$))/i
+  ];
+
+  let streetSnippet = "";
+  for (const regex of streetMarkers) {
+    const match = text.match(regex);
+    if (match && match[1] && match[1].trim().length > 10) {
+      streetSnippet = match[1].trim();
+      break;
+    }
+  }
+
+  // 3. Extract core lead text (first 1-2 sentences)
+  const sentences = text.split(/(?<=[.!?।])\s+/).filter(Boolean);
+  let lead = sentences.slice(0, 2).join(' ').trim();
+
+  if (lead.length > 280) {
+    const punctIdx = lead.lastIndexOf('.', 270);
+    if (punctIdx > 120) {
+      lead = lead.slice(0, punctIdx + 1);
+    } else {
+      lead = lead.slice(0, 270).replace(/\s+\S*$/, '') + '...';
+    }
+  }
+
+  let formatted = `📋 *முக்கிய விவரங்கள் / Key Details:*\n${lead}\n`;
+
+  if (streetSnippet) {
+    if (streetSnippet.length > 180) {
+      streetSnippet = streetSnippet.slice(0, 180).replace(/[,;]\s*[^,;]*$/, '') + '...';
+    }
+    formatted += `\n🏘️ *பாதிக்கப்படும் முக்கிய பகுதிகள் / Streets:*\n${streetSnippet}\n`;
+  }
+
+  return formatted;
+}
+
+/**
  * Broadcasts an article or civic update directly to the VizhiTN WhatsApp Channel.
  * Automatically attaches rich link preview card metadata and large thumbnail.
  *
@@ -148,18 +210,21 @@ export async function postToWhatsAppChannel({
   // Format broadcast caption text
   let messageText = `${urgencyIcon} *${title.trim()}*\n\n`;
   if (district && district.trim()) {
-    messageText += `📍 *மாவட்டம்:* ${district.toUpperCase()}\n`;
+    messageText += `📍 *மாவட்டம் / District:* ${district.toUpperCase()}\n`;
   }
   if (helpline && helpline.trim()) {
-    messageText += `📞 *துறை / உதவி எண்:* ${helpline.trim()}\n`;
+    messageText += `📞 *துறை & உதவி எண் / Helpline:* ${helpline.trim()}\n`;
   }
   if (district || helpline) {
     messageText += `\n`;
   }
-  if (summary && summary.trim()) {
-    messageText += `${summary.trim().slice(0, 280)}...\n\n`;
+
+  const formattedBody = cleanAndFormatWhatsAppBody(summary);
+  if (formattedBody) {
+    messageText += `${formattedBody}\n`;
   }
-  messageText += `👉 *முழு விவரங்களுக்கு:* ${url}\n\n`;
+
+  messageText += `👉 *முழு விவரங்களுக்கு / Full List:* ${url}\n\n`;
   messageText += `📢 *பிறருக்கு உதவ இந்த தகவலை உங்கள் குடியிருப்போர் மற்றும் குடும்ப வாட்ஸ்அப் குழுக்களில் பகிருங்கள் (Forward)!*\n\n`;
   messageText += `🔗 *வாட்ஸ்அப் சேனலை பின்தொடர:* https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228\n\n`;
   messageText += `🌐 *VizhiTN* | தமிழ்நாடு உண்மை செய்திகள் & மக்கள் களம்`;

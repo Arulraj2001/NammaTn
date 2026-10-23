@@ -216,15 +216,52 @@ function determinePulse() {
   return 'evening';
 }
 
+// Dynamic 38-District Geographic Rotation based on day of week (IST)
+function getDailyDistrictRotation(istDate) {
+  const day = istDate ? istDate.getUTCDay() : new Date().getUTCDay(); // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  const rotation = {
+    1: { // Monday: North & Chennai Metropolitan Corridor
+      primary: ['chennai', 'tiruvallur', 'chengalpattu', 'kancheepuram', 'ranipet', 'vellore'],
+      label: 'North & Chennai Metropolitan Corridor (Chennai, Tiruvallur, Chengalpattu, Kancheepuram, Ranipet, Vellore)'
+    },
+    2: { // Tuesday: Central & Cauvery Delta Upper
+      primary: ['tiruchirappalli', 'salem', 'namakkal', 'perambalur', 'ariyalur', 'kallakurichi'],
+      label: 'Central & Upper Delta Region (Tiruchirappalli, Salem, Namakkal, Perambalur, Ariyalur, Kallakurichi)'
+    },
+    3: { // Wednesday: Kongu & Western Belt
+      primary: ['coimbatore', 'erode', 'tiruppur', 'karur', 'nilgiris', 'dindigul'],
+      label: 'Kongu & Western Tamil Nadu (Coimbatore, Erode, Tiruppur, Karur, Nilgiris, Dindigul)'
+    },
+    4: { // Thursday: Cauvery Delta & Coastal
+      primary: ['thanjavur', 'nagapattinam', 'mayiladuthurai', 'tiruvarur', 'pudukkottai', 'cuddalore'],
+      label: 'Cauvery Delta & Coastal Belt (Thanjavur, Nagapattinam, Mayiladuthurai, Tiruvarur, Pudukkottai, Cuddalore)'
+    },
+    5: { // Friday: Southern Districts
+      primary: ['madurai', 'tirunelveli', 'thoothukudi', 'tenkasi', 'virudhunagar', 'kanyakumari', 'ramanathapuram', 'sivaganga', 'theni'],
+      label: 'Southern Tamil Nadu (Madurai, Tirunelveli, Thoothukudi, Tenkasi, Virudhunagar, Kanyakumari, Ramanathapuram, Sivaganga, Theni)'
+    },
+    6: { // Saturday: Northern Interior & Weekend Corridors
+      primary: ['dharmapuri', 'krishnagiri', 'tiruvannamalai', 'tirupattur', 'villupuram', 'nilgiris'],
+      label: 'Northern Interior & Weekend Travel Corridors (Dharmapuri, Krishnagiri, Tiruvannamalai, Tirupattur, Villupuram, Nilgiris)'
+    },
+    0: { // Sunday: Major State Transit & Municipal Hubs
+      primary: ['chennai', 'coimbatore', 'madurai', 'tiruchirappalli', 'salem', 'tirunelveli'],
+      label: 'Major State Transit & Municipal Hubs (Chennai, Coimbatore, Madurai, Tiruchirappalli, Salem, Tirunelveli)'
+    }
+  };
+  return rotation[day] || rotation[1];
+}
+
 // Build Pulse Specifications
-function getPulseSpec(pulse, todayStr) {
+function getPulseSpec(pulse, todayStr, istDate) {
+  const rotation = getDailyDistrictRotation(istDate);
   switch (pulse) {
     case 'morning':
       return {
-        name: 'Morning Civic & Power Batch (7:00 AM – 8:15 AM IST)',
+        name: `Morning Civic & Power Batch (${rotation.label})`,
         targetCount: 14,
         searchAnchors: [
-          `TANGEDCO power cut shutdown schedule ${todayStr} Chennai Coimbatore Madurai Salem`,
+          `TANGEDCO power cut shutdown schedule ${todayStr} ${rotation.primary.slice(0, 3).join(' ')}`,
           `Tamil Nadu heavy rain school college holiday collector order ${todayStr}`,
           `Aadhaar ration card grievance camp Tamil Nadu taluk office ${todayStr}`,
           `Southern Railway suburban train cancellation Beach Tambaram Central ${todayStr}`
@@ -235,34 +272,35 @@ Generate 14 real, scheduled civic updates for Tamil Nadu for TODAY (${todayStr})
 - 4 × post_type: "local_update" (Aadhaar / Ration card grievance camps, district collectorate notices, public health camps)
 - 2 × post_type: "complaint" (Real civic grievance pattern: water leak, road pothole, or street light hazard)
 - 2 × post_type: "appreciation" (Recognition of sanitary workers, GCC drain desilting, or swift repair)
-Focus districts (North & West TN): Chennai, Coimbatore, Madurai, Tiruchirappalli, Salem, Tiruvallur, Chengalpattu, Kancheepuram, Erode, Tiruppur.
+TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 8 of the 14 posts cover these rotation districts, with remaining posts covering major state infrastructure corridors.
 `,
       };
 
     case 'midday':
       return {
-        name: 'Midday Civic Progress & Welfare Pulse (12:30 PM – 2:00 PM IST)',
+        name: `Midday Civic Progress & Welfare Pulse (${rotation.label})`,
         targetCount: 12,
         searchAnchors: [
           `Tamil Nadu municipal development flyover road work progress ${todayStr}`,
           `IMD Chennai rainfall warning alert orange yellow Tamil Nadu ${todayStr}`,
-          `DIPR Tamil Nadu press release welfare scheme ${todayStr}`
+          `DIPR Tamil Nadu press release welfare scheme ${todayStr}`,
+          `TANGEDCO maintenance progress ${rotation.primary.slice(0, 2).join(' ')}`
         ],
         mixPrompt: `
 Generate 12 civic progress updates and active advisories for Tamil Nadu for TODAY (${todayStr}):
 - 5 × post_type: "local_update" (Ongoing municipal road resurfacing, flyover milestone, canal irrigation water release, e-Sevai / Patta transfer settlement drives)
 - 4 × post_type: "alert" (Afternoon traffic diversions, weather/rain alert updates from IMD / TNDMA, water tanker supply helpline)
 - 3 × post_type: "complaint" (Unaddressed garbage pile-up or drainage overflow in residential areas)
-Focus districts (Central, Delta & South TN): Tiruchirappalli, Thanjavur, Dindigul, Tirunelveli, Thoothukudi, Cuddalore, Vellore, Nilgiris, Nagapattinam, Pudukkottai.
+TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 6 of the 12 posts cover these districts.
 `,
       };
 
     case 'evening':
       return {
-        name: 'Evening Advisory & Tomorrow Advance Batch (5:30 PM – 6:30 PM IST)',
+        name: `Evening Advisory & Tomorrow Advance Batch (${rotation.label})`,
         targetCount: 14,
         searchAnchors: [
-          `TANGEDCO tomorrow scheduled power shutdown notice Tamil Nadu`,
+          `TANGEDCO tomorrow scheduled power shutdown notice Tamil Nadu ${rotation.primary.slice(0, 3).join(' ')}`,
           `Tamil Nadu cyber crime police advisory fake bill SMS 1930`,
           `Southern Railway line block train diversion Tamil Nadu tomorrow`
         ],
@@ -272,7 +310,7 @@ Generate 14 evening advisories and ADVANCE notices for TOMORROW across Tamil Nad
 - 3 × post_type: "alert" (Cyber fraud warning: fake electricity bill SMS, WhatsApp job scams, OTP theft with National Cyber Helpline 1930)
 - 3 × post_type: "local_update" (Civic work completed today: street lights fixed, garbage cleared by corporation)
 - 2 × post_type: "appreciation" (Commendation of TANGEDCO line workers or civic staff)
-Focus districts: Namakkal, Dharmapuri, Krishnagiri, Villupuram, Ranipet, Tiruvannamalai, Kanyakumari, Theni, Sivaganga, Ramanathapuram.
+TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 8 posts cover tomorrow's advance notices for these districts.
 `,
       };
 
@@ -312,10 +350,10 @@ Generate 12 weekend preparation notices for Tamil Nadu:
 
     default:
       return {
-        name: 'General Daily Civic Batch',
+        name: `General Daily Civic Batch (${rotation.label})`,
         targetCount: 10,
         mixPrompt: `
-Generate 10 real, verified civic posts for Tamil Nadu for TODAY (${todayStr}) across power, water, transport, and public schemes.
+Generate 10 real, verified civic posts for Tamil Nadu for TODAY (${todayStr}) across power, water, transport, and public schemes, with focus on ${rotation.label}.
 `,
       };
   }
@@ -350,7 +388,7 @@ async function main() {
   const now = new Date();
   const istDate = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
   const todayStr = istDate.toISOString().slice(0, 10);
-  const spec = getPulseSpec(pulse === 'dry-run' ? 'morning' : pulse, todayStr);
+  const spec = getPulseSpec(pulse === 'dry-run' ? 'morning' : pulse, todayStr, istDate);
 
   console.log(`[INFO] Running: ${spec.name}`);
 
@@ -482,6 +520,8 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
 13. HIGH-CONVERTING META DESCRIPTION ("seo_description"):
     145 to 160 characters stating exact area, timing, affected streets, and helpline number. This snippet appears directly below the title in Google search results.
 14. "official_sources": Array with at least one direct HTTPS URL to the specific official notice, shutdown schedule, order, advisory, or release supporting this update. Do not use homepages, media reports, social posts, or invented URLs. If no official source exists, do not return the update.
+15. OFFICIAL REFERENCE / CIRCULAR NUMBER ("official_reference_number"):
+    Extract any official government reference code, circular number, or G.O. mentioned in the order or release (e.g. "G.O. Ms. No. 42", "DIPR PR No. 312", "TANGEDCO Circular No. 88/2026", "Collector Order ROC No. 104"). If not explicitly stated in the source, return "".
 
 OUTPUT FORMAT:
 Return ONLY a valid JSON array containing the post objects.
@@ -507,11 +547,11 @@ No conversational intro, no commentary outside the JSON array.
     console.warn(`[GEMINI] Model list check: ${listErr.message}`);
   }
 
-  // Bug Fix #2: Only use Search Grounding for morning/weekend/rain pulses (higher value, lower frequency).
-  // Midday and evening go straight to standard generation to preserve daily grounding quota (429 prevention).
-  const useGrounding = ['morning', 'weekend', 'rain'].includes(pulse);
+  // Search Grounding Optimization: Prioritize Google Search Grounding across ALL pulses
+  // (morning, midday, evening, rain, weekend) to guarantee live, verified facts.
+  const useGrounding = !process.argv.includes('--no-grounding');
 
-  // Use available modern models (gemini-2.5 is deprecated 404)
+  // Use modern high-performance models
   const CANDIDATE_MODELS = [
     'gemini-flash-lite-latest',
     'gemini-3.1-flash-lite-preview',
@@ -519,13 +559,13 @@ No conversational intro, no commentary outside the JSON array.
     'gemini-3-flash-preview',
   ];
 
-  console.log(`[GEMINI] Grounding: ${useGrounding ? 'ENABLED (morning/weekend pulse)' : 'DISABLED (midday/evening — quota conservation)'}`);
+  console.log(`[GEMINI] Grounding: ${useGrounding ? 'ENABLED for all pulses (live Google Search)' : 'DISABLED (--no-grounding flag)'}`);
 
   let lastError = null;
 
-  for (const modelName of CANDIDATE_MODELS) {
-    if (useGrounding) {
-      // Attempt 1: With Google Search Grounding (morning/weekend only)
+  // Phase 1: Attempt Grounded Generation across all candidate models
+  if (useGrounding) {
+    for (const modelName of CANDIDATE_MODELS) {
       try {
         console.log(`[GEMINI] Attempting model: ${modelName} with Google Search Grounding...`);
         const response = await ai.models.generateContent({
@@ -542,32 +582,18 @@ No conversational intro, no commentary outside the JSON array.
           break;
         }
       } catch (groundErr) {
-        console.warn(`[GEMINI WARN] Search Grounding failed on ${modelName} (${groundErr.message}). Retrying standard mode...`);
-
-        // Attempt 2: Standard generation fallback with JSON mode
-        try {
-          const response = await ai.models.generateContent({
-            model: modelName,
-            contents: masterPrompt,
-            config: {
-              responseMimeType: 'application/json',
-            }
-          });
-
-          rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          if (rawResponseText) {
-            console.log(`[GEMINI ✓] Successfully received standard response from ${modelName}`);
-            break;
-          }
-        } catch (stdErr) {
-          console.warn(`[GEMINI WARN] Standard generation on ${modelName} failed: ${stdErr.message}`);
-          lastError = stdErr;
-        }
+        console.warn(`[GEMINI WARN] Search Grounding on ${modelName} encountered: ${groundErr.message}. Checking next candidate model...`);
+        lastError = groundErr;
       }
-    } else {
-      // No grounding for midday/evening — go straight to standard generation with JSON mode
+    }
+  }
+
+  // Phase 2: If grounding exhausted or unavailable, fall back to standard JSON generation
+  if (!rawResponseText) {
+    console.warn(`[GEMINI FALLBACK] Grounding unavailable or quota limited. Retrying standard generation with JSON mode across candidate models...`);
+    for (const modelName of CANDIDATE_MODELS) {
       try {
-        console.log(`[GEMINI] Attempting model: ${modelName} (standard, no grounding)...`);
+        console.log(`[GEMINI FALLBACK] Attempting model: ${modelName} (standard JSON mode)...`);
         const response = await ai.models.generateContent({
           model: modelName,
           contents: masterPrompt,
@@ -592,6 +618,9 @@ No conversational intro, no commentary outside the JSON array.
     console.error(`[FATAL] All candidate Gemini models failed. Last error: ${lastError?.message}`);
     process.exit(1);
   }
+
+  console.log(`[RAW RESPONSE LENGTH]: ${rawResponseText.length} characters`);
+  console.log(`[RAW RESPONSE PREVIEW]: ${rawResponseText.slice(0, 180)}...`);
 
   // --- STEP 4: PARSE AND CLEAN JSON WITH MULTI-PASS RECOVERY ---
   function parseCivicJson(rawText) {
@@ -755,11 +784,15 @@ No conversational intro, no commentary outside the JSON array.
       console.warn(`[SKIP] ${title_en || slug}: no reachable approved official source URL.`);
       continue;
     }
+    const officialRef = (raw.official_reference_number || raw.official_ref || raw.reference_number || '').trim();
     const sourceMarkup = sourceUrls
       .map(url => `<li><a href="${url}" target="_blank" rel="noopener noreferrer">Official source</a></li>`)
       .join('');
-    const sourceSectionEn = `<h2>Official sources</h2><ul>${sourceMarkup}</ul>`;
-    const sourceSectionTa = `<h2>அதிகாரப்பூர்வ ஆதாரங்கள்</h2><ul>${sourceMarkup}</ul>`;
+    const refBadgeEn = officialRef ? `<p class="official-ref-badge" style="margin: 8px 0; font-size: 0.875rem;"><strong>Official Circular/Order Ref:</strong> ${officialRef}</p>` : '';
+    const refBadgeTa = officialRef ? `<p class="official-ref-badge" style="margin: 8px 0; font-size: 0.875rem;"><strong>அதிகாரப்பூர்வ ஆணை / குறிப்பு எண்:</strong> ${officialRef}</p>` : '';
+
+    const sourceSectionEn = `<h2>Official sources</h2>${refBadgeEn}<ul>${sourceMarkup}</ul>`;
+    const sourceSectionTa = `<h2>அதிகாரப்பூர்வ ஆதாரங்கள்</h2>${refBadgeTa}<ul>${sourceMarkup}</ul>`;
 
     // Build Post Object
     const normalizedPost = {
@@ -786,7 +819,7 @@ No conversational intro, no commentary outside the JSON array.
         ? raw.media_urls
         : [],
       civic_receipt_id,
-      official_complaint_id: raw.official_complaint_id || '',
+      official_complaint_id: officialRef || raw.official_complaint_id || '',
       assigned_department,
       civic_status,
       location_text,

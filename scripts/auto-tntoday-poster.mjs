@@ -413,6 +413,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     "நவம்பர் 2026: மின்மயமாக்கல் மற்றும் சோதனை ஓட்டம்",
     "மார்ச் 2027: பொதுமக்கள் பயன்பாட்டிற்கு திறப்பு"
   ],
+  "official_reference": "G.O. Ms. No. 128 / DIPR Press Release No. 402 / Nodal Agency Circular Ref",
   "official_sources": [
     "Official source: https://example.gov.in/department/specific-announcement"
   ],
@@ -435,8 +436,8 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
   let rawResponseText = '';
   let successfulModel = '';
 
+  // Phase 1: Prioritize Search Grounding across all candidate models
   for (const modelName of CANDIDATE_MODELS) {
-    // Attempt 1: Search Grounding
     try {
       console.log(`[GEMINI] Calling ${modelName} with Google Search Grounding for live Tamil Nadu developments...`);
       const response = await ai.models.generateContent({
@@ -454,10 +455,16 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
         break;
       }
     } catch (groundErr) {
-      console.warn(`[GEMINI WARN] Grounding on ${modelName} failed (${groundErr.message}). Retrying standard mode...`);
+      console.warn(`[GEMINI WARN] Grounding on ${modelName} encountered: ${groundErr.message}. Checking next candidate model...`);
+    }
+  }
 
-      // Attempt 2: Standard generation with JSON mode
+  // Phase 2: If grounding exhausted or unavailable, fall back to standard JSON generation
+  if (!rawResponseText) {
+    console.warn(`[GEMINI FALLBACK] Grounding unavailable or quota limited. Retrying standard generation across candidate models...`);
+    for (const modelName of CANDIDATE_MODELS) {
       try {
+        console.log(`[GEMINI FALLBACK] Attempting ${modelName} (standard JSON mode)...`);
         const response = await ai.models.generateContent({
           model: modelName,
           contents: masterPrompt,
@@ -603,6 +610,15 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     created_date: new Date().toISOString(),
     updated_date: new Date().toISOString()
   };
+
+  const officialRef = String(parsed.official_reference || parsed.reference_number || '').trim();
+  if (officialRef) {
+    const badgeEn = `<div class="official-ref-badge" style="margin-bottom: 16px; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; border-radius: 4px;"><strong>Official Gazette / Circular Ref:</strong> ${officialRef}</div>`;
+    const badgeTa = `<div class="official-ref-badge" style="margin-bottom: 16px; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; border-radius: 4px;"><strong>அதிகாரப்பூர்வ அரசாணை / செய்தி வெளியீடு குறிப்பு:</strong> ${officialRef}</div>`;
+    articleObj.content = `${badgeEn}\n${articleObj.content}`;
+    articleObj.content_ta = `${badgeTa}\n${articleObj.content_ta}`;
+    console.log(`[OFFICIAL REF ✓] Attached Gazette reference: ${officialRef}`);
+  }
 
   // Attach high-impact 16:9 Cloudflare FLUX image (or clean category graphic card fallback)
   try {

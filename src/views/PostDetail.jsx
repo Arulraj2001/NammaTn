@@ -486,6 +486,12 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                             {post.helpline}
                           </p>
                         )}
+                        {post.official_complaint_id && (
+                          <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mt-1 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block flex-shrink-0 animate-pulse"></span>
+                            <span>{T("Official Order / Ref:", "அரசாணை / குறிப்பு எண்:")} <strong className="font-mono text-emerald-800 dark:text-emerald-300">{post.official_complaint_id}</strong></span>
+                          </p>
+                        )}
                       </div>
                     </div>
                     {post.helpline && (
