@@ -100,7 +100,7 @@ export default function CookiePolicy() {
               <Cookie className="w-3.5 h-3.5" />
               {T("COOKIE POLICY & CONSENT MANAGEMENT", "குக்கீ கொள்கை & சம்மத மேலாண்மை")}
             </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3">
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3 text-white">
               {T("VizhiTN Cookie Policy", "VizhiTN குக்கீ கொள்கை")}
             </h1>
             <p className="text-xs sm:text-base text-slate-300 leading-relaxed mb-5">

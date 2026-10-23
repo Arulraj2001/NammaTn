@@ -115,7 +115,7 @@ export default function Contact() {
               {T("CITIZEN HELPDESK & EDITORIAL GRIEVANCE DESK", "குடிமக்கள் உதவி மையம் & குறைதீர்ப்பு பிரிவு")}
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3">
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3 text-white">
               {T("Contact VizhiTN | We Are Here to Listen", "VizhiTN தொடர்பு மையம் | உங்கள் குரலுக்கு முன்னுரிமை")}
             </h1>
 

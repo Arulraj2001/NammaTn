@@ -210,7 +210,7 @@ export default function TermsOfService() {
               {T("PUBLIC CIVIC PROOF STANDARD • IT RULES 2021 COMPLIANT", "குடிமக்கள் சாசனம் • IT விதிகள் 2021")}
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3">
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3 text-white">
               {T("Terms of Service & Citizen Charter", "VizhiTN சேவை விதிமுறைகள் & சாசனம்")}
             </h1>
 

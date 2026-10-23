@@ -135,7 +135,7 @@ export default function About() {
               {T("VIZHITN • TAMIL NADU CIVIC PROOF & INTELLIGENCE NETWORK", "VIZHITN • தமிழ்நாடு குடிமை ஆதாரம் & தகவல் தளம்")}
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4 text-white">
               {T("The Eyes of Tamil Nadu: Turning Grievances into Proof", "தமிழ்நாட்டின் விழி: புகார்களை ஆதாரங்களாக மாற்றும் இயக்கம்")}
             </h1>
 

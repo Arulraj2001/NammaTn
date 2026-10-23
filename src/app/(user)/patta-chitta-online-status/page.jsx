@@ -150,7 +150,7 @@ export default function PattaChittaPage() {
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Verified Revenue Administration Guide (2026)</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight text-white">
                 Patta Chitta Online Status & Land Records Verification
               </h1>
               <p className="text-xs sm:text-sm text-emerald-100/80 mt-2 max-w-2xl leading-relaxed">

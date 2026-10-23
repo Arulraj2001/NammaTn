@@ -94,7 +94,7 @@ export default function Disclaimer() {
               <ShieldAlert className="w-3.5 h-3.5" />
               {T("EDITORIAL INDEPENDENCE NOTICE • UGC PLATFORM", "தணிக்கை சுதந்திரம் • குடிமக்கள் உள்ளடக்க தளம்")}
             </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3">
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3 text-white">
               {T("VizhiTN Disclaimer", "VizhiTN மறுப்பு அறிவிப்பு")}
             </h1>
             <p className="text-xs sm:text-base text-slate-300 leading-relaxed mb-5">

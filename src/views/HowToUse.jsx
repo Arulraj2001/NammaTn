@@ -277,7 +277,7 @@ export default function HowToUse() {
               {T("VIZHITN CITIZEN MANUAL • ALL 38 DISTRICTS", "VIZHITN பொதுமக்கள் கையேடு • 38 மாவட்டங்கள்")}
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3">
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3 text-white">
               {T("How to Use VizhiTN — Your Step-by-Step Guide", "VizhiTN பயன்படுத்துவது எப்படி — முழு வழிகாட்டி")}
             </h1>
 

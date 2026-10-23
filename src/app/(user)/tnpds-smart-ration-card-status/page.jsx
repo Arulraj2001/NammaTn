@@ -147,7 +147,7 @@ export default function TnpdsSmartCardPage() {
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Civil Supplies & Consumer Protection (2026)</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight text-white">
                 TNPDS Smart Ration Card Status & Services Guide
               </h1>
               <p className="text-xs sm:text-sm text-indigo-100/80 mt-2 max-w-2xl leading-relaxed">

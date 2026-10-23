@@ -196,7 +196,7 @@ export default function PrivacyPolicy() {
               {T("CITIZEN DATA PROTECTION CHARTER • DPDPA 2023 COMPLIANT", "குடிமக்கள் தரவுப் பாதுகாப்பு சாசனம் • DPDPA 2023")}
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3">
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3 text-white">
               {T("VizhiTN Privacy Policy & Data Disclosures", "VizhiTN தனியுரிமைக் கொள்கை & தரவு பாதுகாப்பு")}
             </h1>
 
