@@ -4,6 +4,7 @@ import { createServerSupabase } from '@/lib/serverSupabase';
 import { getDistrictBySlug } from '@/lib/districts';
 import { getPowerCutArea, getPowerCutAreas, getAllPowerCutAreaStaticParams } from '@/lib/powerCutAreas';
 import { notFound } from 'next/navigation';
+import { generateSpecialAnnouncementSchema } from '@/lib/seo/newsSchema';
 
 const SITE_URL = 'https://www.vizhitn.in';
 export const revalidate = 900; // 15 minutes fresh cache
@@ -155,6 +156,18 @@ export default async function Page({ params }) {
     ],
   };
 
+  const activeShutdown = posts.find((p) => p.post_type === 'alert') || posts[0];
+  const specialAnnouncementSchema = activeShutdown ? generateSpecialAnnouncementSchema({
+    name: activeShutdown.title_en || `${area.name_en} (${district.name_en}) Power Shutdown Schedule Today`,
+    text: activeShutdown.content_en || activeShutdown.description || `Scheduled TANGEDCO power shutdown timings and affected localities in ${area.name_en}, ${district.name_en}.`,
+    url: `${SITE_URL}/power-cuts-today-tamil-nadu/${district.slug}/${area.slug}`,
+    datePosted: activeShutdown.created_date,
+    districtName: district.name_en,
+    departmentName: `TANGEDCO ${district.name_en} Distribution Circle`,
+    helpline: '1912',
+    category: 'https://en.wikipedia.org/wiki/Power_outage',
+  }) : null;
+
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -170,6 +183,9 @@ export default async function Page({ params }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      {specialAnnouncementSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(specialAnnouncementSchema) }} />
+      )}
       <PowerCutsToday
         initialPosts={posts}
         targetDistrict={district}

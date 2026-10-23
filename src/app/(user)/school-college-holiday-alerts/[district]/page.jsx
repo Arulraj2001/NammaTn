@@ -3,6 +3,7 @@ import HolidayAlerts from '@/views/HolidayAlerts';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { DISTRICTS, getDistrictBySlug } from '@/lib/districts';
 import { notFound } from 'next/navigation';
+import { generateSpecialAnnouncementSchema } from '@/lib/seo/newsSchema';
 
 const SITE_URL = 'https://www.vizhitn.in';
 export const revalidate = 900; // 15 minutes fresh cache
@@ -123,6 +124,18 @@ export default async function Page({ params }) {
     ],
   };
 
+  const activeAlert = posts.find((p) => p.post_type === 'alert' || ['critical', 'high'].includes(p.urgency_level)) || posts[0];
+  const specialAnnouncementSchema = activeAlert ? generateSpecialAnnouncementSchema({
+    name: activeAlert.title_en || `${district.name_en} School & College Holiday Notice`,
+    text: activeAlert.content_en || activeAlert.description || `Live school and college holiday status for ${district.name_en} declared by District Collector.`,
+    url: `${SITE_URL}/school-college-holiday-alerts/${district.slug}`,
+    datePosted: activeAlert.created_date,
+    districtName: district.name_en,
+    departmentName: `${district.name_en} District Collectorate`,
+    helpline: '1077',
+    category: 'https://en.wikipedia.org/wiki/School_closure',
+  }) : null;
+
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -137,6 +150,9 @@ export default async function Page({ params }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      {specialAnnouncementSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(specialAnnouncementSchema) }} />
+      )}
       <HolidayAlerts initialPosts={posts} targetDistrict={district} />
     </>
   );

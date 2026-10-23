@@ -2,6 +2,7 @@ import React from 'react';
 import HolidayAlerts from '@/views/HolidayAlerts';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
+import { generateSpecialAnnouncementSchema } from '@/lib/seo/newsSchema';
 
 const SITE_URL = 'https://www.vizhitn.in';
 export const revalidate = 900; // 15 minutes fresh cache
@@ -112,6 +113,18 @@ export default async function Page() {
     ],
   };
 
+  const activeAlert = posts.find((p) => p.post_type === 'alert' || ['critical', 'high'].includes(p.urgency_level)) || posts[0];
+  const specialAnnouncementSchema = activeAlert ? generateSpecialAnnouncementSchema({
+    name: activeAlert.title_en || activeAlert.title || 'Tamil Nadu School & College Rain Holiday Updates',
+    text: activeAlert.content_en || activeAlert.description || 'Verified live school and college holiday updates declared by District Collectors across Tamil Nadu.',
+    url: `${SITE_URL}/school-college-holiday-alerts`,
+    datePosted: activeAlert.created_date,
+    districtName: activeAlert.district_name || activeAlert.district_slug || 'Tamil Nadu',
+    departmentName: activeAlert.assigned_department || 'District Collectorate / Disaster Management',
+    helpline: activeAlert.assigned_department || '1077',
+    category: 'https://en.wikipedia.org/wiki/School_closure',
+  }) : null;
+
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
     { name: 'Alerts', href: '/category/education' },
@@ -124,6 +137,12 @@ export default async function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+      {specialAnnouncementSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(specialAnnouncementSchema) }}
+        />
+      )}
       <Breadcrumbs items={breadcrumbItems} />
       <HolidayAlerts initialPosts={posts} />
     </>

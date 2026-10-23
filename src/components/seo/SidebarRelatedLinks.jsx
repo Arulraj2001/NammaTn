@@ -5,7 +5,7 @@ import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import {
   Shield, BookOpen,
-  Zap, ArrowRight, Phone
+  Zap, ArrowRight, Phone, PhoneCall
 } from "lucide-react";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
 

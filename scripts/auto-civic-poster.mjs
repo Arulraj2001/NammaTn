@@ -447,20 +447,36 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
    - Chief Minister Helpline: 1100
    Always include the relevant helpline in "assigned_department" (e.g. "TANGEDCO (Helpline: 1912)") and in the content body!
 8. NO HALLUCINATION: All scheduled power shutdowns or maintenance must specify real streets and exact hours (e.g. "9:00 AM to 2:00 PM").
-9. BILINGUAL & INVERTED PYRAMID:
-   - First sentence of content_en & content_ta MUST state the core facts immediately: Who (Department), What (Shutdown/Camp/Alert), Where (Specific streets/locations), When (Exact hours), and Helpline.
-   - Example lead: "TANGEDCO has scheduled power shutdown today from 9:00 AM to 2:00 PM across Kamarajar High Road and Balaji Nagar for maintenance. Contact Minnalagam at 1912."
+9. SUBSTANTIVE DEPTH & STRUCTURED 4-PART REPORTING (200 to 320 Words per post):
+   Google search and Google Discover strictly penalize thin content under 120 words. To rank in Google Featured Snippets and Answer Boxes, every post's "content_en" and "content_ta" MUST contain 4 distinct structured sections separated by double line breaks:
+
+   • SECTION 1 — INVERTED PYRAMID LEAD (40-50 words):
+     State the core facts immediately: Department, What is happening, Specific neighborhood/district, Exact hours (e.g. 9:00 AM to 2:00 PM), and Helpline.
+     Example: "TANGEDCO has scheduled a mandatory power shutdown today from 9:00 AM to 2:00 PM across Tambaram and Sanatorium in Chengalpattu circle for substation transformer maintenance. Contact Minnalagam at 1912 for assistance."
+
+   • SECTION 2 — DETAILED LOCALITY & STREET LIST (60-90 words):
+     Thorough breakdown of every affected feeder, street, nagar, and landmark.
+     Example: "Affected Streets & Areas: Kamarajar High Road, Balaji Nagar 1st to 4th Streets, New Perungalathur Main Road, Gandhi Road, Peerkankaranai bus stop junction, and adjoining residential layouts."
+
+   • SECTION 3 — OFFICIAL DEPARTMENT STATEMENT & TECHNICAL REASON (35-50 words):
+     State the technical work being carried out citing the department.
+     Example: "According to TANGEDCO engineers, the shutdown is necessitated by routine pre-monsoon tree trimming, high-tension insulator washing, and transformer oil testing to avert sudden peak-hour grid trips. Power supply may be restored earlier if maintenance completes ahead of schedule."
+
+   • SECTION 4 — CITIZEN PRECAUTION & HELPLINE REDRESSAL (40-60 words):
+     Actionable advice for local residents and commercial establishments.
+     Example: "Residents are advised to charge essential emergency inverters and water pumps in advance. For unresolved power restoration after 2:00 PM or snapped wire emergencies, contact TANGEDCO Minnalagam 24x7 control room at 1912 or WhatsApp 94987 94987."
+
 10. GOOGLE DISCOVER & SEARCH HIGH-CTR TITLES (TAMIL & ENGLISH):
    - title_ta: 48 to 65 Tamil characters. Put the neighborhood and core hook in the first 3 words so mobile Chrome cards grab reader attention immediately.
-     * Electricity Alerts: "[பகுதி] மின்தடை: உங்கள் தெரு உள்ளதா? [நேரம்] வரை மின்சாரம் நிறுத்தம் — பகுதிகள் இதோ!"
-     * Rain/School Alerts: "கனமழை எச்சரிக்கை: [மாவட்டம்] பள்ளிகளுக்கு விடுமுறையா? ஆட்சியர் அறிவிப்பு விவரம்!"
+     * Electricity Alerts: "[பகுதி] மின்தடை இன்று: உங்கள் தெரு உள்ளதா? [நேரம்] வரை மின் நிறுத்தம் — முழு பட்டியல்!"
+     * Rain/School Alerts: "கனமழை எச்சரிக்கை: [மாவட்டம்] பள்ளி, கல்லூரிகளுக்கு இன்று விடுமுறையா? ஆட்சியர் அறிவிப்பு விவரம்!"
      * Camp/Aadhaar/Ration Drives: "[பகுதி] சிறப்பு மக்கள் முகாம்: விடுபட்டவர்கள் தவறவிடாதீர்கள் — நேரம் & ஆவணங்கள் விவரம்!"
      * Transport/Railway Blocks: "[வழித்தடம்] ரயில்கள் ரத்து: பயணிகள் மாற்று ஏற்பாடுகள் என்ன? முழு நேர விவரம்!"
    - title_en: Search-intent and location upfront (e.g. "[Area] Power Cut Today: Full Street List & Shutdown Timings | TANGEDCO Alert").
 11. SLUG: Provide a clean, SEO-friendly English slug ending with a date code (e.g. "tambaram-power-cut-chennai-${todayStr.replace(/-/g, '')}").
 12. 2026 MULTI-INTENT TRENDING KEYWORDS ("seo_keywords"):
     Every post MUST include 6 to 8 comma-separated search terms covering all 3 search intents:
-    a) High-Intent English: e.g. "[area] power cut today", "tangedco shutdown timings [district]", "power outage list"
+    a) High-Intent English: e.g. "[area] power cut today", "tangedco shutdown timings [district]", "power outage list [district]"
     b) Tanglish (Tamil in English letters): e.g. "naalai minthadai [area]", "inraiya eb shutdown timings", "current cut timings"
     c) Pure Tamil Script: e.g. "[பகுதி] மின்தடை இன்று", "மின்சார நிறுத்தம் [மாவட்டம்]", "மின்னகம் 1912"
 13. HIGH-CONVERTING META DESCRIPTION ("seo_description"):

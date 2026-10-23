@@ -2,6 +2,7 @@ import React from 'react';
 import PowerCutsToday from '@/views/PowerCutsToday';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
+import { generateSpecialAnnouncementSchema } from '@/lib/seo/newsSchema';
 
 const SITE_URL = 'https://www.vizhitn.in';
 export const revalidate = 900; // 15 minutes fresh cache
@@ -112,6 +113,18 @@ export default async function Page() {
     ],
   };
 
+  const activeShutdown = posts.find((p) => p.post_type === 'alert') || posts[0];
+  const specialAnnouncementSchema = activeShutdown ? generateSpecialAnnouncementSchema({
+    name: activeShutdown.title_en || 'Tamil Nadu TANGEDCO Power Shutdown Schedule Today',
+    text: activeShutdown.content_en || activeShutdown.description || 'Scheduled TANGEDCO maintenance power shutdown timings and affected localities across Tamil Nadu.',
+    url: `${SITE_URL}/power-cuts-today-tamil-nadu`,
+    datePosted: activeShutdown.created_date,
+    districtName: activeShutdown.district_name || 'Tamil Nadu',
+    departmentName: 'TANGEDCO (Minnalagam 1912)',
+    helpline: '1912',
+    category: 'https://en.wikipedia.org/wiki/Power_outage',
+  }) : null;
+
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
     { name: 'Electricity', href: '/category/electricity' },
@@ -124,6 +137,12 @@ export default async function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+      {specialAnnouncementSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(specialAnnouncementSchema) }}
+        />
+      )}
       <Breadcrumbs items={breadcrumbItems} />
       <PowerCutsToday initialPosts={posts} />
     </>
