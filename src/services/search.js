@@ -1,7 +1,6 @@
 import { supabase } from "@/api/supabaseClient";
 import { DISTRICTS } from "@/lib/districts";
-import { CATEGORIES } from "@/lib/categories";
-import { isPubliclyVisible as sharedVisibilityGuard, isSafePublicListing } from "@/lib/visibility";
+import { isPubliclyVisible as sharedVisibilityGuard } from "@/lib/visibility";
 
 /**
  * Normalize a civic receipt ID for fuzzy matching.
@@ -121,50 +120,7 @@ export const searchScams = async (query) => {
   );
 };
 
-/** Public safety guard for Jobs/Listings */
-const isSafeForPublic = isSafePublicListing;
 
-/** Search job alerts */
-export const searchJobs = async (query) => {
-  const { data: items, error } = await supabase
-    .from("job_alert")
-    .select("*")
-    .eq("status", "active")
-    .order("created_date", { ascending: false })
-    .limit(80);
-  if (error) return [];
-
-  const safe = items.filter(isSafeForPublic);
-  if (!query || query.trim().length < 2) return safe.slice(0, 10);
-  const q = query.toLowerCase();
-  return safe.filter((j) =>
-    (j.title || "").toLowerCase().includes(q) ||
-    (j.district_name || "").toLowerCase().includes(q) ||
-    (j.description || "").toLowerCase().includes(q) ||
-    (j.company_or_poster_name || "").toLowerCase().includes(q)
-  );
-};
-
-/** Search local listings */
-export const searchListings = async (query) => {
-  const { data: items, error } = await supabase
-    .from("local_listing")
-    .select("*")
-    .eq("status", "active")
-    .order("created_date", { ascending: false })
-    .limit(80);
-  if (error) return [];
-
-  const safe = items.filter((l) => isSafeForPublic(l) && l.is_publicly_visible !== false);
-  if (!query || query.trim().length < 2) return safe.slice(0, 10);
-  const q = query.toLowerCase();
-  return safe.filter((l) =>
-    (l.business_name || "").toLowerCase().includes(q) ||
-    (l.district_name || "").toLowerCase().includes(q) ||
-    (l.area_name || "").toLowerCase().includes(q) ||
-    (l.description || "").toLowerCase().includes(q)
-  );
-};
 
 
 

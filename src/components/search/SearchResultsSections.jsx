@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "@/lib/router-compat";
-import { AlertTriangle, Briefcase, Building2 } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
-export default function SearchResultsSections({ scams, jobs, listings, T }) {
+export default function SearchResultsSections({ scams, T }) {
   return (
     <>
-      {scams.length > 0 && (
+      {scams && scams.length > 0 && (
         <div>
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
             ⚠️ {T("Scam Alerts", "மோசடி எச்சரிக்கைகள்")} ({scams.length})
@@ -17,46 +17,6 @@ export default function SearchResultsSections({ scams, jobs, listings, T }) {
                 <div className="min-w-0">
                   <p className="font-semibold text-sm text-slate-900 dark:text-white truncate">{s.title}</p>
                   <p className="text-xs text-slate-500">{s.district_name}{s.area_name ? ` · ${s.area_name}` : ""}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {jobs.length > 0 && (
-        <div>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-            💼 {T("Job Alerts", "வேலை எச்சரிக்கைகள்")} ({jobs.length})
-          </p>
-          <div className="space-y-2">
-            {jobs.slice(0, 5).map((j) => (
-              <Link key={j.id} to="/jobs" className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-2xl p-3 hover:shadow-sm transition-all">
-                <Briefcase className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm text-slate-900 dark:text-white truncate">{j.title}</p>
-                  <p className="text-xs text-slate-500">{j.district_name}{j.area_name ? ` · ${j.area_name}` : ""}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-
-
-      {listings.length > 0 && (
-        <div>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-            🏢 {T("Local Listings", "உள்ளூர் பட்டியல்")} ({listings.length})
-          </p>
-          <div className="space-y-2">
-            {listings.slice(0, 5).map((l) => (
-              <Link key={l.id} to="/listings" className="flex items-start gap-3 bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800 rounded-2xl p-3 hover:shadow-sm transition-all">
-                <Building2 className="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm text-slate-900 dark:text-white truncate">{l.business_name}</p>
-                  <p className="text-xs text-slate-500">{l.category} · {l.district_name}{l.area_name ? ` · ${l.area_name}` : ""}</p>
                 </div>
               </Link>
             ))}

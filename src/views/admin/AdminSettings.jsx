@@ -4,8 +4,9 @@ import { getSettingsMap, saveSettingsGroup } from "@/services/admin/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Save, Zap, Mail, ExternalLink } from "lucide-react";
+import { Save, Zap, Mail, ExternalLink, Upload, Trash2, Loader2 } from "lucide-react";
 import { Link } from "@/lib/router-compat";
+import { base44 } from "@/api/base44Client";
 
 const SECTIONS = [
   {
@@ -16,7 +17,7 @@ const SECTIONS = [
       { key: "site_description", label: "Site Description", placeholder: "Tamil Nadu civic platform" },
       { key: "contact_email", label: "Admin Contact Email", placeholder: "admin@vizhitn.in" },
       { key: "support_email", label: "Support Email (for replies)", placeholder: "support@vizhitn.in" },
-      { key: "site_logo_url", label: "Site Logo URL", placeholder: "https://..." },
+      { key: "site_logo_url", label: "Site Logo URL", placeholder: "https://... or click Upload", type: "image_upload" },
     ],
   },
   {
@@ -25,7 +26,7 @@ const SECTIONS = [
     fields: [
       { key: "meta_title", label: "Default Meta Title", placeholder: "VizhiTN - Tamil Nadu Platform" },
       { key: "meta_description", label: "Default Meta Description", placeholder: "Community-driven civic platform for Tamil Nadu" },
-      { key: "og_image", label: "Default OG Image URL", placeholder: "https://..." },
+      { key: "og_image", label: "Default OG Image URL", placeholder: "https://... or click Upload", type: "image_upload" },
       { key: "canonical_url", label: "Canonical Base URL", placeholder: "https://vizhitn.in" },
     ],
   },
@@ -77,14 +78,21 @@ const SECTIONS = [
     title: "📋 Content & Features",
     category: "general",
     fields: [
-      { key: "jobs_enabled", label: "Jobs Board Enabled (true/false)", placeholder: "true" },
       { key: "scam_alerts_enabled", label: "Scam Alerts Enabled (true/false)", placeholder: "true" },
       { key: "emergency_enabled", label: "Emergency Help Enabled (true/false)", placeholder: "true" },
-      { key: "office_reports_enabled", label: "Office Reports Enabled (true/false)", placeholder: "true" },
-      { key: "qa_enabled", label: "Q&A (Ask Local) Enabled (true/false)", placeholder: "true" },
-      { key: "situations_enabled", label: "Situations Enabled (true/false)", placeholder: "true" },
-      { key: "rwa_enabled", label: "RWA Dashboard Enabled (true/false)", placeholder: "true" },
-      { key: "csr_enabled", label: "CSR Dashboard Enabled (true/false)", placeholder: "true" },
+    ],
+  },
+  {
+    title: "💳 Support & Donations (UPI / QR)",
+    category: "donations",
+    fields: [
+      { key: "upi_id", label: "UPI ID / VPA (e.g. vizhitn@okaxis)", placeholder: "vizhitn@upi" },
+      { key: "upi_name", label: "Payee Name (displayed on support page)", placeholder: "VizhiTN" },
+      { key: "qr_image_url", label: "UPI QR Code Image (Upload or paste URL)", placeholder: "https://... or click Upload", type: "image_upload" },
+      { key: "min_donation_amount", label: "Minimum Contribution Amount (₹)", placeholder: "10", type: "number" },
+      { key: "donation_message", label: "Supporter Note / Banner Message", placeholder: "Your support keeps VizhiTN free, fast, and community-driven. Every contribution matters — thank you!" },
+      { key: "buymecoffee_link", label: "BuyMeACoffee Link (optional)", placeholder: "https://buymeacoffee.com/..." },
+      { key: "buymecoffee_enabled", label: "Enable BuyMeACoffee Button (true/false)", placeholder: "false" },
     ],
   },
   {
@@ -106,16 +114,6 @@ const SECTIONS = [
       },
     ],
   },
-  {
-    title: "📋 Local Listing Plans (Pricing)",
-    category: "monetization",
-    fields: [
-      { key: "plan_free_price", label: "Free Listing Price (₹) — Set > 0 for minimum cost mode", placeholder: "0", type: "number" },
-      { key: "plan_verified_price", label: "Verified Listing Price (₹)", placeholder: "299", type: "number" },
-      { key: "plan_featured_price", label: "Featured Listing Price (₹)", placeholder: "799", type: "number" },
-      { key: "plan_district_sponsor_price", label: "District Sponsor Listing Price (₹)", placeholder: "2499", type: "number" },
-    ],
-  },
 ];
 
 const DEFAULT_SETTINGS = {};
@@ -123,6 +121,7 @@ const DEFAULT_SETTINGS = {};
 export default function AdminSettings() {
   const [values, setValues] = useState({});
   const [saving, setSaving] = useState(null);
+  const [uploadingKey, setUploadingKey] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -136,6 +135,22 @@ export default function AdminSettings() {
       setValues(settingsMap);
     }
   }, [settingsMap]);
+
+  const handleImageUpload = async (key, file) => {
+    if (!file) return;
+    setUploadingKey(key);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      if (file_url) {
+        setValues((v) => ({ ...v, [key]: file_url }));
+        toast({ description: "Image uploaded successfully. Click Save to apply." });
+      }
+    } catch (err) {
+      toast({ variant: "destructive", description: "Image upload failed: " + (err.message || "Unknown error") });
+    } finally {
+      setUploadingKey(null);
+    }
+  };
 
   const handleSaveSection = async (section) => {
     setSaving(section.category + section.title);
@@ -178,7 +193,7 @@ export default function AdminSettings() {
 
       <div className="space-y-6">
         {SECTIONS.map(section => (
-          <div key={section.title} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
+          <div key={section.title} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-xs">
             <h2 className="font-semibold text-slate-900 dark:text-white mb-4">{section.title}</h2>
             <div className="space-y-3">
               {section.fields.map(field => (
@@ -196,6 +211,57 @@ export default function AdminSettings() {
                         </option>
                       ))}
                     </select>
+                  ) : field.type === "image_upload" ? (
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Input
+                          type="text"
+                          value={values[field.key] || ""}
+                          onChange={e => setValues(v => ({ ...v, [field.key]: e.target.value }))}
+                          placeholder={field.placeholder}
+                          className="flex-1"
+                        />
+                        <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-600 transition-colors whitespace-nowrap">
+                          {uploadingKey === field.key ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Upload Image</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={uploadingKey === field.key}
+                            onChange={(e) => handleImageUpload(field.key, e.target.files?.[0])}
+                          />
+                        </label>
+                      </div>
+                      {values[field.key] && (
+                        <div className="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 w-fit">
+                          <img
+                            src={values[field.key]}
+                            alt="Preview"
+                            className="w-14 h-14 object-contain rounded-lg border border-slate-200 dark:border-slate-700 bg-white"
+                          />
+                          <div className="pr-2">
+                            <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Preview</p>
+                            <button
+                              type="button"
+                              onClick={() => setValues(v => ({ ...v, [field.key]: "" }))}
+                              className="text-[11px] text-red-500 hover:underline flex items-center gap-1 mt-0.5"
+                            >
+                              <Trash2 className="w-3 h-3" /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <Input
                       type={field.type || "text"}

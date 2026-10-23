@@ -295,8 +295,6 @@ export async function fetchActiveCustomAds(slot, district, pagePath = "") {
       } else if (pagePath) {
         if (ad.target_page === "home" && pagePath !== "/") return false;
         if (ad.target_page === "tn_today" && !pagePath.includes("/tn-today")) return false;
-        if (ad.target_page === "listings" && !pagePath.includes("/listings")) return false;
-        if (ad.target_page === "jobs" && !pagePath.includes("/jobs")) return false;
         if (ad.target_page === "explore" && !pagePath.includes("/explore")) return false;
       }
     }

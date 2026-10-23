@@ -206,19 +206,19 @@ export default function AwarenessFaqs() {
           </div>
         )}
 
-        {/* Ask Question Banner */}
+        {/* Civic Reporting Banner */}
         <section className="mt-14 bg-gradient-to-r from-purple-900 to-indigo-950 text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden">
           <div className="max-w-2xl relative z-10">
             <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-800/80 text-purple-200 mb-3">
-              {T("Citizen Q&A Community", "குடிமக்கள் கேள்வி பதில்")}
+              {T("Civic Action & Reporting", "குடிமக்கள் அறிக்கை")}
             </span>
             <h3 className="text-2xl sm:text-3xl font-black text-white">
-              {T("Have a Specific Civic Question Not Answered Here?", "இங்கு விடை கிடைக்காத மற்றொரு கேள்வி உள்ளதா?")}
+              {T("Facing a Local Civic Issue in Your Area?", "உங்கள் பகுதியில் ஏதேனும் குடிமைப் பிரச்சனை உள்ளதா?")}
             </h3>
             <p className="mt-3 text-sm text-purple-100 leading-relaxed">
               {T(
-                "Post your civic doubt or report an issue on VizhiTN. Local volunteers and verified citizen journalists across Tamil Nadu will assist you.",
-                "உங்கள் சந்தேகங்களை VizhiTN தளத்தில் பதிவிடுங்கள். தமிழ்நாடு முழுவதும் உள்ள தன்னார்வலர்கள் உங்களுக்கு உதவ தயாராக உள்ளனர்."
+                "Document civic hazards, power disruptions, or infrastructure failures on VizhiTN. Verified citizen alerts reach local authorities and neighbors instantly.",
+                "சாலையோர ஆபத்துகள், மின் தடைகள் அல்லது உள்கட்டமைப்பு குறைபாடுகளை VizhiTN தளத்தில் ஆவணப்படுத்துங்கள்."
               )}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -226,7 +226,7 @@ export default function AwarenessFaqs() {
                 href="/create"
                 className="inline-flex items-center gap-2 px-5 py-3 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-md hover:bg-purple-50 transition-colors"
               >
-                {T("Ask on VizhiTN", "கேள்வி கேளுங்கள்")}
+                {T("Report an Issue", "புகார் பதிவு செய்க")}
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <Link

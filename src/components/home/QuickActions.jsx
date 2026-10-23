@@ -3,15 +3,15 @@
 import React from "react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
-import { Plus, Zap, Flame, Briefcase, ShieldAlert, Building2 } from "lucide-react";
+import { Plus, Zap, Flame, AlertTriangle, ShieldAlert } from "lucide-react";
 
 const QUICK_ACTIONS = [
   { path: "/create",   icon: <Plus className="w-5 h-5" />,       bg: "bg-blue-100 dark:bg-blue-900/30",   iconColor: "text-blue-600 dark:text-blue-400",   en: "Report Issue",    ta: "சிக்கல் புகார்",     sub_en: "Log a civic problem",      sub_ta: "குடிமை சிக்கல் பதிவு" },
+  { path: "/power-cuts-today-tamil-nadu", icon: <Zap className="w-5 h-5" />, bg: "bg-amber-100 dark:bg-amber-900/30", iconColor: "text-amber-600 dark:text-amber-400", en: "Power Cuts", ta: "மின்தடை", sub_en: "Live EB shutdown info", sub_ta: "மின்வாரிய மின்தடை நேரம்" },
+  { path: "/school-college-holiday-alerts", icon: <AlertTriangle className="w-5 h-5" />, bg: "bg-emerald-100 dark:bg-emerald-900/30", iconColor: "text-emerald-600 dark:text-emerald-400", en: "Holiday Alert", ta: "பள்ளி விடுமுறை", sub_en: "Rain & Collector orders", sub_ta: "மழை விடுமுறை தகவல்" },
   { path: "/help",     icon: <Zap className="w-5 h-5" />,         bg: "bg-red-100 dark:bg-red-900/30",     iconColor: "text-red-600 dark:text-red-400",     en: "Emergency",       ta: "அவசரகாலம்",           sub_en: "Request urgent help",      sub_ta: "அவசர உதவி கேளுங்கள்" },
   { path: "/trending", icon: <Flame className="w-5 h-5" />,       bg: "bg-purple-100 dark:bg-purple-900/30", iconColor: "text-purple-600 dark:text-purple-400", en: "Trending",    ta: "டிரெண்டிங்",        sub_en: "Top civic issues",         sub_ta: "முக்கிய சிக்கல்கள்" },
-  { path: "/jobs",     icon: <Briefcase className="w-5 h-5" />,   bg: "bg-green-100 dark:bg-green-900/30", iconColor: "text-green-600 dark:text-green-400", en: "Jobs",            ta: "வேலை",                sub_en: "Local job updates",        sub_ta: "உள்ளூர் வேலை வாய்ப்பு" },
   { path: "/scams",    icon: <ShieldAlert className="w-5 h-5" />, bg: "bg-orange-100 dark:bg-orange-900/30", iconColor: "text-orange-600 dark:text-orange-400", en: "Scam Alert",  ta: "மோசடி எச்சரிக்கை",  sub_en: "Report a scam",            sub_ta: "மோசடி புகாரிடு" },
-  { path: "/offices",  icon: <Building2 className="w-5 h-5" />,   bg: "bg-blue-100 dark:bg-blue-900/30",   iconColor: "text-blue-600 dark:text-blue-400",   en: "Office Ratings",  ta: "அலுவலக மதிப்பீடு",  sub_en: "Govt office reviews",      sub_ta: "அரசு அலுவலக மதிப்பு" },
 ];
 
 export default function QuickActions() {

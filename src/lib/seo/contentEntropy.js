@@ -101,7 +101,7 @@ function buildBlocks(cityData, issueData, stats, reports, rankingContext = {}) {
       weight: 3, // Unique per city via real locality names
       render: () => ({
         title:   `Active Reporting Zones — ${cityData.name}`,
-        content: `Citizen reports from ${cityData.name} are tracked across ${localityText}. Organizing by locality helps RWA networks coordinate with municipal officers and monitor resolution timelines per zone.`,
+        content: `Citizen reports from ${cityData.name} are tracked across ${localityText}. Organizing by locality helps community networks coordinate with municipal officers and monitor resolution timelines per zone.`,
       }),
     },
     {
@@ -149,7 +149,7 @@ function buildBlocks(cityData, issueData, stats, reports, rankingContext = {}) {
       weight: 1,
       render: () => ({
         title:   `How to Report ${issueData.name} Issues`,
-        content: `To report an active ${issueData.name.toLowerCase()} in ${cityData.name}, tap Report, select \"${issueData.name}\" as category, pin your location, and add a brief description. Verified reports are immediately visible to neighbours and monitored by local RWAs.`,
+        content: `To report an active ${issueData.name.toLowerCase()} in ${cityData.name}, tap Report, select \"${issueData.name}\" as category, pin your location, and add a brief description. Verified reports are immediately visible to neighbours and monitored by area residents.`,
       }),
     },
   ];

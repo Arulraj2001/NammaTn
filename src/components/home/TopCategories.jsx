@@ -10,9 +10,9 @@ const TOP_CATEGORIES = [
   { slug: "water-supply", icon: "💧", bg: "bg-blue-50 dark:bg-blue-900/20",    border: "border-blue-200 dark:border-blue-800",    iconBg: "bg-blue-100 dark:bg-blue-900/40",    en: "Water Issues",         ta: "நீர் சிக்கல்",      desc_en: "Track disruptions",        desc_ta: "தடங்கல்கள் கண்காணி" },
   { slug: "road-issues",  icon: "🚧", bg: "bg-orange-50 dark:bg-orange-900/20", border: "border-orange-200 dark:border-orange-800", iconBg: "bg-orange-100 dark:bg-orange-900/40", en: "Road Problems",       ta: "சாலை சிக்கல்",     desc_en: "Report & verify",          desc_ta: "புகார் & சரிபார்" },
   { slug: "scam-alert",   icon: "⚠️", bg: "bg-red-50 dark:bg-red-900/20",     border: "border-red-200 dark:border-red-800",     iconBg: "bg-red-100 dark:bg-red-900/40",     en: "Scam Alerts",          ta: "மோசடி எச்சரிக்கை", desc_en: "Stay protected",           desc_ta: "பாதுகாப்பாக இருங்கள்" },
-  { slug: "offices",      icon: "🏛️", bg: "bg-teal-50 dark:bg-teal-900/20",   border: "border-teal-200 dark:border-teal-800",   iconBg: "bg-teal-100 dark:bg-teal-900/40",   en: "Government Services",  ta: "அரசு சேவைகள்",     desc_en: "Office info & more",       desc_ta: "அலுவலக தகவல்" },
+  { slug: "transport",    icon: "🚌", bg: "bg-teal-50 dark:bg-teal-900/20",   border: "border-teal-200 dark:border-teal-800",   iconBg: "bg-teal-100 dark:bg-teal-900/40",   en: "Transit & Traffic",    ta: "போக்குவரத்து",       desc_en: "Bus, train & metro",       desc_ta: "பேருந்து, ரயில்" },
   { slug: "government-schemes", icon: "📜", bg: "bg-purple-50 dark:bg-purple-900/20", border: "border-purple-200 dark:border-purple-800", iconBg: "bg-purple-100 dark:bg-purple-900/40", en: "Govt Schemes",       ta: "அரசு திட்டங்கள்",   desc_en: "Welfare & e-Sevai",        desc_ta: "நலத்திட்டங்கள் & சேவை" },
-  { slug: "jobs",         icon: "💼", bg: "bg-green-50 dark:bg-green-900/20",  border: "border-green-200 dark:border-green-800",  iconBg: "bg-green-100 dark:bg-green-900/40",  en: "Local Jobs",           ta: "உள்ளூர் வேலை",     desc_en: "Community jobs",           desc_ta: "சமூக வேலைகள்" },
+  { slug: "healthcare",   icon: "🏥", bg: "bg-green-50 dark:bg-green-900/20",  border: "border-green-200 dark:border-green-800",  iconBg: "bg-green-100 dark:bg-green-900/40",  en: "Public Health",        ta: "நல்வாழ்வு",         desc_en: "Hospitals & camps",        desc_ta: "மருத்துவமனை" },
   { slug: "others",       icon: "···", bg: "bg-slate-50 dark:bg-slate-800",   border: "border-slate-200 dark:border-slate-700", iconBg: "bg-slate-200 dark:bg-slate-700",     en: "More",                 ta: "மேலும்",            desc_en: "All categories",           desc_ta: "அனைத்து வகைகள்" },
 ];
 
@@ -26,9 +26,9 @@ export default function TopCategories() {
       case "water-supply": return "/category/water-sanitation";
       case "road-issues": return "/category/road-infrastructure";
       case "scam-alert": return "/scams";
-      case "offices": return "/offices";
-      case "government-schemes": return "/category/government-schemes";
-      case "jobs": return "/jobs";
+      case "transport": return "/category/transport";
+      case "government-schemes": return "/schemes";
+      case "healthcare": return "/category/healthcare";
       case "others": return "/explore";
       default: return `/category/${slug}`;
     }

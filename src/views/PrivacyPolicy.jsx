@@ -46,7 +46,26 @@ const PRIVACY_CHAPTERS = [
       "குக்கீகள்: நீங்கள் பாதுகாப்பாக உள்நுழைந்திருக்கவும், உங்கள் மொழி விருப்பத்தை (ஆங்கிலம்/தமிழ்) நினைவில் கொள்ளவும் பயன்படும் குக்கீகள்."
     ]
   },
-
+  {
+    id: "purpose-limitation",
+    icon: Lock,
+    en: "3. Purpose Limitation & How We Use Collected Data",
+    ta: "3. தரவுப் பயன்பாடு & நோக்க வரம்பு",
+    summary_en: "We process your information solely to deliver localized utility alerts, prevent automated spam, and provide civic grievance proof.",
+    summary_ta: "மின்தடை மற்றும் குடிமை அறிவிப்புகளை வழங்கவும், போலி பதிவுகளைத் தடுத்து உண்மைத்தன்மையை உறுதி செய்யவும் மட்டுமே தரவு பயன்படுகிறது.",
+    items_en: [
+      "Hyperlocal Utility Filtering: Delivering tailored power cut timings, local heavy rain advisories, and municipal alerts for your selected district.",
+      "Spam & Fraud Prevention: Verifying user authenticity so automated bots and malicious actors cannot flood public ledgers with fake reports.",
+      "Civic Evidence Receipts: Attributing citizen-submitted photos of potholes and water leaks to authentic community members to foster government accountability.",
+      "Strict No-Sale Guarantee: We never sell, rent, or trade citizen personal data to brokers, telemarketers, or commercial marketing agencies."
+    ],
+    items_ta: [
+      "வட்டார அறிவிப்புகள்: உங்கள் மாவட்டத்திற்கான மின்தடை நேரம், கனமழை எச்சரிக்கைகள் மற்றும் உள்ளூர் நகராட்சி அறிவிப்புகளை வழங்குதல்.",
+      "போலி பதிவு தடுப்பு: தானியங்கி போட்கள் மற்றும் விஷமிகள் தவறான அல்லது ஜோடிக்கப்பட்ட புகார்களை வெளியிடுவதைத் தடுத்தல்.",
+      "குடிமை ஆதார ரசீதுகள்: பொதுமக்கள் பதிவேற்றும் சாலை, குடிநீர் குறைபாடுகளை உண்மையான குடிமக்களின் நம்பகமான குரலாக அரசுத் துறைகளுக்கு கொண்டு சேர்த்தல்.",
+      "தரவு விற்பனை செய்யப்படாது: குடிமக்களின் எந்தவொரு தனிப்பட்ட விவரங்களையும் விளம்பரத் தரகர்களுக்கோ, தொலைபேசி சந்தையாளர்களுக்கோ ஒருபோதும் விற்பனை செய்வதில்லை."
+    ]
+  },
   {
     id: "emergency-sos-data",
     icon: AlertTriangle,
@@ -123,10 +142,10 @@ const PRIVACY_CHAPTERS = [
     icon: Mail,
     en: "10. Resident Grievance Officer & Contact Desk",
     ta: "10. குறைதீர்ப்பு அதிகாரி & தொடர்பு விவரங்கள்",
-    summary_en: "Contact our Resident Grievance Officer for statutory compliance or privacy disputes. Inquiries are resolved within 24-48 hours.",
-    summary_ta: "தனியுரிமை அல்லது குறைதீர்ப்பு தொடர்பான கேள்விகளுக்கு எங்கள் அதிகாரியை நேரடியாக தொடர்பு கொள்ளலாம்.",
-    content_en: "In compliance with the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021 and India's DPDPA 2023, VizhiTN has appointed a dedicated Resident Grievance Officer. For privacy concerns, takedown requests, or data port requests, write to: vizhitnin@gmail.com. Office Address: VizhiTN Civic Media Desk, Chennai, Tamil Nadu, India.",
-    content_ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 மற்றும் DPDPA 2023 சட்டத்தின்படி நியமிக்கப்பட்ட எங்கள் குறைதீர்ப்பு அதிகாரியை vizhitnin@gmail.com வழியாக தொடர்பு கொள்ளலாம். அலுவலக முகவரி: VizhiTN குடிமை செய்தி மையம், சென்னை, தமிழ்நாடு."
+    summary_en: "Contact our Resident Grievance Officer for statutory compliance or privacy disputes. Inquiries are resolved within 24-48 hours. Office: Chennai, Tamil Nadu 600001, India.",
+    summary_ta: "தனியுரிமை அல்லது குறைதீர்ப்பு தொடர்பான கேள்விகளுக்கு எங்கள் அதிகாரியை நேரடியாக தொடர்பு கொள்ளலாம். அலுவலகம்: சென்னை, தமிழ்நாடு 600001.",
+    content_en: "In compliance with the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021 and India's DPDPA 2023, VizhiTN has appointed a dedicated Resident Grievance Officer. For privacy concerns, takedown requests, or data portability requests, write to: vizhitnin@gmail.com. Registered Office Address: VizhiTN Civic Media Desk, Chennai, Tamil Nadu 600001, India. Grievances are acknowledged within 24 hours and resolved within 15 calendar days.",
+    content_ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 மற்றும் DPDPA 2023 சட்டத்தின்படி நியமிக்கப்பட்ட எங்கள் குறைதீர்ப்பு அதிகாரியை vizhitnin@gmail.com வழியாக தொடர்பு கொள்ளலாம். பதிவு செய்யப்பட்ட அலுவலக முகவரி: VizhiTN குடிமை செய்தி மையம், சென்னை, தமிழ்நாடு 600001, இந்தியா. மனுக்கள் 24 மணி நேரத்திற்குள் ஏற்கப்பட்டு 15 நாட்களுக்குள் தீர்க்கப்படும்."
   }
 ];
 

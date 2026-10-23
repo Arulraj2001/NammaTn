@@ -21,7 +21,6 @@ const ISSUE_INTENT_MATRIX = {
   'water-issue':       { informational: 0.25, navigational: 0.30, transactional: 0.30, investigative: 0.15 },
   'road-problem':      { informational: 0.30, navigational: 0.25, transactional: 0.25, investigative: 0.20 },
   'scam':              { informational: 0.35, navigational: 0.20, transactional: 0.15, investigative: 0.30 },
-  'jobs':              { informational: 0.40, navigational: 0.30, transactional: 0.25, investigative: 0.05 },
   '__default__':       { informational: 0.30, navigational: 0.25, transactional: 0.25, investigative: 0.20 },
 };
 
@@ -46,11 +45,6 @@ const ISSUE_KEYWORDS = {
     primary:   ['cyber scam', 'online fraud', 'scam alert', 'Tamil Nadu cyber crime', 'fraud complaint'],
     secondary: ['UPI fraud', 'impersonation scam', 'job scam', 'lottery fraud', 'phishing'],
     local:     (city) => [`${city} scam alert`, `${city} cyber fraud`, `${city} online scam today`, `cyber crime complaint ${city}`],
-  },
-  'jobs': {
-    primary:   ['government jobs', 'private jobs', 'job vacancy', 'employment', 'job posting'],
-    secondary: ['Tamil Nadu jobs', 'fresher jobs', 'walk-in interview', 'job fair', 'employment exchange'],
-    local:     (city) => [`${city} jobs today`, `${city} job vacancy`, `${city} government job`, `employment ${city}`],
   },
 };
 

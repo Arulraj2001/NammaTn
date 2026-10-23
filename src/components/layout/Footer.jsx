@@ -18,51 +18,43 @@ const FOOTER_COLUMNS = [
       { path: "/create",      en: "Create Civic Receipt", ta: "குடிமை ரசீது உருவாக்கு" },
       { path: "/explore",     en: "Explore",              ta: "ஆராய்க" },
       { path: "/trending",    en: "Trending",             ta: "டிரெண்டிங்" },
-      { path: "/situations",  en: "Live Situations",      ta: "நேரடி நிகழ்வுகள்" },
-      { path: "/leaderboard", en: "Leaderboard",          ta: "தகுதிப் பட்டி" },
     ],
   },
   {
     en_title: "Awareness & Rights",
     ta_title: "விழிப்புணர்வு & உரிமைகள்",
     links: [
-      { path: "/ask",            en: "Ask Local",      ta: "கேளுங்கள்" },
-      { path: "/scams",          en: "Scams",          ta: "மோசடி" },
-      { path: "/awareness",          en: "Awareness",          ta: "விழிப்புணர்வு" },
-      { path: "/awareness/articles", en: "Knowledge Articles", ta: "கட்டுரைகள்" },
-      { path: "/awareness/rights",   en: "Citizen Rights",     ta: "குடிமக்கள் உரிமைகள்" },
+      { path: "/scams",              en: "Scams Radar",        ta: "மோசடி ரேடார்" },
+      { path: "/schemes",            en: "Welfare Schemes",    ta: "அரசுத் திட்டங்கள்" },
+      { path: "/esevai",             en: "e-Sevai Guide",      ta: "இ-சேவை" },
+      { path: "/rights",             en: "Citizen Rights",     ta: "குடிமக்கள் உரிமைகள்" },
+      { path: "/rti",                en: "RTI Assistant",      ta: "ஆர்டிஐ" },
     ],
   },
   {
-    en_title: "Local Life",
-    ta_title: "உள்ளூர் வாழ்க்கை",
+    en_title: "Places & News",
+    ta_title: "இடங்கள் & செய்திகள்",
     links: [
-      { path: "/jobs",      en: "Jobs",           ta: "வேலை" },
-      { path: "/offices",   en: "Offices",        ta: "அலுவலகங்கள்" },
-      { path: "/listings",  en: "Local Listings", ta: "உள்ளூர் பட்டியல்" },
+      { path: "/tn-today",  en: "TN Today News",  ta: "TN Today செய்திகள்" },
+      { path: "/districts", en: "38 Districts",   ta: "38 மாவட்டங்கள்" },
+      { path: "/areas",     en: "Areas",          ta: "பகுதிகள்" },
+      { path: "/dashboard", en: "Civic Dashboard",ta: "குடிமை டாஷ்போர்டு" },
     ],
   },
   {
-    en_title: "Organizations",
-    ta_title: "நிறுவனங்கள்",
-    links: [
-      { path: "/rwa",       en: "RWA Dashboard", ta: "RWA டாஷ்போர்டு" },
-      { path: "/csr",       en: "CSR Dashboard", ta: "CSR டாஷ்போர்டு" },
-      { path: "/areas",     en: "Areas",         ta: "பகுதிகள்" },
-      { path: "/districts", en: "Districts",     ta: "மாவட்டங்கள்" },
-    ],
-  },
-  {
-    en_title: "Help Centre",
-    ta_title: "உதவி மையம்",
+    en_title: "Help & Trust",
+    ta_title: "உதவி & கொள்கை",
     links: [
       { path: "/about",          en: "About VizhiTN",  ta: "VizhiTN பற்றி" },
       { path: "/press",          en: "Press & Media",  ta: "செய்தி & ஊடகம்" },
       { path: "/help",           en: "Help Centre",    ta: "உதவி மையம்" },
+      { path: "/helplines",      en: "Helplines Desk", ta: "அவசர எண்கள்" },
       { path: "/how-to-use",     en: "How to Use",     ta: "பயன்படுத்துவது எப்படி" },
       { path: "/support",        en: "Support",        ta: "ஆதரவு" },
       { path: "/contact",        en: "Contact",        ta: "தொடர்பு" },
       { path: "/privacy-policy", en: "Privacy Policy", ta: "தனியுரிமை கொள்கை" },
+      { path: "/cookie-policy",  en: "Cookie Policy",  ta: "குக்கீ கொள்கை" },
+      { path: "/disclaimer",     en: "Disclaimer",     ta: "மறுப்பு அறிவிப்பு" },
       { path: "/terms",          en: "Terms of Service",ta: "சேவை விதிமுறைகள்" },
     ],
   },
@@ -228,14 +220,8 @@ export default function Footer() {
                 <ul className="space-y-2">
                   {col.links
                     .filter((link) => {
-                      if (link.path === "/jobs" && settings.jobs_enabled === "false") return false;
                       if (link.path === "/scams" && settings.scam_alerts_enabled === "false") return false;
                       if (link.path === "/help" && settings.emergency_enabled === "false") return false;
-                      if (link.path === "/offices" && settings.office_reports_enabled === "false") return false;
-                      if (link.path === "/ask" && settings.qa_enabled === "false") return false;
-                      if (link.path === "/situations" && settings.situations_enabled === "false") return false;
-                      if (link.path === "/rwa" && settings.rwa_enabled === "false") return false;
-                      if (link.path === "/csr" && settings.csr_enabled === "false") return false;
                       return true;
                     })
                     .map((link) => (

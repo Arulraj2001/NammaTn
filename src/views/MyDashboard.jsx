@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { supabase } from "@/api/supabaseClient";
 import { Link } from "@/lib/router-compat";
 import {
-  User, FileText, CheckCircle, MessageSquare, Flag, Briefcase, Building2,
+  User, FileText, CheckCircle, MessageSquare, Flag,
   Bell, Settings, Plus, AlertTriangle, ChevronRight, LogOut,
   Eye, Bookmark, BarChart3, Home
 } from "lucide-react";
@@ -23,8 +23,6 @@ const TABS = [
   { key: "activity",      icon: BarChart3,     label_en: "My Activity",         label_ta: "என் செயல்பாடு" },
   { key: "comments",      icon: MessageSquare, label_en: "Comments",            label_ta: "கருத்துகள்" },
   { key: "reports",       icon: Flag,          label_en: "My Reports",          label_ta: "என் புகார்கள்" },
-  { key: "jobs",          icon: Briefcase,     label_en: "Jobs & Listings",     label_ta: "வேலைகள் & வணிகங்கள்" },
-  { key: "orgs",          icon: Building2,     label_en: "Organisations",       label_ta: "நிறுவனங்கள்" },
   { key: "notifications", icon: Bell,          label_en: "Notifications",       label_ta: "அறிவிப்புகள்" },
   { key: "settings",      icon: Settings,      label_en: "Settings",            label_ta: "அமைப்புகள்" },
 ];
@@ -375,106 +373,7 @@ function ReportsTab({ reports, lang }) {
   );
 }
 
-// ── Jobs / Listings ──────────────────────────────────────────────────────────
-function JobsTab({ user, lang }) {
-  const opts = { enabled: !!user?.id, staleTime: 60_000 };
-  const { data: jobs = [] } = useQuery({ queryKey: ["my-jobs", user?.id], queryFn: () => base44.entities.JobAlert.filter({ created_by_id: user?.id }, "-created_date", 50), ...opts });
-  const { data: listings = [] } = useQuery({ queryKey: ["my-listings", user?.id], queryFn: () => base44.entities.LocalListing.filter({ created_by_id: user?.id }, "-created_date", 50), ...opts });
 
-  const ST = { active: "bg-green-100 text-green-700", pending: "bg-yellow-100 text-yellow-700", rejected: "bg-red-100 text-red-600", removed: "bg-red-100 text-red-600", expired: "bg-slate-100 text-slate-500" };
-
-  if (!jobs.length && !listings.length) {
-    return <EmptyState icon={Briefcase} title="No submissions yet" desc="Post jobs or local business listings to manage them here." />;
-  }
-
-  const Section = ({ title, items, renderItem }) => items.length === 0 ? null : (
-    <div>
-      <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">{title} ({items.length})</h3>
-      <div className="space-y-2">{items.map(renderItem)}</div>
-    </div>
-  );
-
-  return (
-    <div className="space-y-6">
-      <Section title="Job Alerts" items={jobs} renderItem={j => (
-        <div key={j.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
-          <p className="text-sm font-medium text-slate-800 dark:text-white truncate mb-1">{j.title}</p>
-          <div className="flex gap-2 flex-wrap">
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ST[j.status] || ST.pending}`}>{j.status}</span>
-            {j.safety_status === "scam" && <span className="text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded-full font-bold">🚨 Scam flagged</span>}
-            {j.report_count > 0 && <span className="text-xs text-red-500">{j.report_count} reports</span>}
-          </div>
-          {j.admin_note && <p className="text-xs text-amber-600 mt-1 italic">Admin: {j.admin_note}</p>}
-        </div>
-      )} />
-      <Section title="Local Listings" items={listings} renderItem={l => (
-        <div key={l.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
-          <p className="text-sm font-medium text-slate-800 dark:text-white truncate mb-1">{l.business_name}</p>
-          <div className="flex gap-2 flex-wrap">
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ST[l.status] || ST.pending}`}>{l.status}</span>
-            {l.is_verified && <span className="text-xs text-blue-600 font-medium">✓ Verified</span>}
-            {l.is_featured && <span className="text-xs text-amber-600 font-medium">⭐ Featured</span>}
-            {l.report_count > 0 && <span className="text-xs text-red-500">{l.report_count} reports</span>}
-          </div>
-          {l.admin_note && <p className="text-xs text-amber-600 mt-1 italic">Admin: {l.admin_note}</p>}
-        </div>
-      )} />
-    </div>
-  );
-}
-
-// ── Organisations ─────────────────────────────────────────────────────────────
-function OrgsTab({ user, lang }) {
-  const opts = { enabled: !!user?.email, staleTime: 60_000 };
-  const { data: rwaGroups = [] } = useQuery({ queryKey: ["my-rwa", user?.email], queryFn: () => base44.entities.RWAGroup.filter({ admin_email: user?.email }, "-created_date", 20), ...opts });
-  const { data: sponsors = [] } = useQuery({ queryKey: ["my-sponsors", user?.email], queryFn: () => base44.entities.CivicSponsor.filter({ contact_email: user?.email }, "-created_date", 20), ...opts });
-
-  const ST = { pending: "bg-yellow-100 text-yellow-700", active: "bg-green-100 text-green-700", rejected: "bg-red-100 text-red-600", suspended: "bg-orange-100 text-orange-600", completed: "bg-teal-100 text-teal-700" };
-
-  if (!rwaGroups.length && !sponsors.length) {
-    return (
-      <div className="space-y-4">
-        <EmptyState icon={Building2} title="No organisations yet" desc="Register your RWA, CSR organisation, or sponsor profile." />
-        <div className="flex gap-3 justify-center flex-wrap">
-          <Link to="/rwa" className="px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700">Register RWA</Link>
-          <Link to="/csr" className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700">Register CSR / Sponsor</Link>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {rwaGroups.map(g => (
-        <div key={g.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <div>
-              <p className="text-sm font-bold text-slate-800 dark:text-white">{g.group_name}</p>
-              <p className="text-xs text-slate-500 capitalize">{(g.group_type || "").replace(/_/g, " ")} · {g.plan}</p>
-            </div>
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${ST[g.status] || ST.pending}`}>{g.status}</span>
-          </div>
-          {g.is_verified && <p className="text-xs text-blue-600 font-medium">✓ Verified by VizhiTN</p>}
-          {g.status === "pending" && <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-2 py-1 mt-1">Request is under review. We'll contact you within 48 hours.</p>}
-        </div>
-      ))}
-      {sponsors.map(s => (
-        <div key={s.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <div>
-              <p className="text-sm font-bold text-slate-800 dark:text-white">{s.sponsor_name}</p>
-              <p className="text-xs text-slate-500 capitalize">{(s.sponsor_type || "").replace(/_/g, " ")} · {s.plan}</p>
-            </div>
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${ST[s.status] || ST.pending}`}>{s.status}</span>
-          </div>
-          {s.is_verified && <p className="text-xs text-blue-600 font-medium">✓ Verified</p>}
-          {s.admin_note && <p className="text-xs text-slate-500 italic mt-1">Note: {s.admin_note}</p>}
-          {s.status === "pending" && <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-2 py-1 mt-1">Under review. We'll be in touch within 48 hours.</p>}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 // ── Notifications ─────────────────────────────────────────────────────────────
 function NotificationsTab({ notifications, onRefresh, lang }) {
@@ -517,7 +416,6 @@ function NotificationsTab({ notifications, onRefresh, lang }) {
                   {n.target_id && (
                     <Link to={
                       n.target_type === "post" ? `/post/${n.target_id}` :
-                      n.target_type === "job_alert" ? `/jobs` :
                       `/me`
                     } className="text-xs text-blue-600 hover:underline">View</Link>
                   )}
@@ -790,8 +688,6 @@ function MyDashboardContent({ user, lang, activeTab, setActiveTab, logout }) {
       {activeTab === "activity" && <ActivityTab activity={myActivity} lang={lang} />}
       {activeTab === "comments" && <CommentsTab comments={myComments} lang={lang} />}
       {activeTab === "reports" && <ReportsTab reports={myReports} lang={lang} />}
-      {activeTab === "jobs" && <JobsTab user={user} lang={lang} />}
-      {activeTab === "orgs" && <OrgsTab user={user} lang={lang} />}
       {activeTab === "notifications" && <NotificationsTab notifications={myNotifications} onRefresh={refetchNotifications} lang={lang} />}
       {activeTab === "settings" && <SettingsTab user={user} lang={lang} logout={logout} />}
     </div>

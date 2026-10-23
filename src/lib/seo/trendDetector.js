@@ -19,7 +19,7 @@ const FALLBACK_TRENDS = [
   { city: 'coimbatore',      issue: 'water-issue', count: 11, velocity: 'medium', rank: 2 },
   { city: 'madurai',         issue: 'road-problem',count: 8,  velocity: 'medium', rank: 3 },
   { city: 'salem',           issue: 'scam',        count: 6,  velocity: 'low',    rank: 4 },
-  { city: 'tiruchirappalli', issue: 'jobs',        count: 4,  velocity: 'low',    rank: 5 },
+  { city: 'tiruchirappalli', issue: 'power-cut',   count: 4,  velocity: 'low',    rank: 5 },
 ];
 
 // ── Velocity classifier ────────────────────────────────────────────────────────

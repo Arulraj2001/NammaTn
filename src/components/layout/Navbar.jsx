@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
-  Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, Trophy, MessageCircle,
-  HelpCircle, Heart, Briefcase, Building2, AlertTriangle,
-  MapPin, Map, Leaf, ShoppingBag, Shield, ArrowRight, Plus, LayoutDashboard, Info, X, Clock
+  Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, MessageCircle,
+  HelpCircle, AlertTriangle, Heart, LayoutGrid,
+  MapPin, Map, Shield, ArrowRight, Plus, LayoutDashboard, Info, X
 } from "lucide-react";
 
 import { useLanguage } from "@/context/LanguageContext";
@@ -25,44 +25,43 @@ const MAIN_NAV = [
 
 const MEGA_COLUMNS = [
   {
-    en_title: "Alerts & Live",
-    ta_title: "எச்சரிக்கைகள் & நேரலை",
+    en_title: "Alerts & Utilities",
+    ta_title: "எச்சரிக்கைகள் & சேவைகள்",
     items: [
       { path: "/power-cuts-today-tamil-nadu", icon: Zap, en: "Power Cuts Today", ta: "இன்றைய மின்தடை", desc_en: "Live TANGEDCO power cuts", desc_ta: "நேரடி மின் தடை தகவல்கள்" },
       { path: "/school-college-holiday-alerts", icon: AlertTriangle, en: "Holiday Alerts", ta: "பள்ளி விடுமுறை", desc_en: "Rain & Collector orders", desc_ta: "ஆட்சியர் விடுமுறை அறிவிப்புகள்" },
-      { path: "/situations", icon: Zap, en: "Live Situations", ta: "நேரடி நிலைமைகள்", desc_en: "Real-time alerts & updates", desc_ta: "நேரடி பகுதி எச்சரிக்கைகள்" },
       { path: "/scams", icon: Shield, en: "Scam Alerts", ta: "மோசடி எச்சரிக்கை", desc_en: "Local scam & fraud alerts", desc_ta: "உள்ளூர் மோசடி எச்சரிக்கைகள்" },
+      { path: "/helplines", icon: HelpCircle, en: "Helplines Desk", ta: "அவசர எண்கள்", desc_en: "24x7 emergency contacts", desc_ta: "அரசு அவசர உதவி எண்கள்" },
     ],
   },
   {
-    en_title: "Civic & Directory",
-    ta_title: "குடிமை & முகவரிகள்",
+    en_title: "News & Hyperlocal",
+    ta_title: "செய்திகள் & வட்டாரம்",
     items: [
-      { path: "/offices", icon: Building2, en: "Public Offices", ta: "அரசு அலுவலகங்கள்", desc_en: "Taluk & municipal offices", desc_ta: "வட்டாட்சியர், மாநகராட்சி அலுவலகம்" },
+      { path: "/tn-today", icon: Info, en: "TN Today Newsroom", ta: "TN Today செய்திப்பிரிவு", desc_en: "Investigative state dispatches", desc_ta: "ஆழமான களப் புலனாய்வு செய்திகள்" },
       { path: "/districts", icon: Map, en: "38 Districts", ta: "38 மாவட்டங்கள்", desc_en: "Explore by TN district", desc_ta: "மாவட்ட வாரியாக ஆராய்க" },
-      { path: "/awareness", icon: Shield, en: "Citizen Awareness", ta: "குடிமை விழிப்புணர்வு", desc_en: "Rights, schemes & safety", desc_ta: "உரிமைகள், திட்டங்கள் & விழிப்புணர்வு" },
-      { path: "/ask", icon: MessageCircle, en: "Ask Local", ta: "கேளுங்கள்", desc_en: "Questions & local answers", desc_ta: "உள்ளூரினரிடம் கேள்வி கேளுங்கள்" },
+      { path: "/areas", icon: MapPin, en: "Hyperlocal Areas", ta: "வட்டாரப் பகுதிகள்", desc_en: "Local street & town updates", desc_ta: "பகுதி வாரியான குடிமை நிலவரம்" },
+      { path: "/trending", icon: TrendingUp, en: "Trending Topics", ta: "டிரெண்டிங் தலைப்புகள்", desc_en: "Most discussed civic issues", desc_ta: "அதிகம் விவாதிக்கப்பட்ட சிக்கல்கள்" },
       { path: "/dashboard", icon: LayoutDashboard, en: "Civic Dashboard", ta: "டாஷ்போர்டு", desc_en: "State civic resolution stats", desc_ta: "மாநில குடிமை புள்ளிவிவரம்" },
     ],
   },
   {
-    en_title: "Local Life & Opportunities",
-    ta_title: "வாழ்க்கை & வாய்ப்புகள்",
+    en_title: "Citizen Schemes & Rights",
+    ta_title: "அரசுத் திட்டங்கள் & உரிமைகள்",
     items: [
-      { path: "/jobs", icon: Briefcase, en: "Local Jobs", ta: "உள்ளூர் வேலை", desc_en: "Local job alerts & listings", desc_ta: "உள்ளூர் வேலை வாய்ப்புகள்" },
-      { path: "/listings", icon: ShoppingBag, en: "Local Listings", ta: "உள்ளூர் பட்டியல்", desc_en: "Verified local services", desc_ta: "சரிபார்க்கப்பட்ட சேவைகள்" },
-      { path: "/trending", icon: TrendingUp, en: "Trending Topics", ta: "டிரெண்டிங் தலைப்புகள்", desc_en: "Most discussed civic issues", desc_ta: "அதிகம் விவாதிக்கப்பட்ட சிக்கல்கள்" },
-      { path: "/leaderboard", icon: Trophy, en: "Civic Leaderboard", ta: "தகுதிப் பட்டியல்", desc_en: "Active citizens & top areas", desc_ta: "செயலில் உள்ள குடிமக்கள்" },
+      { path: "/schemes", icon: Shield, en: "Welfare Schemes", ta: "அரசுத் திட்டங்கள்", desc_en: "Kalaignar Magalir Urimai & welfare", desc_ta: "முக்கிய மக்கள் நலத் திட்டங்கள்" },
+      { path: "/esevai", icon: Info, en: "e-Sevai Guide", ta: "இ-சேவை வழிகாட்டி", desc_en: "Certificate application guides", desc_ta: "சான்றிதழ் விண்ணப்ப வழிகாட்டல்" },
+      { path: "/rights", icon: Shield, en: "Citizen Rights", ta: "குடிமக்கள் உரிமைகள்", desc_en: "Legal protections & consumer laws", desc_ta: "சட்டப்பூர்வ மக்கள் உரிமைகள்" },
+      { path: "/rti", icon: Info, en: "RTI Assistant", ta: "ஆர்டிஐ உதவியாளர்", desc_en: "Draft official RTI queries", desc_ta: "தகவல் அறியும் உரிமை மாதிரி" },
     ],
   },
   {
     en_title: "Community & Help",
     ta_title: "சமூகம் & ஆதரவு",
     items: [
-      { path: "/help", icon: HelpCircle, en: "Emergency Help", ta: "அவசர உதவி", desc_en: "Helplines & urgent support", desc_ta: "அவசர உதவி கோரிக்கைகள்" },
-      { path: "/rwa", icon: MapPin, en: "RWA Hub", ta: "RWA மையம்", desc_en: "Resident association tracking", desc_ta: "குடியிருப்போர் நலச் சங்கம்" },
-      { path: "/csr", icon: Leaf, en: "CSR Hub", ta: "CSR மையம்", desc_en: "Support civic transparency", desc_ta: "நிறுவன சமூகப் பங்களிப்பு" },
+      { path: "/help", icon: HelpCircle, en: "Emergency Help", ta: "அவசர உதவி", desc_en: "SOS & blood donation support", desc_ta: "அவசர உதவி கோரிக்கைகள்" },
       { path: "/how-to-use", icon: Info, en: "How to Use", ta: "பயன்படுத்துவது எப்படி", desc_en: "VizhiTN guide & walkthrough", desc_ta: "VizhiTN எப்படி பயன்படுத்துவது" },
+      { path: "/about", icon: Info, en: "About Us", ta: "எங்களைப் பற்றி", desc_en: "Mission & trust standards", desc_ta: "எங்கள் நோக்கம் & கொள்கை" },
       { path: "/contact", icon: MessageCircle, en: "Contact Us", ta: "தொடர்பு கொள்க", desc_en: "Reach the VizhiTN team", desc_ta: "குழுவை தொடர்பு கொள்ளுங்கள்" },
       { path: "/support", icon: Heart, en: "Support VizhiTN", ta: "ஆதரவு", desc_en: "Support citizen journalism", desc_ta: "எங்களை ஆதரியுங்கள்" },
     ],
@@ -269,7 +268,7 @@ export default function Navbar() {
                   aria-expanded={megaOpen}
                   aria-label={T("All Pages & Services", "அனைத்து பக்கங்கள் & சேவைகள்")}
                 >
-                  <Briefcase className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-civic-500" />
+                  <LayoutGrid className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-civic-500" />
                   {T("Directory", "சேவைகள்")}
                   <ChevronDown className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform duration-200 ${megaOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -287,14 +286,8 @@ export default function Navbar() {
                         <div className="grid grid-cols-4 gap-3 items-start">
                           {MEGA_COLUMNS.map((column, ci) => {
                             const filteredItems = column.items.filter((item) => {
-                              if (item.path === "/jobs" && settings.jobs_enabled === "false") return false;
                               if (item.path === "/scams" && settings.scam_alerts_enabled === "false") return false;
                               if (item.path === "/help" && settings.emergency_enabled === "false") return false;
-                              if (item.path === "/offices" && settings.office_reports_enabled === "false") return false;
-                              if (item.path === "/ask" && settings.qa_enabled === "false") return false;
-                              if (item.path === "/situations" && settings.situations_enabled === "false") return false;
-                              if (item.path === "/rwa" && settings.rwa_enabled === "false") return false;
-                              if (item.path === "/csr" && settings.csr_enabled === "false") return false;
                               return true;
                             });
 

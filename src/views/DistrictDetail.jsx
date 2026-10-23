@@ -30,7 +30,6 @@ import PostSkeleton from "@/components/posts/PostSkeleton";
 import { getDistrictPosts } from "@/services/posts";
 import { getPublishedTnToday } from "@/services/tnToday";
 import { getAreasByDistrict } from "@/services/areas";
-import { getSituationsByDistrict } from "@/services/situations";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { injectFAQStructuredData, injectDistrictStructuredData } from "@/lib/seo";
 import AdSlot from "@/components/ads/AdSlot";
@@ -134,13 +133,6 @@ export default function DistrictDetail({ initialSlug }) {
     staleTime: 120_000,
   });
 
-  const { data: situations = [] } = useQuery({
-    queryKey: ["district-situations", slug],
-    queryFn: () => getSituationsByDistrict(slug, 10),
-    enabled: !!slug,
-    staleTime: 60_000,
-  });
-
   const { data: tnTodayArticles = [] } = useQuery({
     queryKey: ["district-tn-today-news", slug],
     queryFn: () => getPublishedTnToday({ limit: 4 }),
@@ -217,7 +209,7 @@ export default function DistrictDetail({ initialSlug }) {
     );
   }
 
-  const activeAlertCount = alertsList.length + situations.length;
+  const activeAlertCount = alertsList.length;
   const activeGrievanceCount = complaintsList.length;
   const verifiedFixedCount = fixedList.length;
   const totalTaluksCount = areas.length > 0 ? areas.length : 8;
@@ -713,7 +705,7 @@ export default function DistrictDetail({ initialSlug }) {
             { slug: "water-issue", icon: "💧", en: "Water & Sanitation", ta: "தண்ணீர் & சுகாதாரம்", desc: "TWAD supply & drainage" },
             { slug: "road-problem", icon: "🛣️", en: "Roads & Potholes", ta: "சாலை & குழிகள்", desc: "Highway & pothole reports" },
             { slug: "scam", icon: "🛡️", en: "Scam Alerts", ta: "மோசடி எச்சரிக்கை", desc: "Cyber fraud & safety" },
-            { slug: "jobs", icon: "💼", en: "Jobs & Careers", ta: "வேலைவாய்ப்பு", desc: "Local vacancies & drives" },
+            { slug: "transport", icon: "🚌", en: "Transport & Buses", ta: "போக்குவரத்து & பேருந்துகள்", desc: "MTC, SETC & Metro updates" },
             { slug: "education", icon: "🎓", en: "Education & Exams", ta: "கல்வி & தேர்வுகள்", desc: "School & college notices" },
             { slug: "government-schemes", icon: "📜", en: "Govt Schemes", ta: "அரசு திட்டங்கள்", desc: "Welfare eligibility & e-Sevai" },
             { slug: "healthcare", icon: "🏥", en: "Healthcare & PHC", ta: "சுகாதாரம் & மருத்துவமனை", desc: "Hospital services & 108" },

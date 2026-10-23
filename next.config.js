@@ -217,9 +217,31 @@ const nextConfig = {
       { source: '/awareness/schemes',            destination: '/schemes',            permanent: true },
       { source: '/awareness/scheme/:slug',       destination: '/schemes/:slug',       permanent: true },
 
-      // ── Decommissioned Community Routes (Clean 301 to Explore) ──
+      // ── Decommissioned Community & Dead Module Routes (Clean 301 to Explore) ──
       { source: '/community',                    destination: '/explore',            permanent: true },
       { source: '/community/:path*',             destination: '/explore',            permanent: true },
+      { source: '/jobs',                         destination: '/explore',            permanent: true },
+      { source: '/jobs/:path*',                  destination: '/explore',            permanent: true },
+      { source: '/job/:path*',                   destination: '/explore',            permanent: true },
+      { source: '/listings',                     destination: '/explore',            permanent: true },
+      { source: '/listings/:path*',              destination: '/explore',            permanent: true },
+      { source: '/listing/:path*',               destination: '/explore',            permanent: true },
+      { source: '/offices',                      destination: '/explore',            permanent: true },
+      { source: '/offices/:path*',               destination: '/explore',            permanent: true },
+      { source: '/office/:path*',                destination: '/explore',            permanent: true },
+      { source: '/ask',                          destination: '/explore',            permanent: true },
+      { source: '/ask/:path*',                   destination: '/explore',            permanent: true },
+      { source: '/question/:path*',              destination: '/explore',            permanent: true },
+      { source: '/situations',                   destination: '/explore',            permanent: true },
+      { source: '/situations/:path*',            destination: '/explore',            permanent: true },
+      { source: '/leaderboard',                  destination: '/explore',            permanent: true },
+      { source: '/leaderboard/:path*',           destination: '/explore',            permanent: true },
+      { source: '/rwa',                          destination: '/explore',            permanent: true },
+      { source: '/rwa/:path*',                   destination: '/explore',            permanent: true },
+      { source: '/csr',                          destination: '/explore',            permanent: true },
+      { source: '/csr/:path*',                   destination: '/explore',            permanent: true },
+      { source: '/sponsors',                     destination: '/explore',            permanent: true },
+      { source: '/sponsors/:path*',              destination: '/explore',            permanent: true },
     ];
   },
 

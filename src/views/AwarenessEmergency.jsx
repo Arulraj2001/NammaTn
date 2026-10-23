@@ -770,7 +770,7 @@ export default function AwarenessEmergency() {
               </div>
             </div>
 
-            {/* Directory Listings */}
+            {/* Emergency Helplines */}
             <div className="space-y-8">
               {filteredCategories.map((cat) => {
                 const Icon = cat.icon;

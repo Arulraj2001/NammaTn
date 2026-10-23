@@ -4,8 +4,8 @@ import React from "react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  Shield, BookOpen, AlertTriangle, Building2,
-  Zap, MessageCircle, ArrowRight
+  Shield, BookOpen, AlertTriangle, Bell,
+  Zap, ArrowRight
 } from "lucide-react";
 
 export default function AwarenessRelatedLinks({ currentSection }) {
@@ -119,21 +119,21 @@ export default function AwarenessRelatedLinks({ currentSection }) {
       color: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200 dark:border-amber-800/50",
     },
     {
-      title_en: "Government Offices Directory",
-      title_ta: "அரசு அலுவலகங்கள்",
-      href: "/offices",
-      icon: Building2,
-      desc_en: "Find VAO, Tahsildar, EB, and Corporation offices in TN.",
-      desc_ta: "உள்ளூர் VAO, தாசில்தார், EB அலுவலகங்களைக் கண்டறியவும்.",
+      title_en: "Power Cut Shutdown Schedules",
+      title_ta: "மின்தடை அட்டவணை",
+      href: "/power-cuts-today-tamil-nadu",
+      icon: Zap,
+      desc_en: "Daily verified TANGEDCO scheduled power shutdowns across 38 districts.",
+      desc_ta: "தமிழ்நாட்டின் 38 மாவட்டங்களுக்கான தினசரி மின்வாரிய பராமரிப்பு மின்தடை விபரம்.",
       color: "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 border-purple-200 dark:border-purple-800/50",
     },
     {
-      title_en: "Ask Local Community",
-      title_ta: "உள்ளூரினரிடம் கேளுங்கள்",
-      href: "/ask",
-      icon: MessageCircle,
-      desc_en: "Get real answers about procedures & locations from locals.",
-      desc_ta: "உள்ளூர் மக்களிடம் கேள்விகள் கேட்டு தெளிவு பெறவும்.",
+      title_en: "School & College Holiday Alerts",
+      title_ta: "பள்ளி கல்லூரி விடுமுறை அறிவிப்பு",
+      href: "/school-college-holiday-alerts",
+      icon: Bell,
+      desc_en: "Official District Collector rain & emergency holiday announcements.",
+      desc_ta: "மாவட்ட ஆட்சியர் அறிவிக்கும் மழை மற்றும் அவசர விடுமுறை அறிவிப்புகள்.",
       color: "bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400 border-teal-200 dark:border-teal-800/50",
     },
   ];

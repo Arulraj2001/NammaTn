@@ -7,7 +7,7 @@ const PLANS = [
   { key: "area_dashboard", label: "Area Civic Dashboard", desc: "Support civic transparency for one area" },
   { key: "district_dashboard", label: "District Dashboard", desc: "District-wide civic transparency support" },
   { key: "issue_campaign", label: "Issue Awareness Campaign", desc: "Support a specific community-solvable awareness campaign" },
-  { key: "csr_impact", label: "CSR Impact Full Package", desc: "Full dashboard, reports, and public sponsor profile" },
+  { key: "impact_partner", label: "Civic Impact Partner Package", desc: "Full dashboard, reports, and public sponsor profile" },
 ];
 
 const CAMPAIGN_TYPES = [
@@ -24,9 +24,9 @@ const CAMPAIGN_TYPES = [
 ];
 
 const SPONSOR_TYPES = [
-  { key: "csr", label: "Company / Corporate CSR" },
+  { key: "corporate", label: "Company / Corporate Sponsor" },
   { key: "ngo", label: "NGO / Foundation" },
-  { key: "rwa", label: "RWA / Community Group" },
+  { key: "community", label: "Community Association / Group" },
   { key: "individual", label: "Individual Philanthropist" },
   { key: "business", label: "Local Business" },
 ];
@@ -34,7 +34,7 @@ const SPONSOR_TYPES = [
 export default function SponsorRegisterModal({ onClose, linkedPostId, linkedPostTitle }) {
   const [form, setForm] = useState({
     sponsor_name: "",
-    sponsor_type: "csr",
+    sponsor_type: "corporate",
     plan: linkedPostId ? "issue_campaign" : "area_dashboard",
     campaign_type: "clean_street",
     campaign_title: linkedPostTitle ? `Support: ${linkedPostTitle}` : "",
@@ -171,7 +171,7 @@ export default function SponsorRegisterModal({ onClose, linkedPostId, linkedPost
           <div>
             <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Contact Email *</label>
             <input required type="email" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)}
-              placeholder="csr@company.com"
+              placeholder="contact@company.com"
               className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none" />
           </div>
 

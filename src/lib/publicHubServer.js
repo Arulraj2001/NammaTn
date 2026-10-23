@@ -39,32 +39,7 @@ export async function getActiveScamAlerts(limit = 40) {
   }
 }
 
-export async function getActiveJobAlerts(limit = 40) {
-  const supabase = createServerSupabase();
-  if (!supabase) return [];
 
-  try {
-    const { data, error } = await supabase
-      .from('job_alert')
-      .select('*')
-      .eq('status', 'active')
-      .order('created_date', { ascending: false })
-      .limit(limit * 2);
-    if (error) throw error;
-
-    return (data || [])
-      .filter(job =>
-        job.safety_status !== 'scam' &&
-        job.safety_status !== 'rejected' &&
-        (job.report_count || 0) < 5 &&
-        job.is_publicly_visible !== false,
-      )
-      .slice(0, limit);
-  } catch (error) {
-    console.warn('[jobs] Server job fetch failed:', error.message);
-    return [];
-  }
-}
 
 export async function getActiveAreas(limit = 100) {
   const supabase = createServerSupabase();
@@ -85,81 +60,7 @@ export async function getActiveAreas(limit = 100) {
   }
 }
 
-export async function getLeaderboardPosts(limit = 200) {
-  const supabase = createServerSupabase();
-  if (!supabase) return [];
 
-  try {
-    const { data, error } = await supabase
-      .from('post')
-      .select('*')
-      .eq('post_type', 'complaint')
-      .eq('status', 'active')
-      .order('verification_count', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.warn('[leaderboard] Server post fetch failed:', error.message);
-    return [];
-  }
-}
-
-export async function getPublicLocalListings(limit = 24) {
-  const supabase = createServerSupabase();
-  if (!supabase) return [];
-
-  try {
-    const { data, error } = await supabase
-      .from('local_listing')
-      .select('*')
-      .eq('status', 'active')
-      .or('moderation_status.is.null,moderation_status.neq.hidden')
-      .or('is_publicly_visible.is.null,is_publicly_visible.eq.true')
-      .or('report_count.is.null,report_count.lt.5')
-      .order('created_date', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.warn('[listings] Server listing fetch failed:', error.message);
-    return [];
-  }
-}
-
-export async function getCommunityHubData() {
-  const supabase = createServerSupabase();
-  const empty = { settings: {}, situations: [], emergencies: [], scams: [], questions: [], posts: [] };
-  if (!supabase) return empty;
-
-  const requests = [
-    supabase.from('site_settings').select('key,value').order('key', { ascending: true }).limit(200),
-    supabase.from('situation_update').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
-    supabase.from('emergency_post').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
-    supabase.from('scam_alert').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
-    supabase.from('question').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(20),
-    supabase.from('unified_explore_feed').select('*').eq('status', 'active').order('created_date', { ascending: false }).limit(100),
-  ];
-
-  try {
-    const results = await Promise.all(requests);
-    const failed = results.find(result => result.error);
-    if (failed) throw failed.error;
-    const [settings, situations, emergencies, scams, questions, posts] = results.map(result => result.data || []);
-
-    return {
-      settings: Object.fromEntries(settings.map(setting => [setting.key, setting.value])),
-      situations,
-      emergencies,
-      scams,
-      questions,
-      posts: posts.filter(isPubliclyVisible).slice(0, 50),
-    };
-  } catch (error) {
-    console.warn('[community] Server hub fetch failed:', error.message);
-    return empty;
-  }
-}
 
 export async function getTrendingHubData(limit = 9) {
   const supabase = createServerSupabase();
@@ -270,34 +171,7 @@ export async function getAreaDetailData(slug) {
   }
 }
 
-export async function getQuestionDetailData(id) {
-  const supabase = createServerSupabase();
-  const empty = { question: null, answers: [] };
-  if (!id) return empty;
-  if (!supabase) throw new Error('Supabase is not configured');
 
-  try {
-    const [questionResult, answersResult] = await Promise.all([
-      supabase.from('question').select('*').eq('id', id).maybeSingle(),
-      supabase.from('answer').select('*').eq('question_id', id).eq('status', 'active').order('helpful_count', { ascending: false }).limit(50),
-    ]);
-    if (questionResult.error) throw questionResult.error;
-    if (answersResult.error) throw answersResult.error;
-
-    const question = questionResult.data || null;
-    // Deleted rows are hard-deleted (already null). `closed` is the archived
-    // state — hide those from the public detail route so `/question/[id]` 404s
-    // instead of serving removed content (GSC "soft 404" fix).
-    if (!question || question.status === 'closed') {
-      return empty;
-    }
-
-    return { question, answers: answersResult.data || [] };
-  } catch (error) {
-    console.warn(`[question:${id}] Server detail fetch failed:`, error.message);
-    throw error;
-  }
-}
 
 
 
@@ -375,24 +249,7 @@ export async function getExplorePosts(limit = 18) {
   }
 }
 
-export async function getActiveSituationUpdates(limit = 30) {
-  const supabase = createServerSupabase();
-  if (!supabase) return [];
 
-  try {
-    const { data, error } = await supabase
-      .from('situation_update')
-      .select('*')
-      .eq('status', 'active')
-      .order('created_date', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.warn('[situations] Server update fetch failed:', error.message);
-    return [];
-  }
-}
 
 export async function getActiveEmergencyPosts(limit = 40) {
   const supabase = createServerSupabase();
@@ -413,22 +270,6 @@ export async function getActiveEmergencyPosts(limit = 40) {
   }
 }
 
-export async function getLatestQuestions(limit = 40) {
-  const supabase = createServerSupabase();
-  if (!supabase) return [];
 
-  try {
-    const { data, error } = await supabase
-      .from('question')
-      .select('*')
-      .order('created_date', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.warn('[ask] Server question fetch failed:', error.message);
-    return [];
-  }
-}
 
 

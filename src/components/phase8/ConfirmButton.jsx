@@ -8,7 +8,7 @@ import { useLanguage } from "@/context/LanguageContext";
  * ConfirmButton — community factual validation (Confirm vs Not True)
  * 
  * Props:
- *  - targetType: "situation_update" | "emergency_post" | "scam_alert" | "office_report"
+ *  - targetType: "emergency_post" | "scam_alert"
  *  - targetId: string
  *  - confirmCount: number (initial count from DB record)
  *  - districtSlug: string

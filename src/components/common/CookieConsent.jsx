@@ -132,15 +132,19 @@ export default function CookieConsent() {
             'VizhiTN விருப்ப பகுப்பாய்வு மற்றும் விளம்பர குக்கீகளைப் பயன்படுத்துகிறது. அவற்றை ஏற்கலாம் அல்லது அவை இல்லாமல் தொடரலாம். எங்கள் ',
           )}
           <Link
+            href="/cookie-policy"
+            className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+          >
+            {T('Cookie Policy', 'குக்கீ கொள்கை')}
+          </Link>
+          {T(' & ', ' மற்றும் ')}
+          <Link
             href="/privacy-policy"
             className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
           >
             {T('Privacy Policy', 'தனியுரிமைக் கொள்கை')}
           </Link>
-          {T(
-            '.',
-            ' பார்க்கவும்.',
-          )}
+          {T('.', ' பார்க்கவும்.')}
         </p>
 
         {/* Action row */}

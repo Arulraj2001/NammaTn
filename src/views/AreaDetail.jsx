@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import {
-  MapPin, ArrowLeft, ShieldAlert, FileText, AlertTriangle,
+  MapPin, ArrowLeft, ShieldAlert, FileText, AlertTriangle, Shield,
   Plus, CheckCircle, Zap, Droplets, Construction, Users,
   ArrowRight, Clock, ChevronRight, Share2, RefreshCw,
   Star, Trophy, Flame, Building2, PhoneCall, BadgeCheck
@@ -755,9 +755,9 @@ export default function AreaDetail({ initialSlug, initialData }) {
               </h3>
               <div className="space-y-2">
                 {[
-                  { icon: Building2, label: T("Government Offices", "அரசு அலுவலகங்கள்"), to: "/offices" },
-                  { icon: PhoneCall, label: T("Emergency Numbers", "அவசர எண்கள்"), to: "/awareness/emergency" },
-                  { icon: Trophy,    label: T("Leaderboard", "முன்னணியாளர்கள்"), to: "/leaderboard" },
+                  { icon: Zap,       label: T("Power Cut Schedules", "மின்தடை அட்டவணை"), to: "/power-cuts-today-tamil-nadu" },
+                  { icon: PhoneCall, label: T("Emergency Numbers", "அவசர எண்கள்"), to: "/helplines" },
+                  { icon: Shield,    label: T("Government Schemes", "அரசு நலத்திட்டங்கள்"), to: "/schemes" },
                   { icon: Star,      label: T("Popular Areas", "பிரபலமான பகுதிகள்"), to: "/areas" },
                 ].map((item) => {
                   const Icon = item.icon;

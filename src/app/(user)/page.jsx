@@ -36,7 +36,7 @@ const orgSchema = {
 // Result: "Know what's happening in your area right now | VizhiTN"
 export const metadata = {
   title: "Know what's happening in your area right now",
-  description: "Report civic issues, see live alerts, track complaints, and find jobs in Tamil Nadu. All in one place, verified by citizens.",
+  description: "Report civic issues, see live alerts, track complaints, and discover official updates in Tamil Nadu. All in one place, verified by citizens.",
   alternates: {
     // Self-canonical on homepage prevents www vs non-www duplication
     canonical: 'https://www.vizhitn.in/',

@@ -15,14 +15,4 @@ export function isPubliclyVisible(p) {
   if (p.civic_status === "duplicate_invalid" || p.civic_status === "deleted" || p.civic_status === "removed") return false;
   return true;
 }
-
-/** Safety guard for jobs/listings */
-export function isSafePublicListing(item) {
-  if (!item) return false;
-  if (item.status === "removed" || item.status === "rejected" || item.status === "pending") return false;
-  if (item.safety_status === "scam" || item.safety_status === "rejected") return false;
-  if (item.moderation_status === "hidden") return false;
-  if (item.is_publicly_visible === false) return false;
-  if ((item.report_count || 0) >= 5) return false;
-  return true;
-}
+

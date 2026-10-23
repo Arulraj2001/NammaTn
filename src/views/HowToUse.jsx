@@ -132,62 +132,62 @@ const CORE_PILLARS = [
     pro_tip_ta: "முக்கிய குறிப்பு: ஆன்லைன் வங்கி மோசடி நடந்தால் 120 நிமிடங்களுக்குள் 1930 அழைத்தால் பணத்தை முடக்க முடியும்."
   },
   {
-    id: "ask_local_community",
-    icon: MessageSquare,
+    id: "schemes_and_esevai",
+    icon: Scale,
     color: "bg-teal-600",
     text_color: "text-teal-600 dark:text-teal-400",
     border_color: "border-teal-200 dark:border-teal-900/50",
     bg_light: "bg-teal-50/60 dark:bg-teal-950/20",
-    title_en: "Ask Local Questions & Get Area Answers",
-    title_ta: "உள்ளூரினரிடம் கேள்விகள் & பதில்கள்",
-    desc_en: "Get authentic ground advice on local water supply timings, Taluk e-Sevai centers, road repair updates, and neighbourhood facilities.",
-    desc_ta: "குடிநீர் வரும் நேரம், இ-சேவை மையம், சாலை நிலை போன்ற உள்ளூர் சந்தேகங்களை அப்பகுதி மக்களிடம் கேட்டு அறியலாம்.",
-    action_href: "/ask-local",
-    action_label_en: "Ask Local Community",
-    action_label_ta: "கேள்வி கேட்க",
+    title_en: "Government Schemes & e-Sevai Guides",
+    title_ta: "அரசு நலத்திட்டங்கள் & இ-சேவை வழிகாட்டிகள்",
+    desc_en: "Access step-by-step guides for Kalaignar Magalir Urimai, Smart Ration Card, Patta Chitta transfers, and e-Sevai certificates.",
+    desc_ta: "கலைஞர் மகளிர் உரிமைத் தொகை, ஸ்மார்ட் ரேஷன் கார்டு, பட்டா மாறுதல் மற்றும் இ-சேவை சான்றிதழ் வழிகாட்டிகளை அறியலாம்.",
+    action_href: "/schemes",
+    action_label_en: "Browse Govt Schemes",
+    action_label_ta: "அரசுத் திட்டங்கள் காண்க",
     steps_en: [
-      { num: "01", title: "Choose Your District & Area", text: "Target your question to a specific town or neighbourhood (e.g. Tambaram, Gandhipuram, Anna Nagar)." },
-      { num: "02", title: "Post a Specific Question", text: "Ask practical civic questions: 'Is the sub-registrar office open on Saturday?', 'What time does Metrowater supply come?'" },
-      { num: "03", title: "Ground Verified Answers", text: "Local residents who live on that street answer directly with operational timings and contact numbers." },
-      { num: "04", title: "Vote Best Answer", text: "Upvote helpful responses so future neighbours find verified information instantly." }
+      { num: "01", title: "Select Scheme or Service", text: "Browse categorized Tamil Nadu welfare schemes, pension plans, or certificate checklists." },
+      { num: "02", title: "Check Eligibility & Documents", text: "Review mandatory documents (Aadhaar, income certificate, ration card) before applying." },
+      { num: "03", title: "Direct Official Portals", text: "Access authentic Government of Tamil Nadu URLs (tnesevai.tn.gov.in, eservices.tn.gov.in) with zero fraud risk." },
+      { num: "04", title: "Track Grievance with CM Cell", text: "If applications are delayed unlawfully, use CM Special Cell 1100 escalation templates." }
     ],
     steps_ta: [
-      { num: "01", title: "மாவட்டம் & பகுதியைத் தேர்வு செய்க", text: "உங்கள் கேள்வியை குறிப்பிட்ட பகுதிக்கு (எ.கா. தாம்பரம், காந்திபுரம், அண்ணா நகர்) நிர்ணயிக்கவும்." },
-      { num: "02", title: "சரியான கேள்வியை கேட்கவும்", text: "உள்ளூர் அரசு அலுவலக நேரம், குடிநீர் வரும் நேரம் போன்ற நடைமுறை கேள்விகளை கேட்கலாம்." },
-      { num: "03", title: "உள்ளூர் மக்களின் நேரடி பதில்", text: "அந்த பகுதியில் வசிக்கும் மக்கள் சரியான நேரம் மற்றும் உண்மை நிலவரத்தை பதிலளிப்பார்கள்." },
-      { num: "04", title: "சரியான பதிலுக்கு வாக்களிக்கவும்", text: "பிறருக்கும் உதவும் வகையில் சரியான பதில்களுக்கு வாக்களிக்கலாம்." }
+      { num: "01", title: "திட்டம் அல்லது சேவையைத் தேர்வு செய்க", text: "தமிழ்நாடு அரசின் சமூக நலத்திட்டங்கள், உதவித்தொகை அல்லது சான்றிதழ் பட்டியலை தேர்வு செய்யவும்." },
+      { num: "02", title: "தகுதி & ஆவணங்களைச் சரிபார்க்கவும்", text: "விண்ணப்பிக்கும் முன் தேவையான ஆவணங்கள் (ஆதார், வருமான சான்று, குடும்ப அட்டை) குறித்து அறியவும்." },
+      { num: "03", title: "அதிகாரப்பூர்வ அரசு இணையதளங்கள்", text: "போலி தளங்களைத் தவிர்த்து தமிழ்நாடு அரசின் அதிகாரப்பூர்வ இணையதள முகவரிகளை நேரடியாக அணுகலாம்." },
+      { num: "04", title: "முதல்வர் உதவி மையம் 1100", text: "சான்றிதழ் கிடைப்பதில் தேவையற்ற தாமதம் ஏற்பட்டால் 1100 முதல்வர் தனிப்பிரிவு வழிகாட்டிகளைப் பயன்படுத்தலாம்." }
     ],
-    pro_tip_en: "Pro Tip: Keep questions focused on local facilities, office timings, or services rather than generic opinions.",
-    pro_tip_ta: "முக்கிய குறிப்பு: பொதுவான விவாதங்களை விட அலுவலக நேரம், குடிநீர், பேருந்து வழித்தடம் சார்ந்த கேள்விகளுக்கு உடனடி பதில் கிடைக்கும்."
+    pro_tip_en: "Pro Tip: Most e-Sevai certificate applications carry a fixed statutory fee of ₹60. Avoid paying extra charges to unauthorized agents.",
+    pro_tip_ta: "முக்கிய குறிப்பு: பெரும்பாலான இ-சேவை சான்றிதழ்களுக்கான அரசு கட்டணம் ₹60 மட்டுமே. இடைத்தரகர்களிடம் கூடுதல் பணம் கொடுக்க வேண்டாம்."
   },
   {
-    id: "local_listings_directory",
-    icon: Store,
+    id: "tn_today_news",
+    icon: FileText,
     color: "bg-blue-600",
     text_color: "text-blue-600 dark:text-blue-400",
     border_color: "border-blue-200 dark:border-blue-900/50",
     bg_light: "bg-blue-50/60 dark:bg-blue-950/20",
-    title_en: "Find & List Local Neighbourhood Services",
-    title_ta: "உள்ளூர் சேவைகள் & சிறுவணிகங்கள்",
-    desc_en: "Discover verified local electricians, plumbers, water tanker suppliers, AC technicians, and grocery stores across all 38 districts.",
-    desc_ta: "எலக்ட்ரீசியன், பிளம்பர், குடிநீர் லாரி விநியோகஸ்தர், ஏசி மெக்கானிக் போன்ற உள்ளூர் சேவை நபர்களை கண்டறியலாம்.",
-    action_href: "/local-listings",
-    action_label_en: "Browse Local Listings",
-    action_label_ta: "உள்ளூர் சேவைகளை பார்க்க",
+    title_en: "TN Today — State Development & Governance News",
+    title_ta: "TN Today — தமிழக வளர்ச்சி & திட்டங்கள் செய்திகள்",
+    desc_en: "In-depth, citizen-first reportage on Metro rail extensions, flyovers, water projects, and district administrative orders.",
+    desc_ta: "மெட்ரோ ரயில் விரிவாக்கம், பாலங்கள், கூட்டுக்குடிநீர் திட்டங்கள் மற்றும் மாவட்ட நிர்வாக உத்தரவுகள் குறித்த ஆழமான செய்திகள்.",
+    action_href: "/tn-today",
+    action_label_en: "Read TN Today",
+    action_label_ta: "TN Today செய்திகள்",
     steps_en: [
-      { num: "01", title: "Filter by Category & Area", text: "Search by skill (Electrician, Plumber, Water Supply, AC Service) and your local taluk." },
-      { num: "02", title: "Direct Phone Call", text: "Tap the phone button to connect directly with the local technician without middlemen commission." },
-      { num: "03", title: "List Your Own Business", text: "If you run a local service in Tamil Nadu, add your listing for free with phone number and address." },
-      { num: "04", title: "Community Verification", text: "High-rated listings receive community trust badges based on genuine customer feedback." }
+      { num: "01", title: "Verified Editorial Standards", text: "Articles are compiled exclusively from official Government Orders (GOs), Assembly announcements, and departmental releases." },
+      { num: "02", title: "Track Infrastructure Milestones", text: "Follow physical progress percentages of highway bridges, canal restoration, and SIPCOT corridors." },
+      { num: "03", title: "District-Wise Breakdown", text: "Filter development stories by your specific district to see what is being built in your neighbourhood." },
+      { num: "04", title: "Share for Civic Accountability", text: "Share development timelines with ward councillors and community groups to ensure timely completion." }
     ],
     steps_ta: [
-      { num: "01", title: "வகை & பகுதியை வடிகட்டவும்", text: "பணி வகை (எலக்ட்ரீசியன், பிளம்பர், குடிநீர் விநியோகம்) மற்றும் பகுதியை தேர்வு செய்யவும்." },
-      { num: "02", title: "நேரடி தொலைபேசி அழைப்பு", text: "இடைத்தரகர் கமிஷன் இல்லாமல் உள்ளூர் தொழில்நுட்ப வல்லுநரை நேரடியாக அழைக்கலாம்." },
-      { num: "03", title: "உங்கள் சேவையை இணைக்கவும்", text: "நீங்கள் உள்ளூர் சேவை வழங்குபவராக இருந்தால் உங்கள் தொடர்பு எண்ணுடன் இலவசமாக பதிவு செய்யலாம்." },
-      { num: "04", title: "சமுதாய நம்பிக்கை பேட்ஜ்", text: "நல்ல சேவை வழங்கும் நபர்களுக்கு மக்கள் மதிப்பீட்டின்படி நம்பகத்தன்மை பேட்ஜ் வழங்கப்படும்." }
+      { num: "01", title: "அரசு அரசாணைகளின்படி உண்மைத் தகவல்", text: "அரசாணைகள் (GO), சட்டமன்ற அறிவிப்புகள் மற்றும் அரசுத் துறை செய்திக் குறிப்புகளின்படி தொகுக்கப்படும் செய்திகள்." },
+      { num: "02", title: "கட்டமைப்பு பணிகள் கண்காணிப்பு", text: "நெடுஞ்சாலை மேம்பாலங்கள், கால்வாய் தூர்வாருதல் மற்றும் தொழிற்பேட்டை பணிகளின் முன்னேற்றத்தை அறியலாம்." },
+      { num: "03", title: "மாவட்ட வாரியான செய்திகள்", text: "உங்கள் மாவட்டத்தில் அரசு மேற்கொள்ளும் புதிய திட்டங்கள் மற்றும் வளர்ச்சிப் பணிகளை வடிகட்டி படிக்கலாம்." },
+      { num: "04", title: "சமூகப் பொறுப்புணர்வுடன் பகிருங்கள்", text: "பணிகள் குறித்த காலக்கெடுவை உள்ளூர் பிரதிநிதிகளுடன் பகிர்ந்து திட்டங்களை விரைவுபடுத்தலாம்." }
     ],
-    pro_tip_en: "Pro Tip: Local Listings is 100% commission-free. You deal directly with your local neighbourhood service professionals.",
-    pro_tip_ta: "முக்கிய குறிப்பு: இந்த சேவையில் எந்தவித கமிஷனும் இல்லை. உங்கள் பகுதி சேவை நபருடன் நேரடியாக தொடர்பு கொள்ளலாம்."
+    pro_tip_en: "Pro Tip: All TN Today articles are published in bilingual format with direct departmental reference citations.",
+    pro_tip_ta: "முக்கிய குறிப்பு: அனைத்து கட்டுரைகளும் தமிழ் மற்றும் ஆங்கிலத்தில் அதிகாரப்பூர்வ ஆதார மேற்கோள்களுடன் வெளியிடப்படுகின்றன."
   }
 ];
 
@@ -197,13 +197,13 @@ const PLATFORM_FEATURES_MATRIX = [
   { name_en: "Log Issue (Create Receipt)", name_ta: "புகார் பதிவு செய்தல்", route: "/create", desc_en: "Submit civic grievances with photo, GPS, and department routing", desc_ta: "ஆதாரத்துடன் பொதுப் புகாரை பதிவு செய்து கண்காணிக்க", audience: "Registered Citizens" },
   { name_en: "38 District Portals", name_ta: "38 மாவட்ட இணைய முகப்புகள்", route: "/chennai", desc_en: "Hyperlocal feeds, ward stats, and grievance tallies for each district", desc_ta: "ஒவ்வொரு மாவட்டத்திற்கான பிரத்யேக செய்தி & புள்ளிவிவரங்கள்", audience: "All Citizens" },
   { name_en: "Power Cuts Today", name_ta: "இன்றைய மின்தடை நேரம்", route: "/power-cuts-today-tamil-nadu", desc_en: "TANGEDCO planned substation shutdown timings & affected streets", desc_ta: "மின்வாரிய பராமரிப்பு பணி காரணமாக மின்தடை ஆகும் பகுதிகள்", audience: "All Citizens" },
-  { name_en: "Rain Holiday Alerts", name_ta: "மழை பள்ளி விடுமுறை செய்திகள்", route: "/holiday-alerts-tamil-nadu", desc_en: "District Collector official announcements for heavy rains", desc_ta: "மாவட்ட ஆட்சியர் அறிவிக்கும் அதிகாரப்பூர்வ பள்ளி விடுமுறைகள்", audience: "All Citizens" },
-  { name_en: "Live Situations & Diversions", name_ta: "நேரடி கள நிலவரம் & போக்குவரத்து", route: "/situations", desc_en: "Subway waterlogging, train line blocks, festival diversions", desc_ta: "வெள்ளப் பெருக்கு, சுரங்கப்பாதை அடைப்பு, ரயில் ரத்து செய்திகள்", audience: "All Citizens" },
+  { name_en: "School & College Holiday Alerts", name_ta: "மழை பள்ளி விடுமுறை செய்திகள்", route: "/school-college-holiday-alerts", desc_en: "District Collector official announcements for heavy rains", desc_ta: "மாவட்ட ஆட்சியர் அறிவிக்கும் அதிகாரப்பூர்வ பள்ளி விடுமுறைகள்", audience: "All Citizens" },
+  { name_en: "TN Today News", name_ta: "TN Today தமிழக செய்திகள்", route: "/tn-today", desc_en: "State infrastructure, policy, metro rail, and development dispatches", desc_ta: "தமிழக கட்டமைப்பு, கொள்கைகள் மற்றும் வளர்ச்சித் திட்ட செய்திகள்", audience: "All Citizens" },
   { name_en: "Emergency Command Center", name_ta: "24x7 அவசர கட்டுப்பாட்டு மையம்", route: "/helplines", desc_en: "1-tap speed dials (112, 108, 1912, 1930) & District Disaster 1077", desc_ta: "அனைத்து அவசர உதவி எண்கள், பேரிடர் மற்றும் முதலுதவி நெறிமுறைகள்", audience: "24x7 Public" },
   { name_en: "Community SOS Help", name_ta: "சமுதாய அவசர உதவி மையம்", route: "/help", desc_en: "Blood requirement requests, ambulance help, missing persons", desc_ta: "ரத்த தான தேவை மற்றும் அவசர சமுதாய உதவி கோரிக்கைகள்", audience: "Volunteers & Citizens" },
   { name_en: "Scam Radar & Fraud Alerts", name_ta: "சைபர் மோசடி எச்சரிக்கை", route: "/scams", desc_en: "Fake EB bill SMS, part-time job fraud warnings, Cyber helpline 1930", desc_ta: "ஆன்லைன் நிதி மோசடிகள் மற்றும் சைபர் கிரைம் விழிப்புணர்வு", audience: "All Citizens" },
-  { name_en: "Ask Local Q&A", name_ta: "உள்ளூரினரிடம் கேளுங்கள்", route: "/ask-local", desc_en: "Ask neighbours questions about local timings, roads, and facilities", desc_ta: "அப்பகுதி மக்களிடம் நேரடி சந்தேகங்களை கேட்டு தீர்க்க", audience: "Local Residents" },
-  { name_en: "Local Business Listings", name_ta: "உள்ளூர் வணிகங்கள் & சேவைகள்", route: "/local-listings", desc_en: "Verified local electricians, plumbers, water suppliers & mechanics", desc_ta: "எலக்ட்ரீசியன், பிளம்பர், குடிநீர் லாரி சேவைகளின் தொடர்பு எண்கள்", audience: "Consumers & Pros" },
+  { name_en: "e-Sevai Certificate Guides", name_ta: "இ-சேவை சான்றிதழ் வழிகாட்டி", route: "/esevai", desc_en: "Checklists & procedures for Patta, Legal Heir, Community & Income certificates", desc_ta: "பட்டா, வாரிசு, சாதி மற்றும் வருமான சான்றிதழ் ஆவண விபரங்கள்", audience: "All Citizens" },
+  { name_en: "Government Welfare Schemes", name_ta: "அரசு நலத்திட்டங்கள்", route: "/schemes", desc_en: "Direct benefits, eligibility rules, and official online application links", desc_ta: "அரசு நலத்திட்டங்கள் மற்றும் விண்ணப்பிக்கும் நேரடி இணைப்புகள்", audience: "All Citizens" },
   { name_en: "Civic Awareness & Rights", name_ta: "குடிமக்கள் உரிமைகள் & திட்டங்கள்", route: "/awareness", desc_en: "RTI Act 2005, police check rights, welfare schemes & portal guides", desc_ta: "RTI சட்டம், நுகர்வோர் உரிமை மற்றும் அரசு திட்ட வழிகாட்டிகள்", audience: "All Citizens" }
 ];
 
@@ -212,7 +212,7 @@ const FAQS = [
   {
     q_en: "Is filing a civic complaint or viewing alerts free on VizhiTN?",
     q_ta: "VizhiTN தளத்தில் புகாரளிப்பதற்கும் தகவல்களைப் பார்ப்பதற்கும் கட்டணம் உண்டா?",
-    a_en: "VizhiTN is 100% free and open to all citizens of Tamil Nadu. There are no fees to file complaints, search power cut schedules, dial helplines, or post local questions.",
+    a_en: "VizhiTN is 100% free and open to all citizens of Tamil Nadu. There are no fees to file complaints, search power cut schedules, or dial emergency helplines.",
     a_ta: "VizhiTN தளம் தமிழ்நாடு பொதுமக்கள் அனைவருக்கும் 100% முற்றிலும் இலவசமானது. புகாரளிப்பது, மின்தடை அறிவது, அவசர எண்களை அழைப்பது என அனைத்திற்கும் எந்த கட்டணமும் இல்லை."
   },
   {
@@ -228,10 +228,10 @@ const FAQS = [
     a_ta: "அரசுத் துறை அல்லது மாநகராட்சி ஊழியர்கள் அந்தப் பணியை முடித்ததும் (சாலை போடுதல், விளக்கு மாற்றுதல்), சரிசெய்யப்பட்ட புகைப்படத்தை பதிவேற்றினால் மக்கள் சரிபார்த்து வெற்றிச் சுவருக்கு மாற்றப்படும்."
   },
   {
-    q_en: "Can I contact local technicians directly through Local Listings without middleman commission?",
-    q_ta: "உள்ளூர் சேவை நபர்களை இடைத்தரகர் கமிஷன் இன்றி நேரடியாக அழைக்க முடியுமா?",
-    a_en: "Yes. Local Listings connects you directly via telephone with neighbourhood electricians, plumbers, and mechanics. VizhiTN charges zero commission to either party.",
-    a_ta: "ஆம். எலக்ட்ரீசியன், பிளம்பர், குடிநீர் லாரி உரிமையாளர்களை நேரடியாக தொலைபேசி மூலம் அழைக்கலாம். VizhiTN எந்தவொரு கமிஷனும் வசூலிப்பதில்லை."
+    q_en: "Are government helpline numbers and utility alerts verified on VizhiTN?",
+    q_ta: "VizhiTN தளத்தில் உள்ள அரசு உதவி எண்கள் மற்றும் மின்வெட்டு தகவல்கள் சரிபார்க்கப்பட்டவையா?",
+    a_en: "Yes. Every power cut advisory, water shortage notice, and emergency helpline is cross-referenced with official departmental gazettes, TANGEDCO circulars, and District Disaster Control numbers.",
+    a_ta: "ஆம். மின்வாரிய பராமரிப்பு அறிவிப்புகள், குடிநீர் வாரிய தகவல்கள் மற்றும் அவசர உதவி எண்கள் அனைத்தும் அதிகாரப்பூர்வ அரசு சுற்றறிக்கைகளுடன் ஒப்பிட்டு உறுதி செய்யப்படுகின்றன."
   }
 ];
 
@@ -296,8 +296,8 @@ export default function HowToUse() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={T(
-                  "Search a feature (e.g. pothole, power cut, scam, blood, rain holiday, ask local)...",
-                  "தேடுங்கள் (மின்வெட்டு, மோசடி, ரத்த தானம், மழை விடுமுறை, கேள்வி கேட்க)..."
+                  "Search a feature (e.g. pothole, power cut, scam, blood, rain holiday, transport)...",
+                  "தேடுங்கள் (மின்வெட்டு, மோசடி, ரத்த தானம், மழை விடுமுறை, போக்குவரத்து)..."
                 )}
                 className="w-full pl-10 pr-4 py-3 text-xs sm:text-sm bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-inner"
               />

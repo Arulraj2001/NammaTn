@@ -186,13 +186,13 @@ export default function CustomAdBanner({ slot = "sidebar", district, fallbackTyp
               Get 5x More Inquiries in Your District on VizhiTN
             </h3>
             <p className="text-xs text-blue-100 leading-relaxed mb-3">
-              Feature your shop, business, clinic, or service at the top of local listings across Tamil Nadu.
+              Feature your brand, business, or civic initiative across high-traffic district pages in Tamil Nadu.
             </p>
             <Link
-              to="/listings"
+              to="/contact"
               className="inline-flex items-center gap-1.5 text-xs font-extrabold bg-white text-blue-800 hover:bg-blue-50 px-4 py-2 rounded-xl transition-all shadow-xs"
             >
-              Sponsor Your District →
+              Contact VizhiTN Desk →
             </Link>
           </div>
         </div>

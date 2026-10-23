@@ -99,7 +99,7 @@ export default async function Page({ params }) {
         name={`${district.name} Civic Issue Reports & Alerts`}
         description={
           `Citizen-submitted reports from ${district.name}, Tamil Nadu — power cuts, water issues, ` +
-          `road problems, scam alerts, jobs, and more.`
+          `road problems, scam alerts, and civic updates.`
         }
         breadcrumbs={[
           { name: 'Home', url: SITE_URL },

@@ -55,12 +55,6 @@ const AwarenessPortals = lazy(() => import('@/views/AwarenessPortals'));
 const AwarenessFaqs = lazy(() => import('@/views/AwarenessFaqs'));
 const Areas = lazy(() => import('@/pages/Areas'));
 const AreaDetail = lazy(() => import('@/pages/AreaDetail'));
-const Situations = lazy(() => import('@/pages/Situations'));
-const AskLocal = lazy(() => import('@/pages/AskLocal'));
-const QuestionDetail = lazy(() => import('@/pages/QuestionDetail'));
-const Offices = lazy(() => import('@/pages/Offices'));
-const OfficeDetail = lazy(() => import('@/pages/OfficeDetail'));
-const Jobs = lazy(() => import('@/pages/Jobs'));
 const Scams = lazy(() => import('@/pages/Scams'));
 const Help = lazy(() => import('@/pages/Help'));
 const Support = lazy(() => import('@/pages/Support'));
@@ -69,10 +63,6 @@ const AdminContacts = lazy(() => import('@/pages/admin/AdminContacts'));
 const AdminUsers = lazy(() => import('@/pages/admin/AdminUsers'));
 const AdminCivicReceipts = lazy(() => import('@/pages/admin/AdminCivicReceipts'));
 const AdminAwareness = lazy(() => import('@/views/admin/AdminAwareness'));
-const LocalListings = lazy(() => import('@/pages/LocalListings'));
-const CivicLeaderboard = lazy(() => import('@/pages/CivicLeaderboard'));
-const RWADashboard = lazy(() => import('@/pages/RWADashboard'));
-const CSRDashboard = lazy(() => import('@/pages/CSRDashboard'));
 const AdminMonetization = lazy(() => import('@/pages/admin/AdminMonetization'));
 const AdminSEO = lazy(() => import('@/views/admin/AdminSEO'));
 const AdminTnToday = lazy(() => import('@/views/admin/AdminTnToday'));
@@ -214,20 +204,9 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/awareness/faqs" element={<AwarenessFaqs />} />
         <Route path="/areas" element={<Areas />} />
         <Route path="/area/:slug" element={<AreaDetail />} />
-        <Route path="/situations" element={settings.situations_enabled !== "false" ? <Situations /> : <PageNotFound />} />
-        <Route path="/ask" element={settings.qa_enabled !== "false" ? <AskLocal /> : <PageNotFound />} />
-        <Route path="/question/:id" element={settings.qa_enabled !== "false" ? <QuestionDetail /> : <PageNotFound />} />
-        <Route path="/offices" element={settings.office_reports_enabled !== "false" ? <Offices /> : <PageNotFound />} />
-        <Route path="/office/:slug" element={settings.office_reports_enabled !== "false" ? <OfficeDetail /> : <PageNotFound />} />
-        <Route path="/jobs" element={settings.jobs_enabled !== "false" ? <Jobs /> : <PageNotFound />} />
         <Route path="/scams" element={settings.scam_alerts_enabled !== "false" ? <Scams /> : <PageNotFound />} />
         <Route path="/help" element={settings.emergency_enabled !== "false" ? <Help /> : <PageNotFound />} />
         <Route path="/support" element={<Support />} />
-        <Route path="/listings" element={<LocalListings />} />
-        <Route path="/leaderboard" element={<CivicLeaderboard />} />
-        <Route path="/rwa" element={settings.rwa_enabled !== "false" ? <RWADashboard /> : <PageNotFound />} />
-        <Route path="/csr" element={settings.csr_enabled !== "false" ? <CSRDashboard /> : <PageNotFound />} />
-        <Route path="/sponsors" element={settings.csr_enabled !== "false" ? <CSRDashboard /> : <PageNotFound />} />
         <Route path="/me" element={<MyDashboard />} />
         {/* TN Today public routes */}
         <Route path="/tn-today" element={<TnToday />} />

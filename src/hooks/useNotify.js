@@ -6,7 +6,7 @@
  *
  * Usage:
  *   const { notify } = useNotify();
- *   notify({ type: "job_pending_review", title: "Job submitted", message: "...", target_type: "job_alert", target_id: job.id });
+ *   notify({ type: "post_verified", title: "Receipt verified", message: "...", target_type: "post", target_id: post.id });
  */
 import { useCallback } from "react";
 import { base44 } from "@/api/base44Client";

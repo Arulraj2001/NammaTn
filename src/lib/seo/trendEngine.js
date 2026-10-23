@@ -8,7 +8,7 @@ const fallbackTrends = [
   { city: 'coimbatore', issue: 'water-issue', count: 8 },
   { city: 'madurai', issue: 'road-problem', count: 5 },
   { city: 'salem', issue: 'scam', count: 4 },
-  { city: 'tiruchirappalli', issue: 'jobs', count: 3 }
+  { city: 'tiruchirappalli', issue: 'power-cut', count: 3 }
 ];
 
 function getSupabase() {

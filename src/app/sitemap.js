@@ -9,7 +9,6 @@ import {
   CATEGORY_MAP,
 } from '@/lib/seo-data';
 import { CATEGORIES as PUBLIC_CATEGORIES } from '@/lib/categories';
-import { OFFICES } from '@/lib/offices';
 import { getActiveAreas } from '@/lib/publicHubServer';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
@@ -29,11 +28,9 @@ export default async function sitemap() {
   });
 
   // ── Level 2 + Level 3: City hub pages AND City × Issue pages.
-  //     All 38 city hubs + all valid city/issue combos are indexable editorial
-  //     pages (they render H1/intro/FAQs even with 0 reports), so enumerate the
-  //     full matrix instead of only the pairs that currently have DB reports.
+  //     Only emit City × Issue pairs with active DB reports to prevent thin content.
   const ISSUE_SLUGS = [
-    'power-cut', 'water-issue', 'road-problem', 'scam', 'jobs',
+    'power-cut', 'water-issue', 'road-problem', 'scam',
     'education', 'government-schemes', 'general', 'healthcare', 'environment',
   ];
 
@@ -80,13 +77,14 @@ export default async function sitemap() {
     });
   });
 
-  // Level 3: City × Issue pages — full indexable matrix
+  // Level 3: City × Issue pages — only output pairs with active DB reports
   DISTRICTS.forEach(city => {
     ISSUE_SLUGS.forEach(issue => {
       if (!CATEGORY_MAP[issue]) return;
+      if (!issueDates.has(`${city.slug}:${issue}`)) return;
       const lastModified = issueDates.get(`${city.slug}:${issue}`);
       entries.push({
-        url: `${SITE_URL}/${city.slug + '/' + issue}`,
+        url: `${SITE_URL}/${city.slug}/${issue}`,
         ...(lastModified ? { lastModified } : {}),
         changeFrequency: 'daily',
         priority: 0.7,
@@ -182,13 +180,7 @@ export default async function sitemap() {
     });
   });
 
-  OFFICES.forEach(office => {
-    entries.push({
-      url: `${SITE_URL}/office/${office.slug}`,
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    });
-  });
+
 
   const areas = await getActiveAreas(500);
   areas.forEach(area => {
@@ -288,7 +280,7 @@ export default async function sitemap() {
   [
     '/power-cuts-today-tamil-nadu', '/school-college-holiday-alerts',
     '/schemes', '/helplines', '/rights', '/rti', '/esevai',
-    '/scams', '/situations', '/trending'
+    '/scams', '/trending'
   ].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,
@@ -329,11 +321,10 @@ export default async function sitemap() {
   [
     '/districts', '/areas', '/awareness', '/awareness/articles',
     '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',
-    '/scams',
-    '/jobs', '/offices', '/trending', '/tn-today',
-    '/explore', '/help', '/situations', '/ask', '/leaderboard', '/listings',
-    '/support', '/rwa', '/csr',
+    '/scams', '/trending', '/tn-today',
+    '/explore', '/help', '/support',
     '/about', '/press', '/contact', '/privacy-policy', '/terms', '/how-to-use',
+    '/disclaimer', '/cookie-policy',
   ].forEach(path => {
     entries.push({
       url: `${SITE_URL}${path}`,

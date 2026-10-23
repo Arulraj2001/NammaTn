@@ -184,7 +184,7 @@ export async function postToWhatsAppChannel({
       const timeout = setTimeout(() => {
         try { sock.end(); } catch (_) {}
         resolve(null);
-      }, 15000);
+      }, 25000);
 
       sock.ev.on("connection.update", async (update) => {
         const { connection } = update;
@@ -193,29 +193,36 @@ export async function postToWhatsAppChannel({
           try {
             console.log(`[WhatsAppChannel] Broadcasting to ${VIZHITN_CHANNEL_JID}...`);
 
-            const messagePayload = {
-              text: messageText,
-              linkPreview: thumbBuf ? {
-                "matched-text": url,
-                title: title.trim().slice(0, 60),
-                description: summary ? summary.slice(0, 150) : "VizhiTN Civic Alert",
-                jpegThumbnail: thumbBuf
-              } : undefined,
-              contextInfo: thumbBuf ? {
-                externalAdReply: {
-                  title: title.trim().slice(0, 50),
-                  body: "VizhiTN | தமிழ்நாடு உண்மை செய்திகள் & மக்கள் களம்",
-                  thumbnail: thumbBuf,
-                  mediaType: 1,
-                  mediaUrl: url,
-                  sourceUrl: url,
-                  renderLargerThumbnail: true
-                }
-              } : undefined
-            };
+            let sent = null;
 
-            const sent = await sock.sendMessage(VIZHITN_CHANNEL_JID, messagePayload);
-            console.log(`[WhatsAppChannel] ✅ Broadcast with rich preview card successful! Message ID: ${sent?.key?.id}`);
+            // 1. If an image is available, broadcast as a native media card with caption.
+            // This is the officially supported, compliant method for WhatsApp Channels that
+            // fans out to all subscribers with an image header and rich caption.
+            if (thumbBuf) {
+              try {
+                console.log(`[WhatsAppChannel] Attempting native media broadcast (image + caption)...`);
+                sent = await sock.sendMessage(VIZHITN_CHANNEL_JID, {
+                  image: thumbBuf,
+                  caption: messageText
+                });
+                console.log(`[WhatsAppChannel] ✅ Native media broadcast successful! Message ID: ${sent?.key?.id}`);
+              } catch (mediaErr) {
+                console.warn(`[WhatsAppChannel] Media upload failed (${mediaErr.message}), falling back to clean text...`);
+              }
+            }
+
+            // 2. Fallback or Default: Clean text broadcast.
+            // NEVER inject contextInfo.externalAdReply or synthetic linkPreview for @newsletter JIDs,
+            // as WhatsApp newsletter servers silently drop stanzas with private-chat ad metadata,
+            // causing the message to appear only on the sender's device and not to subscribers.
+            if (!sent) {
+              console.log(`[WhatsAppChannel] Sending clean text broadcast to newsletter...`);
+              sent = await sock.sendMessage(VIZHITN_CHANNEL_JID, {
+                text: messageText
+              });
+              console.log(`[WhatsAppChannel] ✅ Text broadcast successful! Message ID: ${sent?.key?.id}`);
+            }
+
             clearTimeout(timeout);
             setTimeout(() => {
               try { sock.end(); } catch (_) {}

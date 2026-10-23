@@ -108,28 +108,7 @@ const AUTHORITY_REGISTRY = {
     },
   },
 
-  'jobs': {
-    entity:         'Tamil Nadu Employment Exchange',
-    fullName:       'Tamil Nadu Department of Employment and Training',
-    department:     'District Employment Office',
-    primaryHelpline:'1800 425 1545',
-    secondaryHelpline: '044-28521100',
-    onlinePortal:   'https://www.tnvelaivaaippu.gov.in',
-    complaintPortal:'https://www.tnvelaivaaippu.gov.in/grievance',
-    tnEgrievance:   'https://grievance.tn.gov.in',
-    escalation: [
-      'District Employment Officer',
-      'Joint Director, Employment Exchange',
-      'Commissioner, Employment and Training',
-    ],
-    schemaCivicEntity: {
-      '@type':      'GovernmentOrganization',
-      name:          'Tamil Nadu Employment Exchange',
-      description:   'Tamil Nadu department managing employment registration, job placements, and career guidance.',
-      telephone:     '1800 425 1545',
-      url:           'https://www.tnvelaivaaippu.gov.in',
-    },
-  },
+
 
 
   'education': {

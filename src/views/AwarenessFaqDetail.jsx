@@ -109,22 +109,22 @@ export default function AwarenessFaqDetail({ faq }) {
           </div>
         </div>
 
-        {/* Have a Question CTA */}
+        {/* Explore Community Updates CTA */}
         <div className="bg-purple-50 dark:bg-purple-950/20 border-2 border-purple-200 dark:border-purple-800/60 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h3 className="font-bold text-purple-900 dark:text-purple-300 text-base mb-1">
-              {T("Have another question not answered here?", "இங்கு விடை கிடைக்காத மற்றொரு கேள்வி உள்ளதா?")}
+              {T("Facing a civic issue or need local alerts?", "பொதுப் பிரச்சனை உள்ளதா அல்லது அவசர அறிவிப்புகள் தேவையா?")}
             </h3>
             <p className="text-xs sm:text-sm text-purple-800 dark:text-purple-400">
-              {T("Ask the VizhiTN community or consult citizen volunteers across Tamil Nadu.", "VizhiTN சமூகத்திடம் கேட்டு விடை பெறுங்கள்.")}
+              {T("Explore verified public reports and utility alerts across Tamil Nadu.", "தமிழ்நாடு முழுவதும் சரிபார்க்கப்பட்ட குடிமை தகவல்களைக் காணவும்.")}
             </p>
           </div>
           <Link
-            href="/ask"
+            href="/explore"
             className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-sm transition-colors"
           >
-            <PlusCircle className="w-4 h-4" />
-            {T("Ask Now", "கேள்வி கேளுங்கள்")}
+            <ChevronRight className="w-4 h-4" />
+            {T("Explore Feed", "தகவல்களைக் காண்க")}
           </Link>
         </div>
 

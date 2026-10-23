@@ -79,22 +79,6 @@ function MapInteractionController() {
 
 // Category / Incident metadata resolver
 function getItemMeta(item) {
-  if (item.situation_type || item.post_type === 'situation') {
-    const rawType = item.situation_type || 'live_situation';
-    const iconsMap = {
-      eb_shutdown: '⚡',
-      water_shortage: '💧',
-      traffic: '🚧',
-      flooding: '🌧️',
-    };
-    return {
-      icon: iconsMap[rawType] || '🚨',
-      label: rawType.replace(/_/g, ' '),
-      color: '#dc2626', // rose-600
-      isUrgent: true,
-      url: '/situations',
-    };
-  }
 
   if (item.category_slug === 'electricity' || item.category === 'electricity') {
     return {

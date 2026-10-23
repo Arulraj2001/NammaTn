@@ -93,20 +93,19 @@ const TERMS_CHAPTERS = [
     content_en: "The emergency phone numbers (112, 108, 1912, 1930, 1070, 1077) and first-aid SOP guides hosted on VizhiTN are compiled from verified official Government of Tamil Nadu and Central directives. VIZHITN DOES NOT OPERATE EMERGENCY DISPATCH VANS, AMBULANCES, OR POLICE VEHICLES. In any active life-or-death crisis, road accident, fire, or live-wire electrocution, you must dial emergency cellular lines directly. VizhiTN disclaims all liability for telecom network outages, delayed departmental responses, or hospital bed unavailability.",
     content_ta: "தளத்தில் உள்ள அவசர எண்கள் (112, 108, 1912, 1930, 1070) மற்றும் முதலுதவி வழிகாட்டிகள் அரசு வழிகாட்டுதலின்படி தொகுக்கப்பட்டவை. VizhiTN ஆம்புலன்ஸ் அல்லது மீட்பு வாகனங்களை நேரடியாக இயக்குவதில்லை. விபத்து, தீ அல்லது மின்கம்பி ஆபத்தின் போது அரசு எண்களை நேரடியாக அழைக்கவும். தொலைத்தொடர்பு தாமதங்களுக்கு தளம் பொறுப்பாகாது."
   },
-
   {
-    num: "8",
-    id: "local-listings-terms",
-    icon: Users,
-    en: "Local Listings & Service Directory Terms",
-    ta: "உள்ளூர் வணிகங்கள் & சேவைகள் பயன்பாட்டு விதிகள்",
-    summary_en: "VizhiTN connects citizens directly with neighbourhood technicians with zero commission. We do not warranty third-party commercial workmanship.",
-    summary_ta: "உள்ளூர் சேவை நபர்களை நேரடியாக இணைக்கிறோம்; எந்த கமிஷனும் வசூலிப்பதில்லை. அவர்களின் பணித் தரத்திற்கு தளம் பொறுப்பேற்காது.",
-    content_en: "The Local Listings directory (/local-listings) connects citizens directly with neighbourhood service professionals (electricians, plumbers, water suppliers). VizhiTN charges zero commission and acts solely as an open directory. We do not employ or guarantee the workmanship, punctuality, pricing, or licenses of listed independent technicians. Citizens are advised to exercise standard commercial prudence before hiring.",
-    content_ta: "உள்ளூர் சேவைப் பட்டியல் எலக்ட்ரீசியன், பிளம்பர் போன்ற நபர்களை நேரடியாக பொதுமக்களுடன் இணைக்கிறது. இதில் எந்தவித இடைத்தரகர் கமிஷனும் இல்லை. இருப்பினும், அந்த நபர்களின் பணித் தரம், கட்டணம் அல்லது சான்றிதழ்களுக்கு VizhiTN பொறுப்பேற்காது; பொதுமக்கள் உரிய விழிப்புணர்வுடன் செயல்பட வேண்டும்."
+    num: "7",
+    id: "advertising-and-third-party",
+    icon: Sparkles,
+    en: "Advertising, External Links & Google AdSense Policy",
+    ta: "விளம்பரங்கள் & மூன்றாம் தரப்பு இணைப்புகள் கொள்கை",
+    summary_en: "Clean, non-intrusive ads from Google AdSense offset server costs. We do not endorse third-party commercial claims or products.",
+    summary_ta: "சேவையக செலவுகளை ஈடுகட்ட Google AdSense விளம்பரங்கள் காட்டப்படுகின்றன. விளம்பரதாரர்களின் தயாரிப்புகளுக்கு தளம் பொறுப்பேற்காது.",
+    content_en: "VizhiTN displays non-intrusive advertisements served by Google AdSense and may feature hyperlinks to official Tamil Nadu government portals (such as tangedco.org, chennaicorporation.gov.in). We do not control or endorse external websites or the claims made by commercial advertisers. Clicking on third-party advertisements or external links is at your sole discretion and subject to the privacy and usage terms of those respective providers.",
+    content_ta: "சேவையக மற்றும் பராமரிப்பு செலவுகளை ஈடுகட்ட Google AdSense மூலமான விளம்பரங்கள் தளத்தில் காட்டப்படலாம். மேலும் தமிழ்நாடு அரசு இணையதளங்களுக்கான வெளி இணைப்புகளும் வழங்கப்பட்டுள்ளன. மூன்றாம் தரப்பு விளம்பரதாரர்களின் தயாரிப்புகள் அல்லது வெளி தளங்களின் உள்ளடக்கத்திற்கு VizhiTN பொறுப்பேற்காது; பயனர்கள் தங்கள் சொந்த விருப்பத்தின் பேரிலேயே அவற்றை அணுக வேண்டும்."
   },
   {
-    num: "9",
+    num: "8",
     id: "moderation-and-suspension",
     icon: Shield,
     en: "Content Moderation, Trust Scores & Account Termination",
@@ -117,7 +116,7 @@ const TERMS_CHAPTERS = [
     content_ta: "தளத்தின் நம்பகத்தன்மையை பாதுகாக்க சமுதாய சரிபார்ப்பு மற்றும் ஆசிரியர் குழு மேற்பார்வை செயல்படுகிறது. உண்மைப் புகார்களை இடுவோரின் நம்பிக்கை மதிப்பு (Trust Score) உயரும். போலி வதந்திகள் அல்லது ஸ்பேம் இடும் கணக்குகள் எச்சரிக்கையின்றி நிரந்தரமாக முடக்கப்படும்."
   },
   {
-    num: "10",
+    num: "9",
     id: "limitation-of-liability",
     icon: AlertTriangle,
     en: "Limitation of Liability & Warranty Disclaimers",
@@ -128,18 +127,18 @@ const TERMS_CHAPTERS = [
     content_ta: "இந்தியச் சட்டங்களின்படி, தளத்தைப் பயன்படுத்துவதால் அல்லது பயன்படுத்த முடியாமல் போவதால் ஏற்படும் எந்தவொரு இழப்புகளுக்கும் VizhiTN நிர்வாகம் பொறுப்பாகாது. அரசுத் துறைகள் நடவடிக்கை எடுக்கும் கால அவகாசத்திற்கு நாங்கள் உத்தரவாதம் அளிக்க முடியாது."
   },
   {
-    num: "11",
+    num: "10",
     id: "it-rules-compliance",
     icon: Scale,
     en: "IT Rules 2021 Compliance & Grievance Redressal",
     ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 & குறைதீர்ப்பு முறை",
     summary_en: "We comply with India's Intermediary Guidelines. Statutory content grievances are acknowledged within 24 hours.",
     summary_ta: "இந்தியாவின் தகவல் தொழில்நுட்ப விதிகளின்படி புகார்கள் 24 மணி நேரத்திற்குள் ஏற்கப்பட்டு உரிய தீர்வு காணப்படும்.",
-    content_en: "In compliance with Rule 3 of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, any citizen, property owner, or authority aggrieved by content on VizhiTN may submit a statutory grievance to our Resident Grievance Officer at vizhitnin@gmail.com. Grievances are acknowledged within 24 hours and disposed of within 15 calendar days in accordance with the law.",
-    content_ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 இன் கீழ், தளத்தில் உள்ள ஏதேனும் ஒரு பதிவினால் பாதிக்கப்பட்ட எவரும் vizhitnin@gmail.com வழியாக மனு அளிக்கலாம். மனுக்கள் 24 மணி நேரத்திற்குள் ஏற்கப்பட்டு 15 நாட்களுக்குள் சட்டப்படி தீர்வு காணப்படும்."
+    content_en: "In compliance with Rule 3 of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, any citizen, property owner, or authority aggrieved by content on VizhiTN may submit a statutory grievance to our Resident Grievance Officer at vizhitnin@gmail.com. Registered Office Address: VizhiTN Civic Media Desk, Chennai, Tamil Nadu 600001, India. Grievances are acknowledged within 24 hours and disposed of within 15 calendar days in accordance with the law.",
+    content_ta: "தகவல் தொழில்நுட்ப விதிகள் 2021 இன் கீழ், தளத்தில் உள்ள ஏதேனும் ஒரு பதிவினால் பாதிக்கப்பட்ட எவரும் vizhitnin@gmail.com வழியாக மனு அளிக்கலாம். பதிவு செய்யப்பட்ட அலுவலக முகவரி: VizhiTN குடிமை செய்தி மையம், சென்னை, தமிழ்நாடு 600001, இந்தியா. மனுக்கள் 24 மணி நேரத்திற்குள் ஏற்கப்பட்டு 15 நாட்களுக்குள் சட்டப்படி தீர்வு காணப்படும்."
   },
   {
-    num: "12",
+    num: "11",
     id: "governing-law-jurisdiction",
     icon: Building2,
     en: "Governing Law & Exclusive Tamil Nadu Jurisdiction",

@@ -7,7 +7,6 @@ import dynamic from "next/dynamic";
 import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown, X, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getActiveCivicPosts } from "@/services/posts";
-import { getActiveSituations } from "@/services/situations";
 import { findNearestDistrict } from "@/lib/geoDistrict";
 import { DISTRICTS } from "@/lib/districts";
 
@@ -22,17 +21,6 @@ const InteractiveHomeMap = dynamic(
     )
   }
 );
-
-/* ── filter expired situations ───── */
-const filterExpiredSituations = (items) => {
-  const NOW = Date.now();
-  return items.filter(s => {
-    if (!s.created_date) return true;
-    const elapsed = NOW - new Date(s.created_date).getTime();
-    const TTL = { traffic: 3 * 3600_000, eb_shutdown: 12 * 3600_000, water_shortage: 24 * 3600_000, flooding: 48 * 3600_000 };
-    return elapsed <= (TTL[s.situation_type] || 24 * 3600_000);
-  });
-};
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371;
@@ -61,19 +49,13 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
   const { data: civicPosts = [] } = useQuery({
     queryKey: ["home-civic-posts"],
-    queryFn: () => getActiveCivicPosts(40),
-    staleTime: 300_000,
-  });
-  const { data: situations = [] } = useQuery({
-    queryKey: ["home-situations"],
-    queryFn: () => getActiveSituations(25),
+    queryFn: () => getActiveCivicPosts(50),
     staleTime: 300_000,
   });
 
   const allMapItems = useMemo(() => [
-    ...filterExpiredSituations(situations).map(s => ({ ...s, post_type: "situation" })),
     ...civicPosts.map(p => ({ ...p, post_type: p.post_type || "civic" })),
-  ], [civicPosts, situations]);
+  ], [civicPosts]);
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) return;

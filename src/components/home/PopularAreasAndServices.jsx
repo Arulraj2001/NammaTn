@@ -24,12 +24,12 @@ const AREA_IMAGES = {
 };
 const getAreaImage = (slug) => AREA_IMAGES[slug] || "/images/areas/default.webp";
 
-const GOVT_OFFICES = [
-  { path: "/offices", icon: "⚡", label_en: "EB Office",      label_ta: "மின் அலுவலகம்",   sub_en: "Check status",         sub_ta: "நிலை சரிபார்" },
-  { path: "/offices", icon: "🚗", label_en: "RTO",            label_ta: "RTO",               sub_en: "Info & reviews",       sub_ta: "தகவல் & மதிப்பு" },
-  { path: "/offices", icon: "🏛️", label_en: "Taluk Office",  label_ta: "வட்டாட்சி",         sub_en: "Location & info",      sub_ta: "இடம் & தகவல்" },
-  { path: "/offices", icon: "📋", label_en: "Passport Office",label_ta: "பாஸ்போர்ட் அலுவலகம்", sub_en: "Info & reviews",    sub_ta: "தகவல் & மதிப்பு" },
-  { path: "/offices", icon: "···", label_en: "More Offices",  label_ta: "மேலும் அலுவலகங்கள்", sub_en: "All departments",   sub_ta: "அனைத்து துறைகள்" },
+const CIVIC_SERVICES = [
+  { path: "/power-cuts-today-tamil-nadu", icon: "⚡", label_en: "Power Cuts",      label_ta: "மின் விவரம்",   sub_en: "EB Outage Info",         sub_ta: "மின்தடை நேரம்" },
+  { path: "/esevai",                      icon: "📋", label_en: "e-Sevai Guide",   label_ta: "இ-சேவை",       sub_en: "Certificates",           sub_ta: "சான்றிதழ்கள்" },
+  { path: "/schemes",                     icon: "🏛️", label_en: "Welfare Schemes", label_ta: "அரசுத் திட்டம்",sub_en: "Direct Benefits",       sub_ta: "மக்கள் நல உதவி" },
+  { path: "/helplines",                   icon: "📞", label_en: "Helplines Desk",  label_ta: "அவசர உதவி",    sub_en: "24x7 Hotlines",          sub_ta: "அரசு எண்கள்" },
+  { path: "/rti",                         icon: "⚖️", label_en: "RTI Assistant",   label_ta: "ஆர்டிஐ",       sub_en: "Citizen Rights",         sub_ta: "தகவல் உரிமை" },
 ];
 
 export default function PopularAreasAndServices() {
@@ -102,22 +102,22 @@ export default function PopularAreasAndServices() {
               <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
                 {T("Government Services", "அரசு சேவைகள்")}
               </h2>
-              <Link to="/offices" className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+              <Link to="/schemes" className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                 {T("View all", "அனைத்தும்")} <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
             <div className="grid grid-cols-5 gap-3">
-              {GOVT_OFFICES.map((office, i) => (
-                <Link key={i} to={office.path}>
+              {CIVIC_SERVICES.map((service, i) => (
+                <Link key={i} to={service.path}>
                   <div className="flex flex-col items-center text-center group cursor-pointer">
                     <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 flex items-center justify-center text-xl mb-2 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
-                      {office.icon}
+                      {service.icon}
                     </div>
                     <p className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight mb-0.5">
-                      {T(office.label_en, office.label_ta)}
+                      {T(service.label_en, service.label_ta)}
                     </p>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
-                      {T(office.sub_en, office.sub_ta)}
+                      {T(service.sub_en, service.sub_ta)}
                     </p>
                   </div>
                 </Link>

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import UniversalCrossLinks from "@/components/seo/UniversalCrossLinks";
+import { getSettingsMap } from "@/services/admin/settings";
 
 const PRESET_AMOUNTS = [10, 25, 50, 100, 200, 500];
 
@@ -51,15 +52,21 @@ export default function Support() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const upiId = getSetting(settings, "upi_id", "vizhitn@upi");
-  const upiName = getSetting(settings, "upi_name", "VizhiTN");
-  const qrUrl = getSetting(settings, "qr_image_url", "");
-  const bmcLink = getSetting(settings, "buymecoffee_link", "");
-  const razorpayEnabled = getSetting(settings, "razorpay_enabled", "false") === "true";
-  const stripeEnabled = getSetting(settings, "stripe_enabled", "false") === "true";
-  const bmcEnabled = getSetting(settings, "buymecoffee_enabled", "false") === "true";
-  const donationMsg = getSetting(settings, "donation_message", "Your support keeps VizhiTN free, fast, and community-driven. Every contribution matters — thank you!");
-  const minAmount = parseInt(getSetting(settings, "min_donation_amount", "10")) || 10;
+  const { data: siteSettings = {} } = useQuery({
+    queryKey: ["site-settings-public"],
+    queryFn: getSettingsMap,
+    staleTime: 60 * 1000,
+  });
+
+  const upiId = siteSettings["upi_id"] || getSetting(settings, "upi_id", "vizhitn@upi");
+  const upiName = siteSettings["upi_name"] || getSetting(settings, "upi_name", "VizhiTN");
+  const qrUrl = siteSettings["qr_image_url"] || getSetting(settings, "qr_image_url", "");
+  const bmcLink = siteSettings["buymecoffee_link"] || getSetting(settings, "buymecoffee_link", "");
+  const razorpayEnabled = (siteSettings["razorpay_enabled"] ?? getSetting(settings, "razorpay_enabled", "false")) === "true";
+  const stripeEnabled = (siteSettings["stripe_enabled"] ?? getSetting(settings, "stripe_enabled", "false")) === "true";
+  const bmcEnabled = (siteSettings["buymecoffee_enabled"] ?? getSetting(settings, "buymecoffee_enabled", "false")) === "true";
+  const donationMsg = siteSettings["donation_message"] || getSetting(settings, "donation_message", "Together, we can keep Tamil Nadu informed, safe and empowered.");
+  const minAmount = parseInt(siteSettings["min_donation_amount"] || getSetting(settings, "min_donation_amount", "10")) || 10;
 
   const finalAmount = customAmount ? parseInt(customAmount) : amount;
 
@@ -319,6 +326,11 @@ export default function Support() {
                     <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{T("UPI ID", "UPI ஐடி")}</p>
                       <p className="text-base font-bold text-slate-900 dark:text-white mt-0.5">{upiId}</p>
+                      {upiName && (
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                          {upiName}
+                        </p>
+                      )}
                     </div>
                     <button
                       onClick={handleCopyUpi}

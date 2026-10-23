@@ -12,7 +12,6 @@ export default function HeroMicroAlerts({
   userLocation,
   locating,
   onRescan,
-  situations = [],
   civicPosts = [],
   calculateDistance,
 }) {
@@ -25,13 +24,10 @@ export default function HeroMicroAlerts({
     return findNearestDistrict(userLocation.latitude, userLocation.longitude);
   }, [userLocation]);
 
-  // Combine situations & posts
+  // Items from civicPosts
   const allItems = useMemo(() => {
-    return [
-      ...situations.map((s) => ({ ...s, isSituation: true })),
-      ...civicPosts,
-    ];
-  }, [situations, civicPosts]);
+    return civicPosts;
+  }, [civicPosts]);
 
   // Filter items relevant to user's location
   const localItems = useMemo(() => {
@@ -64,7 +60,6 @@ export default function HeroMicroAlerts({
 
     const alertsList = list.filter(
       (item) =>
-        item.isSituation ||
         item.post_type === "alert" ||
         item.urgency_level === "high" ||
         item.urgency_level === "critical"
@@ -72,9 +67,8 @@ export default function HeroMicroAlerts({
 
     const issuesList = list.filter(
       (item) =>
-        !item.isSituation &&
-        (item.post_type === "complaint" ||
-          (!item.post_type && item.urgency_level !== "critical"))
+        item.post_type === "complaint" ||
+        (!item.post_type && item.urgency_level !== "critical")
     );
 
     const updatesList = list.filter(
@@ -221,14 +215,12 @@ export default function HeroMicroAlerts({
                 const title = T(item.title_en || item.title, item.title_ta || item.title);
                 const area = item.area_name || item.location_text || item.district_name || "";
                 const helpline =
-                  item.assigned_department?.includes("1912") || item.situation_type === "eb_shutdown"
+                  item.assigned_department?.includes("1912")
                     ? "1912"
                     : item.assigned_department?.includes("1913")
                     ? "1913"
                     : "";
-                const path = item.isSituation
-                  ? "/situations"
-                  : item.slug
+                const path = item.slug
                   ? `/post/${item.slug}`
                   : `/post/${item.id}`;
 
@@ -239,7 +231,7 @@ export default function HeroMicroAlerts({
                     className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-50 dark:bg-slate-700/40 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group text-xs border border-transparent hover:border-blue-200 dark:hover:border-blue-900/50"
                   >
                     <span className="flex-shrink-0 text-sm">
-                      {item.isSituation || item.situation_type === "eb_shutdown" || item.category_slug === "electricity"
+                      {item.category_slug === "electricity"
                         ? "⚡"
                         : item.category_slug === "water-sanitation"
                         ? "💧"

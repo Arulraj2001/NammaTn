@@ -36,10 +36,10 @@ export default function HowToUseSection() {
     {
       icon: Users,
       color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400",
-      en_title: "4. Community Hubs",
-      ta_title: "4. சமுதாயப் பலகைகள்",
-      en_desc: "Collaborate with resident groups (RWA) and find corporate CSR sponsorships.",
-      ta_desc: "குடியிருப்பு நலச் சங்கங்கள் (RWA) மற்றும் CSR நிறுவனங்களுடன் இணைந்து தீர்வு காணுங்கள்."
+      en_title: "4. Schemes & Utility Alerts",
+      ta_title: "4. அரசுத் திட்டங்கள் & எச்சரிக்கைகள்",
+      en_desc: "Access e-Sevai guides, welfare schemes, emergency helplines, and daily TANGEDCO power cut timings.",
+      ta_desc: "இ-சேவை வழிகாட்டிகள், அரசு நலத்திட்டங்கள், அவசர உதவி எண்கள் மற்றும் மின்வாரிய பராமரிப்பு விவரங்களை அறியுங்கள்."
     }
   ];
 

@@ -33,10 +33,10 @@ export const TOPIC_OPTIONS = [
   },
   {
     value: "advertising",
-    en: "Partnership & CSR Campaigns",
-    ta: "கூட்டாண்மை & CSR திட்டங்கள்",
-    desc_en: "Civic initiatives, NGO alliances, ethical partnerships",
-    desc_ta: "சமூக பொறுப்புணர்வு திட்டங்கள் மற்றும் அமைப்புகள்",
+    en: "Brand Sponsorships & Partnerships",
+    ta: "வணிக விளம்பரம் & கூட்டாண்மை திட்டங்கள்",
+    desc_en: "Civic initiatives, NGO alliances, ethical brand partnerships",
+    desc_ta: "சமூக நல திட்டங்கள் மற்றும் வணிக அமைப்புகள்",
     sla: "< 24 Hours"
   },
   {

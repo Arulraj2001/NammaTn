@@ -4,7 +4,7 @@ import React from "react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  Shield, BookOpen, AlertTriangle, Building2,
+  Shield, BookOpen,
   Zap, ArrowRight, Phone
 } from "lucide-react";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
@@ -70,12 +70,12 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
           <Link
-            href="/offices"
+            href="/helplines"
             className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors text-xs font-bold"
           >
             <span className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              {T("Find Nearby Public Offices", "அரசு அலுவலகங்கள் கண்டறி")}
+              <PhoneCall className="w-4 h-4" />
+              {T("Civic Helplines & Emergency Desks", "அரசு அவசர உதவி எண்கள்")}
             </span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>

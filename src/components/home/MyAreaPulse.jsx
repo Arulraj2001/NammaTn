@@ -215,7 +215,7 @@ export default function MyAreaPulse({ allAreas = [] }) {
       cat.includes("power") ||
       cat.includes("electricity") ||
       cat.includes("road") ||
-      p.post_type === "situation"
+      p.post_type === "alert"
     );
   }).length;
 

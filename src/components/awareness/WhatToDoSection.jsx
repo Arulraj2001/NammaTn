@@ -1,5 +1,5 @@
 import React from "react";
-import { Zap, Droplets, CreditCard, AlertTriangle, Ambulance, FileText, ArrowRight, ShieldAlert, Home } from "lucide-react";
+import { Zap, Droplets, CreditCard, Ambulance, FileText, ArrowRight, ShieldAlert, Home } from "lucide-react";
 import Link from "next/link";
 import { getAllGuides } from "@/lib/awarenessServer";
 

@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getActiveCivicPosts } from "@/services/posts";
-import { getActiveSituations } from "@/services/situations";
 import { getActiveScams } from "@/services/scamAlerts";
 import { getActiveEmergencies } from "@/services/emergencyPosts";
 
@@ -28,12 +27,7 @@ export default function NearYouStats({ userLocation }) {
 
   const { data: civicPosts = [], isLoading: l1 } = useQuery({
     queryKey: ["home-civic-posts"],
-    queryFn: () => getActiveCivicPosts(20),
-    staleTime: 300_000,
-  });
-  const { data: situations = [], isLoading: l2 } = useQuery({
-    queryKey: ["home-situations"],
-    queryFn: () => getActiveSituations(20),
+    queryFn: () => getActiveCivicPosts(50),
     staleTime: 300_000,
   });
   const { data: scams = [], isLoading: l3 } = useQuery({
@@ -47,7 +41,7 @@ export default function NearYouStats({ userLocation }) {
     staleTime: 300_000,
   });
 
-  const loading = l1 || l2 || l3 || l4;
+  const loading = l1 || l3 || l4;
 
   const getNearbyItems = (items) => {
     if (!userLocation) return items;
@@ -63,15 +57,14 @@ export default function NearYouStats({ userLocation }) {
     });
   };
 
-  const nearbySituations = getNearbyItems(situations);
   const nearbyScams = getNearbyItems(scams);
   const nearbyCivicPosts = getNearbyItems(civicPosts);
   const nearbyEmergencies = getNearbyItems(emergencies);
 
-  const powerIssues   = nearbySituations.filter(s => s.situation_type === "eb_shutdown").length;
-  const waterAlerts   = nearbySituations.filter(s => s.situation_type === "water_shortage").length;
+  const powerIssues   = nearbyCivicPosts.filter(p => p.category_slug === "electricity").length;
+  const waterAlerts   = nearbyCivicPosts.filter(p => p.category_slug === "water-sanitation").length;
   const scamWarnings  = nearbyScams.length;
-  const roadProblems  = nearbyCivicPosts.filter(p => p.category_slug?.includes("road")).length;
+  const roadProblems  = nearbyCivicPosts.filter(p => p.category_slug === "road-infrastructure").length;
   const emergCount    = nearbyEmergencies.length;
 
   const NEAR_YOU_STATS = [

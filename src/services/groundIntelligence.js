@@ -373,15 +373,15 @@ async function checkAndAutoVerify(eventId) {
   }
 }
 
-export async function addSituationUpdate(eventId, content, situationStatus = null) {
+export async function addGroundEventUpdate(eventId, content, eventStatus = null) {
   const { data: { user } } = await supabase.auth.getUser();
   const { error } = await supabase.from("ground_event_updates").insert({
-    event_id: eventId, author_id: user?.id || null, content, situation_status: situationStatus,
+    event_id: eventId, author_id: user?.id || null, content, situation_status: eventStatus,
   });
   if (error) throw error;
-  if (situationStatus) {
+  if (eventStatus) {
     await supabase.from("ground_events")
-      .update({ situation_status: situationStatus, status: "situation_updated", updated_at: new Date().toISOString() })
+      .update({ situation_status: eventStatus, status: "event_updated", updated_at: new Date().toISOString() })
       .eq("id", eventId);
   }
   await addTimelineEntry(eventId, {

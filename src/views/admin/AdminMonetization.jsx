@@ -2,12 +2,10 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  RefreshCw, CheckCircle, XCircle, Eye, Star, Building2, Leaf, BadgeCheck,
-  AlertTriangle, Shield, Ban, RotateCcw, PauseCircle, FileText, Search, Filter
+  RefreshCw, CheckCircle, XCircle, Star, Leaf,
+  AlertTriangle, Shield, PauseCircle, FileText, Search, RotateCcw
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { formatDistanceToNow } from "date-fns";
-import { getCategoryMeta } from "@/lib/listingCategories";
 import { Link } from "@/lib/router-compat";
 import {
   saveAdSenseConfig,
@@ -16,18 +14,13 @@ import {
   saveLocalCustomAds
 } from "@/services/adService";
 
-const TABS = ["listings", "sponsors", "rwa", "adsense"];
+const TABS = ["sponsors", "adsense"];
 
 const PLAN_COLORS = {
   free: "text-slate-500 bg-slate-100",
   verified: "text-blue-600 bg-blue-50",
   featured: "text-amber-600 bg-amber-50",
   district_sponsor: "text-purple-600 bg-purple-50",
-  free_community: "text-slate-500 bg-slate-100",
-  rwa_basic: "text-blue-600 bg-blue-50",
-  rwa_pro: "text-indigo-600 bg-indigo-50",
-  csr_basic: "text-emerald-600 bg-emerald-50",
-  csr_partner: "text-teal-600 bg-teal-50",
 };
 
 const STATUS_COLORS = {
@@ -42,7 +35,7 @@ const STATUS_COLORS = {
 export default function AdminMonetization() {
   const qc = useQueryClient();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("listings");
+  const [activeTab, setActiveTab] = useState("sponsors");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [adminNotes, setAdminNotes] = useState({});
@@ -79,138 +72,27 @@ export default function AdminMonetization() {
     }
   };
 
-  // ── Custom Ads state ────────────────────────────────────────────────────────
-  const [customAds, setCustomAds] = useState(getLocalCustomAds);
-  const [editingAdId, setEditingAdId] = useState(null);
-  const [newAd, setNewAd] = useState({
-    title: "",
-    description: "",
-    category: "Featured Partner",
-    target_url: "",
-    image_url: "",
-    slot: "sidebar",
-    district: "all",
-    cta_text: "Learn More",
-    status: "active",
-    expires_at: "",
-  });
-
-  const handleSaveCustomAd = () => {
-    if (!newAd.title.trim() || !newAd.target_url.trim()) {
-      toast({ description: "⚠️ Title and Target URL are required." });
-      return;
-    }
-
-    if (editingAdId) {
-      // Edit existing
-      const updated = customAds.map(a => a.id === editingAdId ? { ...a, ...newAd } : a);
-      setCustomAds(updated);
-      saveLocalCustomAds(updated);
-      setEditingAdId(null);
-      toast({ description: "✅ Custom Ad Updated!" });
-    } else {
-      // Create new
-      const created = {
-        ...newAd,
-        id: "ad_" + Date.now(),
-        created_at: new Date().toISOString(),
-        clicks: 0,
-        impressions: 0,
-      };
-      const updated = [created, ...customAds];
-      setCustomAds(updated);
-      saveLocalCustomAds(updated);
-      toast({ description: "✅ Custom Ad Created & Live!" });
-    }
-
-    setNewAd({
-      title: "",
-      description: "",
-      category: "Featured Partner",
-      target_url: "",
-      image_url: "",
-      slot: "sidebar",
-      district: "all",
-      cta_text: "Learn More",
-      status: "active",
-      expires_at: "",
-    });
-  };
-
-  const handleEditCustomAd = (ad) => {
-    setEditingAdId(ad.id);
-    setNewAd({
-      title: ad.title || "",
-      description: ad.description || "",
-      category: ad.category || "Featured Partner",
-      target_url: ad.target_url || "",
-      image_url: ad.image_url || "",
-      slot: ad.slot || "sidebar",
-      district: ad.district || "all",
-      cta_text: ad.cta_text || "Learn More",
-      status: ad.status || "active",
-      expires_at: ad.expires_at || "",
-    });
-  };
-
-  const handleToggleCustomAdStatus = (id) => {
-    const updated = customAds.map(a => a.id === id ? { ...a, status: a.status === "active" ? "paused" : "active" } : a);
-    setCustomAds(updated);
-    saveLocalCustomAds(updated);
-    toast({ description: "Ad status updated." });
-  };
-
-  const handleDeleteCustomAd = (id) => {
-    const updated = customAds.filter(a => a.id !== id);
-    setCustomAds(updated);
-    saveLocalCustomAds(updated);
-    toast({ description: "Ad removed." });
-  };
-
   // ── Data ────────────────────────────────────────────────────────────────────
-  const { data: listings = [], isLoading: loadL } = useQuery({
-    queryKey: ["admin-listings"],
-    queryFn: () => base44.entities.LocalListing.list("-created_date", 300),
-    staleTime: 0,
-  });
   const { data: sponsors = [], isLoading: loadS } = useQuery({
     queryKey: ["admin-sponsors"],
     queryFn: () => base44.entities.CivicSponsor.list("-created_date", 200),
     staleTime: 0,
   });
-  const { data: rwaGroups = [], isLoading: loadR } = useQuery({
-    queryKey: ["admin-rwa"],
-    queryFn: () => base44.entities.RWAGroup.list("-created_date", 200),
-    staleTime: 0,
-  });
 
   const refresh = () => {
-    qc.invalidateQueries({ queryKey: ["admin-listings"] });
     qc.invalidateQueries({ queryKey: ["admin-sponsors"] });
-    qc.invalidateQueries({ queryKey: ["admin-rwa"] });
   };
 
   // ── Mutations ───────────────────────────────────────────────────────────────
-  const updateListing = async (id, data, msg) => {
-    await base44.entities.LocalListing.update(id, data);
-    qc.invalidateQueries({ queryKey: ["admin-listings"] });
-    toast({ description: msg });
-  };
   const updateSponsor = async (id, data, msg) => {
     await base44.entities.CivicSponsor.update(id, data);
     qc.invalidateQueries({ queryKey: ["admin-sponsors"] });
     toast({ description: msg });
   };
-  const updateRWA = async (id, data, msg) => {
-    await base44.entities.RWAGroup.update(id, data);
-    qc.invalidateQueries({ queryKey: ["admin-rwa"] });
-    toast({ description: msg });
-  };
+
   const saveNote = async (type, id, note) => {
     if (!note?.trim()) return;
-    if (type === "listing") await base44.entities.LocalListing.update(id, { admin_note: note.trim() });
-    else if (type === "sponsor") await base44.entities.CivicSponsor.update(id, { admin_note: note.trim() });
-    else await base44.entities.RWAGroup.update(id, { admin_note: note.trim() });
+    await base44.entities.CivicSponsor.update(id, { admin_note: note.trim() });
     setAdminNotes(n => ({ ...n, [id]: "" }));
     toast({ description: "Admin note saved." });
     refresh();
@@ -218,47 +100,21 @@ export default function AdminMonetization() {
 
   // ── Stats ───────────────────────────────────────────────────────────────────
   const stats = useMemo(() => ({
-    listings: {
-      total: listings.length,
-      pending: listings.filter(l => l.status === "pending").length,
-      active: listings.filter(l => l.status === "active").length,
-      verified: listings.filter(l => l.is_verified).length,
-      featured: listings.filter(l => l.is_featured).length,
-      sponsored: listings.filter(l => l.is_sponsored).length,
-    },
     sponsors: {
       total: sponsors.length,
       pending: sponsors.filter(s => s.status === "pending").length,
       active: sponsors.filter(s => s.status === "active").length,
       suspended: sponsors.filter(s => s.status === "suspended").length,
     },
-    rwa: {
-      total: rwaGroups.length,
-      pending: rwaGroups.filter(r => r.status === "pending").length,
-      active: rwaGroups.filter(r => r.status === "active").length,
-      suspended: rwaGroups.filter(r => r.status === "suspended").length,
-    },
-  }), [listings, sponsors, rwaGroups]);
+  }), [sponsors]);
 
   // ── Filtered data ───────────────────────────────────────────────────────────
   const q = search.toLowerCase();
-  const filteredListings = useMemo(() => listings.filter(l => {
-    const matchSearch = !q || l.business_name?.toLowerCase().includes(q) || l.district_name?.toLowerCase().includes(q);
-    const matchStatus = statusFilter === "all" || l.status === statusFilter;
-    return matchSearch && matchStatus;
-  }), [listings, q, statusFilter]);
-
   const filteredSponsors = useMemo(() => sponsors.filter(s => {
     const matchSearch = !q || s.sponsor_name?.toLowerCase().includes(q) || s.district_name?.toLowerCase().includes(q);
     const matchStatus = statusFilter === "all" || s.status === statusFilter;
     return matchSearch && matchStatus;
   }), [sponsors, q, statusFilter]);
-
-  const filteredRWA = useMemo(() => rwaGroups.filter(r => {
-    const matchSearch = !q || r.group_name?.toLowerCase().includes(q) || r.district_name?.toLowerCase().includes(q);
-    const matchStatus = statusFilter === "all" || r.status === statusFilter;
-    return matchSearch && matchStatus;
-  }), [rwaGroups, q, statusFilter]);
 
   // ── Common filters bar ──────────────────────────────────────────────────────
   const FiltersBar = () => (
@@ -285,7 +141,7 @@ export default function AdminMonetization() {
       <div className="mb-5 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Monetization Admin</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage listings, sponsors, RWA groups, and CSR campaigns</p>
+          <p className="text-sm text-slate-500 mt-1">Manage sponsors and AdSense settings</p>
         </div>
         <button onClick={refresh} className="flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50">
           <RefreshCw className="w-4 h-4" /> Refresh
@@ -296,10 +152,8 @@ export default function AdminMonetization() {
       <div className="flex gap-2 mb-5 border-b border-slate-200 dark:border-slate-700 pb-3 flex-wrap items-center justify-between">
         <div className="flex gap-2 flex-wrap">
           {[
-            { key: "listings", label: "Local Listings",  icon: BadgeCheck, count: stats.listings.pending },
-            { key: "sponsors", label: "Sponsors / CSR",  icon: Leaf,       count: stats.sponsors.pending },
-            { key: "rwa",      label: "RWA Groups",       icon: Building2,  count: stats.rwa.pending },
-            { key: "adsense",  label: "AdSense Settings", icon: Star,       count: null },
+            { key: "sponsors", label: "Civic Sponsors",  icon: Leaf, count: stats.sponsors.pending },
+            { key: "adsense",  label: "AdSense Settings", icon: Star, count: null },
           ].map(({ key, label, icon: Icon, count }) => (
             <button key={key} onClick={() => { setActiveTab(key); setSearch(""); setStatusFilter("all"); }}
               className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeTab === key ? "bg-blue-600 text-white" : "border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"}`}>
@@ -316,115 +170,6 @@ export default function AdminMonetization() {
           📢 Go to Ad Management (/admin/ads) →
         </Link>
       </div>
-
-      {/* ── LISTINGS TAB ─────────────────────────────────────────────────────── */}
-      {activeTab === "listings" && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-            {[
-              { label: "Total", value: stats.listings.total, cls: "bg-blue-50 border-blue-100 text-blue-600" },
-              { label: "Pending", value: stats.listings.pending, cls: "bg-yellow-50 border-yellow-100 text-yellow-600" },
-              { label: "Active", value: stats.listings.active, cls: "bg-green-50 border-green-100 text-green-600" },
-              { label: "Verified ✓", value: stats.listings.verified, cls: "bg-indigo-50 border-indigo-100 text-indigo-600" },
-              { label: "Featured ⭐", value: stats.listings.featured, cls: "bg-amber-50 border-amber-100 text-amber-600" },
-              { label: "Sponsored 💼", value: stats.listings.sponsored, cls: "bg-purple-50 border-purple-100 text-purple-600" },
-            ].map(s => (
-              <div key={s.label} className={`p-3 rounded-xl text-center border ${s.cls}`}>
-                <p className="text-xl font-bold">{s.value}</p>
-                <p className="text-xs text-slate-500">{s.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 rounded-xl p-3 text-xs text-amber-700 dark:text-amber-400">
-            <strong>Badge Rules:</strong> Verified = admin reviewed content (trust label). Featured = highlighted placement. Sponsored = paid placement. These are separate actions — approve first, then grant badges as appropriate.
-          </div>
-          <FiltersBar />
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
-            <table className="w-full text-left min-w-[800px]">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-700">
-                  {["Business", "Category", "Plan", "District", "Status", "Badges", "Date", "Actions"].map(c => (
-                    <th key={c} className="py-3 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{c}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {loadL ? (
-                  <tr><td colSpan={8} className="py-10 text-center text-slate-400">Loading...</td></tr>
-                ) : filteredListings.length === 0 ? (
-                  <tr><td colSpan={8} className="py-10 text-center text-slate-400">No listings found.</td></tr>
-                ) : filteredListings.map(l => {
-                  const cat = getCategoryMeta(l.category);
-                  return (
-                    <tr key={l.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                      <td className="py-2.5 px-3">
-                        <p className="text-sm font-medium text-slate-800 dark:text-white">{l.business_name}</p>
-                        {l.district_name && <p className="text-xs text-slate-500 font-semibold">{l.district_name}</p>}
-                        
-                        <div className="text-[11px] text-slate-400 mt-1 space-y-0.5 border-t border-slate-100 dark:border-slate-700/50 pt-1">
-                          <p><span className="font-semibold text-slate-600 dark:text-slate-300">Public Phone:</span> {l.contact_phone || "—"}</p>
-                          {(l.admin_email || l.admin_phone) && (
-                            <p className="text-blue-600 dark:text-blue-400">
-                              <span className="font-semibold text-slate-600 dark:text-slate-300">Admin/Billing:</span> {l.admin_email || "—"} / {l.admin_phone || "—"}
-                            </p>
-                          )}
-                        </div>
-
-                        {l.admin_note && <p className="text-xs text-amber-600 italic mt-1.5 max-w-[140px] truncate" title={l.admin_note}>📝 {l.admin_note}</p>}
-                      </td>
-                      <td className="py-2.5 px-3 text-xs text-slate-500">{cat.icon} {cat.label}</td>
-                      <td className="py-2.5 px-3">
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${PLAN_COLORS[l.plan] || PLAN_COLORS.free}`}>{l.plan}</span>
-                      </td>
-                      <td className="py-2.5 px-3 text-xs text-slate-500">{l.district_name}</td>
-                      <td className="py-2.5 px-3">
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[l.status] || STATUS_COLORS.pending}`}>{l.status}</span>
-                      </td>
-                      <td className="py-2.5 px-3 text-xs space-x-1">
-                        {l.is_verified && <span className="text-blue-600 font-bold">✓V</span>}
-                        {l.is_featured && <span className="text-amber-600 font-bold">⭐F</span>}
-                        {l.is_sponsored && <span className="text-purple-600 font-bold">💼S</span>}
-                        {!l.is_verified && !l.is_featured && !l.is_sponsored && <span className="text-slate-300">—</span>}
-                      </td>
-                      <td className="py-2.5 px-3 text-xs text-slate-400 whitespace-nowrap">{l.created_date ? formatDistanceToNow(new Date(l.created_date), { addSuffix: true }) : ""}</td>
-                      <td className="py-2.5 px-3">
-                        <div className="flex gap-1 flex-wrap">
-                          <button onClick={() => updateListing(l.id, { status: "active" }, "Listing activated.")} title="Approve (activate listing)" className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg"><CheckCircle className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => updateListing(l.id, { is_verified: true }, "Verified badge granted (admin reviewed).")} title="Grant Verified badge" className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"><BadgeCheck className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => updateListing(l.id, { is_featured: true, status: "active" }, "Featured.")} title="Feature listing" className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg"><Star className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => updateListing(l.id, { is_sponsored: true, status: "active" }, "Marked Sponsored (paid).")} title="Mark Sponsored" className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg"><Eye className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => updateListing(l.id, { status: "rejected", is_verified: false, is_featured: false, is_sponsored: false }, "Rejected.")} title="Reject" className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><XCircle className="w-3.5 h-3.5" /></button>
-                        </div>
-                        {/* Plan selection for admin */}
-                        <div className="mt-1 flex items-center gap-1">
-                          <label className="text-[10px] text-slate-500 font-semibold">Plan:</label>
-                          <select
-                            value={l.plan || "free"}
-                            onChange={(e) => updateListing(l.id, { plan: e.target.value }, `Plan updated to ${e.target.value}`)}
-                            className="text-[11px] px-1 py-0.5 border border-slate-200 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-700 dark:text-white focus:outline-none"
-                          >
-                            <option value="free">Free</option>
-                            <option value="verified">Verified</option>
-                            <option value="featured">Featured</option>
-                            <option value="district_sponsor">Sponsored</option>
-                          </select>
-                        </div>
-                        {/* Admin note inline */}
-                        <div className="flex gap-1 mt-1">
-                          <input value={adminNotes[l.id] || ""} onChange={e => setAdminNotes(n => ({ ...n, [l.id]: e.target.value }))}
-                            placeholder="Admin note..." className="text-xs px-2 py-1 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 w-28 focus:outline-none" />
-                          <button onClick={() => saveNote("listing", l.id, adminNotes[l.id])} disabled={!adminNotes[l.id]?.trim()}
-                            className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg disabled:opacity-40">💾</button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {/* ── SPONSORS TAB ─────────────────────────────────────────────────────── */}
       {activeTab === "sponsors" && (
@@ -494,82 +239,6 @@ export default function AdminMonetization() {
                         <input value={adminNotes[s.id] || ""} onChange={e => setAdminNotes(n => ({ ...n, [s.id]: e.target.value }))}
                           placeholder="Admin note..." className="text-xs px-2 py-1 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 w-28 focus:outline-none" />
                         <button onClick={() => saveNote("sponsor", s.id, adminNotes[s.id])} disabled={!adminNotes[s.id]?.trim()}
-                          className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg disabled:opacity-40">💾</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* ── RWA TAB ──────────────────────────────────────────────────────────── */}
-      {activeTab === "rwa" && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: "Total", value: stats.rwa.total, cls: "bg-purple-50 border-purple-100 text-purple-600" },
-              { label: "Pending", value: stats.rwa.pending, cls: "bg-yellow-50 border-yellow-100 text-yellow-600" },
-              { label: "Active", value: stats.rwa.active, cls: "bg-green-50 border-green-100 text-green-600" },
-              { label: "Suspended", value: stats.rwa.suspended, cls: "bg-orange-50 border-orange-100 text-orange-600" },
-            ].map(s => (
-              <div key={s.label} className={`p-3 rounded-xl text-center border ${s.cls}`}>
-                <p className="text-xl font-bold">{s.value}</p>
-                <p className="text-xs text-slate-500">{s.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-200 rounded-xl p-3 text-xs text-purple-700 dark:text-purple-400">
-            <strong>RWA controls:</strong> Approve → activates dashboard access. Verify → grants verified RWA badge. Suspend → revokes access immediately. Rejected RWAs are shown rejection note. RWAs cannot access admin controls or change Civic Receipt status.
-          </div>
-          <FiltersBar />
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
-            <table className="w-full text-left min-w-[900px]">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-700">
-                  {["Group Name", "Type", "Plan", "Location", "Email", "Status", "Verified", "Actions"].map(c => (
-                    <th key={c} className="py-3 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{c}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {loadR ? (
-                  <tr><td colSpan={8} className="py-10 text-center text-slate-400">Loading...</td></tr>
-                ) : filteredRWA.length === 0 ? (
-                  <tr><td colSpan={8} className="py-10 text-center text-slate-400">No RWA groups found.</td></tr>
-                ) : filteredRWA.map(r => (
-                  <tr key={r.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                    <td className="py-2.5 px-3">
-                      <p className="font-medium text-sm text-slate-800 dark:text-white">{r.group_name}</p>
-                      {r.description && <p className="text-xs text-slate-400 max-w-[140px] truncate">{r.description}</p>}
-                      {r.admin_note && <p className="text-xs text-amber-600 italic mt-0.5 max-w-[140px] truncate" title={r.admin_note}>📝 {r.admin_note}</p>}
-                    </td>
-                    <td className="py-2.5 px-3 text-xs text-slate-500 capitalize">{r.group_type?.replace("_", " ")}</td>
-                    <td className="py-2.5 px-3">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${PLAN_COLORS[r.plan] || PLAN_COLORS.free}`}>{r.plan}</span>
-                    </td>
-                    <td className="py-2.5 px-3 text-xs text-slate-500">{r.area_name ? `${r.area_name}, ` : ""}{r.district_name}</td>
-                    <td className="py-2.5 px-3 text-xs text-slate-400">{r.admin_email}</td>
-                    <td className="py-2.5 px-3">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[r.status] || STATUS_COLORS.pending}`}>{r.status}</span>
-                    </td>
-                    <td className="py-2.5 px-3 text-xs text-center">
-                      {r.is_verified ? <span className="text-blue-600 font-bold">✓ Yes</span> : <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <div className="flex gap-1 flex-wrap">
-                        <button onClick={() => updateRWA(r.id, { status: "active", is_active: true }, "RWA approved.")} title="Approve" className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg"><CheckCircle className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => updateRWA(r.id, { is_verified: true }, "Verified badge granted.")} title="Verify" className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"><Shield className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => updateRWA(r.id, { status: "suspended", is_active: false, is_verified: false }, "RWA suspended.")} title="Suspend" className="p-1.5 text-orange-500 hover:bg-orange-50 rounded-lg"><PauseCircle className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => updateRWA(r.id, { status: "active", is_active: true }, "RWA restored.")} title="Restore" className="p-1.5 text-teal-600 hover:bg-teal-50 rounded-lg"><RotateCcw className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => updateRWA(r.id, { status: "rejected", is_active: false }, "RWA rejected.")} title="Reject" className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><XCircle className="w-3.5 h-3.5" /></button>
-                      </div>
-                      <div className="flex gap-1 mt-1">
-                        <input value={adminNotes[r.id] || ""} onChange={e => setAdminNotes(n => ({ ...n, [r.id]: e.target.value }))}
-                          placeholder="Admin note..." className="text-xs px-2 py-1 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 w-28 focus:outline-none" />
-                        <button onClick={() => saveNote("rwa", r.id, adminNotes[r.id])} disabled={!adminNotes[r.id]?.trim()}
                           className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg disabled:opacity-40">💾</button>
                       </div>
                     </td>
@@ -675,39 +344,6 @@ export default function AdminMonetization() {
             </div>
           </div>
 
-          {/* AdSense Verification Tags Live Preview */}
-          <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 space-y-4">
-            <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Shield className="w-4 h-4 text-indigo-600" /> Auto-Injected Verification Tags
-            </h4>
-            <p className="text-xs text-slate-500">
-              When you save, the system automatically injects these into <code>&lt;head&gt;</code> and updates <code>/public/ads.txt</code>.
-            </p>
-
-            <div className="space-y-3">
-              <div>
-                <span className="text-[11px] font-semibold text-slate-500 block mb-1">1. Account Meta Tag (&lt;head&gt;)</span>
-                <code className="block bg-slate-900 text-slate-200 rounded-lg p-2.5 text-xs font-mono select-all overflow-x-auto">
-                  {`<meta name="google-adsense-account" content="${(adsense.pub_id.match(/\d{16}/) || [])[0] ? `ca-pub-${(adsense.pub_id.match(/\d{16}/) || [])[0]}` : 'ca-pub-XXXXXXXXXXXXXXXX'}" />`}
-                </code>
-              </div>
-
-              <div>
-                <span className="text-[11px] font-semibold text-slate-500 block mb-1">2. Core Script Tag (&lt;head&gt;)</span>
-                <code className="block bg-slate-900 text-slate-200 rounded-lg p-2.5 text-xs font-mono select-all overflow-x-auto">
-                  {`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${(adsense.pub_id.match(/\d{16}/) || [])[0] ? `ca-pub-${(adsense.pub_id.match(/\d{16}/) || [])[0]}` : 'ca-pub-XXXXXXXXXXXXXXXX'}" crossorigin="anonymous"></script>`}
-                </code>
-              </div>
-
-              <div>
-                <span className="text-[11px] font-semibold text-slate-500 block mb-1">3. ads.txt Seller Record (/ads.txt)</span>
-                <code className="block bg-slate-900 text-slate-200 rounded-lg p-2.5 text-xs font-mono select-all overflow-x-auto">
-                  {`google.com, pub-${(adsense.pub_id.match(/\d{16}/) || [])[0] || 'XXXXXXXXXXXXXXXX'}, DIRECT, f08c47fec0942fa0`}
-                </code>
-              </div>
-            </div>
-          </div>
-
           {/* Ad Slot IDs */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide">Ad Unit Slot IDs (Optional for Auto Ads)</h3>
@@ -739,31 +375,6 @@ export default function AdminMonetization() {
           >
             {adsenseSaved ? <><CheckCircle className="w-5 h-5" /> AdSense Settings & ads.txt Synchronized!</> : <><Star className="w-5 h-5" /> Save AdSense Settings & Update ads.txt</>}
           </button>
-
-          {/* AdSense approval checklist */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">📋 Google AdSense Application Checklist</h3>
-            <div className="space-y-2.5">
-              {[
-                { done: true,  text: 'High-quality original content (Tamil Nadu civic news & utility updates)' },
-                { done: true,  text: 'Mobile-responsive UI (Tailwind & Next.js App Router)' },
-                { done: true,  text: 'Privacy Policy page at /privacy-policy' },
-                { done: true,  text: 'Terms of Service at /terms' },
-                { done: true,  text: 'Contact & About Us at /about' },
-                { done: true,  text: 'Cookie Consent banner with granular controls' },
-                { done: !!(adsense.pub_id.match(/\d{16}/) || [])[0], text: 'Publisher ID entered & saved in this panel' },
-                { done: !!(adsense.pub_id.match(/\d{16}/) || [])[0], text: 'ads.txt synced with verified DIRECT seller record' },
-                { done: false, text: 'Submit site URL (https://www.vizhitn.in) in AdSense and click "Request Review"' },
-              ].map(({ done, text }, i) => (
-                <div key={i} className="flex items-start gap-2.5">
-                  <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5 ${done ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-700'}`}>
-                    {done ? '✓' : '○'}
-                  </span>
-                  <span className={`text-sm ${done ? 'text-slate-600 dark:text-slate-400 line-through' : 'text-slate-900 dark:text-white font-medium'}`}>{text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
     </div>

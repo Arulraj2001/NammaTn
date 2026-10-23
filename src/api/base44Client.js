@@ -73,18 +73,7 @@ const entityProxy = new Proxy({}, {
             if (error) throw error;
             return { id, ...data };
           }
-        } else if (tableName === 'local_listing') {
-          if ('report_count' in data) {
-            const { error } = await supabase.rpc('increment_local_listing_report', { listing_id: id });
-            if (error) throw error;
-            return { id, ...data };
-          }
-        } else if (tableName === 'job_alert') {
-          if ('report_count' in data) {
-            const { error } = await supabase.rpc('increment_job_alert_report', { job_id: id });
-            if (error) throw error;
-            return { id, ...data };
-          }
+
         } else if (tableName === 'emergency_post') {
           if ('confirm_count' in data) {
             const { error } = await supabase.rpc('increment_emergency_confirm', { post_id: id });
@@ -97,12 +86,7 @@ const entityProxy = new Proxy({}, {
             if (error) throw error;
             return { id, ...data };
           }
-        } else if (tableName === 'situation_update') {
-          if ('confirm_count' in data) {
-            const { error } = await supabase.rpc('increment_situation_confirm', { post_id: id });
-            if (error) throw error;
-            return { id, ...data };
-          }
+
         } else if (tableName === 'user') {
           if ('role' in data) {
             const { error } = await supabase.rpc('update_user_role', { user_id: id, new_role: data.role });

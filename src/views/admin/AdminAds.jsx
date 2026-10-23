@@ -22,7 +22,7 @@ const PLACEMENT_OPTIONS = [
   { value: "all", label: "🌐 All Placement Slots (Anywhere on Site)", icon: "✨" },
   { value: "sidebar", label: "📐 Top Sidebar Banner (Slot #1)", icon: "📐" },
   { value: "sidebar_bottom", label: "📐 Bottom Sidebar Banner (Slot #2)", icon: "📌" },
-  { value: "infeed", label: "In-Feed (Leaderboard 4:1 / 1200×300)", icon: "📊" },
+  { value: "infeed", label: "In-Feed Banner (4:1 / 1200×300)", icon: "📊" },
   { value: "banner", label: "Top / Footer Billboard (16:9)", icon: "🖥️" },
   { value: "home_hero", label: "🌟 Homepage Top Spotlight", icon: "⭐" },
   { value: "article_inline", label: "📰 Inside Article Content (Mid-Story)", icon: "📖" },
@@ -661,8 +661,6 @@ export default function AdminAds() {
                   <option value="all">🌐 All Pages (Entire Website)</option>
                   <option value="home">🏠 Homepage Only (/)</option>
                   <option value="tn_today">📰 TN Today News Articles (/tn-today)</option>
-                  <option value="listings">🏢 Business Directory (/listings)</option>
-                  <option value="jobs">💼 Jobs Portal (/jobs)</option>
                   <option value="explore">🗺️ Live Explore (/explore)</option>
                   <option value="custom">🎯 Specific Custom Path (URL)</option>
                 </select>

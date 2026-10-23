@@ -309,6 +309,79 @@ export default function About() {
           </div>
         </div>
 
+        {/* ── FOUNDING TEAM & E-E-A-T ── */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xs space-y-6">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+            <Users className="w-5 h-5 text-red-500" />
+            <h2 className="text-xl sm:text-2xl font-extrabold">
+              {T("The People Behind VizhiTN", "VizhiTN-ஐ உருவாக்கியவர்கள்")}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Founder card */}
+            <div className="flex items-start gap-4 bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg flex-shrink-0 shadow">
+                A
+              </div>
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-wider text-red-500 dark:text-red-400 mb-0.5">
+                  {T("FOUNDER & EDITOR-IN-CHIEF", "நிறுவனர் & தலைமை ஆசிரியர்")}
+                </div>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                  Arulraj
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  {T(
+                    "Civic technologist & journalist based in Chennai, Tamil Nadu. Founded VizhiTN in 2026 to give Tamil Nadu citizens a verified, permanent platform for civic accountability.",
+                    "சென்னையை தளமாக கொண்ட குடிமை தொழில்நுட்ப வல்லுனர் & பத்திரிகையாளர். தமிழ்நாடு குடிமக்களுக்கு சரிபார்க்கப்பட்ட குடிமை ஆதார தளம் வழங்க 2026-ல் VizhiTN ஐ நிறுவினார்."
+                  )}
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <a
+                    href="https://twitter.com/VizhiTN"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-blue-500 hover:underline inline-flex items-center gap-1"
+                  >
+                    <ExternalLink className="w-3 h-3" /> @VizhiTN
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Newsroom info card */}
+            <div className="flex items-start gap-4 bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700">
+              <div className="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+                <MapPin className="w-6 h-6 text-slate-600 dark:text-slate-300" />
+              </div>
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-0.5">
+                  {T("CIVIC MEDIA DESK", "குடிமை செய்தி மையம்")}
+                </div>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                  VizhiTN Newsroom
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  {T(
+                    "Chennai, Tamil Nadu 600001, India",
+                    "சென்னை, தமிழ்நாடு 600001, இந்தியா"
+                  )}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {T("Founded: 2026 • Coverage: All 38 Tamil Nadu Districts", "நிறுவப்பட்டது: 2026 • 38 மாவட்டங்களில் செயல்படுகிறது")}
+                </p>
+                <a
+                  href="mailto:vizhitnin@gmail.com"
+                  className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-1 inline-flex items-center gap-1"
+                >
+                  <Mail className="w-3 h-3" /> vizhitnin@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ── CALL TO ACTION & CONTACT DESK ── */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="space-y-1.5">
@@ -317,8 +390,8 @@ export default function About() {
             </h3>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl leading-relaxed">
               {T(
-                "Connect directly with our civic editorial and moderation desk in Chennai. We welcome journalists, municipal engineers, and resident volunteers.",
-                "எங்கள் சென்னை செய்தி மையத்தை நேரடியாக தொடர்பு கொள்ளலாம். பத்திரிகையாளர்கள், பொறியாளர்கள் மற்றும் தன்னார்வலர்களை வரவேற்கிறோம்."
+                "Connect directly with our civic editorial and moderation desk in Chennai, Tamil Nadu 600001. We welcome journalists, municipal engineers, and resident volunteers.",
+                "எங்கள் சென்னை, தமிழ்நாடு 600001 செய்தி மையத்தை நேரடியாக தொடர்பு கொள்ளலாம். பத்திரிகையாளர்கள், பொறியாளர்கள் மற்றும் தன்னார்வலர்களை வரவேற்கிறோம்."
               )}
             </p>
           </div>

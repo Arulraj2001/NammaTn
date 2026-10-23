@@ -84,14 +84,14 @@ const baseMetadata = {
   },
   category: 'civic technology',
   other: {
-    'google-adsense-account': 'ca-pub-6447285514660893',
+    'google-adsense-account': 'ca-pub-1603942692726452',
   },
 };
 
 export const metadata = baseMetadata;
 
 export default function RootLayout({ children }) {
-  const adsensePubId = 'ca-pub-6447285514660893';
+  const adsensePubId = 'ca-pub-1603942692726452';
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -205,7 +205,7 @@ export default function RootLayout({ children }) {
               url: SITE_URL,
               logo: `${SITE_URL}/logo.png`,
               description:
-                "Tamil Nadu local civic alerts platform for power cuts, water issues, scams, jobs and government updates.",
+                "Tamil Nadu local civic alerts platform for power cuts, water issues, scams, road problems and government updates.",
               areaServed: {
                 '@type': 'State',
                 name: 'Tamil Nadu',

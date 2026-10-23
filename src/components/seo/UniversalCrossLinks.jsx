@@ -4,9 +4,8 @@ import React from "react";
 import { Link } from "@/lib/router-compat";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  Shield, BookOpen, Gift, FileText, AlertTriangle, Building2,
-  Zap, MessageCircle, ArrowRight,
-  Trophy
+  Shield, Gift, FileText, AlertTriangle,
+  Zap, ArrowRight, Phone
 } from "lucide-react";
 
 export default function UniversalCrossLinks({ pageType }) {
@@ -24,8 +23,8 @@ export default function UniversalCrossLinks({ pageType }) {
             { title_en: "How to File RTI Application in TN", title_ta: "தமிழ்நாட்டில் RTI மனு தாக்கல் செய்யும் முறை", href: "/awareness/article/how-to-file-rti-application-tamil-nadu-guide", icon: FileText, desc_en: "Demand answers & government files legally.", desc_ta: "சட்டப்பூர்வமாக பதில் மற்றும் ஆவணம் பெறவும்." },
             { title_en: "Right to Information Act 2005", title_ta: "தகவல் அறியும் உரிமைச் சட்டம் 2005", href: "/awareness/right/right-to-information-act-2005", icon: Shield, desc_en: "30-day mandatory window for government replies.", desc_ta: "30 நாளில் பதில் பெற சட்டப்பூர்வ உரிமை." },
             { title_en: "Local Scam & Fraud Alerts", title_ta: "உள்ளூர் மோசடி எச்சரிக்கைகள்", href: "/scams", icon: AlertTriangle, desc_en: "Protect yourself against job & financial scams.", desc_ta: "வேலை மற்றும் நிதி மோசடிகளில் இருந்து பாதுகாப்போம்." },
-            { title_en: "Government Offices Directory", title_ta: "அரசு அலுவலகங்கள் முகவரி", href: "/offices", icon: Building2, desc_en: "Find local VAO, EB, and Tahsildar offices.", desc_ta: "உள்ளூர் VAO, EB, தாசில்தார் அலுவலகங்கள்." },
-            { title_en: "Civic Transparency Leaderboard", title_ta: "குடிமை முன்னிலை பட்டியல்", href: "/leaderboard", icon: Trophy, desc_en: "Top active civic contributors across TN.", desc_ta: "தீர்க்கப்பட்ட குடிமை சாதனைகள்." },
+            { title_en: "Government Welfare Schemes", title_ta: "அரசு நலத்திட்டங்கள்", href: "/schemes", icon: Shield, desc_en: "Check eligibility for Magalir Urimai & subsidies.", desc_ta: "மகளிர் உரிமை மற்றும் அரசு மானியங்கள்." },
+            { title_en: "e-Sevai Online Services Guide", title_ta: "இ-சேவை வழிகாட்டி", href: "/esevai", icon: FileText, desc_en: "Online certificate procedures & direct portals.", desc_ta: "வருமானம், சாதிச் சான்றிதழ் விண்ணப்ப வழிகாட்டல்." },
           ]
         };
 
@@ -36,30 +35,7 @@ export default function UniversalCrossLinks({ pageType }) {
           items: [
             { title_en: "Consumer Protection Rights Act 2019", title_ta: "நுகர்வோர் பாதுகாப்பு சட்ட உரிமைகள்", href: "/awareness/right/consumer-protection-rights-2019", icon: Shield, desc_en: "File consumer court cases online without a lawyer.", desc_ta: "வழக்கறிஞர் இன்றி ஆன்லைனில் வழக்கு பதிவிடல்." },
             { title_en: "Traffic Check Driver Rights", title_ta: "வாகன சோதனையின் போது ஓட்டுநர் உரிமைகள்", href: "/awareness/article/traffic-police-vehicle-check-citizen-rights-guide", icon: FileText, desc_en: "DigiLocker validity & key seizure rules.", desc_ta: "டிஜிலாக்கர் செல்லுபடி & சாவி பிடுங்கத் தடை." },
-            { title_en: "Ask Local Community", title_ta: "உள்ளூரினரிடம் கேளுங்கள்", href: "/ask", icon: MessageCircle, desc_en: "Verify suspicious deals with area locals.", desc_ta: "சந்தேகமான ஒப்பந்தங்களை சரிபார்க்கவும்." },
-          ]
-        };
-
-      case "jobs":
-        return {
-          title_en: "Related Services & Career Resources",
-          title_ta: "தொடர்புடைய சேவைகள் & வேலைவாய்ப்பு ஆதாரங்கள்",
-          items: [
-            { title_en: "e-Sevai Online Certificates Guide", title_ta: "இ-சேவை சான்றிதழ்கள் முழு வழிகாட்டி", href: "/awareness/article/tamil-nadu-esevai-online-services-guide", icon: FileText, desc_en: "Apply for Income, Community & Native certificates.", desc_ta: "வருமானம், சாதி, இருப்பிட சான்றிதழ்கள் பெற." },
-            { title_en: "Naan Mudhalvan Skill Scheme", title_ta: "நான் முதல்வன் திறன் திட்டம்", href: "/awareness/schemes", icon: Gift, desc_en: "Government skill development & career guidance.", desc_ta: "அரசு திறன் மேம்பாடு மற்றும் வழிகாட்டல்." },
-            { title_en: "Verified Local Businesses", title_ta: "சரிபார்க்கப்பட்ட வணிகங்கள்", href: "/listings", icon: Building2, desc_en: "Local services and shops near you.", desc_ta: "உள்ளூர் வணிகங்கள் மற்றும் சேவைகள்." },
-          ]
-        };
-
-      case "offices":
-        return {
-          title_en: "Related Citizen Services & Property Guides",
-          title_ta: "தொடர்புடைய அரசு சேவைகள் & நில வழிகாட்டிகள்",
-          items: [
-            { title_en: "Patta, Chitta & EC Verification Guide", title_ta: "பட்டா, சிட்டா & வில்லங்கச் சான்றிதழ் வழிகாட்டி", href: "/awareness/article/patta-chitta-fmb-ec-land-records-guide-tamil-nadu", icon: FileText, desc_en: "Online land ownership records check.", desc_ta: "ஆன்லைனில் நில உரிமை ஆவணங்கள் சரிபார்த்தல்." },
-            { title_en: "e-Sevai Online Certificates", title_ta: "இ-சேவை ஆன்லைன் சான்றிதழ்கள்", href: "/awareness/article/tamil-nadu-esevai-online-services-guide", icon: BookOpen, desc_en: "Step-by-step certificate application.", desc_ta: "சான்றிதழ்கள் விண்ணப்பிக்கும் படிநிலைகள்." },
-            { title_en: "RTI Application Guide", title_ta: "RTI விண்ணப்பிக்கும் முறை", href: "/awareness/article/how-to-file-rti-application-tamil-nadu-guide", icon: Shield, desc_en: "Request government files legally.", desc_ta: "அரசு ஆவணங்களைப் பெற வழிகாட்டி." },
-            { title_en: "Local Scam Alerts", title_ta: "மோசடி எச்சரிக்கைகள்", href: "/scams", icon: AlertTriangle, desc_en: "Track local scam reports.", desc_ta: "மோசடி எச்சரிக்கைகளை கண்காணிக்கவும்." },
+            { title_en: "24x7 Emergency Helplines", title_ta: "அவசர உதவி எண்கள்", href: "/helplines", icon: Phone, desc_en: "Dial 1930 Cyber Fraud, 1912 Minnalagam, 112 Unified.", desc_ta: "1930 சைபர் கிரைம், 1912 மின்சாரம், 112 எண்கள்." },
           ]
         };
 
@@ -68,10 +44,10 @@ export default function UniversalCrossLinks({ pageType }) {
           title_en: "Explore District Services & Alerts",
           title_ta: "மாவட்ட சேவைகள் & எச்சரிக்கைகளை ஆராய்க",
           items: [
-            { title_en: "Public Offices Directory", title_ta: "மாவட்ட அரசு அலுவலகங்கள்", href: "/offices", icon: Building2, desc_en: "Find VAO, EB, and Tahsildar offices.", desc_ta: "உள்ளூர் அரசு அலுவலகங்கள்." },
-            { title_en: "Live Emergency Situations", title_ta: "நேரடி நிலைமைகள் & எச்சரிக்கைகள்", href: "/situations", icon: Zap, desc_en: "Real-time weather, power & road updates.", desc_ta: "நேரடி வானிலை மற்றும் சாலைத் தகவல்கள்." },
+            { title_en: "District Power Cuts Today", title_ta: "மாவட்ட மின்தடை", href: "/power-cuts-today-tamil-nadu", icon: Zap, desc_en: "Scheduled substation power shutdowns.", desc_ta: "மின்வாரிய பராமரிப்பு மின்தடை நேரம்." },
+            { title_en: "School & College Holiday Alerts", title_ta: "பள்ளி விடுமுறை அறிவிப்புகள்", href: "/school-college-holiday-alerts", icon: AlertTriangle, desc_en: "Collector rain notices & weather advisories.", desc_ta: "மாவட்ட ஆட்சியர் மழை விடுமுறை அறிவிப்புகள்." },
             { title_en: "TN Today State News", title_ta: "டிஎன் டுடே செய்திகள்", href: "/tn-today", icon: FileText, desc_en: "Daily verified state news and policies.", desc_ta: "தினசரி அரசு செய்திகள் மற்றும் திட்டங்கள்." },
-            { title_en: "District Power Cuts", title_ta: "மாவட்ட மின்தடை", href: "/power-cuts-today-tamil-nadu", icon: Zap, desc_en: "Scheduled power shutdowns.", desc_ta: "மின்வாரிய பராமரிப்பு மின்தடை." },
+            { title_en: "Emergency Helplines Directory", title_ta: "அரசு அவசர உதவி எண்கள்", href: "/helplines", icon: Phone, desc_en: "Direct dial 112, 108, 1912, 1930, 1070.", desc_ta: "24x7 சரிபார்க்கப்பட்ட அரசு அவசர எண்கள்." },
           ]
         };
 
@@ -80,10 +56,10 @@ export default function UniversalCrossLinks({ pageType }) {
           title_en: "Explore VizhiTN Citizen Services",
           title_ta: "VizhiTN குடிமைச் சேவைகளை ஆராய்க",
           items: [
-            { title_en: "Citizen Statutory Rights", title_ta: "குடிமக்கள் சட்ட உரிமைகள்", href: "/awareness/rights", icon: Shield, desc_en: "RTI Act 2005 & Consumer Protection.", desc_ta: "தகவல் உரிமை & நுகர்வோர் பாதுகாப்பு." },
-            { title_en: "Government Welfare Schemes", title_ta: "அரசு நலத்திட்டங்கள்", href: "/awareness/schemes", icon: Gift, desc_en: "Magalir Urimai, Pudhumai Penn & CMCHIS.", desc_ta: "மகளிர் உரிமை & புதுமைப் பெண்." },
+            { title_en: "Citizen Statutory Rights", title_ta: "குடிமக்கள் சட்ட உரிமைகள்", href: "/rights", icon: Shield, desc_en: "RTI Act 2005 & Consumer Protection.", desc_ta: "தகவல் உரிமை & நுகர்வோர் பாதுகாப்பு." },
+            { title_en: "Government Welfare Schemes", title_ta: "அரசு நலத்திட்டங்கள்", href: "/schemes", icon: Gift, desc_en: "Magalir Urimai, Pudhumai Penn & CMCHIS.", desc_ta: "மகளிர் உரிமை & புதுமைப் பெண்." },
             { title_en: "Local Scam Alerts", title_ta: "மோசடி எச்சரிக்கைகள்", href: "/scams", icon: AlertTriangle, desc_en: "Cyber & financial scam warnings.", desc_ta: "மோசடி தடுப்பு எச்சரிக்கைகள்." },
-            { title_en: "Civic Leaderboard", title_ta: "குடிமை முன்னிலை பட்டியல்", href: "/leaderboard", icon: Trophy, desc_en: "Verified active civic contributors.", desc_ta: "குடிமை சாதனைகள் மற்றும் தீர்வுகள்." },
+            { title_en: "Power Cuts Today", title_ta: "இன்றைய மின்தடை", href: "/power-cuts-today-tamil-nadu", icon: Zap, desc_en: "TANGEDCO substation shutdown schedules.", desc_ta: "மின்வாரிய பராமரிப்பு மின்தடை." },
           ]
         };
     }

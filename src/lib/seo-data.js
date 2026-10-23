@@ -93,14 +93,7 @@ export const CATEGORIES = [
     authority: 'Tamil Nadu Cyber Crime Police',
     helpline: '1930',
   },
-  {
-    slug: 'jobs',
-    name: 'Job',
-    plural: 'Jobs',
-    descriptionFragment: 'government and private job listings posted by the community',
-    authority: 'Tamil Nadu Employment Exchange',
-    helpline: '1800 425 1545',
-  },
+
   {
     slug: 'education',
     name: 'Education',
@@ -203,9 +196,7 @@ export const CATEGORY_MAP = Object.fromEntries(
   CATEGORIES.map(c => [c.slug, c])
 );
 
-// Map common aliases to canonical category objects
 CATEGORY_MAP['scams'] = CATEGORY_MAP['scam'];
-CATEGORY_MAP['job'] = CATEGORY_MAP['jobs'];
 CATEGORY_MAP['power-cuts'] = CATEGORY_MAP['electricity'];
 CATEGORY_MAP['eb-shutdown'] = CATEGORY_MAP['electricity'];
 CATEGORY_MAP['water-supply'] = CATEGORY_MAP['water-sanitation'];

@@ -5,28 +5,21 @@ import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, PhoneCall } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { getActiveSituations } from "@/services/situations";
 import { getActiveCivicPosts } from "@/services/posts";
 
 export default function LiveAlertsTicker() {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
-  const { data: situations = [] } = useQuery({
-    queryKey: ["ticker-situations"],
-    queryFn: () => getActiveSituations(6),
-    staleTime: 120_000,
-  });
-
   const { data: civicPosts = [] } = useQuery({
     queryKey: ["ticker-alerts"],
-    queryFn: () => getActiveCivicPosts(6),
+    queryFn: () => getActiveCivicPosts(10),
     staleTime: 120_000,
   });
 
   // Pick top active emergency/alert items
   const alertPosts = civicPosts.filter((p) => p.post_type === "alert" || p.urgency_level === "high" || p.urgency_level === "critical");
-  const liveItems = [...situations, ...alertPosts].slice(0, 3);
+  const liveItems = alertPosts.slice(0, 3);
 
   if (liveItems.length === 0) {
     return null;
@@ -52,8 +45,8 @@ export default function LiveAlertsTicker() {
           {liveItems.map((item, idx) => {
             const title = T(item.title_en || item.title, item.title_ta || item.title);
             const district = item.district_slug || item.district_name || "";
-            const helpline = item.assigned_department || (item.situation_type === "eb_shutdown" ? "1912" : "");
-            const path = item.situation_type ? "/situations" : (item.slug ? `/post/${item.slug}` : `/post/${item.id}`);
+            const helpline = item.assigned_department || "";
+            const path = item.slug ? `/post/${item.slug}` : (item.id ? `/post/${item.id}` : '/explore');
 
             return (
               <Link
@@ -62,7 +55,7 @@ export default function LiveAlertsTicker() {
                 className="hover:text-blue-400 flex items-center gap-1.5 transition-colors group truncate max-w-full sm:max-w-[420px]"
               >
                 <span className="text-amber-400 font-bold flex-shrink-0">
-                  {item.situation_type === "eb_shutdown" || item.category_slug === "electricity" ? "⚡" : "⚠️"}
+                  {item.category_slug === "electricity" ? "⚡" : "⚠️"}
                 </span>
                 {district && (
                   <span className="text-[10px] font-bold uppercase bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded flex-shrink-0">
