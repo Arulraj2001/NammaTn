@@ -348,7 +348,31 @@ async function main() {
     return;
   }
 
+  // 9. Cross-Post to Meta Socials & Upload to YouTube
   let uploadResult = null;
+  let metaResult = null;
+
+  try {
+    const metaCaption = `🚨 ${area} நேரடி எச்சரிக்கை: ${rawTitle}\n\n` +
+      `📍 கள நிலவரம்: ${urgentPost.content_ta || urgentPost.content_en}\n` +
+      `📞 உதவி மையம் / புகார்: ${helplineNumber}\n\n` +
+      `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & கள நிலவரங்களை உடனே தெரிந்து கொள்ள @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
+      `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
+      `🌐 உங்கள் பகுதி பிரச்சனையை நீங்களே பதிவு செய்ய: https://vizhitn.in\n\n` +
+      `#Shorts #${area.replace(/\s+/g, '')} #TamilNadu`;
+
+    metaResult = await crossPostVideoToMetaSocials({
+      videoFilePath: videoOutputPath,
+      thumbnailFilePath: thumbPath,
+      title: ytTitle,
+      caption: metaCaption,
+      isReel: true,
+      isDryRun
+    });
+  } catch (metaErr) {
+    console.warn('[META SOCIAL WARN] Meta social cross-post error:', metaErr.message);
+  }
+
   try {
     uploadResult = await uploadToYouTube({
       videoFilePath: videoOutputPath,
@@ -368,6 +392,8 @@ async function main() {
         title: ytTitle,
         youtubeVideoId: uploadResult.videoId,
         youtubeUrl: uploadResult.videoUrl,
+        metaVideoId: metaResult?.facebook?.id || null,
+        metaReelId: metaResult?.instagram?.id || null,
         metadata: {
           district,
           category,
@@ -391,28 +417,6 @@ async function main() {
     console.log('====================================================');
   } catch (ytErr) {
     console.warn('[YOUTUBE WARN] YouTube upload encountered an issue:', ytErr.message);
-  }
-
-  // 10. Cross-Post to Meta Socials (Instagram Reels & Facebook Video) - ALWAYS EXECUTED
-  try {
-    const metaCaption = `🚨 ${area} நேரடி எச்சரிக்கை: ${rawTitle}\n\n` +
-      `📍 கள நிலவரம்: ${urgentPost.content_ta || urgentPost.content_en}\n` +
-      `📞 உதவி மையம் / புகார்: ${helplineNumber}\n\n` +
-      `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & கள நிலவரங்களை உடனே தெரிந்து கொள்ள @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
-      `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
-      `🌐 உங்கள் பகுதி பிரச்சனையை நீங்களே பதிவு செய்ய: https://vizhitn.in\n\n` +
-      `#VizhiTN #TamilNadu #${area.replace(/\s+/g, '')} #TamilReels #ReelsInstagram #ReelsViral #TNNews #Chennai #CivicAlert`;
-
-    await crossPostVideoToMetaSocials({
-      videoFilePath: videoOutputPath,
-      thumbnailFilePath: thumbPath,
-      title: ytTitle,
-      caption: metaCaption,
-      isReel: true,
-      isDryRun
-    });
-  } catch (metaErr) {
-    console.warn('[META SOCIAL WARN] Meta social cross-post error:', metaErr.message);
   } finally {
     // Cleanup temp files
     const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, photoS1Path, photoS2Path, s1SubPath, s2SubPath, s3SubPath];

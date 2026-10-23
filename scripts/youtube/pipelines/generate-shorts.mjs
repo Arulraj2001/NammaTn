@@ -86,7 +86,7 @@ async function generateAIShortScript({ title, area, category, helplineVoice, ass
 ஹெல்ப்லைன்: ${helplineVoice}
 
 ★ VizhiTN 8-Rule Script Constitution (Strict Enforcement):
-1. Lead with Specificity (Beat 1 Hook): முதல் 3-4 வார்த்தைகளில் என்ன பாதிப்பு (தண்ணி மோட்டார் ஓடாது / கரண்ட் இருக்காது / பஸ் வராது / டிராபிக்ல மாட்டுவீங்க) என்று தொடங்கி "— ஏன்னு தெரியுமா?" என்று கேள்வியோடு முடி. "உடனே உஷாரா இருங்க" போன்ற generic வார்த்தைகள் முற்றிலும் தடை!
+1. Immediate Citizen Pain Command (Beat 1 Hook): முதல் 3-4 வார்த்தைகளில் குடிமக்களின் நேரடி அவசர கட்டளை (எ.கா: "போன், மோட்டாரை இப்பவே சார்ஜ் பண்ணுங்க!", "நாளைக்கு தண்ணி வராது, பிடிச்சு வையுங்க!", "இந்த ரோட்ல போகாதீங்க, டிராபிக் ஜாம்!") என்று அதிவேகமாக தொடங்கி "— ஏன்னு தெரியுமா?" என்று கேள்வியோடு முடி. அரசு அறிக்கை போன்ற மந்தமான தொடக்கங்கள் முற்றிலும் தடை!
 2. One Fact Per Beat (Beat 2 Ground Reality): எங்கு (பகுதி) என்று மட்டும் சொல். நேரம்/மணியை வாயால் பேசாதே (நேரம் திரையில் கார்டில் காண்பிக்கப்படும்). 1 மூச்சில் சொல்லக்கூடிய 1 சிறிய வாக்கியம் மட்டுமே.
 3. Brand CTA & Helpline (Beat 3 Ending): உதவி எண்ணை சொல்லி, 'தினசரி அரசு எச்சரிக்கைகளுக்கு இப்பவே VizhiTN-ஐ Follow & Subscribe பண்ணுங்க!' என்று கட்டாயமாக சொல்லி, பின் 'அடுத்த செய்தி உங்க ஏரியாவான்னு தெரிஞ்சுக்க வேணுமா—' என்ற கேள்வியோடு முடி. (முக்கியம்: 'VizhiTN-ஐ Follow பண்ணுங்க மற்றும் Subscribe' என்ற வார்த்தைகள் விடுபடவே கூடாது!)
 4. Write for the Ear: குறுகிய, எளிய பேச்சுத் தமிழ் (Colloquial Tamil).
@@ -111,8 +111,8 @@ JSON மட்டும் திரும்ப அனுப்பு:
       } catch (modelErr) {
         console.warn(`[AI SCRIPT] Model ${model} failed: ${modelErr.message.slice(0, 60)}`);
       }
-    }
-    const parsed = JSON.parse(raw.trim());
+    const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+    const parsed = JSON.parse(cleaned);
     if (parsed.beat1 && parsed.beat2 && parsed.beat3) {
       console.log('[AI SCRIPT] Unique Gemini-written 3-beat script generated.');
       return parsed;
@@ -423,10 +423,28 @@ async function main() {
     s3FramePath = path.join(outDir, `short_s3_frame_${Date.now()}.png`);
     renderHtmlToImage(tplS3, s3FramePath, { width: 1080, height: 1920 });
 
-    // ─── 7. Captions Disabled (Clean visuals, zero on-screen text clutter) ──
-    s1SubPath = null;
-    s2SubPath = null;
-    s3SubPath = null;
+    // ─── 7. Kinetic Karaoke Subtitles (Crucial for 75%+ Muted Mobile Viewers) ──
+    s1SubPath = path.join(outDir, `short_s1_sub_${Date.now()}.ass`);
+    s2SubPath = path.join(outDir, `short_s2_sub_${Date.now()}.ass`);
+    s3SubPath = path.join(outDir, `short_s3_sub_${Date.now()}.ass`);
+
+    if (s1TimedSegs && s1TimedSegs.length > 0) {
+      generateKaraokeCaptions(s1TimedSegs, s1SubPath, '9:16');
+    } else {
+      generateAssSubtitleFile(generateCaptionsFromClauses(scene1Script, s1Dur), s1SubPath, '9:16');
+    }
+
+    if (s2TimedSegs && s2TimedSegs.length > 0) {
+      generateKaraokeCaptions(s2TimedSegs, s2SubPath, '9:16');
+    } else {
+      generateAssSubtitleFile(generateCaptionsFromClauses(scene2Script, s2Dur), s2SubPath, '9:16');
+    }
+
+    if (s3TimedSegs && s3TimedSegs.length > 0) {
+      generateKaraokeCaptions(s3TimedSegs, s3SubPath, '9:16');
+    } else {
+      generateAssSubtitleFile(generateCaptionsFromClauses(scene3Script, s3Dur), s3SubPath, '9:16');
+    }
 
     // ─── 8. Assemble 3-Beat Multi-Scene Short with Dynamic Motion ────────────
     // Fetch 3 DIFFERENT B-roll clips — one per scene (no repeating background)
@@ -454,12 +472,12 @@ async function main() {
 
     const isValidBroll = (p) => p && !p.includes('procedural') && fs.existsSync(p) && fs.statSync(p).size > 100000;
     console.log(`[COMPOSER] Target SEO Video Filename: ${seoFilename}`);
-    console.log('[COMPOSER] Assembling 3-Beat Civic Short (Clean Visuals — No Captions)...');
+    console.log('[COMPOSER] Assembling 3-Beat Civic Short with Dynamic Karaoke Subtitles...');
 
     const scenes = [
-      { imagePath: s1FramePath, videoPath: isValidBroll(brollS1) ? brollS1 : null, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: null },
-      { imagePath: s2FramePath, videoPath: isValidBroll(brollS2) ? brollS2 : null, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: null },
-      { imagePath: s3FramePath, videoPath: isValidBroll(brollS3) ? brollS3 : null, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: null }
+      { imagePath: s1FramePath, videoPath: isValidBroll(brollS1) ? brollS1 : null, audioPath: s1AudioPath, durationSec: s1Dur, hasMotion: true, isLastScene: false, subtitlePath: s1SubPath },
+      { imagePath: s2FramePath, videoPath: isValidBroll(brollS2) ? brollS2 : null, audioPath: s2AudioPath, durationSec: s2Dur, hasMotion: true, isLastScene: false, subtitlePath: s2SubPath },
+      { imagePath: s3FramePath, videoPath: isValidBroll(brollS3) ? brollS3 : null, audioPath: s3AudioPath, durationSec: s3Dur, hasMotion: true, isLastScene: true, subtitlePath: s3SubPath }
     ];
 
     assembleMultiSceneShortsVideo({
@@ -510,8 +528,32 @@ async function main() {
     return;
   }
 
-  // ─── 12. Upload to YouTube ────────────────────────────────────────────────
+  // ─── 12. Upload to YouTube & Cross-Post to Meta Socials ────────────────────
   let uploadResult = null;
+  let metaResult = null;
+
+  // Cross-Post to Meta Socials (Instagram Reels & Facebook Video)
+  try {
+    const metaCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n` +
+      `📞 அதிகாரப்பூர்வ உதவி / புகார்: ${helplineNumber}\n\n` +
+      `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & மக்கள் விழிப்புணர்வுகளுக்கு @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
+      `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
+      `🌐 முழு விவரங்கள் & நேரடி அறிக்கை: https://vizhitn.in\n\n` +
+      `#Shorts #${(leadPost.district_slug || 'TN').replace(/[^a-zA-Z0-9]/g, '')} #TamilNadu`;
+
+    metaResult = await crossPostVideoToMetaSocials({
+      videoFilePath: videoOutputPath,
+      thumbnailFilePath: thumbnailPath,
+      title: finalTitle,
+      caption: metaCaption,
+      isReel: true,
+      isDryRun
+    });
+  } catch (metaErr) {
+    console.warn('[META SOCIAL WARN] Meta social cross-post error:', metaErr.message);
+  }
+
+  // Upload to YouTube
   try {
     uploadResult = await uploadToYouTube({
       videoFilePath: videoOutputPath,
@@ -531,6 +573,8 @@ async function main() {
         title: finalTitle,
         youtubeVideoId: uploadResult.videoId,
         youtubeUrl: uploadResult.videoUrl,
+        metaVideoId: metaResult?.facebook?.id || null,
+        metaReelId: metaResult?.instagram?.id || null,
         metadata: {
           district: leadPost.district_slug,
           category: leadPost.category_slug,
@@ -567,27 +611,6 @@ async function main() {
     console.log('====================================================');
   } catch (ytErr) {
     console.warn('[YOUTUBE WARN] YouTube upload encountered an issue:', ytErr.message);
-  }
-
-  // ─── 13. Cross-Post to Meta Socials (Instagram Reels & Facebook Video) ─────
-  try {
-    const metaCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n` +
-      `📞 அதிகாரப்பூர்வ உதவி / புகார்: ${helplineNumber}\n\n` +
-      `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & மக்கள் விழிப்புணர்வுகளுக்கு @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
-      `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
-      `🌐 முழு விவரங்கள் & நேரடி அறிக்கை: https://vizhitn.in\n\n` +
-      `#VizhiTN #TamilNadu #TamilReels #ReelsInstagram #ReelsViral #${(leadPost.district_slug || 'TN').replace(/[^a-zA-Z0-9]/g, '')} #TNNews`;
-
-    await crossPostVideoToMetaSocials({
-      videoFilePath: videoOutputPath,
-      thumbnailFilePath: thumbnailPath,
-      title: finalTitle,
-      caption: metaCaption,
-      isReel: true,
-      isDryRun
-    });
-  } catch (metaErr) {
-    console.warn('[META SOCIAL WARN] Meta social cross-post error:', metaErr.message);
   } finally {
     // Cleanup temp files
     const temps = [s1FramePath, s2FramePath, s3FramePath, s1AudioPath, s2AudioPath, s3AudioPath, photoS1Path, photoS2Path, s1SubPath, s2SubPath, s3SubPath];

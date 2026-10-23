@@ -161,19 +161,25 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
     ? rawDistrict.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).slice(0, 20)
     : 'Tamil Nadu';
 
-  // --- Title (Under 65 chars for zero mobile truncation) ---
+  // --- Title (Under 55 chars for zero mobile truncation on Shorts shelf) ---
   let title;
   if (isShort) {
     const areaName = article.area_name || districtLabel;
-    const shortArea = areaName.length > 18 ? areaName.slice(0, 16) + '..' : areaName;
-    title = script?.youtubeTitle ||
-      `${shortArea} மக்களுக்கு முக்கிய அறிவிப்பு! ${titleTa.slice(0, 36)} | #Shorts`;
+    const shortArea = areaName.length > 14 ? areaName.slice(0, 12) + '..' : areaName;
+    if (script?.youtubeTitle && script.youtubeTitle.length <= 55) {
+      title = script.youtubeTitle;
+    } else {
+      title = `${shortArea} அவசர அறிவிப்பு! முழு பட்டியல் ⚡ #Shorts`;
+      if (title.length > 55) {
+        title = `${shortArea} அவசர செய்தி! ⚡ #Shorts`;
+      }
+    }
   } else {
     const hook = script?.thumbnailHookTa || titleTa.slice(0, 40);
     title = script?.youtubeTitle ||
       `${hook}? | ${dept} உண்மை என்ன? | விழி தமிழ்நாடு ஆய்வு`;
+    title = title.replace(/[<>]/g, '').trim().slice(0, 95);
   }
-  title = title.replace(/[<>]/g, '').trim().slice(0, 95);
 
   // --- Category-specific Tier 2 hashtags ---
   const categoryHashtags = {
@@ -207,19 +213,30 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
     'ramanathapuram': '#Ramanathapuram', 'karur': '#Karur', 'kanyakumari': '#Kanyakumari'
   };
 
-  const tier1 = ['#TamilNadu', '#TNNews', '#விழிதமிழ்நாடு', '#VizhiTN', isShort ? '#Shorts' : '#TamilDocumentary'];
-  const tier2 = categoryHashtags[category] || categoryHashtags['general'];
   const districtSlug = (article.district_slug || '').toLowerCase();
-  const tier3 = [districtSlugMap[districtSlug] || '#TamilNaduNews', '#CivicIssues', '#TamilNaduGovt'];
-  const hashtags = [...tier1, ...tier2, ...tier3].join(' ');
+  const primaryEntity = categoryHashtags[category]?.[0] || '#TamilNadu';
+  const geoTag = districtSlugMap[districtSlug] || '#TamilNadu';
+
+  // 2026 Algorithmic Best Practice: Exactly 3 focused hashtags for Shorts (Format + Entity + Geo)
+  let hashtags;
+  if (isShort) {
+    hashtags = `#Shorts ${primaryEntity} ${geoTag}`;
+  } else {
+    const tier1 = ['#TamilNadu', '#TNNews', '#விழிதமிழ்நாடு', '#VizhiTN', '#TamilDocumentary'];
+    const tier2 = categoryHashtags[category] || categoryHashtags['general'];
+    const tier3 = [geoTag, '#CivicIssues', '#TamilNaduGovt'];
+    hashtags = [...tier1, ...tier2, ...tier3].join(' ');
+  }
 
   // --- Tags array for YouTube API ---
-  const tags = [
-    'Tamil Nadu', 'TN News', 'VizhiTN', 'Civic Issues Tamil', districtLabel,
-    dept, 'Tamil Nadu Government', 'Local Body News', 'Tamil Nadu Today',
-    ...(tier2.map(h => h.replace('#', ''))),
-    isShort ? 'Shorts' : 'Tamil Documentary'
-  ].filter(Boolean).slice(0, 15);
+  const tags = isShort
+    ? ['Shorts', 'Tamil Nadu', districtLabel, primaryEntity.replace('#', ''), 'VizhiTN']
+    : [
+        'Tamil Nadu', 'TN News', 'VizhiTN', 'Civic Issues Tamil', districtLabel,
+        dept, 'Tamil Nadu Government', 'Local Body News', 'Tamil Nadu Today',
+        ...((categoryHashtags[category] || categoryHashtags['general']).map(h => h.replace('#', ''))),
+        'Tamil Documentary'
+      ].filter(Boolean).slice(0, 15);
 
   // --- Description ---
   let defaultChapters = chapterTimestamps;

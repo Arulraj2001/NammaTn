@@ -172,8 +172,11 @@ export function generateCaptionsFromClauses(clauses, totalDurationSec, aspectRat
  * @returns {string} outputPath
  */
 export function generateAssSubtitleFile(segments, outputPath, aspectRatio = '9:16') {
-  // Captions disabled project-wide per user preference
-  return null;
+  if (!segments || segments.length === 0) return null;
+
+  const isShort = aspectRatio === '9:16';
+  const playResX = isShort ? 1080 : 1920;
+  const playResY = isShort ? 1920 : 1080;
 
   // Shorts (9:16): High-impact 62px display font centered in mobile optical safe zone (MarginV: 620)
   // Sits cleanly above the bottom audio track name, caption text, and interaction buttons
@@ -244,8 +247,11 @@ ${dialogEvents}
  * @returns {string} outputPath
  */
 export function generateKaraokeCaptions(timedSegments, outputPath, aspectRatio = '9:16') {
-  // Captions disabled project-wide per user preference
-  return null;
+  if (!timedSegments || timedSegments.length === 0) return null;
+
+  const isShort = aspectRatio === '9:16';
+  const playResX = isShort ? 1080 : 1920;
+  const playResY = isShort ? 1920 : 1080;
   const fontSize = isShort ? 72 : 42;
   const marginV  = isShort ? 580 : 120;
   const marginLR = isShort ? 80 : 60;
