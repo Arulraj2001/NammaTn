@@ -148,37 +148,9 @@
     @apply bg-background text-foreground;
   }
 
-  /* Base Headings with clean dark/light contrast */
+  /* Base Headings: use theme foreground color with proper contrast across dark and light modes */
   h1, h2, h3, h4, h5, h6 {
-    @apply text-slate-900 dark:text-white;
-  }
-
-  /* CRITICAL CONTRAST FIX: When headings appear inside dark containers, dark banners, 
-     or elements explicitly marked with text-white, force text color to white so they 
-     never inherit light-mode black text */
-  .text-white h1,
-  .text-white h2,
-  .text-white h3,
-  .text-white h4,
-  .text-white h5,
-  .text-white h6,
-  [class*="text-white"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="bg-slate-900"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="bg-slate-950"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="bg-indigo-900"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="bg-indigo-950"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="bg-emerald-900"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="bg-teal-950"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="bg-blue-950"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="from-slate-900"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="from-slate-950"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="from-indigo-900"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="from-emerald-900"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="from-teal-900"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="from-orange-600"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="from-red-600"] :is(h1, h2, h3, h4, h5, h6),
-  [class*="bg-black"] :is(h1, h2, h3, h4, h5, h6) {
-    color: #ffffff !important;
+    @apply text-foreground;
   }
 }
 

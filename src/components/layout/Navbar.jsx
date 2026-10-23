@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, MessageCircle,
-  HelpCircle, AlertTriangle, Heart, LayoutGrid,
+  HelpCircle, AlertTriangle, Heart, LayoutGrid, Calculator, FileText, CreditCard,
   MapPin, Map, Shield, ArrowRight, Plus, LayoutDashboard, Info, X
 } from "lucide-react";
 
@@ -29,6 +29,7 @@ const MEGA_COLUMNS = [
     ta_title: "எச்சரிக்கைகள் & சேவைகள்",
     items: [
       { path: "/power-cuts-today-tamil-nadu", icon: Zap, en: "Power Cuts Today", ta: "இன்றைய மின்தடை", desc_en: "Live TANGEDCO power cuts", desc_ta: "நேரடி மின் தடை தகவல்கள்" },
+      { path: "/tneb-bill-calculator", icon: Calculator, en: "TNEB Bill Calculator", ta: "மின் கட்டண கணக்கீடு", desc_en: "2026 tariff & 100 free units", desc_ta: "100 யூனிட் மானியக் கணக்கீடு" },
       { path: "/school-college-holiday-alerts", icon: AlertTriangle, en: "Holiday Alerts", ta: "பள்ளி விடுமுறை", desc_en: "Rain & Collector orders", desc_ta: "ஆட்சியர் விடுமுறை அறிவிப்புகள்" },
       { path: "/scams", icon: Shield, en: "Scam Alerts", ta: "மோசடி எச்சரிக்கை", desc_en: "Local scam & fraud alerts", desc_ta: "உள்ளூர் மோசடி எச்சரிக்கைகள்" },
       { path: "/helplines", icon: HelpCircle, en: "Helplines Desk", ta: "அவசர எண்கள்", desc_en: "24x7 emergency contacts", desc_ta: "அரசு அவசர உதவி எண்கள்" },
@@ -49,6 +50,8 @@ const MEGA_COLUMNS = [
     en_title: "Citizen Schemes & Rights",
     ta_title: "அரசுத் திட்டங்கள் & உரிமைகள்",
     items: [
+      { path: "/patta-chitta-online-status", icon: FileText, en: "Patta Chitta Status", ta: "பட்டா சிட்டா நிலவரம்", desc_en: "Land records & FMB sketch", desc_ta: "நில உரிமை ஆவண சரிபார்ப்பு" },
+      { path: "/tnpds-smart-ration-card-status", icon: CreditCard, en: "Smart Ration Card", ta: "ஸ்மார்ட் ரேஷன் கார்டு", desc_en: "TNPDS card & OTP status", desc_ta: "குடும்ப அட்டை சேவை நிலை" },
       { path: "/schemes", icon: Shield, en: "Welfare Schemes", ta: "அரசுத் திட்டங்கள்", desc_en: "Kalaignar Magalir Urimai & welfare", desc_ta: "முக்கிய மக்கள் நலத் திட்டங்கள்" },
       { path: "/esevai", icon: Info, en: "e-Sevai Guide", ta: "இ-சேவை வழிகாட்டி", desc_en: "Certificate application guides", desc_ta: "சான்றிதழ் விண்ணப்ப வழிகாட்டல்" },
       { path: "/rights", icon: Shield, en: "Citizen Rights", ta: "குடிமக்கள் உரிமைகள்", desc_en: "Legal protections & consumer laws", desc_ta: "சட்டப்பூர்வ மக்கள் உரிமைகள்" },

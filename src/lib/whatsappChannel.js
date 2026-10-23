@@ -258,35 +258,13 @@ export async function postToWhatsAppChannel({
           try {
             console.log(`[WhatsAppChannel] Broadcasting to ${VIZHITN_CHANNEL_JID}...`);
 
-            let sent = null;
-
-            // 1. If an image is available, broadcast as a native media card with caption.
-            // This is the officially supported, compliant method for WhatsApp Channels that
-            // fans out to all subscribers with an image header and rich caption.
-            if (thumbBuf) {
-              try {
-                console.log(`[WhatsAppChannel] Attempting native media broadcast (image + caption)...`);
-                sent = await sock.sendMessage(VIZHITN_CHANNEL_JID, {
-                  image: thumbBuf,
-                  caption: messageText
-                });
-                console.log(`[WhatsAppChannel] ✅ Native media broadcast successful! Message ID: ${sent?.key?.id}`);
-              } catch (mediaErr) {
-                console.warn(`[WhatsAppChannel] Media upload failed (${mediaErr.message}), falling back to clean text...`);
-              }
-            }
-
-            // 2. Fallback or Default: Clean text broadcast.
-            // NEVER inject contextInfo.externalAdReply or synthetic linkPreview for @newsletter JIDs,
-            // as WhatsApp newsletter servers silently drop stanzas with private-chat ad metadata,
-            // causing the message to appear only on the sender's device and not to subscribers.
-            if (!sent) {
-              console.log(`[WhatsAppChannel] Sending clean text broadcast to newsletter...`);
-              sent = await sock.sendMessage(VIZHITN_CHANNEL_JID, {
-                text: messageText
-              });
-              console.log(`[WhatsAppChannel] ✅ Text broadcast successful! Message ID: ${sent?.key?.id}`);
-            }
+            // WhatsApp Channels (@newsletter) reliably deliver formatted text broadcasts
+            // to all followers without the media CDN silent drops caused by raw binary payloads.
+            console.log(`[WhatsAppChannel] Sending formatted text broadcast to newsletter...`);
+            const sent = await sock.sendMessage(VIZHITN_CHANNEL_JID, {
+              text: messageText
+            });
+            console.log(`[WhatsAppChannel] ✅ Text broadcast successful! Message ID: ${sent?.key?.id}`);
 
             clearTimeout(timeout);
             setTimeout(() => {
