@@ -1,6 +1,6 @@
 import TnTodayArticle from '@/views/TnTodayArticle';
 import { notFound } from 'next/navigation';
-import { getTnTodayArticle } from '@/lib/tnTodayServer';
+import { getTnTodayArticle, getTnTodayArchive } from '@/lib/tnTodayServer';
 import { getTnTodayCanonical } from '@/lib/tnTodayUrl';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 import { toMetaDescription } from '@/lib/metaDescription';
@@ -11,6 +11,11 @@ const SITE_URL = 'https://www.vizhitn.in';
 
 export const runtime = 'edge';
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const { articles } = await getTnTodayArchive();
+  return (articles || []).map(a => ({ slug: a.slug })).filter(a => !!a.slug);
+}
 
 export async function generateMetadata({ params, searchParams }) {
   const resolvedParams = await params;

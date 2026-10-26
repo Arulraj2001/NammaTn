@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { CATEGORY_MAP, SITE_URL } from '@/lib/seo-data';
-import { getCategoryBySlug, CATEGORY_ALIASES, resolveCategorySlug } from '@/lib/categories';
+import { CATEGORIES, getCategoryBySlug, CATEGORY_ALIASES, resolveCategorySlug } from '@/lib/categories';
 import PageSchema from '@/components/seo/PageSchema';
 import { CategoryDistrictLinks } from '@/components/seo/InternalLinks';
 import CategoryDetail from '@/views/CategoryDetail';
@@ -10,6 +10,10 @@ import { getCategoryHubData } from '@/lib/publicHubServer';
 
 export const runtime = 'edge';
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return CATEGORIES.map(c => ({ slug: c.slug }));
+}
 
 function slugToLabel(slug) {
   return slug

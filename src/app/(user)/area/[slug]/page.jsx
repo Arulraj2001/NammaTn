@@ -1,12 +1,16 @@
 import AreaDetail from '@/views/AreaDetail';
 import { notFound } from 'next/navigation';
-import { getAreaDetailData, getPublicArea } from '@/lib/publicHubServer';
+import { getAreaDetailData, getPublicArea, getStaticAreaSlugs } from '@/lib/publicHubServer';
 import { BreadcrumbJsonLd } from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
 export const runtime = 'edge';
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return await getStaticAreaSlugs(40);
+}
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;

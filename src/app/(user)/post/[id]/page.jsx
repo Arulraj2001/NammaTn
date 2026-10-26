@@ -1,6 +1,6 @@
 import PostDetail from '@/views/PostDetail';
 import { notFound, permanentRedirect } from 'next/navigation';
-import { getPublicPostDetail } from '@/lib/postServer';
+import { getPublicPostDetail, getStaticPostSlugs } from '@/lib/postServer';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 import { toMetaDescription } from '@/lib/metaDescription';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
@@ -13,6 +13,10 @@ const SITE_URL = 'https://www.vizhitn.in';
 
 export const runtime = 'edge';
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return await getStaticPostSlugs(60);
+}
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;

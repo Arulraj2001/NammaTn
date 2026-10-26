@@ -8,6 +8,10 @@ import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
 export const runtime = 'edge';
 export const revalidate = 300;
 
+export async function generateStaticParams() {
+  return Object.keys(TN_TODAY_CATEGORY_MAP).map(category => ({ category }));
+}
+
 export async function generateMetadata({ params }) {
   const { category } = await params;
   const categoryData = TN_TODAY_CATEGORY_MAP[category];

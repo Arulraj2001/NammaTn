@@ -101,7 +101,23 @@ export async function getPublicPostDetail(idOrSlug) {
 
     return { post, complaintTrackers };
   } catch (error) {
-    console.error(`[post:${idOrSlug}] Server detail fetch failed:`, error.message);
+    console.error(`[post:${idOrSlug}] Server detail fetch failed:`, error?.message);
     return empty;
+  }
+}
+
+export async function getStaticPostSlugs(limit = 60) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+  try {
+    const { data } = await supabase
+      .from('post')
+      .select('slug, id')
+      .eq('status', 'active')
+      .order('created_date', { ascending: false })
+      .limit(limit);
+    return (data || []).map(p => ({ id: p.slug || p.id })).filter(p => !!p.id);
+  } catch {
+    return [];
   }
 }

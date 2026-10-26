@@ -125,8 +125,7 @@ export async function getTrendingHubData(limit = 9) {
 
 export async function getPublicArea(slug) {
   const supabase = createServerSupabase();
-  if (!slug) return null;
-  if (!supabase) throw new Error('Supabase is not configured');
+  if (!slug || !supabase) return null;
 
   try {
     const { data, error } = await supabase
@@ -135,19 +134,18 @@ export async function getPublicArea(slug) {
       .eq('slug', slug)
       .eq('active', true)
       .maybeSingle();
-    if (error) throw error;
+    if (error) return null;
     return data || null;
   } catch (error) {
-    console.warn(`[area:${slug}] Server area fetch failed:`, error.message);
-    throw error;
+    console.warn(`[area:${slug}] Server area fetch failed:`, error?.message);
+    return null;
   }
 }
 
 export async function getAreaDetailData(slug) {
   const supabase = createServerSupabase();
   const empty = { area: null, civicPosts: [], scams: [], emergencies: [] };
-  if (!slug) return empty;
-  if (!supabase) throw new Error('Supabase is not configured');
+  if (!slug || !supabase) return empty;
 
   try {
     const results = await Promise.all([
@@ -156,18 +154,31 @@ export async function getAreaDetailData(slug) {
       supabase.from('scam_alert').select('*').eq('area_slug', slug).eq('status', 'active').order('created_date', { ascending: false }).limit(30),
       supabase.from('emergency_post').select('*').eq('area_slug', slug).eq('status', 'active').order('created_date', { ascending: false }).limit(20),
     ]);
-    const failed = results.find(result => result.error);
-    if (failed) throw failed.error;
 
     return {
-      area: results[0].data || null,
-      civicPosts: (results[1].data || []).filter(post => post.civic_receipt_id && isPubliclyVisible(post)).slice(0, 100),
-      scams: results[2].data || [],
-      emergencies: results[3].data || [],
+      area: results[0]?.data || null,
+      civicPosts: (results[1]?.data || []).filter(post => post.civic_receipt_id && isPubliclyVisible(post)).slice(0, 100),
+      scams: results[2]?.data || [],
+      emergencies: results[3]?.data || [],
     };
   } catch (error) {
-    console.warn(`[area:${slug}] Server detail fetch failed:`, error.message);
-    throw error;
+    console.warn(`[area:${slug}] Server detail fetch failed:`, error?.message);
+    return empty;
+  }
+}
+
+export async function getStaticAreaSlugs(limit = 40) {
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+  try {
+    const { data } = await supabase
+      .from('area')
+      .select('slug')
+      .eq('active', true)
+      .limit(limit);
+    return (data || []).map(a => ({ slug: a.slug })).filter(a => !!a.slug);
+  } catch {
+    return [];
   }
 }
 
