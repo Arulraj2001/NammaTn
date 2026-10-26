@@ -2,20 +2,16 @@
 <html lang="ta">
 <head>
   <meta charset="UTF-8">
-  <title>Vizhi Uncut Podcast Studio Frame</title>
+  <title>VizhiTN Investigative Desk</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Noto+Sans+Tamil:wght@400;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&family=Noto+Sans+Tamil:wght@500;700;800;900&display=swap');
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       width: 1920px;
       height: 1080px;
-      background: radial-gradient(circle at 50% 20%, #111a2e 0%, #060a12 100%);
+      background: radial-gradient(circle at 50% 20%, #0d1527 0%, #030712 100%);
       font-family: 'Plus Jakarta Sans', 'Noto Sans Tamil', sans-serif;
       color: #f8fafc;
       overflow: hidden;
@@ -28,76 +24,82 @@
     /* Ambient Newsroom Studio Glow */
     .studio-glow {
       position: absolute;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
-      top: -100px;
+      width: 900px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, transparent 70%);
+      top: -80px;
       left: 50%;
       transform: translateX(-50%);
       pointer-events: none;
       z-index: 1;
     }
 
-    /* Top Broadcast Bar */
+    /* ── Top Broadcast Header ── */
     .header-bar {
-      height: 100px;
+      height: 96px;
       padding: 0 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(10, 16, 29, 0.7);
-      backdrop-filter: blur(12px);
+      border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
+      background: rgba(10, 16, 29, 0.85);
+      backdrop-filter: blur(16px);
       z-index: 10;
     }
 
     .brand-section {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 18px;
     }
-
     .brand-logo {
-      width: 52px;
-      height: 52px;
+      width: 48px;
+      height: 48px;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
     }
-
     .brand-titles {
       display: flex;
       flex-direction: column;
     }
-
     .brand-name {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
       letter-spacing: -0.5px;
+      color: #ffffff;
       display: flex;
       align-items: center;
       gap: 12px;
     }
-
-    .brand-name span.gradient-text {
-      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .brand-name span.highlight {
+      color: #38bdf8;
+    }
+    .brand-tagline {
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
-    .live-badge {
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .live-docket-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #f87171;
-      padding: 4px 14px;
-      border-radius: 20px;
+      background: rgba(220, 38, 38, 0.2);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 6px 18px;
+      border-radius: 9999px;
       font-size: 14px;
       font-weight: 800;
       letter-spacing: 1px;
     }
-
     .live-dot {
       width: 8px;
       height: 8px;
@@ -105,458 +107,314 @@
       border-radius: 50%;
       box-shadow: 0 0 10px #ef4444;
     }
-
     .series-pill {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid {{CATEGORY_COLOR}};
-      padding: 8px 24px;
-      border-radius: 30px;
-      font-size: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid {{CATEGORY_COLOR}};
+      padding: 6px 20px;
+      border-radius: 9999px;
+      font-size: 15px;
       font-weight: 800;
       color: {{CATEGORY_COLOR}};
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
-    /* Main Studio 3-Column Grid */
+    /* ── Main Documentary Evidence Desk (75% Stage) ── */
     .studio-stage {
       flex: 1;
       padding: 30px 60px;
       display: grid;
-      grid-template-columns: 320px 1fr 320px;
+      grid-template-columns: 360px 1fr;
       gap: 40px;
-      align-items: center;
+      align-items: stretch;
       z-index: 5;
     }
 
-    /* Host Cards */
-    .host-card {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Left Sidebar: Topic Dossier & Helpline */
+    .dossier-panel {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
       border-radius: 24px;
-      padding: 32px 24px;
+      padding: 28px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      text-align: center;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      transition: all 0.3s ease;
-      position: relative;
+      justify-content: space-between;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     }
-
-    .host-card.host-dimmed {
-      opacity: 0.38;
-      filter: grayscale(40%);
-      transform: scale(0.97);
-      border-color: rgba(255, 255, 255, 0.05);
-      box-shadow: none;
-    }
-
-    .host-card.karthik-active {
-      opacity: 1;
-      transform: scale(1.03);
-      border-color: #00ffff;
-      box-shadow: 0 0 50px rgba(0, 255, 255, 0.35);
-    }
-
-    .host-card.kavitha-active {
-      opacity: 1;
-      transform: scale(1.03);
-      border-color: #facc15;
-      box-shadow: 0 0 50px rgba(250, 204, 21, 0.35);
-    }
-
-    .host-avatar-ring {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
-      border: 3px solid rgba(255, 255, 255, 0.15);
+    .dossier-top {
       display: flex;
-      align-items: center;
-      overflow: hidden;
-      margin-bottom: 20px;
-      position: relative;
+      flex-direction: column;
+      gap: 14px;
     }
-
-    .host-avatar-img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .host-card.karthik-active .host-avatar-ring {
-      border-color: #00ffff;
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-    }
-
-    .host-card.kavitha-active .host-avatar-ring {
-      border-color: #facc15;
-      box-shadow: 0 0 30px rgba(250, 204, 21, 0.5);
-    }
-
-    .speaking-pill {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
+    .dossier-badge {
+      font-size: 13px;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
     }
-
-    .karthik-active .speaking-pill {
+    .episode-headline-ta {
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 1.35;
+      color: #ffffff;
+    }
+    .district-location-tag {
       display: inline-flex;
-      background: rgba(0, 255, 255, 0.2);
-      border: 1px solid #00ffff;
-      color: #00ffff;
-      box-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #cbd5e1;
+      align-self: flex-start;
     }
 
-    .kavitha-active .speaking-pill {
-      display: inline-flex;
-      background: rgba(250, 204, 21, 0.2);
-      border: 1px solid #facc15;
-      color: #facc15;
-      box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
+    .dossier-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-
-    .mic-icon-badge {
-      position: absolute;
-      bottom: -6px;
-      right: 4px;
-      width: 36px;
-      height: 36px;
-      background: #1e293b;
-      border: 2px solid #334155;
-      border-radius: 50%;
+    .helpline-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .helpline-box {
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.25) 0%, rgba(185, 28, 28, 0.15) 100%);
+      border: 1.5px solid #ef4444;
+      border-radius: 14px;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 18px;
+      gap: 12px;
     }
-
-    .karthik-active .mic-icon-badge {
-      border-color: #00ffff;
-      background: #083344;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-    }
-
-    .kavitha-active .mic-icon-badge {
-      border-color: #facc15;
-      background: #422006;
-      box-shadow: 0 0 15px rgba(250, 204, 21, 0.5);
-    }
-
-    .host-name-ta {
-      font-size: 26px;
-      font-weight: 800;
+    .helpline-num {
+      font-size: 28px;
+      font-weight: 900;
       color: #ffffff;
-      margin-bottom: 4px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: 1px;
     }
 
-    .host-role-en {
+    /* Right Main Stage: Evidence Display Screen */
+    .evidence-screen {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 36px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(24px);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+    }
+    .evidence-screen::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, {{CATEGORY_COLOR}}, #38bdf8, {{CATEGORY_COLOR}});
+    }
+
+    .evidence-act-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .act-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 900;
+      color: #38bdf8;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .legal-shield-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1.5px solid #10b981;
+      color: #6ee7b7;
+      padding: 6px 18px;
+      border-radius: 9999px;
       font-size: 14px;
+      font-weight: 800;
+    }
+
+    .evidence-headline {
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.35;
+      color: #ffffff;
+      margin-bottom: 24px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .evidence-points {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+    .evidence-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 5px solid {{CATEGORY_COLOR}};
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .card-icon { font-size: 26px; }
+    .card-text {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #f1f5f9;
+    }
+
+    /* ── Lower-Third Speaker Ribbon ── */
+    .lower-third-ribbon {
+      height: 140px;
+      background: rgba(7, 12, 22, 0.95);
+      border-top: 1.5px solid rgba(255, 255, 255, 0.12);
+      padding: 0 60px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      z-index: 10;
+    }
+    .speaker-badge {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 220px;
+      border-right: 1.5px solid rgba(255, 255, 255, 0.12);
+      padding-right: 24px;
+    }
+    .speaker-name {
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .speaker-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00ffff;
+      box-shadow: 0 0 10px #00ffff;
+    }
+    .speaker-role {
+      font-size: 13px;
       font-weight: 700;
       color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 18px;
     }
 
-    /* Soundwave Equalizer Bars */
-    .equalizer-bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 6px;
-      height: 44px;
-      padding: 0 16px;
-    }
-
-    .eq-bar {
-      width: 6px;
-      border-radius: 3px;
-      background: #334155;
-      height: 4px;
-      transition: height 0.2s ease;
-    }
-
-    .karthik-active .eq-bar {
-      background: #00ffff;
-      box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
-    }
-
-    .kavitha-active .eq-bar {
-      background: #facc15;
-      box-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
-    }
-
-    .host-dimmed .eq-bar {
-      height: 4px !important;
-      background: #1e293b !important;
-      box-shadow: none !important;
-    }
-
-    /* Center Evidence Board */
-    .center-board {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 28px;
-      overflow: hidden;
-      height: 640px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-    }
-
-    .board-header {
-      padding: 18px 32px;
-      background: rgba(2, 6, 23, 0.6);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .act-badge {
-      background: {{CATEGORY_COLOR}};
-      color: #ffffff;
-      font-weight: 900;
-      font-size: 15px;
-      padding: 6px 18px;
-      border-radius: 20px;
-      letter-spacing: 0.5px;
-    }
-
-    .act-title-en {
-      font-size: 18px;
-      font-weight: 800;
-      color: #cbd5e1;
-      letter-spacing: -0.2px;
-    }
-
-    .board-media-wrap {
+    .spoken-dialogue-box {
       flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .board-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: brightness(0.88);
-    }
-
-    .board-gradient-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60%;
-      background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
-    }
-
-    .board-content-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 32px;
-      z-index: 2;
-    }
-
-    .evidence-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(245, 158, 11, 0.2);
-      border: 1px solid rgba(245, 158, 11, 0.6);
-      color: #fbbf24;
-      font-size: 14px;
-      font-weight: 800;
-      padding: 6px 16px;
-      border-radius: 8px;
-      margin-bottom: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .headline-ta {
-      font-size: 32px;
-      font-weight: 900;
-      line-height: 1.35;
-      color: #ffffff;
-      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
-    }
-
-    /* Bottom Information Strip */
-    .footer-bar {
-      height: 110px;
-      padding: 0 60px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(6, 10, 18, 0.85);
-      z-index: 10;
-    }
-
-    .helpline-box {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 10px 24px;
-      border-radius: 16px;
-    }
-
-    .helpline-icon {
       font-size: 24px;
-    }
-
-    .helpline-label {
-      font-size: 13px;
       font-weight: 700;
-      color: #94a3b8;
-    }
-
-    .helpline-value {
-      font-size: 20px;
-      font-weight: 900;
-      color: #38bdf8;
-      letter-spacing: 0.5px;
-    }
-
-    .cta-portal-box {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 18px;
-      font-weight: 700;
-      color: #e2e8f0;
-    }
-
-    .portal-link {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      color: #ffffff;
-      padding: 8px 22px;
-      border-radius: 12px;
-      font-weight: 900;
-      font-size: 18px;
-      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+      line-height: 1.45;
+      color: #f8fafc;
+      letter-spacing: 0.2px;
     }
   </style>
 </head>
 <body>
   <div class="studio-glow"></div>
 
-  <!-- Top Header Bar -->
+  <!-- Header -->
   <header class="header-bar">
     <div class="brand-section">
-      <img src="{{BRAND_LOGO_DATA_URI}}" class="brand-logo" alt="VizhiTN">
+      <img class="brand-logo" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
       <div class="brand-titles">
-        <div class="brand-name">
-          VIZHI UNCUT <span class="gradient-text">| விழி பாட்காஸ்ட்</span>
-        </div>
-      </div>
-      <div class="live-badge">
-        <div class="live-dot"></div>
-        ON AIR
+        <div class="brand-name">VizhiTN <span class="highlight">INVESTIGATIVE DESK</span></div>
+        <div class="brand-tagline">தமிழ்நாடு உண்மை சரிபார்ப்பு & புலனாய்வு</div>
       </div>
     </div>
-
-    <div class="series-pill">
-      <span>{{SERIES_ICON}}</span>
-      <span>{{SERIES_NAME_TA}}</span>
+    <div class="header-right">
+      <div class="live-docket-pill">
+        <span class="live-dot"></span>
+        <span>SPECIAL DOSSIER</span>
+      </div>
+      <div class="series-pill">{{SERIES_NAME_EN}}</div>
     </div>
   </header>
 
-  <!-- Main 3-Column Studio Stage -->
+  <!-- Main Stage: Dossier + Evidence Desk -->
   <main class="studio-stage">
-    <!-- Left Host: Karthik -->
-    <div class="host-card {{KARTHIK_ACTIVE_CLASS}}">
-      <div class="speaking-pill">● SPEAKING NOW</div>
-      <div class="host-avatar-ring">
-        <img src="{{KARTHIK_AVATAR_URI}}" class="host-avatar-img" alt="கார்த்திக்">
-        <div class="mic-icon-badge">🎙️</div>
-      </div>
-      <div class="host-name-ta">கார்த்திக்</div>
-      <div class="host-role-en">Investigative Journalist</div>
-      <div class="equalizer-bars">
-        <div class="eq-bar" style="height: {{EQ_K1}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_K2}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_K3}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_K4}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_K5}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_K6}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_K7}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_K8}}px;"></div>
-      </div>
-    </div>
-
-    <!-- Center Evidence Board -->
-    <div class="center-board">
-      <div class="board-header">
-        <div class="act-badge">{{ACT_BADGE_TEXT}}</div>
-        <div class="act-title-en">{{ACT_TITLE_EN}}</div>
+    <!-- Left Dossier Panel -->
+    <aside class="dossier-panel">
+      <div class="dossier-top">
+        <span class="dossier-badge">CASE DOSSIER</span>
+        <h2 class="episode-headline-ta">{{EPISODE_TITLE_TA}}</h2>
+        <div class="district-location-tag">📍 {{DISTRICT_NAME}}</div>
       </div>
 
-      <div class="board-media-wrap">
-        <img src="{{SCENE_IMAGE_SRC}}" class="board-image" alt="Evidence">
-        <div class="board-gradient-overlay"></div>
-        <div class="board-content-overlay">
-          <div class="evidence-tag">✦ {{EVIDENCE_TAG_TEXT}}</div>
-          <h2 class="headline-ta">{{HEADLINE_TA}}</h2>
+      <div class="dossier-bottom">
+        <span class="helpline-label">அதிகாரப்பூர்வ உதவி மையம்</span>
+        <div class="helpline-box">
+          <span style="font-size: 24px;">📞</span>
+          <span class="helpline-num">{{HELPLINE_TEXT}}</span>
         </div>
       </div>
-    </div>
+    </aside>
 
-    <!-- Right Host: Kavitha -->
-    <div class="host-card {{KAVITHA_ACTIVE_CLASS}}">
-      <div class="speaking-pill">● SPEAKING NOW</div>
-      <div class="host-avatar-ring">
-        <img src="{{KAVITHA_AVATAR_URI}}" class="host-avatar-img" alt="கவிதா">
-        <div class="mic-icon-badge">🎙️</div>
+    <!-- Right Evidence Screen -->
+    <section class="evidence-screen">
+      <div class="evidence-act-row">
+        <div class="act-indicator">⚡ {{ACT_NAME_TA}}</div>
+        <div class="legal-shield-badge">🛡️ {{LEGAL_SECTION_NAME}}</div>
       </div>
-      <div class="host-name-ta">கவிதா</div>
-      <div class="host-role-en">Systems & Legal Decoder</div>
-      <div class="equalizer-bars">
-        <div class="eq-bar" style="height: {{EQ_V1}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_V2}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_V3}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_V4}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_V5}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_V6}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_V7}}px;"></div>
-        <div class="eq-bar" style="height: {{EQ_V8}}px;"></div>
+
+      <h1 class="evidence-headline">{{SCENE_TITLE_TA}}</h1>
+
+      <div class="evidence-points">
+        <div class="evidence-card">
+          <span class="card-icon">🔍</span>
+          <span class="card-text">{{POINT_1_TEXT}}</span>
+        </div>
+        <div class="evidence-card">
+          <span class="card-icon">⚠️</span>
+          <span class="card-text">{{POINT_2_TEXT}}</span>
+        </div>
+        <div class="evidence-card">
+          <span class="card-icon">⚖️</span>
+          <span class="card-text">{{POINT_3_TEXT}}</span>
+        </div>
       </div>
-    </div>
+    </section>
   </main>
 
-  <!-- Bottom Information Bar -->
-  <footer class="footer-bar">
-    <div class="helpline-box">
-      <span class="helpline-icon">📞</span>
-      <div>
-        <div class="helpline-label">அதிகாரப்பூர்வ உதவி எண்</div>
-        <div class="helpline-value">{{HELPLINE_TEXT}}</div>
+  <!-- Lower Third Subtitle Ribbon -->
+  <footer class="lower-third-ribbon">
+    <div class="speaker-badge">
+      <div class="speaker-name">
+        <span class="speaker-dot" style="background: {{SPEAKER_COLOR}};"></span>
+        <span>{{SPEAKER_NAME_TA}}</span>
       </div>
+      <div class="speaker-role">{{SPEAKER_ROLE_TA}}</div>
     </div>
-
-    <div class="cta-portal-box">
-      <span>உங்கள் பகுதியில் நடக்கும் பிரச்சனைகளை பதிவு செய்ய:</span>
-      <span class="portal-link">vizhitn.in</span>
+    <div class="spoken-dialogue-box">
+      "{{SPOKEN_TEXT_TA}}"
     </div>
   </footer>
 </body>

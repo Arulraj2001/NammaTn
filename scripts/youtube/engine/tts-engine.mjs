@@ -9,6 +9,7 @@ import { execSync, execFileSync } from 'child_process';
 import { YOUTUBE_CONFIG } from '../config.mjs';
 import { normalizeAcronymsToSpokenTamil, splitIntoSpokenClauses, addUrgencyPauses } from './tamil-phonetics.mjs';
 import { getFfmpegBinaryPath } from './video-composer.mjs';
+import { synthesizeGeminiSpeech } from './gemini-tts.mjs';
 
 // ── Detect Python edge-tts CLI ────────────────────────────────────────────────
 
@@ -127,7 +128,43 @@ export async function synthesizeSpeech(input, outputFilePath, options = {}) {
 
   console.log(`[TTS ENGINE] Sliced narration into ${clauses.length} natural segments for continuous delivery.`);
 
-  // Verify Python + edge-tts CLI is available
+  // Prioritize Gemini Neural Speech (Lifelike breathing & emotional tone)
+  const geminiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (geminiKey && !options.forceEdgeTts) {
+    try {
+      const fullSpokenText = clauses.join(' ');
+      console.log('[TTS ENGINE] Synthesizing via Google Gemini Lifelike Neural Voice...');
+      await synthesizeGeminiSpeech(fullSpokenText, outputFilePath, options);
+
+      // Probe duration
+      let durationSec = 15;
+      try {
+        const probe = execSync(`"${ffmpeg}" -i "${outputFilePath}" 2>&1`, { timeout: 10000 }).toString();
+        const m = probe.match(/Duration:\s*(\d+):(\d+):(\d+\.\d+)/);
+        if (m) durationSec = +m[1] * 3600 + +m[2] * 60 + +m[3];
+      } catch (_) {}
+
+      // Calculate approximate segment timings for karaoke subtitles
+      const timedSegments = [];
+      const totalWords = fullSpokenText.split(/\s+/).length;
+      const secPerWord = durationSec / Math.max(1, totalWords);
+      let currentWordOffset = 0;
+      for (const clause of clauses) {
+        const count = clause.split(/\s+/).length;
+        const startSec = Math.round(currentWordOffset * secPerWord * 100) / 100;
+        const endSec = Math.round((currentWordOffset + count) * secPerWord * 100) / 100;
+        timedSegments.push({ text: clause, startSec, endSec });
+        currentWordOffset += count;
+      }
+
+      console.log(`[TTS ENGINE] Gemini Neural Speech generated successfully (${durationSec.toFixed(1)}s).`);
+      return { filePath: outputFilePath, voice: 'gemini-neural', durationSec, timedSegments };
+    } catch (geminiErr) {
+      console.warn(`[TTS ENGINE WARN] Gemini TTS failed, falling back to edge-tts: ${geminiErr.message}`);
+    }
+  }
+
+  // Verify Python + edge-tts CLI is available (fallback)
   const python = getPythonBinary();
   if (!checkEdgeTtsCli(python)) {
     throw new Error('[TTS] edge-tts Python CLI not found. Run: pip install edge-tts');

@@ -225,8 +225,12 @@ export async function postToWhatsAppChannel({
   }
 
   messageText += `👉 *முழு விவரங்களுக்கு / Full List:* ${url}\n\n`;
-  messageText += `📢 *பிறருக்கு உதவ இந்த தகவலை உங்கள் குடியிருப்போர் மற்றும் குடும்ப வாட்ஸ்அப் குழுக்களில் பகிருங்கள் (Forward)!*\n\n`;
-  messageText += `🔗 *வாட்ஸ்அப் சேனலை பின்தொடர:* https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228\n\n`;
+  messageText += `──────────────────────────────\n`;
+  messageText += `📲 *இந்த செய்தியை பார்வர்டு (Forward) வழியாக படிக்கிறீர்களா?*\n`;
+  messageText += `உங்கள் மாவட்டத்தின் உடனடி மின்தடை, குடிநீர், பேருந்து, அவசர அறிவிப்புகளை உடனுக்குடன் பெற *VizhiTN* சேனலை உடனே Follow செய்யுங்கள்!\n`;
+  messageText += `👉 *இலவசமாக இணைய:* https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228\n`;
+  messageText += `──────────────────────────────\n\n`;
+  messageText += `👇 *உங்கள் பகுதியில் இதே நிலை உள்ளதா? ஆம் என்றால் 👍 / இல்லை என்றால் ❌ ரியாக்ட் செய்யவும்!*\n\n`;
   messageText += `🌐 *VizhiTN* | தமிழ்நாடு உண்மை செய்திகள் & மக்கள் களம்`;
 
   const thumbBuf = await resolveThumbnail(image);

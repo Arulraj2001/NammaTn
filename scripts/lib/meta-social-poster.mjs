@@ -87,16 +87,21 @@ export function formatSocialCaption(post = {}) {
   const saveShareHook = '📌 உங்கள் பகுதி உள்ளதா என்பதைச் சரிபார்க்க சேமித்து (Save) வைத்துக் கொள்ளுங்கள்! நண்பர்களுக்கும் குடும்பத்தினருக்கும் பகிருங்கள் (Share) ↗️';
   const discussionHook = '💬 உங்கள் பகுதியில் தற்போதைய நிலை என்ன? கமெண்டில் சொல்லுங்கள் 👇';
 
-  // 3. Multi-tier hashtags
-  const tier1Tags = ['#VizhiTN', '#TamilNadu', '#TamilNaduNews', '#TNGovt'];
+  // 3. Multi-tier hashtags (25-30 live trending Meta tags)
+  const tier1ViralTags = [
+    '#VizhiTN', '#TamilNadu', '#TamilNaduNews', '#TNGovt',
+    '#Reels', '#ReelsIndia', '#TamilReels', '#TrendingReels', '#ViralReels',
+    '#ExplorePage', '#TamilNews', '#BreakingNews', '#TamilTrending', '#TNNews'
+  ];
   const tier2Tags = getCategoryHashtags(category);
   const districtTag = `#${district.replace(/[^a-zA-Z0-9]/g, '')}`;
   const areaTag = area ? `#${area.replace(/[^a-zA-Z0-9]/g, '')}` : '';
-  const tier3Tags = [districtTag, areaTag].filter(Boolean);
+  const tier3Tags = [districtTag, areaTag, '#CivicAlert', '#PublicSafety', '#DailyUpdate', '#HyperlocalNews'].filter(Boolean);
 
-  const allHashtags = Array.from(new Set([...tier1Tags, ...tier2Tags, ...tier3Tags])).join(' ');
+  const allHashtags = Array.from(new Set([...tier1ViralTags, ...tier2Tags, ...tier3Tags])).join(' ');
 
   const targetUrl = `https://www.vizhitn.in/${post.slug ? `post/${post.slug}` : ''}`;
+  const searchQueries = `🔍 Searches: ${area || district} news today, Tamil Nadu civic alert, ${helpline || '1100'} helpline, VizhiTN`;
 
   const lines = [
     searchAnchor,
@@ -108,11 +113,14 @@ export function formatSocialCaption(post = {}) {
     '',
     helpline ? `📞 அவசர உதவி எண்: ${helpline}` : '',
     '',
+    '👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & நேரடி மக்கள் செய்திகளுக்கு @VizhiTN பக்கத்தை Follow செய்யுங்கள்!',
     saveShareHook,
     discussionHook,
     '',
     'மேலும் முழு விவரங்களை அறிய 👇',
     `🔗 ${targetUrl}`,
+    '',
+    searchQueries,
     '',
     allHashtags
   ].filter((line, idx, arr) => line !== '' || (arr[idx - 1] !== '' && idx > 0));

@@ -178,11 +178,40 @@ export default function MobileNav() {
                 </Link>
 
                 {/* Profile row */}
-                <div className="flex items-center justify-end mb-5">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-1">
+                    {T("Menu", "மெனு")}
+                  </span>
                   <div className="flex-shrink-0">
                     <UserMenu onAction={() => setMenuOpen(false)} />
                   </div>
                 </div>
+
+                {/* WhatsApp Channel Follow Card */}
+                <a
+                  href="https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="mb-5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-md active:scale-[0.98] transition-all"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                      <MessageCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold leading-tight">
+                        {T("Join VizhiTN on WhatsApp", "VizhiTN வாட்ஸ்அப் சேனல்")}
+                      </p>
+                      <p className="text-[11px] text-emerald-100 leading-tight mt-0.5">
+                        {T("Get instant district civic & power alerts", "உடனடி மாவட்ட அவசர அறிவிப்புகள்")}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold bg-white text-emerald-700 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0 shadow-sm">
+                    {T("Follow", "இணைய")}
+                  </span>
+                </a>
 
                 {/* Feature Groups */}
                 {MOBILE_MENU_GROUPS.map((group, gi) => (

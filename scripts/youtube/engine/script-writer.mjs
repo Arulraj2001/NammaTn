@@ -217,26 +217,45 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
   const primaryEntity = categoryHashtags[category]?.[0] || '#TamilNadu';
   const geoTag = districtSlugMap[districtSlug] || '#TamilNadu';
 
-  // 2026 Algorithmic Best Practice: Exactly 3 focused hashtags for Shorts (Format + Entity + Geo)
+  // Live Trending Multi-Tier Hashtag Clusters (YouTube, Instagram, Facebook)
+  const TIER_1_VIRAL = ['#Shorts', '#ShortsFeed', '#YouTubeShorts', '#TamilShorts', '#Trending', '#Viral', '#ViralShorts', '#TamilNews', '#TamilNadu', '#TamilNaduNews', '#BreakingNews', '#VizhiTN'];
+  const catTags = categoryHashtags[category] || categoryHashtags['general'];
+  const geoTagDistrict = districtSlugMap[districtSlug] || '#TamilNadu';
+  const areaTag = article.area_name ? `#${article.area_name.replace(/[^a-zA-Z0-9]/g, '')}` : '';
+
   let hashtags;
   if (isShort) {
-    hashtags = `#Shorts ${primaryEntity} ${geoTag}`;
+    hashtags = Array.from(new Set([
+      ...TIER_1_VIRAL,
+      ...catTags,
+      geoTagDistrict,
+      areaTag,
+      '#TamilTrending', '#TNAlert', '#HyperlocalNews'
+    ].filter(Boolean))).join(' ');
   } else {
-    const tier1 = ['#TamilNadu', '#TNNews', '#விழிதமிழ்நாடு', '#VizhiTN', '#TamilDocumentary'];
-    const tier2 = categoryHashtags[category] || categoryHashtags['general'];
-    const tier3 = [geoTag, '#CivicIssues', '#TamilNaduGovt'];
-    hashtags = [...tier1, ...tier2, ...tier3].join(' ');
+    const tier1 = ['#TamilNadu', '#TNNews', '#விழிதமிழ்நாடு', '#VizhiTN', '#TamilDocumentary', '#TamilInvestigation', '#TrueCrimeTamil'];
+    const tier2 = catTags;
+    const tier3 = [geoTagDistrict, areaTag, '#CivicIssues', '#TamilNaduGovt', '#ConsumerRights'];
+    hashtags = Array.from(new Set([...tier1, ...tier2, ...tier3].filter(Boolean))).join(' ');
   }
 
-  // --- Tags array for YouTube API ---
+  // --- High-Ranking Search Tags array for YouTube API (25-30 Keywords) ---
   const tags = isShort
-    ? ['Shorts', 'Tamil Nadu', districtLabel, primaryEntity.replace('#', ''), 'VizhiTN']
-    : [
+    ? Array.from(new Set([
+        'Shorts', 'YouTube Shorts', 'Tamil Shorts', 'Tamil Nadu', districtLabel,
+        `${districtLabel} news`, `${districtLabel} alert`, 'Tamil News', 'TN News Live',
+        'VizhiTN', dept, 'Civic Alert Tamil', 'Government Helpline', 'Breaking News Tamil',
+        'Tamil Trending', 'Viral Video Tamil', 'Tamil Nadu Government', 'Public Notice Tamil',
+        ...(catTags.map(h => h.replace('#', ''))),
+        ...(article.area_name ? [article.area_name, `${article.area_name} news`] : [])
+      ].filter(Boolean))).slice(0, 30)
+    : Array.from(new Set([
         'Tamil Nadu', 'TN News', 'VizhiTN', 'Civic Issues Tamil', districtLabel,
         dept, 'Tamil Nadu Government', 'Local Body News', 'Tamil Nadu Today',
-        ...((categoryHashtags[category] || categoryHashtags['general']).map(h => h.replace('#', ''))),
-        'Tamil Documentary'
-      ].filter(Boolean).slice(0, 15);
+        'Tamil Documentary', 'Investigative Journalism Tamil', 'Consumer Rights Tamil',
+        ...(catTags.map(h => h.replace('#', ''))),
+        ...(article.area_name ? [article.area_name, `${article.area_name} news`] : [])
+      ].filter(Boolean))).slice(0, 30);
 
   // --- Description ---
   let defaultChapters = chapterTimestamps;

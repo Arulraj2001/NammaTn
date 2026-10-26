@@ -9,6 +9,7 @@ import { execSync, execFileSync } from 'child_process';
 import { normalizeAcronymsToSpokenTamil, sanitizeClauseText } from './tamil-phonetics.mjs';
 import { getFfmpegBinaryPath, getAudioDuration } from './video-composer.mjs';
 import { cleanCaptionText, chunkSentenceForCaptions, parseVttTiming, generateCaptionsFromTimedSegments } from './captions-engine.mjs';
+import { synthesizeGeminiSpeech } from './gemini-tts.mjs';
 
 function getPythonBinary() {
   for (const bin of ['python', 'python3']) {
@@ -212,7 +213,17 @@ export async function synthesizePodcastTurn({ turn, actNum, turnIndex, outputDir
 
   const rawAudioPath = path.join(outputDir, `turn_raw_${actNum}_${turnIndex}_${Date.now()}.mp3`);
   try {
-    synthesizeTurnAudio(cleanText, rawAudioPath, speaker, emotion);
+    const geminiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    if (geminiKey) {
+      try {
+        await synthesizeGeminiSpeech(cleanText, rawAudioPath, { voice: speaker });
+      } catch (geminiErr) {
+        console.warn(`[PODCAST TTS] Gemini voice failed, falling back to edge-tts: ${geminiErr.message.slice(0, 80)}`);
+        synthesizeTurnAudio(cleanText, rawAudioPath, speaker, emotion);
+      }
+    } else {
+      synthesizeTurnAudio(cleanText, rawAudioPath, speaker, emotion);
+    }
   } catch (ttsErr) {
     console.warn(`[PODCAST TTS RESILIENCE] Turn ${turnIndex + 1} synthesis failed after all retries (${ttsErr.message.slice(0, 80)}). Generating atmospheric fallback audio...`);
     execSync(`"${ffmpeg}" -y -f lavfi -i anullsrc=r=24000:cl=mono -t 3.0 -c:a libmp3lame -q:a 2 "${rawAudioPath}"`, {

@@ -66,15 +66,15 @@ function getCategoryTheme(slug) {
  * Falls back to hardcoded template strings if API is unavailable.
  */
 async function generateAIShortScript({ title, area, category, helplineVoice, assigned_department, location_text, content_ta }) {
-  const apiKey = process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
 
   try {
     const { GoogleGenAI } = await import('@google/genai');
     const ai = new GoogleGenAI({ apiKey });
 
-    const prompt = `நீ VizhiTN என்ற தமிழ்நாடு குடிமை செய்தி ஊடகத்திற்கான YouTube Shorts scriptwriter.
-தமிழ்நாடு மக்களுக்கான அதிவேக 16-18 வினாடி Viral Civic Short script எழுது.
+    const prompt = `நீ VizhiTN என்ற தமிழ்நாடு மக்கள் புலனாய்வு மற்றும் உண்மை செய்தி ஊடகத்தின் தலைமை Shorts scriptwriter.
+தமிழ்நாடு மக்கள் சட்டென நின்று பார்க்கக்கூடிய அதிவேக 15-18 வினாடி Viral Civic Alert Script எழுது.
 
 தகவல்கள்:
 தலைப்பு: "${title}"
@@ -85,18 +85,16 @@ async function generateAIShortScript({ title, area, category, helplineVoice, ass
 உள்ளடக்கம்: ${content_ta || title}
 ஹெல்ப்லைன்: ${helplineVoice}
 
-★ VizhiTN 8-Rule Script Constitution (Strict Enforcement):
-1. Immediate Citizen Pain Command (Beat 1 Hook): முதல் 3-4 வார்த்தைகளில் குடிமக்களின் நேரடி அவசர கட்டளை (எ.கா: "போன், மோட்டாரை இப்பவே சார்ஜ் பண்ணுங்க!", "நாளைக்கு தண்ணி வராது, பிடிச்சு வையுங்க!", "இந்த ரோட்ல போகாதீங்க, டிராபிக் ஜாம்!") என்று அதிவேகமாக தொடங்கி "— ஏன்னு தெரியுமா?" என்று கேள்வியோடு முடி. அரசு அறிக்கை போன்ற மந்தமான தொடக்கங்கள் முற்றிலும் தடை!
-2. One Fact Per Beat (Beat 2 Ground Reality): எங்கு (பகுதி) என்று மட்டும் சொல். நேரம்/மணியை வாயால் பேசாதே (நேரம் திரையில் கார்டில் காண்பிக்கப்படும்). 1 மூச்சில் சொல்லக்கூடிய 1 சிறிய வாக்கியம் மட்டுமே.
-3. Brand CTA & Helpline (Beat 3 Ending): உதவி எண்ணை சொல்லி, 'தினசரி அரசு எச்சரிக்கைகளுக்கு இப்பவே VizhiTN-ஐ Follow & Subscribe பண்ணுங்க!' என்று கட்டாயமாக சொல்லி, பின் 'அடுத்த செய்தி உங்க ஏரியாவான்னு தெரிஞ்சுக்க வேணுமா—' என்ற கேள்வியோடு முடி. (முக்கியம்: 'VizhiTN-ஐ Follow பண்ணுங்க மற்றும் Subscribe' என்ற வார்த்தைகள் விடுபடவே கூடாது!)
-4. Write for the Ear: குறுகிய, எளிய பேச்சுத் தமிழ் (Colloquial Tamil).
-5. நீளம்: Beat 1 (7-9 வார்த்தைகள்), Beat 2 (8-10 வார்த்தைகள்), Beat 3 (12-16 வார்த்தைகள்: உதவி எண் + VizhiTN Follow & Subscribe + கேள்வி).
+★ Viral Retention Constitution (Strict Enforcement):
+1. Beat 1 Hook (0-2s): முதல் 2 வினாடிகளில் பார்வையாளரை திடுக்கிட வைக்கும் நேரடி உள்ளூர் எச்சரிக்கை. (எ.கா: "${area}-ல இருக்கிறவங்க கவனத்திற்கு!", "நாளைக்கு காலைல இந்த ரோட்ல போறவங்க ஜாக்கிரதை!", "உங்க ஏரியாவில இன்னைக்கு கரண்ட் கட் இருக்கான்னு செக் பண்ணுங்க!"). போலி முழக்கங்கள் அல்லது 'ஏன்னு தெரியுமா' போன்ற பழைய வாக்கியங்கள் வேண்டாம்.
+2. Beat 2 Ground Reality (2-10s): எங்கு, என்ன பிரச்சனை, என்ன நேரம் என்பதை மிகத் தெளிவாக, ஒரு மூச்சில் சொல்லக்கூடிய எளிய பேச்சுத் தமிழில் (Colloquial Tamil) விவரி. (7-12 வார்த்தைகள்).
+3. Beat 3 Immediate Action & Follow/Subscribe Command (10-18s): உதவி எண்ணை தெளிவாகச் சொல்லி, பின் 'இது போன்ற தினசரி தமிழ்நாடு எச்சரிக்கைகளுக்கு இப்போதே VizhiTN-ஐ Follow மற்றும் Subscribe பண்ணுங்க!' என்று அதிகாரப்பூர்வமாக கூறி, பின் 'உங்க ஏரியாவிலும் இந்த பிரச்சனையா? கமெண்ட்ல சொல்லுங்க!' என்ற கேள்வியோடு முடி. (கட்டாயம்: 'VizhiTN-ஐ Follow மற்றும் Subscribe பண்ணுங்க' என்ற வார்த்தைகள் விடுபடவே கூடாது!).
 
 JSON மட்டும் திரும்ப அனுப்பு:
 {"beat1": "...", "beat2": "...", "beat3": "..."}`.trim();
 
     // Try candidate models in reliability order
-    const CANDIDATES = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
+    const CANDIDATES = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
     let raw = '';
 
     for (const model of CANDIDATES) {
@@ -104,7 +102,7 @@ JSON மட்டும் திரும்ப அனுப்பு:
         const result = await ai.models.generateContent({
           model,
           contents: prompt,
-          generationConfig: { responseMimeType: 'application/json', temperature: 0.7, maxOutputTokens: 512 }
+          generationConfig: { responseMimeType: 'application/json', temperature: 0.6, maxOutputTokens: 512 }
         });
         raw = result.candidates?.[0]?.content?.parts?.[0]?.text || '';
         if (raw) break;
@@ -533,14 +531,26 @@ async function main() {
   let uploadResult = null;
   let metaResult = null;
 
-  // Cross-Post to Meta Socials (Instagram Reels & Facebook Video)
   try {
-    const metaCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n${leadPost.title_ta || leadPost.title_en}\n\n` +
-      `📞 அதிகாரப்பூர்வ உதவி / புகார்: ${helplineNumber}\n\n` +
-      `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & மக்கள் விழிப்புணர்வுகளுக்கு @vizhitn பக்கத்தை Follow செய்யுங்கள்!\n` +
-      `📌 உங்கள் பகுதி மக்களுக்கு உதவ உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
-      `🌐 முழு விவரங்கள் & நேரடி அறிக்கை: https://vizhitn.in\n\n` +
-      `#Shorts #${(leadPost.district_slug || 'TN').replace(/[^a-zA-Z0-9]/g, '')} #TamilNadu`;
+    const districtTag = (leadPost.district_slug || 'tamilnadu').replace(/[^a-zA-Z0-9]/g, '');
+    const areaTag = (leadPost.area_name || '').replace(/[^a-zA-Z0-9]/g, '');
+    const metaHashtags = [
+      '#Reels', '#ReelsIndia', '#TamilReels', '#TrendingReels', '#ExplorePage',
+      '#TamilNews', '#TamilNaduNews', '#TNNews', '#BreakingNews', '#Shorts',
+      `#${districtTag}`, areaTag ? `#${areaTag}` : null, '#TamilNadu',
+      '#CivicAlert', '#PublicSafety', '#GovernmentUpdate', '#VizhiTN',
+      '#TamilTrending', '#NewsUpdate', '#ViralVideo', '#ViralReels',
+      '#DailyAlert', '#TamilNaduToday', '#HyperlocalNews'
+    ].filter(Boolean).join(' ');
+
+    const metaCaption = `${theme.icon} ${(leadPost.district_slug || 'TN').toUpperCase()} நேரடி நிலவரம்:\n\n` +
+      `${leadPost.title_ta || leadPost.title_en}\n\n` +
+      `📞 அதிகாரப்பூர்வ உதவி / புகார் எண்: ${helplineNumber}\n\n` +
+      `👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & நேரடி மக்கள் செய்திகளுக்கு @vizhitn பக்கத்தை Follow & Subscribe செய்யுங்கள்!\n` +
+      `📌 உங்கள் பகுதி மக்கள் எச்சரிக்கையாக இருக்க உடனே Save & Share செய்யுங்கள் ↗️\n\n` +
+      `🌐 முழு அதிகாரப்பூர்வ விவரம்: https://vizhitn.in\n\n` +
+      `🔍 Searches: ${(leadPost.area_name || leadPost.district_slug)} news today, Tamil Nadu civic alert, ${helplineNumber} helpline, VizhiTN\n\n` +
+      `${metaHashtags}`;
 
     metaResult = await crossPostVideoToMetaSocials({
       videoFilePath: videoOutputPath,
@@ -554,16 +564,21 @@ async function main() {
     console.warn('[META SOCIAL WARN] Meta social cross-post error:', metaErr.message);
   }
 
-  // Upload to YouTube
+  // Upload to YouTube (Skipped in dry-run mode)
   try {
-    uploadResult = await uploadToYouTube({
-      videoFilePath: videoOutputPath,
-      title: finalTitle,
-      description: finalDesc,
-      tags,
-      privacyStatus: 'public',
-      isShort: true
-    });
+    if (isDryRun) {
+      console.log('[YOUTUBE DRY-RUN] Video rendered successfully. Skipping YouTube upload because --dry-run is active.');
+      uploadResult = { videoId: 'DRY_RUN_LOCAL_VIDEO', videoUrl: 'https://youtube.com/shorts/DRY_RUN_LOCAL_VIDEO', dryRun: true };
+    } else {
+      uploadResult = await uploadToYouTube({
+        videoFilePath: videoOutputPath,
+        title: finalTitle,
+        description: finalDesc,
+        tags,
+        privacyStatus: 'public',
+        isShort: true
+      });
+    }
 
     if (uploadResult?.videoId && !uploadResult.dryRun) {
       recordQuotaUsage('VIDEO_UPLOAD', { videoId: uploadResult.videoId, title: finalTitle });
