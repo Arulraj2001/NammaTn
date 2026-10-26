@@ -1,4 +1,5 @@
 import { createServerSupabase } from '@/lib/serverSupabase';
+import sanitizeHtml from 'sanitize-html';
 
 // featured_image is intentionally excluded from the server-side list select.
 // It stores base64 image data (~200KB/row), making 50 rows = ~10MB which
@@ -77,11 +78,25 @@ export async function getTnTodayArticle(slug) {
     if (relatedError) throw relatedError;
 
     return {
-      article,
+      article: {
+        ...article,
+        safe_content: sanitizeHtml(article.content || '', {
+          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2']),
+          allowedAttributes: {
+            ...sanitizeHtml.defaults.allowedAttributes,
+            img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+            a: ['href', 'name', 'target', 'rel'],
+          },
+          allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+          transformTags: {
+            a: sanitizeHtml.simpleTransform('a', { rel: 'noopener noreferrer' }, true),
+          },
+        }),
+      },
       relatedArticles: related || [],
     };
   } catch (error) {
     console.warn(`[tn-today:${slug}] Server article fetch failed:`, error.message);
-    return { article: null, relatedArticles: [] };
+    throw error;
   }
 }
