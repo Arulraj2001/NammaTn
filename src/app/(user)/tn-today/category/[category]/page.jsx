@@ -5,6 +5,7 @@ import { getTnTodayArchive } from '@/lib/tnTodayServer';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
 
+export const runtime = 'edge';
 export const revalidate = 300;
 
 export async function generateMetadata({ params }) {

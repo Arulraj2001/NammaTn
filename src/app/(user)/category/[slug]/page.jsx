@@ -8,6 +8,7 @@ import { CategoryDistrictLinks } from '@/components/seo/InternalLinks';
 import CategoryDetail from '@/views/CategoryDetail';
 import { getCategoryHubData } from '@/lib/publicHubServer';
 
+export const runtime = 'edge';
 export const revalidate = 3600;
 
 function slugToLabel(slug) {

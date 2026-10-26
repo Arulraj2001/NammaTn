@@ -6,6 +6,7 @@ import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
+export const runtime = 'edge';
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {

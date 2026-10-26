@@ -33,6 +33,8 @@ import { NearbyDistrictLinks } from '@/components/seo/InternalLinks';
 
 import { runAutonomousCoreAsync }  from '@/lib/seo/autonomousSeoCore';
 import { evaluateIndexBoost }      from '@/lib/seo/indexBoost';
+
+export const runtime = 'edge';
 import { isPageTrending }          from '@/lib/seo/trendDetector';
 import { DEFAULT_SUBSYSTEM_WEIGHTS, computeWeightAdjustments } from '@/lib/seo/selfImprovingSeoLoop';
 import InlineCivicReportCard       from '@/components/civic/InlineCivicReportCard';

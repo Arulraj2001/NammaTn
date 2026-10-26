@@ -3,6 +3,8 @@
 
 import { notFound, permanentRedirect } from 'next/navigation';
 import { DISTRICT_MAP } from '@/lib/seo-data';
+ 
+export const runtime = 'edge';
 
 export default async function Page({ params }) {
   const { slug } = await params;
