@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "@/lib/router-compat";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown, X, CheckCircle2 } from "lucide-react";
+import { MapPin, Search, RefreshCw, ArrowRight, ChevronDown, X, CheckCircle2, Zap, FileCheck2, ShieldCheck, Building2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getActiveCivicPosts } from "@/services/posts";
 import { findNearestDistrict } from "@/lib/geoDistrict";
@@ -41,6 +41,19 @@ export default function HomeHero({ userLocation, setUserLocation }) {
   const [locating, setLocating] = useState(false);
   const [shouldLoadMap, setShouldLoadMap] = useState(false);
   const [districtDropdownOpen, setDistrictDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  const matchedDistricts = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase().trim();
+    return DISTRICTS.filter(
+      (d) =>
+        d.name_en.toLowerCase().includes(q) ||
+        (d.name_ta && d.name_ta.includes(q)) ||
+        d.slug.toLowerCase().includes(q)
+    ).slice(0, 6);
+  }, [searchQuery]);
 
   useEffect(() => {
     const timer = setTimeout(() => setShouldLoadMap(true), 60);
@@ -124,25 +137,47 @@ export default function HomeHero({ userLocation, setUserLocation }) {
             </div>
 
             {/* Authoritative Headline with unique word styling */}
-            <h1 className="text-2xl sm:text-4xl lg:text-[2.65rem] font-black leading-[1.2] tracking-tight mb-3">
-              <span className="text-civic-900 dark:text-white">
-                {T("Know what's happening", "என்ன நடக்கிறது என்று தெரிந்து கொள்ளுங்கள்")}
-              </span>
-              <span className="bg-gradient-to-r from-civic-600 via-sky-500 to-civic-400 bg-clip-text text-transparent font-black ml-1.5">
-                {T("in your area", "உங்கள் பகுதியில்")},
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 mx-1.5 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-black text-[0.82em] align-middle shadow-2xs hover:scale-105 transition-transform select-none">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                <span>{T("verified", "சரிபார்க்கப்பட்டு")}</span>
-              </span>
-              <span className="text-civic-900 dark:text-white inline-flex items-center ml-1">
-                <span>{T("in real-time", "நிகழ்நேரத்தில்")}</span>
-                <span className="relative flex h-2.5 w-2.5 ml-2 mr-0.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-civic-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-civic-500"></span>
-                </span>
-                <span>.</span>
-              </span>
+            <h1 className="text-2xl sm:text-4xl lg:text-[2.65rem] font-black leading-[1.25] tracking-tight mb-3">
+              {lang === "ta" ? (
+                <>
+                  <span className="text-civic-900 dark:text-white block">
+                    உங்கள் பகுதியில் என்ன நடக்கிறது?
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 my-1 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-black text-[0.82em] align-middle shadow-2xs hover:scale-105 transition-transform select-none">
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    <span>சரிபார்க்கப்பட்ட</span>
+                  </span>
+                  <span className="bg-gradient-to-r from-civic-600 via-sky-500 to-civic-400 bg-clip-text text-transparent font-black ml-1.5">
+                    ஆதாரங்களுடன் நிகழ்நேரத்தில்
+                  </span>
+                  <span className="relative inline-flex h-2.5 w-2.5 ml-2 mr-0.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-civic-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-civic-500"></span>
+                  </span>
+                  <span className="text-civic-900 dark:text-white">.</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-civic-900 dark:text-white">
+                    Know what&apos;s happening
+                  </span>
+                  <span className="bg-gradient-to-r from-civic-600 via-sky-500 to-civic-400 bg-clip-text text-transparent font-black ml-1.5">
+                    in your area,
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 mx-1.5 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-black text-[0.82em] align-middle shadow-2xs hover:scale-105 transition-transform select-none">
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    <span>verified</span>
+                  </span>
+                  <span className="text-civic-900 dark:text-white inline-flex items-center ml-1">
+                    <span>in real-time</span>
+                    <span className="relative flex h-2.5 w-2.5 ml-2 mr-0.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-civic-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-civic-500"></span>
+                    </span>
+                    <span>.</span>
+                  </span>
+                </>
+              )}
             </h1>
 
             {/* Subtitle Explaining Platform Scope */}
@@ -153,15 +188,17 @@ export default function HomeHero({ userLocation, setUserLocation }) {
               )}
             </p>
 
-            {/* 4 Core Pillars Grid (Shows what entire website does) */}
+            {/* 4 Core Pillars Grid (Shows what entire website does) with Lucide Icons */}
             <div className="grid grid-cols-2 gap-2.5 mb-5">
               <Link
                 to="/power-cuts-today-tamil-nadu"
-                className="group p-2.5 rounded-xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 hover:shadow-xs transition-all flex items-start gap-2"
+                className="group p-2.5 rounded-2xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-amber-400 hover:shadow-xs transition-all flex items-center gap-2.5"
               >
-                <span className="text-base">⚡</span>
+                <span className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Zap className="w-4 h-4" />
+                </span>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-civic-600 truncate">
+                  <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-amber-600 truncate">
                     {T("Power & Rain Alerts", "மின்தடை & மழை எச்சரிக்கை")}
                   </p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
@@ -172,11 +209,13 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
               <Link
                 to="/create"
-                className="group p-2.5 rounded-xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 hover:shadow-xs transition-all flex items-start gap-2"
+                className="group p-2.5 rounded-2xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-blue-400 hover:shadow-xs transition-all flex items-center gap-2.5"
               >
-                <span className="text-base">📋</span>
+                <span className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <FileCheck2 className="w-4 h-4" />
+                </span>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-civic-600 truncate">
+                  <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-blue-600 truncate">
                     {T("Civic Proof Receipts", "குடிமக்கள் குறைதீர்ப்பு")}
                   </p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
@@ -187,11 +226,13 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
               <Link
                 to="/schemes"
-                className="group p-2.5 rounded-xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 hover:shadow-xs transition-all flex items-start gap-2"
+                className="group p-2.5 rounded-2xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-emerald-400 hover:shadow-xs transition-all flex items-center gap-2.5"
               >
-                <span className="text-base">⚖️</span>
+                <span className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <ShieldCheck className="w-4 h-4" />
+                </span>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-civic-600 truncate">
+                  <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-emerald-600 truncate">
                     {T("Schemes & Rights", "அரசு நலத்திட்டங்கள் & RTI")}
                   </p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
@@ -202,11 +243,13 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
               <Link
                 to="/districts"
-                className="group p-2.5 rounded-xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 hover:shadow-xs transition-all flex items-start gap-2"
+                className="group p-2.5 rounded-2xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-indigo-400 hover:shadow-xs transition-all flex items-center gap-2.5"
               >
-                <span className="text-base">🏛️</span>
+                <span className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Building2 className="w-4 h-4" />
+                </span>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-civic-600 truncate">
+                  <p className="text-xs font-bold text-civic-900 dark:text-white group-hover:text-indigo-600 truncate">
                     {T("38 District Feeds", "38 மாவட்ட நுழைவுவாயில்")}
                   </p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
@@ -216,8 +259,49 @@ export default function HomeHero({ userLocation, setUserLocation }) {
               </Link>
             </div>
 
-            {/* ── LOCATION INTERACTION & SMART RESULT ── */}
+            {/* ── PREDICTIVE SEARCH BAR + LOCATION INTERACTION ── */}
             <div className="space-y-3">
+              {/* Inline Predictive Search Bar */}
+              <div className="relative">
+                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-700 shadow-sm focus-within:border-civic-500 focus-within:ring-2 focus-within:ring-civic-500/20 transition-all">
+                  <Search className="w-4 h-4 text-civic-500 flex-shrink-0" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setTimeout(() => setSearchFocused(false), 250)}
+                    placeholder={T("Search your town or district (e.g. Tambaram, Coimbatore, Madurai)...", "உங்கள் மாவட்டம் அல்லது பகுதியை தேடுங்கள்...")}
+                    className="w-full bg-transparent text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery("")} className="text-slate-400 hover:text-slate-600">
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Predictive Dropdown */}
+                {searchFocused && matchedDistricts.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-[#071E3D] border-2 border-civic-200 dark:border-civic-700 rounded-2xl shadow-xl z-50 p-1.5 space-y-1">
+                    {matchedDistricts.map((d) => (
+                      <Link
+                        key={d.slug}
+                        to={`/${d.slug}`}
+                        className="flex items-center justify-between p-2 rounded-xl hover:bg-civic-50 dark:hover:bg-civic-900/40 text-xs transition"
+                      >
+                        <span className="font-bold text-slate-900 dark:text-white">
+                          {lang === "ta" ? d.name_ta : d.name_en}
+                        </span>
+                        <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1">
+                          {T("Open District Feed", "தகவல்கள்")} <ArrowRight className="w-3 h-3" />
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* If location is NOT detected yet */}
               {!userLocation && (
                 <div className="flex flex-wrap items-center gap-2.5">
@@ -234,8 +318,8 @@ export default function HomeHero({ userLocation, setUserLocation }) {
                     to="/districts"
                     className="inline-flex items-center gap-2 border-2 border-civic-200 dark:border-civic-700 bg-white dark:bg-[#0D2B52] hover:bg-civic-50 dark:hover:bg-civic-900/40 text-civic-900 dark:text-civic-100 font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-2xs"
                   >
-                    <Search className="w-4 h-4 text-civic-500" />
-                    <span>{T("Search 38 Districts", "38 மாவட்டங்கள்")}</span>
+                    <Building2 className="w-4 h-4 text-civic-500" />
+                    <span>{T("Browse 38 Districts", "38 மாவட்டங்கள்")}</span>
                   </Link>
                 </div>
               )}

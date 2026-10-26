@@ -2,7 +2,9 @@ import Explore from '@/views/Explore';
 import { getExplorePosts } from '@/lib/publicHubServer';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
-export const revalidate = 30;
+// 5-minute background revalidation to conserve serverless compute credits.
+// On-demand revalidation via /api/revalidate instantly updates this page on new post imports.
+export const revalidate = 300;
 
 export const metadata = {
   title: 'Explore Tamil Nadu Civic Reports & Local Updates',

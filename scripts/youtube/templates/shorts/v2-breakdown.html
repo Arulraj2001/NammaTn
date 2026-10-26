@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @font-face {
+      font-family: 'Noto Sans Tamil';
+      src: url('file:///{{FONTS_DIR}}/NotoSansTamil-Bold.ttf') format('truetype');
+      font-weight: 700 900;
+      font-style: normal;
+      font-display: block;
+    }
+  </style>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px; height: 1920px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #1E1B4B 0%, #111340 40%, #0B1230 100%);
+      font-family: 'Noto Sans Tamil', system-ui, sans-serif;
+      color: #ffffff;
+      position: relative;
+    }
+    .halftone {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.09) 2px, transparent 2.6px);
+      background-size: 34px 34px;
+      z-index: 1;
+    }
+    .speedlines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(115deg, transparent 0 42px, rgba(255,255,255,0.045) 42px 43px);
+      z-index: 1;
+    }
+    .top-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 96px;
+      background: rgba(8,12,28,0.94);
+      border-bottom: 4px solid #ffffff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      z-index: 20;
+    }
+    .brand-pill { display: flex; align-items: center; gap: 14px; }
+    .brand-logo-img { width: 50px; height: 50px; object-fit: contain; border-radius: 10px; background: #fff; padding: 3px; }
+    .brand-name { font-size: 28px; font-weight: 900; }
+    .digest-badge {
+      background: #f59e0b;
+      border: 3px solid #ffffff;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.35);
+      color: #071224;
+      font-size: 20px; font-weight: 900;
+      padding: 8px 22px;
+      border-radius: 999px;
+      letter-spacing: 1.5px;
+    }
+    .ribbon {
+      position: absolute; top: 110px; left: 0; right: 0;
+      background: linear-gradient(90deg, #4338CA 0%, #6D28D9 100%);
+      border-top: 3px solid #ffffff;
+      border-bottom: 3px solid #ffffff;
+      height: 84px;
+      display: flex; align-items: center;
+      padding: 0 44px;
+      transform: skewX(-4deg);
+      z-index: 20;
+    }
+    .ribbon-title {
+      font-size: 30px; font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      transform: skewX(4deg);
+      text-shadow: 0 3px 0 rgba(0,0,0,0.35);
+    }
+    .ribbon-count {
+      margin-left: auto;
+      background: #ffffff;
+      color: #4338CA;
+      font-size: 21px; font-weight: 900;
+      padding: 6px 18px;
+      border-radius: 8px;
+      transform: skewX(4deg);
+    }
+    .alerts-stack {
+      position: absolute; top: 220px; left: 48px; right: 48px;
+      display: flex; flex-direction: column; gap: 36px;
+      z-index: 20;
+    }
+    /* Comic-panel step cards (classes match pipeline-generated HTML) */
+    .alert-card {
+      background: rgba(8, 12, 28, 0.92);
+      border: 5px solid #ffffff;
+      border-left: 14px solid #F59E0B;
+      border-radius: 24px;
+      box-shadow: 14px 14px 0 rgba(0,0,0,0.45);
+      padding: 34px 36px;
+    }
+    .alert-card.warn { border-left-color: #ef4444; }
+    .card-top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 18px;
+    }
+    .cat-name {
+      background: #F59E0B;
+      border: 3px solid #ffffff;
+      color: #071224;
+      font-size: 21px; font-weight: 900;
+      padding: 6px 18px;
+      border-radius: 8px;
+      letter-spacing: 1px;
+    }
+    .alert-card.warn .cat-name { background: #ef4444; color: #ffffff; }
+    .dist-name {
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.35);
+      border-radius: 8px;
+      padding: 6px 16px;
+      font-size: 19px; font-weight: 800;
+      color: #c7d2fe;
+    }
+    .card-title {
+      font-size: 30px; font-weight: 900;
+      line-height: 1.35;
+      color: #ffffff;
+      text-shadow: 0 3px 0 rgba(0,0,0,0.4);
+      margin-bottom: 14px;
+    }
+    .card-timing {
+      font-size: 22px; font-weight: 700;
+      color: #fbbf24;
+      line-height: 1.4;
+    }
+    .bottom-anchor {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: rgba(8,12,28,0.97);
+      border-top: 4px solid #ffffff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 44px;
+      z-index: 20;
+    }
+    .anchor-url { font-size: 32px; font-weight: 900; color: #38bdf8; }
+    .anchor-tagline { font-size: 20px; font-weight: 700; color: #c7d2fe; }
+    .anchor-action-btn {
+      background: linear-gradient(135deg, #2563eb, #4338CA);
+      border: 3px solid #ffffff;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.35);
+      color: #fff;
+      font-size: 22px; font-weight: 900;
+      padding: 14px 30px;
+      border-radius: 14px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="halftone"></div>
+  <div class="speedlines"></div>
+
+  <div class="top-bar">
+    <div class="brand-pill">
+      <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
+      <span class="brand-name">VizhiTN</span>
+    </div>
+    <div class="digest-badge">இன்றைய வழிகாட்டி</div>
+  </div>
+
+  <div class="ribbon">
+    <span class="ribbon-title">{{DIGEST_TITLE_TA}}</span>
+    <span class="ribbon-count">3 STEPS</span>
+  </div>
+
+  <div class="alerts-stack">
+    {{ALERTS_CARDS_HTML}}
+  </div>
+
+  <div class="bottom-anchor">
+    <div>
+      <div class="anchor-url">🌐 vizhitn.in</div>
+      <div class="anchor-tagline">உங்க பிரச்சனையை நீங்களே பதிவு பண்ணுங்க</div>
+    </div>
+    <div class="anchor-action-btn">புகார் பதிவு ➔</div>
+  </div>
+</body>
+</html>

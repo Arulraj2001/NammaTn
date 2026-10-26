@@ -41,6 +41,7 @@ import SponsorThisIssue from "@/components/sponsors/SponsorThisIssue";
 import SidebarRelatedLinks from "@/components/seo/SidebarRelatedLinks";
 import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
 import GoogleNewsFollow from "@/components/common/GoogleNewsFollow";
+import NearbyDistrictAreas from "@/components/discovery/NearbyDistrictAreas";
 
 function SafeMediaImage({ url, alt }) {
   const [hasError, setHasError] = useState(false);
@@ -606,6 +607,13 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
           </a>
 
           <GoogleNewsFollow className="mb-6" />
+
+          {/* Explore other areas in this district */}
+          <NearbyDistrictAreas
+            districtSlug={post.district_slug}
+            districtName={post.district_name}
+            currentAreaSlug={post.area_slug}
+          />
 
           <div data-comment-section>
             <CommentSection postId={id} postCommentCount={post.comment_count} />

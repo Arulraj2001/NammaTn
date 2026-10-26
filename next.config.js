@@ -55,6 +55,24 @@ const nextConfig = {
       // ── Cache headers for high-traffic article/hub pages: cache 1h, serve
       //     stale up to 24h while revalidating in the background (ISR-friendly). ──
       {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=1800, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/explore',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=300, stale-while-revalidate=3600',
+          },
+        ],
+      },
+      {
         source: '/:city/:issue',
         headers: [
           {

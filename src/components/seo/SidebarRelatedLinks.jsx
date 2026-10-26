@@ -88,7 +88,31 @@ export default function SidebarRelatedLinks({ type = "article", category, curren
             >
               <span className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-teal-600" />
-                {T("Patta Chitta & EC Verification", "பட்டா சிட்டா & EC சரிபார்ப்பு")}
+                {T("Patta Chitta Land Records", "பட்டா சிட்டா நில ஆவணங்கள்")}
+              </span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
+          {currentSlug !== "tnreginet-guideline-value" && (
+            <Link
+              href="/tnreginet-guideline-value"
+              className="flex items-center justify-between p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border-2 border-indigo-200 dark:border-indigo-900/60 text-indigo-800 dark:text-indigo-300 hover:bg-indigo-100 transition-colors text-xs font-bold"
+            >
+              <span className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-indigo-600" />
+                {T("TNREGINET Guideline & EC", "TNREGINET வழிகாட்டி மதிப்பு & EC")}
+              </span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
+          {currentSlug !== "kalaignar-magalir-urimai-status" && (
+            <Link
+              href="/kalaignar-magalir-urimai-status"
+              className="flex items-center justify-between p-2.5 rounded-xl bg-pink-50 dark:bg-pink-950/30 border-2 border-pink-200 dark:border-pink-900/60 text-pink-800 dark:text-pink-300 hover:bg-pink-100 transition-colors text-xs font-bold"
+            >
+              <span className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-pink-600" />
+                {T("Magalir Urimai ₹1,000 Status", "மகளிர் உரிமை தொகை நிலை")}
               </span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>

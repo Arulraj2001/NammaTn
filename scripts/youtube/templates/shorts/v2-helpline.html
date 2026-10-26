@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @font-face {
+      font-family: 'Noto Sans Tamil';
+      src: url('file:///{{FONTS_DIR}}/NotoSansTamil-Bold.ttf') format('truetype');
+      font-weight: 700 900;
+      font-style: normal;
+      font-display: block;
+    }
+  </style>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px; height: 1920px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #1E1B4B 0%, #111340 40%, #0B1230 100%);
+      font-family: 'Noto Sans Tamil', system-ui, sans-serif;
+      color: #ffffff;
+      position: relative;
+    }
+    .halftone {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.09) 2px, transparent 2.6px);
+      background-size: 34px 34px;
+      z-index: 1;
+    }
+    .speedlines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(115deg, transparent 0 42px, rgba(255,255,255,0.045) 42px 43px);
+      z-index: 1;
+    }
+    .brand-bar {
+      position: absolute; top: 170px; left: 48px; right: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 20;
+    }
+    .brand-pill {
+      display: inline-flex; align-items: center; gap: 14px;
+      background: rgba(10, 15, 30, 0.88);
+      border: 2.5px solid rgba(255,255,255,0.85);
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.35);
+      padding: 10px 22px 10px 12px;
+      border-radius: 14px;
+    }
+    .brand-logo-img { width: 44px; height: 44px; object-fit: contain; border-radius: 10px; background: #fff; padding: 2px; }
+    .brand-name { font-size: 26px; font-weight: 900; }
+    .helpline-chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #f59e0b;
+      border: 2.5px solid #ffffff;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.35);
+      color: #071224;
+      font-size: 21px; font-weight: 900;
+      padding: 12px 24px;
+      border-radius: 999px;
+    }
+    .hero-card {
+      position: absolute;
+      top: 280px; left: 56px; right: 180px;
+      z-index: 20;
+      background: rgba(8, 12, 28, 0.94);
+      border: 5px solid #ffffff;
+      border-left: 14px solid {{CATEGORY_COLOR}};
+      border-radius: 26px;
+      box-shadow: 18px 18px 0 rgba(0,0,0,0.45);
+      padding: 40px 38px;
+      text-align: center;
+    }
+    .chip-top {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: {{CATEGORY_COLOR}};
+      color: #071224;
+      font-size: 20px; font-weight: 900;
+      padding: 8px 20px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
+    .dept-title {
+      margin-top: 22px;
+      font-size: 34px; font-weight: 900;
+      line-height: 1.3;
+      color: #ffffff;
+      text-shadow: 0 3px 0 rgba(0,0,0,0.4);
+    }
+    .dept-sub { margin-top: 8px; font-size: 21px; font-weight: 700; color: #c7d2fe; }
+    .hl-giant {
+      margin-top: 30px;
+      display: inline-block;
+      background: {{CATEGORY_COLOR}};
+      border: 4px solid #ffffff;
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.4);
+      border-radius: 20px;
+      color: #071224;
+      font-size: 96px; font-weight: 900;
+      line-height: 1;
+      padding: 28px 44px;
+      letter-spacing: 2px;
+    }
+    .hl-giant span { font-size: 56px; margin-right: 16px; }
+    .hl-status {
+      margin-top: 26px;
+      font-size: 20px; font-weight: 800;
+      color: #a5f3fc;
+    }
+    .follow-card {
+      position: absolute; top: 1060px; left: 56px; right: 180px;
+      z-index: 20;
+      background: rgba(8,12,28,0.92);
+      border: 4px solid #ffffff;
+      border-left: 14px solid #38bdf8;
+      border-radius: 22px;
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.4);
+      padding: 26px 30px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+    }
+    .follow-handle { font-size: 28px; font-weight: 900; color: #38bdf8; }
+    .follow-tagline { margin-top: 4px; font-size: 18px; font-weight: 700; color: #c7d2fe; }
+    .follow-btn {
+      background: #dc2626;
+      border: 3px solid #ffffff;
+      color: #fff;
+      font-size: 22px; font-weight: 900;
+      padding: 14px 28px;
+      border-radius: 14px;
+      white-space: nowrap;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.35);
+    }
+    .portal-card {
+      position: absolute; top: 1240px; left: 56px; right: 180px;
+      z-index: 20;
+      background: rgba(8,12,28,0.92);
+      border: 4px solid #ffffff;
+      border-radius: 22px;
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.4);
+      padding: 22px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .portal-url { font-size: 26px; font-weight: 900; color: #38bdf8; }
+    .portal-desc { margin-top: 2px; font-size: 17px; font-weight: 700; color: #c7d2fe; }
+    .portal-badge {
+      background: rgba(56,189,248,0.15);
+      border: 2px solid #38bdf8;
+      color: #38bdf8;
+      font-size: 16px; font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .district-line {
+      position: absolute; bottom: 130px; left: 56px; right: 56px;
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+      z-index: 20;
+      font-size: 22px; font-weight: 800;
+      color: #e0e7ff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="halftone"></div>
+  <div class="speedlines"></div>
+
+  <div class="brand-bar">
+    <div class="brand-pill">
+      <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
+      <span class="brand-name">VizhiTN</span>
+    </div>
+    <div class="helpline-chip"><span>{{CATEGORY_ICON}}</span><span>அவசர உதவி</span></div>
+  </div>
+
+  <div class="hero-card">
+    <div class="chip-top">📞 அதிகாரப்பூர்வ உதவி எண்</div>
+    <h2 class="dept-title">{{ASSIGNED_DEPT}}</h2>
+    <p class="dept-sub">இலவச உடனடி அழைப்பு • 24 மணி நேர சேவை</p>
+    <div class="hl-giant"><span>📞</span>{{HELPLINE_NUMBER}}</div>
+    <div class="hl-status">● ● ● 24/7 செயலில் உள்ள அரசு சேவை</div>
+  </div>
+
+  <div class="follow-card">
+    <div>
+      <div class="follow-handle">🔔 @VizhiTN</div>
+      <div class="follow-tagline">தினசரி தமிழ்நாடு அரசு & குடிமை எச்சரிக்கைகள்</div>
+    </div>
+    <div class="follow-btn">Follow 🔔</div>
+  </div>
+
+  <div class="portal-card">
+    <div>
+      <div class="portal-url">🌐 vizhitn.in</div>
+      <div class="portal-desc">பொதுமக்கள் நேரடி கள அறிக்கை தளம்</div>
+    </div>
+    <div class="portal-badge">உண்மை நிலவரம்</div>
+  </div>
+
+  <div class="district-line">📍 {{DISTRICT_NAME}}</div>
+</body>
+</html>

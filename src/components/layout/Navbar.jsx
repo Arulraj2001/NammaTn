@@ -51,6 +51,8 @@ const MEGA_COLUMNS = [
     ta_title: "அரசுத் திட்டங்கள் & உரிமைகள்",
     items: [
       { path: "/patta-chitta-online-status", icon: FileText, en: "Patta Chitta Status", ta: "பட்டா சிட்டா நிலவரம்", desc_en: "Land records & FMB sketch", desc_ta: "நில உரிமை ஆவண சரிபார்ப்பு" },
+      { path: "/tnreginet-guideline-value", icon: Calculator, en: "TNREGINET Land Value", ta: "வழிகாட்டி மதிப்பு (Guideline)", desc_en: "Street guideline & stamp duty", desc_ta: "தெரு வாரியான நில வழிகாட்டி மதிப்பு" },
+      { path: "/kalaignar-magalir-urimai-status", icon: Shield, en: "Magalir Urimai Status", ta: "மகளிர் உரிமைத் தொகை", desc_en: "₹1,000 welfare eligibility & status", desc_ta: "₹1,000 தகுதி சரிபார்ப்பு & நிலை" },
       { path: "/tnpds-smart-ration-card-status", icon: CreditCard, en: "Smart Ration Card", ta: "ஸ்மார்ட் ரேஷன் கார்டு", desc_en: "TNPDS card & OTP status", desc_ta: "குடும்ப அட்டை சேவை நிலை" },
       { path: "/schemes", icon: Shield, en: "Welfare Schemes", ta: "அரசுத் திட்டங்கள்", desc_en: "Kalaignar Magalir Urimai & welfare", desc_ta: "முக்கிய மக்கள் நலத் திட்டங்கள்" },
       { path: "/esevai", icon: Info, en: "e-Sevai Guide", ta: "இ-சேவை வழிகாட்டி", desc_en: "Certificate application guides", desc_ta: "சான்றிதழ் விண்ணப்ப வழிகாட்டல்" },
@@ -202,13 +204,13 @@ export default function Navbar() {
         {showAnnouncement && (
           <div className={`w-full h-8 relative flex items-center overflow-hidden border-b text-[11px] font-medium leading-none select-none ${bgClass}`}>
             {/* Pinned Label / Icon */}
-            <div className="absolute left-0 top-0 bottom-0 flex items-center gap-1.5 px-3 z-20 font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-r border-slate-200 dark:border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
+            <div className="absolute left-0 top-0 bottom-0 flex items-center gap-1.5 px-3 z-30 font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-r border-slate-200 dark:border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
               {announcementIcon}
               <span>{T("Alert", "அறிவிப்பு")}</span>
             </div>
 
             {/* Marquee Content */}
-            <div className="flex-1 h-full overflow-hidden relative flex items-center pl-[115px] pr-[40px]">
+            <div className="flex-1 h-full overflow-hidden relative flex items-center pl-[125px] pr-[40px]">
               <div className="marquee-content flex items-center gap-24">
                 <span>{settings.site_announcement}</span>
                 <span>{settings.site_announcement}</span>

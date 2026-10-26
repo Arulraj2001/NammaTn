@@ -11,13 +11,13 @@
 [[redirects]]
   from = "/media/*"
   to = "https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:splat"
-  status = 200
+  status = 301
   force = true
 
 [[redirects]]
   from = "/storage/v1/object/public/media/*"
   to = "https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:splat"
-  status = 200
+  status = 301
   force = true
 
 [[plugins]]

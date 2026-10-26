@@ -280,6 +280,7 @@ export default async function sitemap() {
   [
     '/power-cuts-today-tamil-nadu', '/school-college-holiday-alerts',
     '/tneb-bill-calculator', '/patta-chitta-online-status', '/tnpds-smart-ration-card-status',
+    '/tnreginet-guideline-value', '/kalaignar-magalir-urimai-status',
     '/schemes', '/helplines', '/rights', '/rti', '/esevai',
     '/scams', '/trending'
   ].forEach(path => {
