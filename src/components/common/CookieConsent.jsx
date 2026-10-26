@@ -93,8 +93,8 @@ export default function CookieConsent() {
       aria-live="polite"
       aria-label={T('Cookie consent banner', 'குக்கீ சம்மத பேனர்')}
       className={`
-        fixed bottom-0 inset-x-0 z-[100] flex justify-center px-3 pb-3 md:pb-5
-        pointer-events-none
+        fixed bottom-16 sm:bottom-4 left-3 right-3 sm:right-auto sm:left-4 z-[90]
+        pointer-events-none flex justify-start
       `}
     >
       <div
@@ -106,82 +106,73 @@ export default function CookieConsent() {
         onKeyDown={handleKeyDown}
         className={`
           pointer-events-auto
-          w-full max-w-xl max-h-[50dvh] overflow-y-auto
-          bg-white dark:bg-slate-900
-          border border-slate-200 dark:border-slate-700
-          rounded-xl shadow-xl shadow-slate-900/10 dark:shadow-black/40
-          px-4 py-3.5 md:px-5 md:py-4
-          transition-transform duration-200 ease-out will-change-transform
-          ${visible ? 'translate-y-0' : 'translate-y-[calc(100%+1.5rem)]'}
+          w-full sm:w-[330px]
+          bg-white/95 dark:bg-slate-900/95 backdrop-blur-md
+          border border-slate-200/90 dark:border-slate-700/80
+          rounded-2xl shadow-xl shadow-slate-900/15 dark:shadow-black/50
+          p-3 sm:p-3.5
+          transition-all duration-300 ease-out will-change-transform
+          ${visible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-6 opacity-0 scale-95 pointer-events-none'}
         `}
       >
         {/* Header row */}
-        <div className="flex items-start gap-2 mb-1.5">
-          <span className="text-lg leading-none select-none" aria-hidden="true">🍪</span>
-          <div className="flex-1 min-w-0">
-            <h2 id="cookie-heading" className="text-base font-semibold text-slate-900 dark:text-slate-50 leading-snug">
-              {T('We use cookies', 'நாங்கள் குக்கீகளை பயன்படுத்துகிறோம்')}
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <div className="flex items-center gap-1.5">
+            <span className="text-base select-none" aria-hidden="true">🍪</span>
+            <h2 id="cookie-heading" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+              {T('Cookie Notice', 'குக்கீ கொள்கை')}
             </h2>
           </div>
+          <button
+            onClick={handleReject}
+            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg text-xs leading-none"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
         </div>
 
         {/* Body */}
-        <p id="cookie-desc" className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-snug mb-3">
+        <p id="cookie-desc" className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug mb-2.5">
           {T(
-            'VizhiTN uses optional analytics and advertising cookies. Accept them or continue without non-essential cookies. See our ',
-            'VizhiTN விருப்ப பகுப்பாய்வு மற்றும் விளம்பர குக்கீகளைப் பயன்படுத்துகிறது. அவற்றை ஏற்கலாம் அல்லது அவை இல்லாமல் தொடரலாம். எங்கள் ',
+            'We use cookies for analytics and ads. ',
+            'சிறந்த அனுபவத்திற்கு குக்கீகளைப் பயன்படுத்துகிறோம். '
           )}
           <Link
             href="/cookie-policy"
-            className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+            className="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700 font-medium"
           >
-            {T('Cookie Policy', 'குக்கீ கொள்கை')}
+            {T('Learn more', 'விவரங்கள்')}
           </Link>
-          {T(' & ', ' மற்றும் ')}
-          <Link
-            href="/privacy-policy"
-            className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-          >
-            {T('Privacy Policy', 'தனியுரிமைக் கொள்கை')}
-          </Link>
-          {T('.', ' பார்க்கவும்.')}
         </p>
 
         {/* Action row */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex items-center gap-2">
           {/* Accept All */}
           <button
             ref={acceptRef}
             onClick={handleAccept}
             className="
-              inline-flex items-center justify-center
-              min-h-11 px-3 py-2
-              bg-white dark:bg-slate-900 border border-indigo-500
-              text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40
-              text-xs sm:text-sm font-semibold leading-tight
-              rounded-lg
-              transition-colors duration-150
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2
+              flex-1 py-1.5 px-3
+              bg-blue-600 hover:bg-blue-700 active:scale-95
+              text-white text-xs font-bold
+              rounded-xl shadow-xs transition-all text-center
             "
           >
-            {T('Accept All', 'அனைத்தையும் ஏற்கவும்')}
+            {T('Accept', 'ஏற்கவும்')}
           </button>
 
           {/* Reject Non-Essential */}
           <button
             onClick={handleReject}
             className="
-              inline-flex items-center justify-center
-              min-h-11 px-3 py-2
-              bg-white dark:bg-slate-900 border border-indigo-500
-              text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40
-              text-xs sm:text-sm font-semibold leading-tight
-              rounded-lg
-              transition-colors duration-150
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2
+              py-1.5 px-3
+              bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95
+              text-slate-700 dark:text-slate-300 text-xs font-semibold
+              rounded-xl transition-all text-center
             "
           >
-            {T('Reject Non-Essential', 'அத்தியாவசியமற்றவற்றை நிராகரிக்கவும்')}
+            {T('Decline', 'நிராகரி')}
           </button>
         </div>
       </div>

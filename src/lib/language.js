@@ -4,8 +4,8 @@ export const LANGUAGES = {
 };
 
 export const getStoredLanguage = () => {
-  if (typeof window === "undefined") return "en";
-  return localStorage.getItem("tn_lang") || "en";
+  if (typeof window === "undefined") return "ta";
+  return localStorage.getItem("tn_lang") || "ta";
 };
 
 export const setStoredLanguage = (lang) => {

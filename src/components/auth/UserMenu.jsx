@@ -5,9 +5,12 @@ import { LogIn, LogOut, LayoutDashboard, ChevronDown, Shield } from "lucide-reac
 import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 
-export default function UserMenu() {
+import { useLanguage } from "@/context/LanguageContext";
+
+export default function UserMenu({ onAction }) {
   const { user, isAuthenticated, logout, isLoadingAuth } = useAuth();
   const { requireAuth } = useAuthModal();
+  const { lang } = useLanguage();
   const [open, setOpen] = useState(false);
 
   if (isLoadingAuth) return null;
@@ -17,11 +20,14 @@ export default function UserMenu() {
       <Button
         size="sm"
         variant="outline"
-        className="h-8 text-xs font-medium border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400"
-        onClick={() => requireAuth(() => {}, "Sign in to participate")}
+        className="h-8 text-xs font-semibold border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400"
+        onClick={() => {
+          if (onAction) onAction();
+          requireAuth(() => {}, lang === "ta" ? "குடிமக்கள் சமூகத்தில் பங்கேற்க உள்நுழையவும்" : "Sign in to participate in the community");
+        }}
       >
         <LogIn className="w-3.5 h-3.5 mr-1" />
-        Sign In
+        {lang === "ta" ? "உள்நுழைக" : "Sign In"}
       </Button>
     );
   }

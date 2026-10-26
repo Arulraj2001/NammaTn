@@ -2,6 +2,8 @@
 
 import React from "react";
 import HomeTopSection from "@/components/home/HomeTopSection";
+import DistrictQuickStrip from "@/components/home/DistrictQuickStrip";
+import RecentDispatchesStrip from "@/components/home/RecentDispatchesStrip";
 import QuickActions from "@/components/home/QuickActions";
 import TnTodaySpotlight from "@/components/home/TnTodaySpotlight";
 import CivicProofSection from "@/components/home/CivicProofSection";
@@ -12,10 +14,18 @@ import CtaBanner from "@/components/home/CtaBanner";
 export default function Home() {
   return (
     <div className="min-h-screen bg-civic-50/50 dark:bg-[#071E3D] flex flex-col">
-      {/* Zone 1: Hero with Clean Interactive Live Map */}
+      {/* Zone 1: Hero with Clean Interactive Live Map, Live Stats Bar & Balanced CTAs */}
       <HomeTopSection />
 
-      {/* Quick Civic Actions Bar */}
+      {/* Zone 2A: 38-District Horizontal Quick Access Strip */}
+      <div id="district-strip">
+        <DistrictQuickStrip />
+      </div>
+
+      {/* Zone 2B: Happening Right Now (3 Freshest Live Verified Dispatches) */}
+      <RecentDispatchesStrip />
+
+      {/* Zone 2C: Quick Civic Actions Bar */}
       <QuickActions />
 
       {/* Zone 3: Flagship Editorial Newsroom Spotlight (TN Today) */}
@@ -36,4 +46,4 @@ export default function Home() {
       <CtaBanner />
     </div>
   );
-}
+}

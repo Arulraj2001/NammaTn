@@ -94,7 +94,7 @@ export default function RootLayout({ children }) {
   const adsensePubId = 'ca-pub-1603942692726452';
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ta" suppressHydrationWarning>
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

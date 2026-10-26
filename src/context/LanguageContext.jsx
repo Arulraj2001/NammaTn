@@ -3,10 +3,10 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getStoredLanguage, setStoredLanguage } from "@/lib/language";
 
-const LanguageContext = createContext({ lang: "en", setLang: () => {} });
+const LanguageContext = createContext({ lang: "ta", setLang: () => {} });
 
 export function LanguageProvider({ children }) {
-  const [lang, setLangState] = useState("en");
+  const [lang, setLangState] = useState("ta");
 
   useEffect(() => {
     if (typeof window !== "undefined") {

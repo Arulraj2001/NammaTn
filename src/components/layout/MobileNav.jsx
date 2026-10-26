@@ -180,7 +180,7 @@ export default function MobileNav() {
                 {/* Profile row */}
                 <div className="flex items-center justify-end mb-5">
                   <div className="flex-shrink-0">
-                    <UserMenu />
+                    <UserMenu onAction={() => setMenuOpen(false)} />
                   </div>
                 </div>
 
