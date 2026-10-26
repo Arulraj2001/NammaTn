@@ -102,6 +102,6 @@ export async function getPublicPostDetail(idOrSlug) {
     return { post, complaintTrackers };
   } catch (error) {
     console.error(`[post:${idOrSlug}] Server detail fetch failed:`, error.message);
-    throw error;
+    return empty;
   }
 }

@@ -98,7 +98,7 @@ async function fetchCityIssueData(citySlug, issueSlug, orderField = 'created_dat
 
 // ── METADATA ──────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const { city, issue } = params;
+  const { city, issue } = await params;
   const cityData  = DISTRICT_MAP[city];
   const issueData = CATEGORY_MAP[issue];
 
@@ -193,7 +193,7 @@ export async function generateStaticParams({ params } = {}) {
 
 // ── SERVER COMPONENT ──────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const { city, issue } = params;
+  const { city, issue } = await params;
   const cityData  = DISTRICT_MAP[city];
   const issueData = CATEGORY_MAP[issue];
 

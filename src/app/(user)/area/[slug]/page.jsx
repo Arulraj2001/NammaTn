@@ -9,7 +9,9 @@ export const runtime = 'edge';
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
-  const area = await getPublicArea(params.slug);
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+  const area = await getPublicArea(slug);
   if (!area) {
     return {
       title: 'Area Reports',

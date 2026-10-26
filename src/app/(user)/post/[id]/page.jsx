@@ -15,7 +15,9 @@ export const runtime = 'edge';
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
-  const { post } = await getPublicPostDetail(params.id);
+  const resolvedParams = await params;
+  const id = resolvedParams?.id;
+  const { post } = await getPublicPostDetail(id);
   if (!post) {
     return {
       title: 'Civic Report',
@@ -73,11 +75,13 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const { post, complaintTrackers } = await getPublicPostDetail(params.id);
+  const resolvedParams = await params;
+  const id = resolvedParams?.id;
+  const { post, complaintTrackers } = await getPublicPostDetail(id);
   if (!post) notFound();
 
   // If accessed by UUID or receipt ID, permanently redirect (308) to the clean keyword slug
-  if (post.slug && params.id !== post.slug) {
+  if (post.slug && id !== post.slug) {
     permanentRedirect(`/post/${post.slug}`);
   }
 

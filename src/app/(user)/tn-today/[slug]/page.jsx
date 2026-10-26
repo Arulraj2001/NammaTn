@@ -13,7 +13,9 @@ export const runtime = 'edge';
 export const revalidate = 3600;
 
 export async function generateMetadata({ params, searchParams }) {
-  const { article } = await getTnTodayArticle(params.slug);
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+  const { article } = await getTnTodayArticle(slug);
   if (!article) notFound();
 
   const isTamil = searchParams?.lang === 'ta';
@@ -98,10 +100,13 @@ export async function generateMetadata({ params, searchParams }) {
 }
 
 export default async function Page({ params, searchParams }) {
-  const { article, relatedArticles } = await getTnTodayArticle(params.slug);
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const slug = resolvedParams?.slug;
+  const { article, relatedArticles } = await getTnTodayArticle(slug);
   if (!article) notFound();
-  const canonical = getTnTodayCanonical(article?.slug || params.slug);
-  const isTamil = searchParams?.lang === 'ta';
+  const canonical = getTnTodayCanonical(article?.slug || slug);
+  const isTamil = resolvedSearchParams?.lang === 'ta';
 
   const articleSchema = article
     ? generateNewsArticleSchema({
