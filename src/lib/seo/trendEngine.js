@@ -1,7 +1,7 @@
 // src/lib/seo/trendEngine.js
 // Detects high activity city + issue pairs dynamically based on database report count.
 
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/api/supabaseClient';
 
 const fallbackTrends = [
   { city: 'chennai', issue: 'power-cut', count: 12 },
@@ -12,10 +12,7 @@ const fallbackTrends = [
 ];
 
 function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY
-  );
+  return supabase;
 }
 
 export async function getTrendingPairs() {

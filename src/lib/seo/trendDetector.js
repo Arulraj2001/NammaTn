@@ -3,14 +3,11 @@
 // Extends trendEngine.js with richer signal data: velocity, acceleration, rank.
 // Provides homepage injection list and trending content block generator.
 
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/api/supabaseClient';
 import { DISTRICT_MAP, CATEGORY_MAP } from '@/lib/seo-data';
 
 function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY
-  );
+  return supabase;
 }
 
 // ── Static fallback (used on DB error) ────────────────────────────────────────

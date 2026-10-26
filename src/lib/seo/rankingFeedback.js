@@ -4,13 +4,10 @@
 // weight, sitemap priority, and anchor text selection.
 // All scoring is deterministic within a given ISR window — no Math.random().
 
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/api/supabaseClient';
 
 function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY
-  );
+  return supabase;
 }
 
 // ── Scoring weights ────────────────────────────────────────────────────────────
