@@ -50,12 +50,17 @@ async function fetchGscAccessToken() {
     const b64 = obj => Buffer.from(JSON.stringify(obj)).toString('base64url');
     const unsigned = `${b64(header)}.${b64(payload)}`;
 
-    // Sign with RS256 using Node.js crypto
-    const { createSign } = await import('crypto');
-    const privateKey = rawKey.replace(/\\n/g, '\n');
-    const sign = createSign('RSA-SHA256');
-    sign.update(unsigned);
-    const sig = sign.sign(privateKey, 'base64url');
+    // Sign with RS256 using Node.js crypto if available
+    let sig;
+    try {
+      const { createSign } = await import(/* webpackIgnore: true */ 'crypto');
+      const privateKey = rawKey.replace(/\\n/g, '\n');
+      const sign = createSign('RSA-SHA256');
+      sign.update(unsigned);
+      sig = sign.sign(privateKey, 'base64url');
+    } catch {
+      return null;
+    }
 
     const jwt = `${unsigned}.${sig}`;
 

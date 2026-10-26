@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 /**
  * Universal Mobile App Deep-Link Route for YouTube Videos & Shorts
  * /r/yt?v=VIDEO_ID (or /r/yt?s=SHORT_ID)

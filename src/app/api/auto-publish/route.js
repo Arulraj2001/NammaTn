@@ -43,6 +43,9 @@ import { notifySearchEngines } from '@/lib/seo/instantIndexing';
 import { ensureBilingualPost } from '@/services/translate';
 import { attachIncidentPhotosToPosts } from '@/lib/incidentPhotoMatcher';
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const SITE_URL = 'https://www.vizhitn.in';

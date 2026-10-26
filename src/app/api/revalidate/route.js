@@ -1,6 +1,9 @@
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 function isAuthorized(request) {
   // Reuse the automation secret when a dedicated revalidation secret has not
   // been configured. Never expose cache invalidation to anonymous requests.

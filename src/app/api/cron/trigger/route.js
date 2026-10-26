@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 const WORKFLOW_MAP = {
   civic: 'autonomous-civic-bot.yml',
   tntoday: 'autonomous-tntoday-bot.yml',

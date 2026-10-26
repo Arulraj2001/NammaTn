@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { postToWhatsAppChannel } from '@/lib/whatsappChannel';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
@@ -17,6 +16,21 @@ export async function POST(request) {
     }
 
     console.log(`[API /admin/broadcast-whatsapp] Broadcasting "${title}" to WhatsApp Channel...`);
+
+    let postToWhatsAppChannel;
+    try {
+      const mod = await import(/* webpackIgnore: true */ '@/lib/whatsappChannel');
+      postToWhatsAppChannel = mod?.postToWhatsAppChannel;
+    } catch (e) {
+      // Running on edge where Baileys/sharp is externalized
+    }
+
+    if (!postToWhatsAppChannel) {
+      return NextResponse.json(
+        { error: 'WhatsApp broadcasting is executed via server background workers.' },
+        { status: 501 }
+      );
+    }
 
     const result = await postToWhatsAppChannel({
       title,

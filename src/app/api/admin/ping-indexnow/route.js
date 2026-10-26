@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { notifySearchEngines } from '@/lib/seo/instantIndexing';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {

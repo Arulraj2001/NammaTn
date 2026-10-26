@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import fs from 'fs';
-import path from 'path';
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { invalidateAdSenseCache } from '@/lib/adsenseServer';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
@@ -129,12 +127,8 @@ export async function POST(request) {
       adsTxtContent = '# No advertising seller is authorized yet. Add a verified record after AdSense approval.\n';
     }
 
-    try {
-      const adsTxtPath = path.join(process.cwd(), 'public', 'ads.txt');
-      fs.writeFileSync(adsTxtPath, adsTxtContent, 'utf-8');
-    } catch (fsErr) {
-      console.warn('[API /admin/adsense] Could not write public/ads.txt to disk:', fsErr.message);
-    }
+    // In Edge environments, ads.txt is served statically from public/ads.txt
+
 
     try {
       revalidatePath('/', 'layout');
