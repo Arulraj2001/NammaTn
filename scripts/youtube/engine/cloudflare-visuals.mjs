@@ -12,33 +12,6 @@ const CLOUDFLARE_MODEL = process.env.CLOUDFLARE_IMAGE_MODEL || '@cf/black-forest
  * @param {string} prompt - Detailed scene description
  * @param {string} outputFilePath - Destination image path
  * @param {'9:16'|'16:9'} [aspectRatio='9:16']
-/**
- * Fetches image from Pollinations AI (FLUX model, zero API key required)
- */
-async function fetchPollinationsVisual(prompt, outputFilePath, width, height) {
-  try {
-    console.log('[POLLINATIONS FLUX] Calling free FLUX image generation...');
-    const cleanPrompt = `${prompt}, realistic photography, Tamil Nadu India ground reality, authentic documentary news photo, 8k, cinematic lighting, no text, no watermark, no words`;
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=${width}&height=${height}&nologo=true&model=flux`;
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
-
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeout);
-
-    if (!res.ok) throw new Error(`Pollinations returned HTTP ${res.status}`);
-    const buffer = Buffer.from(await res.arrayBuffer());
-    if (buffer.length < 5000) throw new Error('Pollinations returned too small buffer');
-
-    fs.writeFileSync(outputFilePath, buffer);
-    console.log(`[POLLINATIONS SUCCESS] Scene image generated: ${outputFilePath} (${(buffer.length / 1024).toFixed(1)} KB)`);
-    return outputFilePath;
-  } catch (err) {
-    console.warn(`[POLLINATIONS WARN] Fallback failed: ${err.message}`);
-    return null;
-  }
-}
 
 /**
  * Generates an ultra-clean procedural cinematic dark-ambient backdrop
@@ -137,9 +110,6 @@ export async function generateYouTubeSceneVisual(prompt, outputFilePath, aspectR
     }
   }
 
-  // Tier 2 Fallback: Pollinations AI FLUX (Free, Zero API keys)
-  const pollResult = await fetchPollinationsVisual(prompt, outputFilePath, width, height);
-  if (pollResult) return pollResult;
 
   // Tier 3 Fallback: Procedural clean cinematic backdrop (Guaranteed ZERO cut-off text)
   return generateProceduralBackdrop(outputFilePath, width, height);

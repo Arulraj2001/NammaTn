@@ -12,6 +12,7 @@ import { generateArtDirectedVisualPrompt } from '../engine/script-writer.mjs';
 import { synthesizePodcastTurn } from '../engine/podcast-tts.mjs';
 import { assemblePodcastVideo, generatePodcastThumbnail } from '../engine/podcast-composer.mjs';
 import { generateYouTubeSceneVisual, toImageSource } from '../engine/cloudflare-visuals.mjs';
+import { fetchEditorialVisual, toSafeDataUri } from '../engine/free-media-fetcher.mjs';
 import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { getBrandLogoDataUri, getHostAvatarDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
@@ -45,8 +46,8 @@ async function main() {
   const brandLogoDataUri = getBrandLogoDataUri();
   const todayIst = getTodayIst();
 
-  // Deduplication Guard: Never upload duplicate podcast for today's slot unless forced
-  if (!process.argv.includes('--force')) {
+  // Deduplication Guard: Never upload duplicate podcast for today's slot unless forced or in dry-run
+  if (!process.argv.includes('--force') && !isDryRun) {
     const status = await isBroadcastCompletedToday('podcast', todayIst);
     if (status.published) {
       console.log(`[DEDUP GUARD ✓] Vizhi Uncut Podcast already broadcast today (${status.existingRecord?.youtube_video_id || 'recorded'}). Exiting.`);
@@ -189,7 +190,23 @@ async function main() {
     const secs = Math.floor(totalDurationSec % 60).toString().padStart(2, '0');
     chapterTimestamps.push(`${mins}:${secs} - ${actTitleEn}`);
 
-    console.log(`\n[ACT ${actNum}/5] Processing "${actTitleEn}" (${turns.length} dialogue turns)...`);
+    console.log(`\n[ACT ${actNum}/5] Resolving dynamic documentary visual for "${actTitleEn}"...`);
+    // Dynamic photographic visual plate per act (Pexels / Wikimedia / Pollinations / Cloudflare)
+    let actVisualPath = null;
+    try {
+      actVisualPath = await fetchEditorialVisual({
+        query: `${topic.seriesNameEn || 'investigation'} ${actTitleEn}`,
+        category: topic.category || 'public-safety',
+        aspectRatio: '16:9',
+        actTag: `act_${actNum}`,
+        prompt: `Authentic documentary photograph for ${topic.episodeTitleEn || topic.episodeTitleTa}, ${actTitleEn}, Tamil Nadu, 8k realistic news proof`
+      });
+    } catch (e) {
+      console.warn(`[ACT ${actNum} VISUAL WARN] Using hero fallback:`, e.message);
+    }
+    const resolvedActVisual = actVisualPath || heroVisualUrl;
+
+    console.log(`[ACT ${actNum}/5] Processing "${actTitleEn}" (${turns.length} dialogue turns)...`);
 
     for (let j = 0; j < turns.length; j++) {
       const turn = turns[j];
@@ -232,7 +249,11 @@ async function main() {
         .replace(/\{\{KAVITHA_AVATAR_URI\}\}/g, kavithaAvatarUri)
         .replace(/\{\{CATEGORY_COLOR\}\}/g, topic.categoryColor || '#38bdf8')
         .replace(/\{\{SERIES_ICON\}\}/g, topic.categoryIcon || '🎙️')
-        .replace(/\{\{SERIES_NAME_TA\}\}/g, topic.seriesNameTa)
+        .replace(/\{\{SERIES_NAME_EN\}\}/g, topic.seriesNameEn || 'INVESTIGATION')
+        .replace(/\{\{SERIES_NAME_TA\}\}/g, topic.seriesNameTa || 'புலனாய்வு')
+        .replace(/\{\{EPISODE_TITLE_TA\}\}/g, topic.episodeTitleTa || topic.episodeTitleEn || '')
+        .replace(/\{\{DISTRICT_NAME\}\}/g, (topic.district || 'TAMIL NADU').toUpperCase())
+        .replace(/\{\{LEGAL_SECTION_NAME\}\}/g, topic.legalSectionOrTool || 'IT Act & BNS')
         .replace(/\{\{KARTHIK_ACTIVE_CLASS\}\}/g, karthikClass)
         .replace(/\{\{KAVITHA_ACTIVE_CLASS\}\}/g, kavithaClass)
         .replace(/\{\{EQ_K1\}\}/g, eqK[0]).replace(/\{\{EQ_K2\}\}/g, eqK[1])
@@ -245,10 +266,14 @@ async function main() {
         .replace(/\{\{EQ_V7\}\}/g, eqV[6]).replace(/\{\{EQ_V8\}\}/g, eqV[7])
         .replace(/\{\{ACT_BADGE_TEXT\}\}/g, `ACT 0${actNum} / 05`)
         .replace(/\{\{ACT_TITLE_EN\}\}/g, actTitleEn)
-        .replace(/\{\{SCENE_IMAGE_SRC\}\}/g, toImageSource(heroVisualUrl))
-        .replace(/\{\{EVIDENCE_TAG_TEXT\}\}/g, `${topic.seriesNameEn.toUpperCase()} EVIDENCE`)
+        .replace(/\{\{SCENE_IMAGE_SRC\}\}/g, toSafeDataUri(resolvedActVisual))
+        .replace(/\{\{EVIDENCE_TAG_TEXT\}\}/g, `${(topic.seriesNameEn || 'INVESTIGATION').toUpperCase()} EVIDENCE`)
         .replace(/\{\{HEADLINE_TA\}\}/g, actTitleTa)
-        .replace(/\{\{HELPLINE_TEXT\}\}/g, topic.helplineText);
+        .replace(/\{\{SCENE_TITLE_TA\}\}/g, turn.text ? turn.text.slice(0, 70) + '...' : actTitleTa)
+        .replace(/\{\{ACTIVE_SPEAKER_NAME\}\}/g, isKarthik ? 'கார்த்திக்' : 'கவிதா')
+        .replace(/\{\{ACTIVE_SPEAKER_COLOR\}\}/g, isKarthik ? '#38bdf8' : '#ec4899')
+        .replace(/\{\{SPOKEN_TEXT_TA\}\}/g, (turn.text || '').replace(/"/g, '&quot;'))
+        .replace(/\{\{HELPLINE_TEXT\}\}/g, topic.helplineText || '1930 / 1100');
 
       const turnFramePng = path.join(outDir, `podcast_frame_act_${actNum}_turn_${j}_${Date.now()}.png`);
       renderHtmlToImage(frameHtml, turnFramePng, { width: 1920, height: 1080 });

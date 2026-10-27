@@ -207,31 +207,52 @@ export async function postToWhatsAppChannel({
 
   const urgencyIcon = urgency === "critical" ? "🚨" : (urgency === "high" ? "⚠️" : "📢");
 
-  // Format broadcast caption text
-  let messageText = `${urgencyIcon} *${title.trim()}*\n\n`;
+  // Format headline (clean, max 60 chars)
+  let cleanTitle = title.trim();
+  if (cleanTitle.length > 55) {
+    cleanTitle = cleanTitle.slice(0, 52).replace(/\s+\S*$/, '') + '...';
+  }
+
+  // Format clean bullet points
+  const rawCleaned = String(summary || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const sentences = rawCleaned.split(/(?<=[.!?।])\s+/).filter(Boolean);
+  const lead = sentences.slice(0, 2).join(' ').trim();
+
+  let bullets = [];
+  if (category === 'public-safety' || title.includes('மோசடி') || title.includes('SMS')) {
+    bullets = [
+      '• லிங்கை கிளிக் பண்ணாதீங்க',
+      '• OTP, PIN யார்கிட்டயும் சொல்லாதீங்க',
+      '• நம்பரை பிளாக் பண்ணுங்க' + (helpline ? ` & உதவிக்கு 📞 ${helpline.match(/\d{4}/)?.[0] || '1930'}` : ' & உதவிக்கு 📞 1930')
+    ];
+  } else if (category === 'electricity' || title.includes('மின்தடை')) {
+    const timeMatch = rawCleaned.match(/(?:காலை|மதியம்)?\s*\d{1,2}(?::\d{2})?\s*(?:மணி)?\s*முதல்\s*(?:மதியம்|மாலை)?\s*\d{1,2}(?::\d{2})?\s*(?:மணி)?\s*வரை/i)?.[0];
+    bullets = [
+      timeMatch ? `• மின்தடை நேரம்: ${timeMatch}` : '• மாதாந்திர மின்வாரிய பராமரிப்பு பணி',
+      '• போன் மற்றும் இன்வெர்ட்டரை முன்கூட்டியே சார்ஜ் செய்யவும்',
+      '• மின் தடை புகார்களுக்கு மின்னகம் 📞 1912'
+    ];
+  } else {
+    bullets = [
+      sentences[1] ? `• ${sentences[1].slice(0, 70)}` : '• அதிகாரப்பூர்வ துறை அறிவிப்பு',
+      sentences[2] ? `• ${sentences[2].slice(0, 70)}` : '• பொதுமக்கள் பயன்பெற நடவடிக்கை தேவை',
+      helpline ? `• உதவி மையம்: 📞 ${helpline.match(/\d{4,}/)?.[0] || helpline}` : '• அவசர உதவி மையம்: 📞 1100'
+    ];
+  }
+
+  // Standard clean 8.1 template
+  let messageText = `${urgencyIcon} *${cleanTitle}*\n\n`;
+  messageText += `${lead || cleanTitle}\n\n`;
+  messageText += `✅ உங்களுக்கு என்ன முக்கியம்:\n${bullets.join('\n')}\n\n`;
   if (district && district.trim()) {
-    messageText += `📍 *மாவட்டம் / District:* ${district.toUpperCase()}\n`;
+    messageText += `📍 ${district.trim()}\n`;
   }
-  if (helpline && helpline.trim()) {
-    messageText += `📞 *துறை & உதவி எண் / Helpline:* ${helpline.trim()}\n`;
-  }
-  if (district || helpline) {
-    messageText += `\n`;
-  }
-
-  const formattedBody = cleanAndFormatWhatsAppBody(summary);
-  if (formattedBody) {
-    messageText += `${formattedBody}\n`;
-  }
-
-  messageText += `👉 *முழு விவரங்களுக்கு / Full List:* ${url}\n\n`;
-  messageText += `──────────────────────────────\n`;
-  messageText += `📲 *இந்த செய்தியை பார்வர்டு (Forward) வழியாக படிக்கிறீர்களா?*\n`;
-  messageText += `உங்கள் மாவட்டத்தின் உடனடி மின்தடை, குடிநீர், பேருந்து, அவசர அறிவிப்புகளை உடனுக்குடன் பெற *VizhiTN* சேனலை உடனே Follow செய்யுங்கள்!\n`;
-  messageText += `👉 *இலவசமாக இணைய:* https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228\n`;
-  messageText += `──────────────────────────────\n\n`;
-  messageText += `👇 *உங்கள் பகுதியில் இதே நிலை உள்ளதா? ஆம் என்றால் 👍 / இல்லை என்றால் ❌ ரியாக்ட் செய்யவும்!*\n\n`;
-  messageText += `🌐 *VizhiTN* | தமிழ்நாடு உண்மை செய்திகள் & மக்கள் களம்`;
+  messageText += `👉 முழு செய்தி: ${url}\n\n`;
+  messageText += `📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
 
   const thumbBuf = await resolveThumbnail(image);
 

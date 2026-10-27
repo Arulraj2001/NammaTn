@@ -2,16 +2,14 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Daily ~01:25 PM IST (07:52 UTC): Daily Live Civic Pulse Short (Today's Real-Time Alerts)
-    - cron: '52 7 * * *'
-    # 2. Daily ~02:18 PM IST (08:48 UTC): Midday Safety Catch-Up Sweeper
-    - cron: '48 8 * * *'
-    # 3. Daily ~05:55 PM IST (12:22 UTC): 90-Day Vizhi Uncut Duo Podcast (90 daily episodes)
-    - cron: '22 12 * * *'
-    # 4. Daily ~07:25 PM IST (13:52 UTC): 90-Day Daily Civic Lifeline Alert Short (90 shorts)
-    - cron: '52 13 * * *'
-    # 5. Daily ~08:48 PM IST (15:18 UTC): Evening Safety Catch-Up Sweeper
-    - cron: '18 15 * * *'
+    # 1. Daily ~08:15 AM IST (02:45 UTC): Morning Utility & Money Hack Short (TNEB, Patta Chitta)
+    - cron: '45 2 * * *'
+    # 2. Daily ~01:30 PM IST (08:00 UTC): Midday Cyber Scam & Urgent Warning Short (1930 Helpline)
+    - cron: '0 8 * * *'
+    # 3. Daily ~06:30 PM IST (13:00 UTC): Evening 16:9 Documentary Podcast Desk
+    - cron: '0 13 * * *'
+    # 4. Daily ~08:45 PM IST (15:15 UTC): Night Welfare Schemes & Citizen Entitlements Short
+    - cron: '15 15 * * *'
 
   workflow_dispatch:
     inputs:
@@ -20,9 +18,13 @@ on:
         type: choice
         options:
           - auto
+          - utility-shorts
+          - scam-shorts
+          - podcast
+          - scheme-shorts
+          - rights-shorts
           - live-shorts
           - civic-shorts
-          - podcast
           - backfill
           - all
         default: 'auto'
@@ -106,14 +108,14 @@ jobs:
           if [ "$PIPELINE" = "backfill" ]; then
             SLOT_ARG="--backfill"
           elif [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
-            if [ "$SCHEDULE" = "52 7 * * *" ]; then
-              SLOT_ARG="--slot=live-shorts"
-            elif [ "$SCHEDULE" = "22 12 * * *" ] || [ "$SCHEDULE" = "22 12 * * 2,4,6" ]; then
+            if [ "$SCHEDULE" = "45 2 * * *" ]; then
+              SLOT_ARG="--slot=utility-shorts"
+            elif [ "$SCHEDULE" = "0 8 * * *" ]; then
+              SLOT_ARG="--slot=scam-shorts"
+            elif [ "$SCHEDULE" = "0 13 * * *" ]; then
               SLOT_ARG="--slot=podcast"
-            elif [ "$SCHEDULE" = "52 13 * * *" ]; then
-              SLOT_ARG="--slot=civic-shorts"
-            elif [ "$SCHEDULE" = "48 8 * * *" ] || [ "$SCHEDULE" = "18 15 * * *" ]; then
-              SLOT_ARG="--backfill"
+            elif [ "$SCHEDULE" = "15 15 * * *" ]; then
+              SLOT_ARG="--slot=scheme-shorts"
             else
               SLOT_ARG="--slot=auto"
             fi

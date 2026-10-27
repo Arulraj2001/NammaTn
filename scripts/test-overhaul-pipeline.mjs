@@ -73,22 +73,30 @@ async function testAll() {
 
   // ── TEST 2: Modern 9:16 Shorts Hook Frame ──────────────────────────────────
   console.log('▶ [2/4] Testing Redesigned 9:16 Shorts Hook Frame Render...');
+  const { fetchEditorialVisual, toSafeDataUri } = await import('./youtube/engine/free-media-fetcher.mjs');
+  const { getHostAvatarDataUri } = await import('./youtube/engine/brand-assets.mjs');
+
+  const s1PhotoUrl = await fetchEditorialVisual({
+    query: 'electricity power transformer substation',
+    category: 'electricity',
+    aspectRatio: '9:16',
+    actTag: 'test_s1'
+  });
+
   const tplS1Path = path.resolve('scripts/youtube/templates/shorts/scene-1-hook.html');
   let tplS1 = fs.readFileSync(tplS1Path, 'utf-8');
-
-  // Solid dark fallback visual plate if online photo not fetched
-  const dummyPhoto = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920"><rect width="1080" height="1920" fill="%230b1329"/></svg>';
 
   tplS1 = tplS1
     .replace('{{FONTS_DIR}}', fontsDir)
     .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
-    .replace('{{SCENE_PHOTO_SRC}}', dummyPhoto)
+    .replace('{{SCENE_PHOTO_SRC}}', toSafeDataUri(s1PhotoUrl))
     .replaceAll('{{HOOK_HEADLINE_TA}}', samplePost.title_ta)
-    .replace('{{DATE_TEXT}}', 'இன்று | 26 அக்டோபர் 2026')
+    .replace('{{DATE_TEXT}}', 'இன்று | 27 அக்டோபர் 2026')
     .replaceAll('{{CATEGORY_COLOR}}', '#FFD600')
     .replaceAll('{{CATEGORY_ICON}}', '⚡')
     .replaceAll('{{CATEGORY_LABEL}}', 'TANGEDCO மின்வாரியம்')
-    .replaceAll('{{DISTRICT_NAME}}', (samplePost.area_name || 'CHENNAI').toUpperCase());
+    .replaceAll('{{DISTRICT_NAME}}', (samplePost.area_name || 'CHENNAI').toUpperCase())
+    .replace('{{ON_SCREEN_BANNER_HTML}}', '<div style="background:#eab308;color:#000;font-size:28px;font-weight:900;padding:12px 24px;border-radius:14px;display:inline-block;margin-bottom:14px;letter-spacing:-0.5px;">மின்தடை எச்சரிக்கை</div>');
 
   const s1OutputPath = path.join(outDir, 'test_shorts_s1_frame.png');
   renderHtmlToImage(tplS1, s1OutputPath, { width: 1080, height: 1920 });
@@ -97,26 +105,49 @@ async function testAll() {
 
   // ── TEST 3: Modern 16:9 Podcast Documentary Desk Frame ─────────────────────
   console.log('▶ [3/4] Testing Redesigned 16:9 Podcast Documentary Desk Frame Render...');
+  const podVisualUrl = await fetchEditorialVisual({
+    query: 'cyber crime investigation computer police forensics',
+    category: 'public-safety',
+    aspectRatio: '16:9',
+    actTag: 'test_pod'
+  });
+
   const tplPodPath = path.resolve('scripts/youtube/templates/podcast/studio-frame.html');
   let tplPod = fs.readFileSync(tplPodPath, 'utf-8');
 
+  const karthikAvatar = getHostAvatarDataUri('karthik');
+  const kavithaAvatar = getHostAvatarDataUri('kavitha');
+
   tplPod = tplPod
-    .replace('{{BRAND_LOGO_DATA_URI}}', brandLogoDataUri)
+    .replace(/\{\{BRAND_LOGO_DATA_URI\}\}/g, brandLogoDataUri)
+    .replace(/\{\{KARTHIK_AVATAR_URI\}\}/g, karthikAvatar)
+    .replace(/\{\{KAVITHA_AVATAR_URI\}\}/g, kavithaAvatar)
     .replaceAll('{{CATEGORY_COLOR}}', '#38bdf8')
-    .replace('{{SERIES_NAME_EN}}', 'CYBER SCAM EXPOSED')
-    .replace('{{EPISODE_TITLE_TA}}', 'போலி சிபிஐ வீடியோ கால் கைது மோசடி: தப்பிப்பது எப்படி?')
-    .replace('{{DISTRICT_NAME}}', 'TAMIL NADU')
-    .replace('{{HELPLINE_TEXT}}', '1930')
-    .replace('{{ACT_NAME_TA}}', 'பகுதி 1: வலையின் தொடக்கம்')
-    .replace('{{LEGAL_SECTION_NAME}}', 'IT சட்டம் பிரிவு 66D & RBI சுற்றறிக்கை')
-    .replace('{{SCENE_TITLE_TA}}', 'டிஜிட்டல் அரெஸ்ட் என்ற பெயரில் நடக்கும் ₹50 லட்சம் மோசடி')
-    .replace('{{POINT_1_TEXT}}', 'ஸ்கைப் மூலம் போலீஸ் சீருடையில் பேசும் நபர்கள்')
-    .replace('{{POINT_2_TEXT}}', 'ஆர்பிஐ அல்லது சிபிஐ எந்த காலத்திலும் வீடியோ காலில் விசாரிக்காது')
-    .replace('{{POINT_3_TEXT}}', 'பணம் இழந்த 2 மணி நேரத்திற்குள் 1930-ல் பதிவு செய்தால் முழு மீட்பு')
-    .replace('{{SPEAKER_COLOR}}', '#00ffff')
-    .replace('{{SPEAKER_NAME_TA}}', 'கார்த்திக்')
-    .replace('{{SPEAKER_ROLE_TA}}', 'புலனாய்வு நிருபர்')
-    .replace('{{SPOKEN_TEXT_TA}}', 'கவிதா, சாதாரண மக்களுக்கு போலீஸ் நோட்டீஸ்னு வந்தாலே பயம் வந்துடும். அதைத்தான் இந்த கும்பல் தங்களுக்கு சாதகமா பயன்படுத்துது.');
+    .replace(/\{\{SERIES_NAME_EN\}\}/g, 'CYBER SCAM EXPOSED')
+    .replace(/\{\{SERIES_NAME_TA\}\}/g, 'சைபர் மோசடி விழிப்புணர்வு')
+    .replace(/\{\{EPISODE_TITLE_TA\}\}/g, 'போலி சிபிஐ வீடியோ கால் கைது மோசடி: தப்பிப்பது எப்படி?')
+    .replace(/\{\{DISTRICT_NAME\}\}/g, 'TAMIL NADU')
+    .replace(/\{\{LEGAL_SECTION_NAME\}\}/g, 'IT சட்டம் பிரிவு 66D & RBI சுற்றறிக்கை')
+    .replace(/\{\{HELPLINE_TEXT\}\}/g, '1930')
+    .replace(/\{\{ACT_BADGE_TEXT\}\}/g, 'ACT 02 / 05')
+    .replace(/\{\{ACT_TITLE_EN\}\}/g, 'ANATOMY OF THE TRAP')
+    .replace(/\{\{SCENE_IMAGE_SRC\}\}/g, toSafeDataUri(podVisualUrl))
+    .replace(/\{\{EVIDENCE_TAG_TEXT\}\}/g, 'POLICE & CBI FORENSIC PROOF')
+    .replace(/\{\{HEADLINE_TA\}\}/g, 'டிஜிட்டல் அரெஸ்ட் என்ற பெயரில் நடக்கும் ₹50 லட்சம் மோசடி')
+    .replace(/\{\{SCENE_TITLE_TA\}\}/g, 'ஸ்கைப் மூலம் போலி போலீஸ் சீருடையில் வீடியோ கால் அழைப்பு')
+    .replace(/\{\{KARTHIK_ACTIVE_CLASS\}\}/g, 'karthik-active')
+    .replace(/\{\{KAVITHA_ACTIVE_CLASS\}\}/g, 'host-dimmed')
+    .replace(/\{\{EQ_K1\}\}/g, '34').replace(/\{\{EQ_K2\}\}/g, '42')
+    .replace(/\{\{EQ_K3\}\}/g, '26').replace(/\{\{EQ_K4\}\}/g, '46')
+    .replace(/\{\{EQ_K5\}\}/g, '38').replace(/\{\{EQ_K6\}\}/g, '30')
+    .replace(/\{\{EQ_K7\}\}/g, '44').replace(/\{\{EQ_K8\}\}/g, '36')
+    .replace(/\{\{EQ_V1\}\}/g, '4').replace(/\{\{EQ_V2\}\}/g, '4')
+    .replace(/\{\{EQ_V3\}\}/g, '4').replace(/\{\{EQ_V4\}\}/g, '4')
+    .replace(/\{\{EQ_V5\}\}/g, '4').replace(/\{\{EQ_V6\}\}/g, '4')
+    .replace(/\{\{EQ_V7\}\}/g, '4').replace(/\{\{EQ_V8\}\}/g, '4')
+    .replace(/\{\{ACTIVE_SPEAKER_NAME\}\}/g, 'கார்த்திக்')
+    .replace(/\{\{ACTIVE_SPEAKER_COLOR\}\}/g, '#38bdf8')
+    .replace(/\{\{SPOKEN_TEXT_TA\}\}/g, 'கவிதா, சாதாரண மக்களுக்கு போலீஸ் நோட்டீஸ்னு வந்தாலே பயம் வந்துடும். அதைத்தான் இந்த கும்பல் தங்களுக்கு சாதகமா பயன்படுத்துது.');
 
   const podOutputPath = path.join(outDir, 'test_podcast_frame.png');
   renderHtmlToImage(tplPod, podOutputPath, { width: 1920, height: 1080 });

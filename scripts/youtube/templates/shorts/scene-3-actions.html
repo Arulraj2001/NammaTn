@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @font-face {
+      font-family: 'Noto Sans Tamil';
+      src: url('file:///{{FONTS_DIR}}/NotoSansTamil-Bold.ttf') format('truetype');
+      font-weight: 700 900;
+      font-style: normal;
+      font-display: block;
+    }
+  </style>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #030712;
+      font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
+      position: relative;
+      color: #ffffff;
+    }
+
+    .bg-photo {
+      position: absolute;
+      top: 0; left: 0;
+      width: 1080px; height: 1920px;
+      object-fit: cover;
+      filter: contrast(1.15) saturate(1.1) brightness(0.72);
+    }
+    .cinematic-vignette {
+      position: absolute;
+      top: 0; left: 0;
+      width: 1080px; height: 1920px;
+      background: radial-gradient(circle at 50% 45%, rgba(3, 7, 18, 0.35) 0%, rgba(3, 7, 18, 0.82) 65%, rgba(3, 7, 18, 0.98) 100%),
+                  linear-gradient(180deg, rgba(3, 7, 18, 0.85) 0%, transparent 25%, transparent 65%, rgba(3, 7, 18, 0.98) 100%);
+    }
+
+    /* Broadcast Bar */
+    .broadcast-bar {
+      position: absolute;
+      top: 140px; left: 54px; right: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 20;
+    }
+    .brand-pill {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      padding: 10px 24px 10px 14px; border-radius: 9999px;
+    }
+    .brand-logo-img { width: 34px; height: 34px; border-radius: 8px; object-fit: contain; }
+    .brand-name { font-size: 22px; font-weight: 900; color: #ffffff; }
+
+    .action-tag {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1.5px solid #10b981;
+      color: #6ee7b7;
+      font-size: 18px; font-weight: 800;
+      padding: 8px 22px; border-radius: 9999px;
+      letter-spacing: 1px;
+    }
+
+    /* Actions Checklist Container */
+    .actions-container {
+      position: absolute;
+      top: 250px; left: 54px; right: 54px;
+      z-index: 20;
+    }
+
+    .on-screen-banner {
+      background: #10b981;
+      color: #032e1d;
+      font-size: 32px;
+      font-weight: 900;
+      padding: 14px 28px;
+      border-radius: 18px;
+      display: inline-block;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+      letter-spacing: -0.5px;
+    }
+
+    .actions-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid rgba(16, 185, 129, 0.3);
+      border-radius: 28px;
+      padding: 34px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .card-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: #6ee7b7;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px 20px;
+      border-radius: 18px;
+    }
+    .step-num {
+      width: 36px; height: 36px;
+      background: #10b981;
+      color: #032e1d;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-text {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+  <img class="bg-photo" src="{{SCENE_PHOTO_SRC}}" alt="Action Scene" />
+  <div class="cinematic-vignette"></div>
+
+  <header class="broadcast-bar">
+    <div class="brand-pill">
+      <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
+      <span class="brand-name">VizhiTN</span>
+    </div>
+    <div class="action-tag">✅ செய்ய வேண்டியவை / ACTION</div>
+  </header>
+
+  <main class="actions-container">
+    <div class="on-screen-banner">{{ON_SCREEN_TEXT}}</div>
+
+    <div class="actions-card">
+      <div class="card-title">
+        <span>🛡️</span>
+        <span>உடனடியாக நீங்கள் செய்ய வேண்டிய 3 படிகள்:</span>
+      </div>
+
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text">{{ACTION_STEP_1}}</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text">{{ACTION_STEP_2}}</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text">{{ACTION_STEP_3}}</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

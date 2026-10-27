@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @font-face {
+      font-family: 'Noto Sans Tamil';
+      src: url('file:///{{FONTS_DIR}}/NotoSansTamil-Bold.ttf') format('truetype');
+      font-weight: 700 900;
+      font-style: normal;
+      font-display: block;
+    }
+  </style>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #030712;
+      font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
+      position: relative;
+      color: #ffffff;
+    }
+
+    .bg-photo {
+      position: absolute;
+      top: 0; left: 0;
+      width: 1080px; height: 1920px;
+      object-fit: cover;
+      filter: contrast(1.15) saturate(1.1) brightness(0.75);
+    }
+    .cinematic-vignette {
+      position: absolute;
+      top: 0; left: 0;
+      width: 1080px; height: 1920px;
+      background: radial-gradient(circle at 50% 45%, rgba(3, 7, 18, 0.3) 0%, rgba(3, 7, 18, 0.8) 65%, rgba(3, 7, 18, 0.98) 100%),
+                  linear-gradient(180deg, rgba(3, 7, 18, 0.85) 0%, transparent 25%, transparent 65%, rgba(3, 7, 18, 0.98) 100%);
+    }
+
+    /* Broadcast Bar */
+    .broadcast-bar {
+      position: absolute;
+      top: 140px; left: 54px; right: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 20;
+    }
+    .brand-pill {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      padding: 10px 24px 10px 14px; border-radius: 9999px;
+    }
+    .brand-logo-img { width: 34px; height: 34px; border-radius: 8px; object-fit: contain; }
+    .brand-name { font-size: 22px; font-weight: 900; color: #ffffff; }
+
+    .fact-tag {
+      background: rgba(30, 58, 138, 0.9);
+      border: 1.5px solid #38bdf8;
+      color: #bae6fd;
+      font-size: 18px; font-weight: 800;
+      padding: 8px 22px; border-radius: 9999px;
+      letter-spacing: 1px;
+    }
+
+    /* Facts Card Container */
+    .facts-container {
+      position: absolute;
+      top: 250px; left: 54px; right: 54px;
+      z-index: 20;
+    }
+
+    .on-screen-banner {
+      background: #eab308;
+      color: #000000;
+      font-size: 32px;
+      font-weight: 900;
+      padding: 14px 28px;
+      border-radius: 18px;
+      display: inline-block;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(234, 179, 8, 0.4);
+      letter-spacing: -0.5px;
+    }
+
+    .facts-card {
+      background: rgba(15, 23, 42, 0.88);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 28px;
+      padding: 36px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .timing-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(220, 38, 38, 0.2);
+      border: 1.5px solid #ef4444;
+      padding: 14px 22px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+    }
+    .timing-row .time-icon { font-size: 28px; }
+    .timing-row .time-text { font-size: 26px; font-weight: 900; color: #fecaca; }
+
+    .facts-lead {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.45;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+
+    .affected-box {
+      background: rgba(0, 0, 0, 0.4);
+      border-left: 5px solid #38bdf8;
+      padding: 18px 22px;
+      border-radius: 0 16px 16px 0;
+    }
+    .affected-box .label { font-size: 18px; font-weight: 800; color: #7dd3fc; margin-bottom: 6px; }
+    .affected-box .text { font-size: 24px; font-weight: 700; color: #e2e8f0; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <img class="bg-photo" src="{{SCENE_PHOTO_SRC}}" alt="Facts Evidence" />
+  <div class="cinematic-vignette"></div>
+
+  <header class="broadcast-bar">
+    <div class="brand-pill">
+      <img class="brand-logo-img" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
+      <span class="brand-name">VizhiTN</span>
+    </div>
+    <div class="fact-tag">📊 முக்கிய விவரங்கள் / FACTS</div>
+  </header>
+
+  <main class="facts-container">
+    <div class="on-screen-banner">{{ON_SCREEN_TEXT}}</div>
+
+    <div class="facts-card">
+      <div class="timing-row">
+        <span class="time-icon">⏰</span>
+        <span class="time-text">{{FACT_TIMING_OR_BADGE}}</span>
+      </div>
+
+      <p class="facts-lead">{{FACT_LEAD_SUMMARY}}</p>
+
+      <div class="affected-box">
+        <div class="label">📍 முக்கிய பகுதிகள் / விவரங்கள்:</div>
+        <div class="text">{{FACT_DETAILS}}</div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

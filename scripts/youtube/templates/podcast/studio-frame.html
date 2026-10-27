@@ -11,7 +11,7 @@
     body {
       width: 1920px;
       height: 1080px;
-      background: radial-gradient(circle at 50% 20%, #0d1527 0%, #030712 100%);
+      background: radial-gradient(circle at 50% 15%, #0f172a 0%, #030712 100%);
       font-family: 'Plus Jakarta Sans', 'Noto Sans Tamil', sans-serif;
       color: #f8fafc;
       overflow: hidden;
@@ -21,13 +21,13 @@
       position: relative;
     }
 
-    /* Ambient Newsroom Studio Glow */
+    /* Ambient Investigative Glow */
     .studio-glow {
       position: absolute;
-      width: 900px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, transparent 70%);
-      top: -80px;
+      width: 1100px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+      top: -100px;
       left: 50%;
       transform: translateX(-50%);
       pointer-events: none;
@@ -36,13 +36,13 @@
 
     /* ── Top Broadcast Header ── */
     .header-bar {
-      height: 96px;
-      padding: 0 60px;
+      height: 90px;
+      padding: 0 50px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
-      background: rgba(10, 16, 29, 0.85);
+      background: rgba(10, 16, 29, 0.88);
       backdrop-filter: blur(16px);
       z-index: 10;
     }
@@ -50,12 +50,15 @@
     .brand-section {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
     }
     .brand-logo {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border-radius: 12px;
+      object-fit: contain;
+      background: #ffffff;
+      padding: 3px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
     }
     .brand-titles {
@@ -63,13 +66,13 @@
       flex-direction: column;
     }
     .brand-name {
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 900;
       letter-spacing: -0.5px;
       color: #ffffff;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .brand-name span.highlight {
       color: #38bdf8;
@@ -78,14 +81,13 @@
       font-size: 13px;
       font-weight: 700;
       color: #94a3b8;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .header-right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
     .live-docket-pill {
       display: inline-flex;
@@ -96,7 +98,7 @@
       color: #fca5a5;
       padding: 6px 18px;
       border-radius: 9999px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       letter-spacing: 1px;
     }
@@ -110,30 +112,31 @@
     .series-pill {
       background: rgba(255, 255, 255, 0.08);
       border: 1.5px solid {{CATEGORY_COLOR}};
-      padding: 6px 20px;
+      padding: 6px 18px;
       border-radius: 9999px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 800;
       color: {{CATEGORY_COLOR}};
     }
 
-    /* ── Main Documentary Evidence Desk (75% Stage) ── */
+    /* ── Main Documentary Stage (75% Canvas) ── */
     .studio-stage {
       flex: 1;
-      padding: 30px 60px;
+      padding: 24px 50px;
       display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 40px;
+      grid-template-columns: 400px 1fr;
+      gap: 32px;
       align-items: stretch;
       z-index: 5;
+      min-height: 0;
     }
 
-    /* Left Sidebar: Topic Dossier & Helpline */
+    /* Left Sidebar: Dossier & Helpline */
     .dossier-panel {
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.85);
       border: 1.5px solid rgba(255, 255, 255, 0.12);
-      border-radius: 24px;
-      padding: 28px;
+      border-radius: 20px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -143,20 +146,43 @@
     .dossier-top {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
+    }
+    .dossier-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .dossier-badge {
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 12px;
+      font-weight: 900;
       color: #38bdf8;
       letter-spacing: 1.5px;
       text-transform: uppercase;
+      background: rgba(56, 189, 248, 0.12);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .act-step-badge {
+      font-size: 12px;
+      font-weight: 800;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
     }
     .episode-headline-ta {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
       line-height: 1.35;
       color: #ffffff;
+    }
+    .meta-tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
     }
     .district-location-tag {
       display: inline-flex;
@@ -165,21 +191,32 @@
       background: rgba(255, 255, 255, 0.08);
       border-radius: 8px;
       padding: 4px 12px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: #cbd5e1;
-      align-self: flex-start;
+    }
+    .legal-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #6ee7b7;
     }
 
     .dossier-bottom {
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 20px;
+      padding-top: 18px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
     .helpline-label {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       color: #94a3b8;
       letter-spacing: 1px;
@@ -189,25 +226,25 @@
       background: linear-gradient(135deg, rgba(220, 38, 38, 0.25) 0%, rgba(185, 28, 28, 0.15) 100%);
       border: 1.5px solid #ef4444;
       border-radius: 14px;
-      padding: 12px 18px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
     }
     .helpline-num {
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 900;
       color: #ffffff;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
 
-    /* Right Main Stage: Evidence Display Screen */
+    /* Right Main Stage: High-Resolution Photographic Evidence Display */
     .evidence-screen {
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.9);
       border: 1.5px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
-      padding: 36px 44px;
+      border-radius: 20px;
+      padding: 20px 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -224,116 +261,245 @@
       background: linear-gradient(90deg, {{CATEGORY_COLOR}}, #38bdf8, {{CATEGORY_COLOR}});
     }
 
-    .evidence-act-row {
+    .evidence-header-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
     .act-indicator {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      font-size: 15px;
+      gap: 8px;
+      font-size: 14px;
       font-weight: 900;
       color: #38bdf8;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
       text-transform: uppercase;
     }
-    .legal-shield-badge {
+    .evidence-tag-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(16, 185, 129, 0.18);
-      border: 1.5px solid #10b981;
-      color: #6ee7b7;
-      padding: 6px 18px;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #e2e8f0;
+      padding: 4px 14px;
       border-radius: 9999px;
-      font-size: 14px;
+      font-size: 12px;
       font-weight: 800;
+      letter-spacing: 0.5px;
     }
 
-    .evidence-headline {
-      font-size: 38px;
-      font-weight: 900;
-      line-height: 1.35;
-      color: #ffffff;
-      margin-bottom: 24px;
-      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-    }
-
-    .evidence-points {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    /* Photographic Hero Visual Container */
+    .evidence-photo-container {
+      position: relative;
       flex: 1;
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
     }
-    .evidence-card {
+    .evidence-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.1) saturate(1.12) brightness(0.9);
+    }
+    .photo-gradient-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 140px;
+      background: linear-gradient(0deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 50%, transparent 100%);
+      pointer-events: none;
+    }
+    .photo-caption-bar {
+      position: absolute;
+      bottom: 14px;
+      left: 18px;
+      right: 18px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .photo-caption-text {
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+    }
+    .watermark-stamp {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: rgba(255, 255, 255, 0.75);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .evidence-sub-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-left: 5px solid {{CATEGORY_COLOR}};
-      border-radius: 12px;
-      padding: 16px 20px;
+      border-radius: 10px;
+      padding: 10px 16px;
+      border-left: 4px solid {{CATEGORY_COLOR}};
+    }
+    .evidence-sub-headline {
+      font-size: 18px;
+      font-weight: 800;
+      color: #f1f5f9;
+      line-height: 1.35;
+    }
+
+    /* ── Lower-Third Host Anchor Desk ── */
+    .lower-third-ribbon {
+      height: 150px;
+      background: rgba(7, 12, 22, 0.96);
+      border-top: 1.5px solid rgba(255, 255, 255, 0.12);
+      padding: 0 50px;
+      display: grid;
+      grid-template-columns: 280px 1fr 280px;
+      gap: 28px;
+      align-items: center;
+      z-index: 10;
+    }
+
+    /* Host Anchor Cards */
+    .host-card {
       display: flex;
       align-items: center;
       gap: 14px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .card-icon { font-size: 26px; }
-    .card-text {
-      font-size: 20px;
-      font-weight: 700;
-      line-height: 1.4;
-      color: #f1f5f9;
+    .host-card.karthik-active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+      opacity: 1;
+    }
+    .host-card.kavitha-active {
+      background: rgba(236, 72, 153, 0.12);
+      border-color: #ec4899;
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+      opacity: 1;
+    }
+    .host-card.host-dimmed {
+      opacity: 0.42;
+      filter: grayscale(0.5);
     }
 
-    /* ── Lower-Third Speaker Ribbon ── */
-    .lower-third-ribbon {
-      height: 140px;
-      background: rgba(7, 12, 22, 0.95);
-      border-top: 1.5px solid rgba(255, 255, 255, 0.12);
-      padding: 0 60px;
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      z-index: 10;
+    .host-avatar-frame {
+      position: relative;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
     }
-    .speaker-badge {
+    .host-card.karthik-active .host-avatar-frame {
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px #38bdf8;
+    }
+    .host-card.kavitha-active .host-avatar-frame {
+      border-color: #ec4899;
+      box-shadow: 0 0 12px #ec4899;
+    }
+    .host-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .host-info {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      min-width: 220px;
-      border-right: 1.5px solid rgba(255, 255, 255, 0.12);
-      padding-right: 24px;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
     }
-    .speaker-name {
-      font-size: 24px;
-      font-weight: 900;
-      color: #ffffff;
+    .host-name-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
     }
-    .speaker-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #00ffff;
-      box-shadow: 0 0 10px #00ffff;
+    .host-name {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      white-space: nowrap;
     }
-    .speaker-role {
-      font-size: 13px;
+    .host-role {
+      font-size: 11px;
       font-weight: 700;
       color: #94a3b8;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
 
+    /* Live Equalizer Waveform */
+    .eq-wave {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 20px;
+      margin-top: 4px;
+    }
+    .eq-bar {
+      width: 3px;
+      background: #38bdf8;
+      border-radius: 2px;
+      transition: height 0.15s ease;
+    }
+    .host-card.kavitha-active .eq-bar {
+      background: #ec4899;
+    }
+    .host-card.host-dimmed .eq-bar {
+      background: #64748b;
+      height: 4px !important;
+    }
+
+    /* Center Spoken Dialogue Subtitle Box */
     .spoken-dialogue-box {
-      flex: 1;
-      font-size: 24px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      min-height: 84px;
+    }
+    .dialogue-speaker-tag {
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dialogue-text {
+      font-size: 20px;
       font-weight: 700;
-      line-height: 1.45;
-      color: #f8fafc;
+      line-height: 1.4;
+      color: #ffffff;
       letter-spacing: 0.2px;
     }
   </style>
@@ -341,13 +507,13 @@
 <body>
   <div class="studio-glow"></div>
 
-  <!-- Header -->
+  <!-- Broadcast Top Header -->
   <header class="header-bar">
     <div class="brand-section">
       <img class="brand-logo" src="{{BRAND_LOGO_DATA_URI}}" alt="VizhiTN" />
       <div class="brand-titles">
         <div class="brand-name">VizhiTN <span class="highlight">INVESTIGATIVE DESK</span></div>
-        <div class="brand-tagline">தமிழ்நாடு உண்மை சரிபார்ப்பு & புலனாய்வு</div>
+        <div class="brand-tagline">தமிழ்நாடு உண்மை சரிபார்ப்பு & புலனாய்வு பாட்காஸ்ட்</div>
       </div>
     </div>
     <div class="header-right">
@@ -364,57 +530,107 @@
     <!-- Left Dossier Panel -->
     <aside class="dossier-panel">
       <div class="dossier-top">
-        <span class="dossier-badge">CASE DOSSIER</span>
+        <div class="dossier-badge-row">
+          <span class="dossier-badge">CASE DOSSIER</span>
+          <span class="act-step-badge">{{ACT_BADGE_TEXT}}</span>
+        </div>
         <h2 class="episode-headline-ta">{{EPISODE_TITLE_TA}}</h2>
-        <div class="district-location-tag">📍 {{DISTRICT_NAME}}</div>
+        <div class="meta-tags-row">
+          <div class="district-location-tag">📍 {{DISTRICT_NAME}}</div>
+          <div class="legal-tag">🛡️ {{LEGAL_SECTION_NAME}}</div>
+        </div>
       </div>
 
       <div class="dossier-bottom">
         <span class="helpline-label">அதிகாரப்பூர்வ உதவி மையம்</span>
         <div class="helpline-box">
-          <span style="font-size: 24px;">📞</span>
+          <span style="font-size: 22px;">📞</span>
           <span class="helpline-num">{{HELPLINE_TEXT}}</span>
         </div>
       </div>
     </aside>
 
-    <!-- Right Evidence Screen -->
+    <!-- Right Evidence Screen with Photographic Stage -->
     <section class="evidence-screen">
-      <div class="evidence-act-row">
-        <div class="act-indicator">⚡ {{ACT_NAME_TA}}</div>
-        <div class="legal-shield-badge">🛡️ {{LEGAL_SECTION_NAME}}</div>
+      <div class="evidence-header-row">
+        <div class="act-indicator">⚡ {{ACT_BADGE_TEXT}} : {{ACT_TITLE_EN}}</div>
+        <div class="evidence-tag-badge">🔍 {{EVIDENCE_TAG_TEXT}}</div>
       </div>
 
-      <h1 class="evidence-headline">{{SCENE_TITLE_TA}}</h1>
+      <!-- Real Photographic Evidence Plate -->
+      <div class="evidence-photo-container">
+        <img class="evidence-hero-img" src="{{SCENE_IMAGE_SRC}}" alt="Evidence Ground Reality" />
+        <div class="photo-gradient-overlay"></div>
+        <div class="photo-caption-bar">
+          <span class="photo-caption-text">{{HEADLINE_TA}}</span>
+          <span class="watermark-stamp">VERIFIED PROOF</span>
+        </div>
+      </div>
 
-      <div class="evidence-points">
-        <div class="evidence-card">
-          <span class="card-icon">🔍</span>
-          <span class="card-text">{{POINT_1_TEXT}}</span>
-        </div>
-        <div class="evidence-card">
-          <span class="card-icon">⚠️</span>
-          <span class="card-text">{{POINT_2_TEXT}}</span>
-        </div>
-        <div class="evidence-card">
-          <span class="card-icon">⚖️</span>
-          <span class="card-text">{{POINT_3_TEXT}}</span>
-        </div>
+      <!-- Evidence Sub-headline strip -->
+      <div class="evidence-sub-strip">
+        <div class="evidence-sub-headline">📌 {{SCENE_TITLE_TA}}</div>
       </div>
     </section>
   </main>
 
-  <!-- Lower Third Subtitle Ribbon -->
+  <!-- Lower Third Host Anchor Desk -->
   <footer class="lower-third-ribbon">
-    <div class="speaker-badge">
-      <div class="speaker-name">
-        <span class="speaker-dot" style="background: {{SPEAKER_COLOR}};"></span>
-        <span>{{SPEAKER_NAME_TA}}</span>
+    <!-- Left Host: Karthik -->
+    <div class="host-card {{KARTHIK_ACTIVE_CLASS}}">
+      <div class="host-avatar-frame">
+        <img class="host-avatar-img" src="{{KARTHIK_AVATAR_URI}}" alt="Karthik" />
       </div>
-      <div class="speaker-role">{{SPEAKER_ROLE_TA}}</div>
+      <div class="host-info">
+        <div class="host-name-row">
+          <span class="host-name">கார்த்திக்</span>
+        </div>
+        <span class="host-role">புலனாய்வு நிருபர்</span>
+        <div class="eq-wave">
+          <div class="eq-bar" style="height: {{EQ_K1}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_K2}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_K3}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_K4}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_K5}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_K6}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_K7}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_K8}}px;"></div>
+        </div>
+      </div>
     </div>
+
+    <!-- Center Spoken Dialogue Subtitles -->
     <div class="spoken-dialogue-box">
-      "{{SPOKEN_TEXT_TA}}"
+      <div class="dialogue-speaker-tag" style="color: {{ACTIVE_SPEAKER_COLOR}};">
+        <span>🎙️</span>
+        <span>{{ACTIVE_SPEAKER_NAME}}</span>
+      </div>
+      <div class="dialogue-text">
+        "{{SPOKEN_TEXT_TA}}"
+      </div>
+    </div>
+
+    <!-- Right Host: Kavitha -->
+    <div class="host-card {{KAVITHA_ACTIVE_CLASS}}">
+      <div class="host-avatar-frame">
+        <img class="host-avatar-img" src="{{KAVITHA_AVATAR_URI}}" alt="Kavitha" />
+      </div>
+      <div class="host-info">
+        <div class="host-name-row">
+          <span class="host-name">கவிதா</span>
+        </div>
+        <span class="host-role">சட்ட ஆய்வாளர்</span>
+        <div class="eq-wave">
+          <div class="eq-bar" style="height: {{EQ_V1}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_V2}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_V3}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_V4}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_V5}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_V6}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_V7}}px;"></div>
+          <div class="eq-bar" style="height: {{EQ_V8}}px;"></div>
+        </div>
+      </div>
     </div>
   </footer>
 </body>

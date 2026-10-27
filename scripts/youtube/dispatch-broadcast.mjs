@@ -42,8 +42,10 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced
-  if (format !== 'live-shorts' && !calEntry && !dbEpisode && !force) {
+  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts'].includes(format);
+
+  // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
+  if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
     console.log(`[DISPATCH] No calendar entry or database episode for format "${format}" on ${todayIst}. Skipping.`);
     return;
   }
@@ -58,27 +60,31 @@ async function handleSlot(format, isDryRun, force) {
   }
 
   const scriptMap = {
-    'podcast': 'scripts/youtube/pipelines/generate-podcast.mjs',
-    'civic-shorts': 'scripts/youtube/pipelines/generate-shorts.mjs',
-    'live-shorts': 'scripts/youtube/pipelines/generate-live-shorts.mjs'
+    'podcast': { script: 'scripts/youtube/pipelines/generate-podcast.mjs', extraArgs: [] },
+    'civic-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: [] },
+    'live-shorts': { script: 'scripts/youtube/pipelines/generate-live-shorts.mjs', extraArgs: [] },
+    'utility-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=utility'] },
+    'scam-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scam'] },
+    'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scheme'] },
+    'rights-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=rights'] }
   };
 
-  const script = scriptMap[format];
-  if (!script) {
+  const entry = scriptMap[format];
+  if (!entry) {
     console.error(`[DISPATCH ERROR] Unknown format: ${format}`);
     return;
   }
 
-  const args = [];
+  const args = [...(entry.extraArgs || [])];
   if (isDryRun) args.push('--dry-run');
 
-  const title = dbEpisode?.topic_title || dbEpisode?.title_ta || dbEpisode?.title_en || calEntry?.title || 'Live Civic Alert';
+  const title = dbEpisode?.topic_title || dbEpisode?.title_ta || dbEpisode?.title_en || calEntry?.title || `${format.toUpperCase()} Broadcast`;
   console.log(`\n====================================================`);
   console.log(`VIZHITN BROADCAST EXECUTION: ${format.toUpperCase()}`);
   console.log(`Date: ${todayIst} | Title: "${title}"`);
   console.log(`====================================================\n`);
 
-  await runPipeline(script, args);
+  await runPipeline(entry.script, args);
 }
 
 /**
@@ -226,15 +232,18 @@ async function main() {
 
   let targetFormat = null;
 
-  if (now.hours < 15) {
-    // Daytime window (06:00 - 14:59 IST): Live Civic Short
-    targetFormat = 'live-shorts';
-  } else if (now.hours < 19) {
-    // Evening podcast window (15:00 - 18:59 IST): Vizhi Uncut Duo Podcast
+  if (now.hours < 12) {
+    // Morning window (06:00 - 11:59 IST): High-Retention Utility & Money Hack Short
+    targetFormat = 'utility-shorts';
+  } else if (now.hours < 16) {
+    // Afternoon window (12:00 - 15:59 IST): Cyber Scam & Urgent Warning Short
+    targetFormat = 'scam-shorts';
+  } else if (now.hours < 20) {
+    // Evening window (16:00 - 19:59 IST): Vizhi Uncut 16:9 Documentary Podcast
     targetFormat = 'podcast';
   } else {
-    // Night short window (19:00 - 23:59 IST): 90-Day Calendar Civic Short
-    targetFormat = 'civic-shorts';
+    // Night window (20:00 - 23:59 IST): Welfare Schemes & Citizen Entitlements Short
+    targetFormat = 'scheme-shorts';
   }
 
   console.log(`[AUTO ROUTER] Target slot for ${now.hours}:${now.minutes} IST is: "${targetFormat}"`);
