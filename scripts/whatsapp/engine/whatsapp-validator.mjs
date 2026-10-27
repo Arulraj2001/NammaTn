@@ -123,9 +123,9 @@ export function validateWhatsAppMessage(messageText = '', post = {}, options = {
   }
 
   // ─── GATE E: TEMPLATE CONSISTENCY ──────────────────────────────────────
-  const hasFullNewsLabel = messageText.includes('👉 முழு செய்தி:');
+  const hasFullNewsLabel = messageText.includes('👉 முழு செய்தி:') || messageText.includes('👉 முழு தகவல்:');
   const hasDistrictMarker = /📍\s+[^\n]+/i.test(messageText);
-  const hasFamilyShareLine = messageText.includes('📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க');
+  const hasFamilyShareLine = messageText.includes('குடும்ப') || messageText.includes('ஷேர் பண்ணுங்க') || messageText.includes('அனுப்புங்கள்');
   const hasOldBilingualLabels = /முக்கிய விவரங்கள் \/ Key Details|Full List|மாவட்டம் \/ District/i.test(messageText);
 
   if (!hasFullNewsLabel || !hasDistrictMarker || !hasFamilyShareLine || hasOldBilingualLabels) {
@@ -146,8 +146,9 @@ export function validateWhatsAppMessage(messageText = '', post = {}, options = {
   }
 
   // ─── GATE G: HELPLINE INTEGRITY ────────────────────────────────────────
-  const isScam = (post.category_slug === 'public-safety' || (post.title_ta || '').includes('மோசடி') || messageText.includes('மோசடி') || messageText.includes('SMS'));
+  const isScam = (post.category_slug === 'scam' || ((post.category_slug === 'public-safety' || (post.title_ta || '').includes('மோசடி') || messageText.includes('மோசடி') || messageText.includes('SMS')) && !messageText.includes('மழை') && !messageText.includes('வானிலை')));
   const isPowerCut = (post.category_slug === 'electricity' || (post.title_ta || '').includes('மின்தடை') || messageText.includes('மின்தடை'));
+  const isRain = (post.category_slug === 'rain' || (post.title_ta || '').includes('மழை') || messageText.includes('மழை'));
 
   if (isScam && !messageText.includes('1930')) {
     gates.gate_g_helpline = { pass: false, reason: 'Cyber scam advisory must mention National Cyber Helpline 1930.' };
@@ -155,6 +156,9 @@ export function validateWhatsAppMessage(messageText = '', post = {}, options = {
   } else if (isPowerCut && !messageText.includes('1912')) {
     gates.gate_g_helpline = { pass: false, reason: 'Power cut alert must mention TANGEDCO Minnalagam helpline 1912.' };
     errors.push('Gate G: Missing 1912 helpline for power cut alert');
+  } else if (isRain && !messageText.includes('1077') && !messageText.includes('1070')) {
+    gates.gate_g_helpline = { pass: false, reason: 'Rain alert must mention District Control 1077 or NDRF 1070.' };
+    errors.push('Gate G: Missing 1077/1070 helpline for rain alert');
   }
 
   return {
