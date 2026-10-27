@@ -42,6 +42,9 @@ import_backup.cjs
 # WhatsApp Baileys Auth Session
 scripts/baileys_auth/
 
+# Twitter Browser Auth Session
+scripts/twitter_auth/
+
 # Generated social media assets & scratch
 public/images/posts/
 public/images/fresh-metro-*

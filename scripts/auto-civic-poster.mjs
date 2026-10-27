@@ -1057,6 +1057,37 @@ No conversational intro, no commentary outside the JSON array.
         console.warn(`[SOCIAL BROADCAST WARN] ${sErr.message}`);
       }
     }
+
+    // --- STEP 11: AUTONOMOUS TWITTER (X) BROADCAST ---
+    // Broadcasts top priority civic alert to @Vizhitn via headless zero-cost automation
+    try {
+      if (validPosts.length > 0) {
+        const sortedForTwitter = [...validPosts].sort((a, b) => {
+          const urgencyRank = { critical: 4, high: 3, medium: 2, low: 1 };
+          const rankA = urgencyRank[a.urgency_level] || 1;
+          const rankB = urgencyRank[b.urgency_level] || 1;
+          if (rankA !== rankB) return rankB - rankA;
+
+          const typeRank = { alert: 3, local_update: 2, complaint: 1 };
+          const tA = typeRank[a.post_type] || 0;
+          const tB = typeRank[b.post_type] || 0;
+          if (tA !== tB) return tB - tA;
+
+          const topCats = ['education', 'electricity', 'transport', 'public-safety', 'government-schemes', 'water-sanitation'];
+          const catA = topCats.indexOf(a.category_slug) !== -1 ? 1 : 0;
+          const catB = topCats.indexOf(b.category_slug) !== -1 ? 1 : 0;
+          return catB - catA;
+        });
+
+        const topTwitterAlert = sortedForTwitter[0];
+        console.log(`[TWITTER BROADCAST] 📢 Broadcasting top civic dispatch: "${topTwitterAlert.title_ta || topTwitterAlert.title_en}" to @Vizhitn...`);
+
+        const { postToTwitter } = await import('./twitter-poster.mjs');
+        await postToTwitter(topTwitterAlert, { isDryRun: isDryRun });
+      }
+    } catch (twErr) {
+      console.warn(`[TWITTER WARN] Twitter broadcast warning: ${twErr.message}`);
+    }
   }
 }
 
