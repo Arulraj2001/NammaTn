@@ -123,15 +123,14 @@ export function validateWhatsAppMessage(messageText = '', post = {}, options = {
   }
 
   // ─── GATE E: TEMPLATE CONSISTENCY ──────────────────────────────────────
-  const hasFullNewsLabel = messageText.includes('👉 முழு செய்தி:') || messageText.includes('👉 முழு தகவல்:');
+  const hasFullNewsLabel = messageText.includes('👉 முழு செய்தி:') || messageText.includes('👉 முழு தகவல்:') || messageText.includes('🔗');
   const hasDistrictMarker = /📍\s+[^\n]+/i.test(messageText);
-  const hasFamilyShareLine = messageText.includes('குடும்ப') || messageText.includes('ஷேர் பண்ணுங்க') || messageText.includes('அனுப்புங்கள்');
   const hasOldBilingualLabels = /முக்கிய விவரங்கள் \/ Key Details|Full List|மாவட்டம் \/ District/i.test(messageText);
 
-  if (!hasFullNewsLabel || !hasDistrictMarker || !hasFamilyShareLine || hasOldBilingualLabels) {
+  if (!hasFullNewsLabel || !hasDistrictMarker || hasOldBilingualLabels) {
     gates.gate_e_template_consistency = {
       pass: false,
-      reason: `Template inconsistent: hasFullNews=${hasFullNewsLabel}, hasDistrict=${hasDistrictMarker}, hasShare=${hasFamilyShareLine}, hasOldBilingual=${hasOldBilingualLabels}`
+      reason: `Template inconsistent: hasFullNews=${hasFullNewsLabel}, hasDistrict=${hasDistrictMarker}, hasOldBilingual=${hasOldBilingualLabels}`
     };
     errors.push('Gate E: Template structure does not match standard (found old bilingual labels or missing fields)');
   }

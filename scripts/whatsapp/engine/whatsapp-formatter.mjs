@@ -5,6 +5,7 @@
  */
 
 import { validateWhatsAppMessage } from './whatsapp-validator.mjs';
+import { formatRealNewsWhatsAppBulletin } from '../../../src/lib/whatsappChannel.js';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -210,78 +211,10 @@ ${retryFeedback ? `\nPREVIOUS ATTEMPT FIXES REQUIRED:\n${retryFeedback}\n` : ''}
 
 /**
  * Deterministic template formatter guaranteeing 100% gate pass when LLM is offline.
+ * Produces clean, professional Tamil newsroom bulletins without AI bot tropes.
  */
 export function buildDeterministicWhatsAppPost({ post, isForwardVariant = false }) {
-  const title = (post.title_ta || post.title_en || '').trim();
-  const rawDistrict = post.district_slug || post.district_name || 'சென்னை';
-  const districtName = formatDistrictName(rawDistrict);
-  const fullUrl = post.canonical_url || post.url || (post.slug ? `https://www.vizhitn.in/post/${post.slug}` : 'https://www.vizhitn.in');
-  const content = (post.content_ta || post.summary_ta || post.subtitle_ta || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-
-  const catKey = CATEGORY_SAFETY_RULES[post.category_slug]
-    ? post.category_slug
-    : ((post.title_ta || '').includes('மழை') || (post.title_en || '').toLowerCase().includes('rain'))
-      ? 'rain'
-      : ((post.title_ta || '').includes('மோசடி') || (post.title_en || '').toLowerCase().includes('scam'))
-        ? 'scam'
-        : post.category_slug;
-
-  // 1. RAIN / FLOOD ALERT
-  if (catKey === 'rain' || title.includes('மழை') || title.includes('வானிலை') || content.includes('மழை')) {
-    const headline = `🌧️ *${title.length > 50 ? title.slice(0, 48) + '...' : title}*`;
-    const summary = content.slice(0, 180) ? content.slice(0, 180).replace(/\s+\S*$/, '') + '.' : 'கனமழை எச்சரிக்கை விடுக்கப்பட்டுள்ளது. பொதுமக்கள் பாதுகாப்புடன் இருக்கவும்.';
-    const bullets = (CATEGORY_SAFETY_RULES['rain'] || []).map(r => `• ${r}`);
-
-    return `${headline}\n\n${summary}\n\n✅ என்ன செய்ய வேண்டும்:\n${bullets.join('\n')}\n\n📞 ${CATEGORY_HELPLINES['rain']}\n\n📍 ${districtName}\n👉 முழு தகவல்: ${fullUrl}\n\n🔁 உங்கள் குடும்பத்தினருக்கு அனுப்புங்கள்`;
-  }
-
-  // 2. SCAM / CYBER FRAUD POST
-  if (catKey === 'scam' || title.includes('மோசடி') || title.includes('SMS') || content.includes('மோசடி')) {
-    const headline = `🚨 *போலி மின் கட்டண SMS: கிளிக் பண்ணாதீங்க!*`;
-    const summary = `"மின் இணைப்பு துண்டிக்கப்படும்"னு SMS வந்தா அது மோசடி. தமிழ்நாடு சைபர் கிரைம் போலீஸ் எச்சரித்துள்ளது.`;
-    const bullets = (CATEGORY_SAFETY_RULES['scam'] || []).map(r => `• ${r}`);
-
-    return `${headline}\n\n${summary}\n\n✅ என்ன செய்ய வேண்டும்:\n${bullets.join('\n')}\n\n📞 ${CATEGORY_HELPLINES['scam']}\n\n📍 ${districtName}\n👉 முழு தகவல்: ${fullUrl}\n\n🔁 உங்கள் குடும்பத்தினருக்கு அனுப்புங்கள்`;
-  }
-
-  // 3. METRO / INFRASTRUCTURE POST
-  if (catKey === 'transport' || title.includes('மெட்ரோ') || content.includes('மெட்ரோ') || content.includes('ரயில்')) {
-    const headline = `🚇 *சென்னை மெட்ரோ 2-ம் கட்டம்: சோதனை ஓட்டம் தீவிரம்!*`;
-    const summary = `பூந்தமல்லி முதல் போரூர் வரையிலான 11.89 கி.மீ. உயர்மட்ட வழித்தடத்தில் ஓட்டுநர் இல்லா ரயில் சோதனை ஓட்டம் தீவிரமாக நடைபெற்று வருகிறது.`;
-    const bullets = [
-      '• மவுண்ட்-பூந்தமல்லி சாலை நெரிசலுக்கு பெரிய தீர்வு',
-      '• 90 நிமிட பயணம் 22 நிமிடங்களாக குறையும்',
-      '• அதிகாரப்பூர்வ திறப்பு தேதி இன்னும் அறிவிக்கப்படவில்லை'
-    ];
-
-    return `${headline}\n\n${summary}\n\n✅ உங்களுக்கு என்ன முக்கியம்:\n${bullets.join('\n')}\n\n📍 ${districtName}\n👉 முழு தகவல்: ${fullUrl}\n\n🔁 உங்கள் குடும்பத்தினருக்கு அனுப்புங்கள்`;
-  }
-
-  // 4. POWER CUT / UTILITY POST
-  if (catKey === 'electricity' || title.includes('மின்தடை') || content.includes('மின்தடை')) {
-    const timeMatch = content.match(/(?:காலை|மதியம்)?\s*\d{1,2}(?::\d{2})?\s*(?:மணி)?\s*முதல்\s*(?:மதியம்|மாலை)?\s*\d{1,2}(?::\d{2})?\s*(?:மணி)?\s*வரை/i)?.[0] || 'காலை 9:00 முதல் மதியம் 2:00 வரை';
-    const headline = `⚡ *${districtName} மின்தடை: இன்று மின் நிறுத்தம்!*`;
-    const summary = `மாதாந்திர பராமரிப்பு பணி காரணமாக ${districtName} முக்கிய பகுதிகளில் ${timeMatch} மின்சாரம் நிறுத்தப்படுகிறது.`;
-    const bullets = (CATEGORY_SAFETY_RULES['electricity'] || []).map(r => `• ${r}`);
-
-    return `${headline}\n\n${summary}\n\n✅ என்ன செய்ய வேண்டும்:\n${bullets.join('\n')}\n\n📞 ${CATEGORY_HELPLINES['electricity']}\n\n📍 ${districtName}\n👉 முழு தகவல்: ${fullUrl}\n\n🔁 உங்கள் குடும்பத்தினருக்கு அனுப்புங்கள்`;
-  }
-
-  // 5. GENERAL CIVIC / SCHEME POST
-  const shortTitle = title.length > 50 ? title.slice(0, 48) + '...' : title;
-  const leadSummary = content.slice(0, 140) ? content.slice(0, 140).replace(/\s+\S*$/, '') + '.' : 'முக்கிய கள விவரங்கள் அதிகாரப்பூர்வமாக வெளியிடப்பட்டுள்ளது.';
-  const catRules = CATEGORY_SAFETY_RULES[catKey] || [];
-  const bullets = catRules.length > 0 
-    ? catRules.map(r => `• ${r}`)
-    : [
-        '• அரசு அறிவித்த அதிகாரப்பூர்வ நேரடி தகவல்',
-        '• பொதுமக்கள் பயன்பெற உடனடி நடவடிக்கை தேவை',
-        '• அவசர அரசு உதவி எண் 📞 1100'
-      ];
-
-  const helplineText = CATEGORY_HELPLINES[catKey] ? `\n\n📞 ${CATEGORY_HELPLINES[catKey]}` : '';
-
-  return `📢 *${shortTitle}*\n\n${leadSummary}\n\n✅ என்ன செய்ய வேண்டும்:\n${bullets.join('\n')}${helplineText}\n\n📍 ${districtName}\n👉 முழு தகவல்: ${fullUrl}\n\n🔁 உங்கள் குடும்பத்தினருக்கு அனுப்புங்கள்`;
+  return formatRealNewsWhatsAppBulletin({ post });
 }
 
 function formatDistrictName(slug = '') {

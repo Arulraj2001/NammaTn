@@ -115,76 +115,181 @@ async function resolveThumbnail(imageInput) {
  * Strips HTML tags, removes duplicate source lists, extracts timing and street details,
  * and ensures sentences terminate cleanly without awkward mid-word cutoffs.
  */
-function cleanAndFormatWhatsAppBody(rawText = "") {
-  if (!rawText) return "";
+export const TAMIL_DISTRICT_MAP = {
+  chennai: "சென்னை",
+  coimbatore: "கோவை",
+  madurai: "மதுரை",
+  tiruchirappalli: "திருச்சி",
+  salem: "சேலம்",
+  tirunelveli: "திருநெல்வேலி",
+  vellore: "வேலூர்",
+  erode: "ஈரோடு",
+  thoothukudi: "தூத்துக்குடி",
+  dindigul: "திண்டுக்கல்",
+  thanjavur: "தஞ்சாவூர்",
+  ranipet: "ராணிப்பேட்டை",
+  sivaganga: "சிவகங்கை",
+  virudhunagar: "விருதுநகர்",
+  nagapattinam: "நாகப்பட்டினம்",
+  kallakurichi: "கள்ளக்குறிச்சி",
+  chengalpattu: "செங்கல்பட்டு",
+  tiruppur: "திருப்பூர்",
+  tenkasi: "தென்காசி",
+  mayiladuthurai: "மயிலாடுதுறை",
+  tirupattur: "திருப்பத்தூர்",
+  nilgiris: "நீலகிரி",
+  krishnagiri: "கிருஷ்ணகிரி",
+  dharmapuri: "தர்மபுரி",
+  cuddalore: "கடலூர்",
+  villupuram: "விழுப்புரம்",
+  perambalur: "பெரம்பலூர்",
+  ariyalur: "அரியலூர்",
+  pudukkottai: "புதுக்கோட்டை",
+  ramanathapuram: "ராமநாதபுரம்",
+  theni: "தேனி",
+  kancheepuram: "காஞ்சிபுரம்",
+  tiruvarur: "திருவாரூர்",
+  karur: "கரூர்",
+  namakkal: "நாமக்கல்",
+  tiruvannamalai: "திருவண்ணாமலை",
+  kanyakumari: "கன்னியாகுமரி",
+  tiruvallur: "திருவள்ளூர்",
+  hosur: "ஓசூர்",
+  tambaram: "தாம்பரம்"
+};
 
-  // 1. Remove HTML tags, links, and official sources section
-  let text = String(rawText)
-    .replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, '') // Remove headers like <h2>Official sources</h2>
-    .replace(/<ul[^>]*>[\s\S]*?<\/ul>/gi, '')   // Remove lists
-    .replace(/<[^>]+>/g, ' ')                   // Strip remaining HTML tags
+export function formatDistrictTamil(slug = '') {
+  if (!slug) return 'தமிழ்நாடு';
+  const clean = slug.toLowerCase().trim();
+  return TAMIL_DISTRICT_MAP[clean] || slug;
+}
+
+export function cleanTamilText(raw = '') {
+  return String(raw || '')
+    .replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, ' ')
+    .replace(/<ul[^>]*>[\s\S]*?<\/ul>/gi, ' ')
+    .replace(/<p class="official-ref-badge"[^>]*>[\s\S]*?<\/p>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
     .replace(/&quot;/gi, '"')
     .replace(/&#39;/gi, "'")
     .replace(/\s+/g, ' ')
     .trim();
+}
 
-  if (!text) return "";
+export function formatHeadline(title = '', defaultIcon = '📢') {
+  let cleaned = String(title || '').replace(/^[\s🚨⚡🌧️🚧🚇💧⚠️📢]+/, '').replace(/[*_~`]/g, '').trim();
+  cleaned = cleaned.replace(/\.{2,}$/, '').trim();
+  return `${defaultIcon} *${cleaned}*`;
+}
 
-  // 2. Identify sections if structured (e.g., Section 1 overview and Section 2 streets)
-  const streetMarkers = [
-    /(?:affected streets & areas|affected areas|streets affected|locations affected):?\s*(.*?)(?=(?:according to|for unresolved|residents are advised|$))/i,
-    /(?:பாதிக்கப்படும் பகுதிகள்|மின்தடை பகுதிகள்|தெருக்கள் விவரம்):?\s*(.*?)(?=(?:மின்வாரிய|புகார்களுக்கு|பொதுமக்கள்|$))/i
+export function extractStreetSnippet(text = '') {
+  const streetPatterns = [
+    /(?:பாதிக்கப்படும் பகுதிகள்(?: & வீதிகள்)?|மின்தடை பகுதிகள்|தெருக்கள் விவரம்|பகுதிகள் விவரம்|மேற்கொள்ளப்பட்ட பணிகள்):\s*([^\n]+)/i,
+    /(?:Affected Streets & Areas|Affected areas|Streets affected):\s*([^\n]+)/i
   ];
-
-  let streetSnippet = "";
-  for (const regex of streetMarkers) {
+  for (const regex of streetPatterns) {
     const match = text.match(regex);
-    if (match && match[1] && match[1].trim().length > 10) {
-      streetSnippet = match[1].trim();
-      break;
+    if (match && match[1] && match[1].trim().length > 5) {
+      let rawSnippet = match[1].trim().replace(/\.$/, '');
+      const parts = rawSnippet.split(/[,;]/).map(s => s.trim()).filter(Boolean);
+      let acc = [];
+      let totalLen = 0;
+      for (const p of parts) {
+        if (totalLen + p.length > 140) break;
+        acc.push(p);
+        totalLen += p.length;
+      }
+      if (acc.length > 0) {
+        return acc.length < parts.length ? acc.join(', ') + ' மற்றும் சுற்றியுள்ள பகுதிகள்' : acc.join(', ');
+      }
+      return rawSnippet.slice(0, 140);
     }
   }
+  return '';
+}
 
-  // 3. Extract core lead text (first 1-2 sentences)
-  const sentences = text.split(/(?<=[.!?।])\s+/).filter(Boolean);
-  let lead = sentences.slice(0, 2).join(' ').trim();
+export function extractTimeSnippet(text = '') {
+  const timeMatch = text.match(/(?:காலை|மதியம்|மாலை)?\s*\d{1,2}(?::\d{2})?\s*(?:மணி)?\s*முதல்\s*(?:காலை|மதியம்|மாலை)?\s*\d{1,2}(?::\d{2})?\s*(?:மணி)?\s*வரை/i);
+  return timeMatch ? timeMatch[0].trim() : 'காலை 9:00 முதல் மதியம் 2:00 வரை';
+}
 
-  if (lead.length > 280) {
-    const punctIdx = lead.lastIndexOf('.', 270);
-    if (punctIdx > 120) {
-      lead = lead.slice(0, punctIdx + 1);
-    } else {
-      lead = lead.slice(0, 270).replace(/\s+\S*$/, '') + '...';
-    }
+export function extractHelpline(text = '', fallback = '1100') {
+  const landlineMatch = text.match(/0\d{2,4}-\d{6,8}/);
+  if (landlineMatch) return landlineMatch[0];
+  const shortHelpline = text.match(/\b(1912|1913|1916|1930|1967|1077|1070|139|1100|108|100)\b/);
+  if (shortHelpline) return shortHelpline[0];
+  return fallback;
+}
+
+export function formatRealNewsWhatsAppBulletin(options) {
+  const post = options.post || {};
+  const title = (options.title || post.title_ta || post.title_en || '').trim();
+  const rawBody = options.summary || post.content_ta || post.summary_ta || post.content_en || '';
+  const cleanBody = cleanTamilText(rawBody);
+  const districtTa = formatDistrictTamil(options.district || post.district_slug || '');
+  const areaName = (post.area_name || '').trim();
+  const fullLocation = areaName ? `${areaName}, ${districtTa}` : districtTa;
+  const url = options.url || post.canonical_url || (post.slug ? `https://www.vizhitn.in/post/${post.slug}` : 'https://www.vizhitn.in');
+
+  const cat = (options.category || post.category_slug || '').toLowerCase();
+  const isElectricity = cat === 'electricity' || title.includes('மின்தடை') || cleanBody.includes('மின்தடை');
+  const isRain = cat === 'rain' || title.includes('மழை') || title.includes('வானிலை') || title.includes('விடுமுறை');
+  const isScam = cat === 'scam' || cat === 'public-safety' || title.includes('மோசடி') || title.includes('SMS');
+  const isWater = cat === 'water-sanitation' || title.includes('குடிநீர்') || title.includes('சாக்கடை') || title.includes('குப்பை');
+  const isTransport = cat === 'transport' || title.includes('மெட்ரோ') || title.includes('ரயில்') || title.includes('பேருந்து');
+
+  const sentences = cleanBody.split(/(?<=[.!?।])\s+/).filter(Boolean);
+  let lead = sentences[0] || title;
+  if (lead.length < 50 && sentences[1]) {
+    lead += ' ' + sentences[1];
   }
 
-  let formatted = `📋 *முக்கிய விவரங்கள் / Key Details:*\n${lead}\n`;
+  // 1. Electricity Alert
+  if (isElectricity) {
+    const headline = formatHeadline(title, '⚡');
+    const timeText = extractTimeSnippet(cleanBody);
+    const streets = extractStreetSnippet(cleanBody) || (areaName ? `${areaName} மற்றும் சுற்றுவட்டார பகுதிகள்` : `${districtTa} முக்கிய பகுதிகள்`);
 
-  if (streetSnippet) {
-    if (streetSnippet.length > 180) {
-      streetSnippet = streetSnippet.slice(0, 180).replace(/[,;]\s*[^,;]*$/, '') + '...';
-    }
-    formatted += `\n🏘️ *பாதிக்கப்படும் முக்கிய பகுதிகள் / Streets:*\n${streetSnippet}\n`;
+    return `${headline}\n\n${lead}\n\n⏰ *நேரம்:* ${timeText}\n📍 *பாதிக்கப்படும் பகுதிகள்:* ${streets}\n📞 *மின்தடை உதவி:* 1912 (மின்னகம்)\n\n🔗 *முழு தெரு பட்டியல் & விவரம்:*\n${url}`;
   }
 
-  return formatted;
+  // 2. Rain / Weather / Holiday Alert
+  if (isRain) {
+    const headline = formatHeadline(title, '🌧️');
+    return `${headline}\n\n${lead}\n\n📍 *மாவட்டம்:* ${districtTa}\n📞 *பேரிடர் கட்டுப்பாட்டு அறை:* 1077 | 1070\n\n🔗 *முழு விவரங்கள்:*\n${url}`;
+  }
+
+  // 3. Cyber Scam Advisory
+  if (isScam) {
+    const headline = formatHeadline(title, '🚨');
+    return `${headline}\n\n${lead}\n\n⚠️ *முக்கிய எச்சரிக்கை:*\n• சந்தேகத்திற்குரிய லிங்க்குகளை கிளிக் செய்யாதீர்கள்\n• OTP, வங்கி ரகசிய எண்களை யாரிடமும் பகிராதீர்கள்\n📞 *சைபர் கிரைம் உதவி:* 1930\n\n🔗 *முழு எச்சரிக்கை விவரம்:*\n${url}`;
+  }
+
+  // 4. Water, Drainage & Sanitation
+  if (isWater) {
+    const icon = title.includes('குப்பை') || title.includes('தூய்மை') ? '🧹' : '💧';
+    const headline = formatHeadline(title, icon);
+    const helpline = extractHelpline(cleanBody, '1913');
+    return `${headline}\n\n${lead}\n\n📍 *பகுதி:* ${fullLocation}\n📞 *மாநகராட்சி / புகார் உதவி:* ${helpline}\n\n🔗 *முழு செய்தி:*\n${url}`;
+  }
+
+  // 5. Metro & Transport
+  if (isTransport) {
+    const headline = formatHeadline(title, '🚇');
+    return `${headline}\n\n${lead}\n\n📍 *பாதை / பகுதி:* ${fullLocation}\n${options.helpline ? `📞 *உதவி எண்:* ${options.helpline}\n` : ''}\n🔗 *முழு விவரம்:*\n${url}`;
+  }
+
+  // 6. General Civic & Schemes
+  const headline = formatHeadline(title, '📢');
+  const helpline = extractHelpline(cleanBody, options.helpline?.match(/\d{4,}/)?.[0] || '1100');
+  return `${headline}\n\n${lead}\n\n📍 *பகுதி:* ${fullLocation}\n📞 *அரசு அவசர உதவி:* ${helpline}\n\n🔗 *முழு செய்தி:*\n${url}`;
 }
 
 /**
  * Broadcasts an article or civic update directly to the VizhiTN WhatsApp Channel.
  * Automatically attaches rich link preview card metadata and large thumbnail.
- *
- * @param {Object} options
- * @param {string} options.title - Article or Alert Title
- * @param {string} [options.summary] - Short description/highlights
- * @param {string} options.url - Full URL to vizhitn.in
- * @param {string} [options.category] - Category slug or label
- * @param {string} [options.urgency] - Urgency level (e.g. critical, high)
- * @param {string} [options.district] - District name or slug
- * @param {string} [options.helpline] - Department / Helpline contact info
- * @param {Buffer|string} [options.image] - Optional custom image buffer or file path
  */
 export async function postToWhatsAppChannel({
   title,
@@ -194,7 +299,8 @@ export async function postToWhatsAppChannel({
   urgency = "normal",
   district = "",
   helpline = "",
-  image = null
+  image = null,
+  post = null
 }) {
   const authDir = path.resolve(process.cwd(), "scripts/baileys_auth");
   prepareAuthDir(authDir);
@@ -205,54 +311,17 @@ export async function postToWhatsAppChannel({
     return null;
   }
 
-  const urgencyIcon = urgency === "critical" ? "🚨" : (urgency === "high" ? "⚠️" : "📢");
-
-  // Format headline (clean, max 60 chars)
-  let cleanTitle = title.trim();
-  if (cleanTitle.length > 55) {
-    cleanTitle = cleanTitle.slice(0, 52).replace(/\s+\S*$/, '') + '...';
-  }
-
-  // Format clean bullet points
-  const rawCleaned = String(summary || '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  const sentences = rawCleaned.split(/(?<=[.!?।])\s+/).filter(Boolean);
-  const lead = sentences.slice(0, 2).join(' ').trim();
-
-  let bullets = [];
-  if (category === 'public-safety' || title.includes('மோசடி') || title.includes('SMS')) {
-    bullets = [
-      '• லிங்கை கிளிக் பண்ணாதீங்க',
-      '• OTP, PIN யார்கிட்டயும் சொல்லாதீங்க',
-      '• நம்பரை பிளாக் பண்ணுங்க' + (helpline ? ` & உதவிக்கு 📞 ${helpline.match(/\d{4}/)?.[0] || '1930'}` : ' & உதவிக்கு 📞 1930')
-    ];
-  } else if (category === 'electricity' || title.includes('மின்தடை')) {
-    const timeMatch = rawCleaned.match(/(?:காலை|மதியம்)?\s*\d{1,2}(?::\d{2})?\s*(?:மணி)?\s*முதல்\s*(?:மதியம்|மாலை)?\s*\d{1,2}(?::\d{2})?\s*(?:மணி)?\s*வரை/i)?.[0];
-    bullets = [
-      timeMatch ? `• மின்தடை நேரம்: ${timeMatch}` : '• மாதாந்திர மின்வாரிய பராமரிப்பு பணி',
-      '• போன் மற்றும் இன்வெர்ட்டரை முன்கூட்டியே சார்ஜ் செய்யவும்',
-      '• மின் தடை புகார்களுக்கு மின்னகம் 📞 1912'
-    ];
-  } else {
-    bullets = [
-      sentences[1] ? `• ${sentences[1].slice(0, 70)}` : '• அதிகாரப்பூர்வ துறை அறிவிப்பு',
-      sentences[2] ? `• ${sentences[2].slice(0, 70)}` : '• பொதுமக்கள் பயன்பெற நடவடிக்கை தேவை',
-      helpline ? `• உதவி மையம்: 📞 ${helpline.match(/\d{4,}/)?.[0] || helpline}` : '• அவசர உதவி மையம்: 📞 1100'
-    ];
-  }
-
-  // Standard clean 8.1 template
-  let messageText = `${urgencyIcon} *${cleanTitle}*\n\n`;
-  messageText += `${lead || cleanTitle}\n\n`;
-  messageText += `✅ உங்களுக்கு என்ன முக்கியம்:\n${bullets.join('\n')}\n\n`;
-  if (district && district.trim()) {
-    messageText += `📍 ${district.trim()}\n`;
-  }
-  messageText += `👉 முழு செய்தி: ${url}\n\n`;
-  messageText += `📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
+  const messageText = formatRealNewsWhatsAppBulletin({
+    title,
+    summary,
+    url,
+    category,
+    urgency,
+    district,
+    helpline,
+    image,
+    post
+  });
 
   const thumbBuf = await resolveThumbnail(image);
 

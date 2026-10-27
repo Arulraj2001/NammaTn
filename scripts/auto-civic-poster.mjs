@@ -1024,7 +1024,8 @@ No conversational intro, no commentary outside the JSON array.
           urgency: topAlert.urgency_level,
           district: topAlert.district_slug,
           helpline: topAlert.assigned_department,
-          image: topAlert.media_urls?.[0] || null
+          image: topAlert.media_urls?.[0] || null,
+          post: topAlert
         });
       }
     } catch (waErr) {
