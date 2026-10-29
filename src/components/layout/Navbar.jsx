@@ -19,7 +19,7 @@ const MAIN_NAV = [
   { path: "/explore", en: "⚡ Live Feed", ta: "⚡ நேரடி ஊட்டம்" },
   { path: "/tn-today", en: "📰 TN Today", ta: "📰 TN Today" },
   { path: "/power-cuts-today-tamil-nadu", en: "⚡ Power Cuts", ta: "⚡ மின்தடை" },
-  { path: "/trending", en: "🔥 Trending", ta: "🔥 டிரெண்டிங்" },
+  { path: "/trending", en: "🔥 Trending", ta: "🔥 டிரெண்டிங்", hideOnLg: true },
 ];
 
 
@@ -236,19 +236,21 @@ export default function Navbar() {
               <Image src={settings.site_logo_url || "/apple-touch-icon.png"} alt="" width={32} height={32} priority className="w-8 h-8 rounded-lg object-contain" />
               <div className="hidden sm:block">
                 <span className="font-bold text-slate-900 dark:text-white text-sm leading-tight block">VizhiTN</span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-none block whitespace-nowrap">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-none hidden 2xl:block whitespace-nowrap">
                   {T("Public Civic Proof Platform", "பொது குடிமை ஆதார தளம்")}
                 </span>
               </div>
             </Link>
 
             {/* Desktop Main Nav */}
-            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 flex-1 ml-1 xl:ml-3">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 flex-1 min-w-0 ml-1 xl:ml-3">
               {MAIN_NAV.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`px-2 py-1.5 xl:px-3 xl:py-2 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap ${
+                  className={`px-1.5 py-1 xl:px-2.5 xl:py-1.5 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap ${
+                    link.hideOnLg ? "hidden xl:inline-flex" : ""
+                  } ${
                     location.pathname === link.path
                       ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100 font-bold border border-civic-200 dark:border-civic-700"
                       : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
@@ -267,7 +269,7 @@ export default function Navbar() {
               >
                 <button
                   onClick={() => setMegaOpen(!megaOpen)}
-                  className={`flex items-center gap-1 px-2 py-1.5 xl:px-3 xl:py-2 rounded-lg text-xs xl:text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-1 px-1.5 py-1 xl:px-2.5 xl:py-1.5 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap ${
                     megaOpen ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100" : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
                   }`}
                   aria-expanded={megaOpen}
@@ -361,41 +363,41 @@ export default function Navbar() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-              <Link to="/search" aria-label="Search" className="hidden md:flex p-1.5 xl:p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <Link to="/search" aria-label="Search" className="hidden md:flex p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <Search className="w-4 h-4" />
               </Link>
 
               <button
                 onClick={() => setLang(lang === "en" ? "ta" : "en")}
-                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
+                className="flex items-center gap-1 px-1.5 sm:px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors whitespace-nowrap"
                 title="Switch Language"
                 aria-label="Switch Language"
               >
-                <Globe className="w-3.5 h-3.5" />
+                <Globe className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="hidden sm:inline">{lang === "en" ? "தமிழ்" : "English"}</span>
                 <span className="sm:hidden uppercase font-bold text-[10px]">{lang === "en" ? "ta" : "en"}</span>
               </button>
 
               <button
                 onClick={toggleTheme}
-                className="p-1.5 xl:p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 aria-label="Toggle Theme"
               >
                 {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
 
-              <Link to="/bookmarks" aria-label="Bookmarks" className="hidden md:flex p-1.5 xl:p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <Link to="/bookmarks" aria-label="Bookmarks" className="hidden xl:flex p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <Bookmark className="w-4 h-4" />
               </Link>
 
               {/* Create CTA — desktop only */}
-              <Link to="/create" className="hidden lg:block ml-1">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 xl:px-4 xl:py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap">
+              <Link to="/create" className="hidden lg:block ml-0.5 xl:ml-1 flex-shrink-0">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-xl transition-colors flex items-center gap-1 shadow-sm whitespace-nowrap">
                   <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                  {T("Log Issue", "பதிவு செய்க")}
+                  <span className="hidden xl:inline">{T("Log Issue", "பதிவு செய்க")}</span>
+                  <span className="xl:hidden">{T("Post", "பதிவு")}</span>
                 </button>
               </Link>
-
 
               <UserMenu />
             </div>

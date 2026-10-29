@@ -20,14 +20,14 @@ export default function UserMenu({ onAction }) {
       <Button
         size="sm"
         variant="outline"
-        className="h-8 text-xs font-semibold border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400"
+        className="h-8 px-2 sm:px-3 text-xs font-semibold border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 whitespace-nowrap flex-shrink-0"
         onClick={() => {
           if (onAction) onAction();
           requireAuth(() => {}, lang === "ta" ? "குடிமக்கள் சமூகத்தில் பங்கேற்க உள்நுழையவும்" : "Sign in to participate in the community");
         }}
       >
-        <LogIn className="w-3.5 h-3.5 mr-1" />
-        {lang === "ta" ? "உள்நுழைக" : "Sign In"}
+        <LogIn className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+        <span className="whitespace-nowrap">{lang === "ta" ? "உள்நுழைக" : "Sign In"}</span>
       </Button>
     );
   }
