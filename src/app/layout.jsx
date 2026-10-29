@@ -96,7 +96,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="ta" suppressHydrationWarning>
-      <head>
+      <head suppressHydrationWarning>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -116,7 +116,7 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="//www.clarity.ms" />
         {/* Google Tag Manager — deferred to idle to unblock FCP and LCP */}
         <script
-          id="gtm-container"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `(function(){
               function loadGTM(){
@@ -139,6 +139,7 @@ export default function RootLayout({ children }) {
         {/* Subscribe with Google / Reader Revenue Manager (Google News Publication ID: CAowlefHDA) */}
         <script
           id="swg-init"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `(function(){
   if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
@@ -166,6 +167,7 @@ export default function RootLayout({ children }) {
         {/* Synchronous theme init — runs before React hydration to prevent CLS */}
         <script
           id="theme-init"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('tn_theme')||'light';document.documentElement.classList.add(t);document.documentElement.classList.remove(t==='dark'?'light':'dark');}catch(e){}})();`,
           }}
@@ -176,6 +178,7 @@ export default function RootLayout({ children }) {
             <meta name="google-adsense-account" content={adsensePubId} />
             <script
               async
+              suppressHydrationWarning
               src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePubId}`}
               crossOrigin="anonymous"
             />
@@ -184,6 +187,7 @@ export default function RootLayout({ children }) {
         {/* Microsoft Clarity: load only after analytics consent and never on private routes. */}
         <script
           id="clarity-init"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: getClarityInitScript(CLARITY_PROJECT_ID),
           }}
