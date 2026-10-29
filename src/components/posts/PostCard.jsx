@@ -120,85 +120,36 @@ const isStaticPlaceholder = (url) => {
   );
 };
 
-function CivicBulletinCard({ post, title, postUrl }) {
+function CivicBulletinStrip({ post }) {
   const category = (post.category_slug || "general").toLowerCase();
   const theme = CATEGORY_BULLETINS[category] || CATEGORY_BULLETINS.general;
   const CategoryIcon = theme.icon;
 
-  // Authentic photo check (Cloudflare FLUX / user uploaded) — strictly reject scraped newsroom stock
-  const candidateImg = Array.isArray(post.media_urls) && post.media_urls.length > 0 ? post.media_urls[0] : null;
-  const isAuthenticPhoto = Boolean(
-    candidateImg &&
-    typeof candidateImg === "string" &&
-    !candidateImg.includes("thgim.com") &&
-    !candidateImg.includes("newindianexpress") &&
-    !candidateImg.includes("dtnext") &&
-    !candidateImg.includes("unsplash") &&
-    !candidateImg.includes("pexels") &&
-    (candidateImg.startsWith("https://") || candidateImg.startsWith("http://"))
-  );
-  const illustrationLabel = mediaProvenanceLabel(candidateImg);
-
   return (
-    <Link
-      to={postUrl}
-      prefetch={true}
-      className={`block mb-3 rounded-2xl overflow-hidden relative border ${theme.border} p-3.5 sm:p-4 shadow-md hover:shadow-xl group/bulletin transition-all duration-300 min-h-[160px] sm:min-h-[175px] flex flex-col justify-between bg-slate-950`}
-    >
-      {/* Authentic Cloudflare FLUX / User Photo or Clean Graphic Card Fallback */}
-      {isAuthenticPhoto ? (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <img
-            src={candidateImg}
-            alt={title}
-            className="w-full h-full object-cover group-hover/bulletin:scale-105 transition-transform duration-700 opacity-40 group-hover/bulletin:opacity-50"
-            loading="lazy"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-          />
-          {/* Deep gradient scrim ensuring 100% text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/45" />
-          {illustrationLabel && (
-            <span className="absolute right-2 bottom-2 rounded bg-black/75 px-2 py-1 text-[9px] font-semibold text-white">
-              {illustrationLabel}
-            </span>
-          )}
+    <div className={`mb-3 p-2.5 sm:p-3 rounded-xl border ${theme.border} ${theme.bg} flex items-center justify-between gap-2.5 transition-all`}>
+      <div className="flex items-center gap-2.5 min-w-0">
+        <span className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${theme.badge} shadow-xs`}>
+          <CategoryIcon className="w-4 h-4" />
+        </span>
+        <div className="min-w-0">
+          <p className={`text-xs font-bold ${theme.accentText} truncate leading-tight`}>
+            {post.assigned_department || theme.dept}
+          </p>
+          <p className="text-[11px] text-slate-300 dark:text-slate-400 truncate mt-0.5">
+            {post.location_text || post.area_name || post.district_slug || theme.label}
+          </p>
         </div>
+      </div>
+      {post.civic_receipt_id ? (
+        <span className="text-[10px] font-mono font-bold text-white bg-white/10 px-2 py-1 rounded-md shrink-0 border border-white/15">
+          {post.civic_receipt_id}
+        </span>
       ) : (
-        <div className={`absolute inset-0 ${theme.bg} pointer-events-none`} />
-      )}
-
-      {/* Top Bar: Category pill + District chip */}
-      <div className="flex items-center justify-between gap-2 relative z-10">
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${theme.badge} backdrop-blur-md`}>
-          <CategoryIcon className="w-3 h-3" />
+        <span className="text-[10px] font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded-md shrink-0">
           {theme.label}
         </span>
-        {post.district_slug && (
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20 capitalize shadow-xs">
-            <MapPin className="w-3 h-3 text-red-400" />
-            {post.area_name || post.district_slug}
-          </span>
-        )}
-      </div>
-
-      {/* Centerpiece: Dynamic Story Headline with High-Contrast Typography */}
-      <div className="my-2.5 relative z-10">
-        <p className="font-extrabold text-white text-xs sm:text-sm leading-snug line-clamp-2 group-hover/bulletin:text-blue-300 transition-colors drop-shadow-md">
-          {title}
-        </p>
-      </div>
-
-      {/* Bottom Bar: Verified Helpline / Department + Source Credit Tag */}
-      <div className="flex items-center justify-between text-[10px] text-slate-300 pt-2.5 border-t border-white/15 relative z-10">
-        <span className="font-semibold flex items-center gap-1.5 truncate max-w-[70%]">
-          <Shield className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-          <span className="truncate">{post.assigned_department || theme.dept}</span>
-        </span>
-        <span className="text-[10px] text-slate-400 font-medium truncate max-w-[28%] text-right">
-          {post.civic_receipt_id || "Official update"}
-        </span>
-      </div>
-    </Link>
+      )}
+    </div>
   );
 }
 
@@ -287,7 +238,7 @@ const PostCard = memo(function PostCard({ post }) {
         </div>
       )}
 
-      <div className="p-4">
+      <div className="p-3.5 sm:p-4">
         {/* Type badge + engagement badge + urgency chip for complaints */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -324,7 +275,7 @@ const PostCard = memo(function PostCard({ post }) {
           </p>
         )}
 
-        {/* Media thumbnail or Dynamic Civic Bulletin */}
+        {/* Media thumbnail or Clean Civic Proof Strip */}
         {firstPhoto && !isStaticPlaceholder(firstPhoto) && !imgError ? (
           <Link to={postUrl} prefetch={true} className="block mb-3 rounded-xl overflow-hidden h-40 bg-slate-100 dark:bg-slate-700">
             <Image
@@ -339,7 +290,7 @@ const PostCard = memo(function PostCard({ post }) {
             />
           </Link>
         ) : (
-          <CivicBulletinCard post={post} title={title} postUrl={postUrl} />
+          <CivicBulletinStrip post={post} />
         )}
 
         {/* Civic stats row — unchanged, still driven by isCivicPost */}
@@ -400,7 +351,7 @@ const PostCard = memo(function PostCard({ post }) {
           <Link
             to={postUrl}
             prefetch={true}
-            className={`text-xs font-medium hover:underline ${isCivic ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
+            className={`inline-flex items-center text-xs font-bold hover:underline py-2 min-h-[44px] ${isCivic ? "text-blue-600 dark:text-blue-400" : "text-blue-600 dark:text-blue-400"}`}
           >
             {isCivic ? T("View Civic Receipt →", "குடிமை ரசீது பார்க்க →") : T("Read more →", "மேலும் படிக்க →")}
           </Link>

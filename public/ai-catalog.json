@@ -3,13 +3,27 @@
   "name": "VizhiTN Agent Catalog",
   "description": "Tamil Nadu hyperlocal civic proof, public alerts, and governance reporting resource catalog for AI agents.",
   "url": "https://www.vizhitn.in",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "resources": [
     {
       "id": "civic-feed",
       "name": "Unified Explore Feed",
       "description": "Verified public complaints, power cuts, road issues, and civic status updates across Tamil Nadu districts.",
       "url": "https://www.vizhitn.in/explore",
+      "type": "dataset"
+    },
+    {
+      "id": "power-cuts",
+      "name": "Scheduled Power Shutdowns",
+      "description": "Daily TANGEDCO scheduled power cut timings, affected substations, and streets across all 38 districts.",
+      "url": "https://www.vizhitn.in/power-cuts-today-tamil-nadu",
+      "type": "dataset"
+    },
+    {
+      "id": "holiday-alerts",
+      "name": "School and College Holiday Alerts",
+      "description": "District Collector verified heavy rain and emergency holiday announcements for schools and colleges.",
+      "url": "https://www.vizhitn.in/school-college-holiday-alerts",
       "type": "dataset"
     },
     {

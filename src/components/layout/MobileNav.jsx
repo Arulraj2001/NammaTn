@@ -80,17 +80,17 @@ export default function MobileNav() {
   return (
     <>
       {/* Bottom Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
-        <div className="flex items-center justify-around px-2 py-2">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-lg">
+        <div className="flex items-center justify-around px-2 py-1.5">
           {BOTTOM_TABS.map(({ path, icon: Icon, en, ta, isCreate }) => {
             const active = location.pathname === path && !isCreate;
             if (isCreate) {
               return (
-                <Link key={path} to={path} className="flex flex-col items-center gap-0.5">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg -mt-4 border-4 border-white dark:border-slate-900">
+                <Link key={path} to={path} className="flex flex-col items-center gap-0.5 active:scale-95 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 flex items-center justify-center shadow-lg shadow-blue-600/30 -mt-4 border-4 border-white dark:border-slate-900 transition-colors">
                     <PlusCircle className="w-5 h-5 text-white stroke-[2.5]" />
                   </div>
-                  <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400">{T(en, ta)}</span>
+                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400">{T(en, ta)}</span>
                 </Link>
               );
             }
@@ -98,12 +98,12 @@ export default function MobileNav() {
               <Link
                 key={path}
                 to={path}
-                className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-all ${
-                  active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"
+                className={`flex flex-col items-center justify-center gap-1 px-3 py-1.5 rounded-xl transition-all active:scale-95 min-h-[44px] min-w-[48px] ${
+                  active ? "text-blue-600 dark:text-blue-400 font-bold" : "text-slate-500 dark:text-slate-400 font-medium"
                 }`}
               >
                 <Icon className={`w-5 h-5 ${active ? "stroke-[2.5]" : "stroke-2"}`} />
-                <span className="text-[10px] font-medium">{T(en, ta)}</span>
+                <span className="text-[10px] leading-none">{T(en, ta)}</span>
               </Link>
             );
           })}
@@ -112,12 +112,12 @@ export default function MobileNav() {
           <button
             onClick={() => setMenuOpen(true)}
             aria-label="Open services"
-            className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-all ${
-              menuOpen ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"
+            className={`flex flex-col items-center justify-center gap-1 px-3 py-1.5 rounded-xl transition-all active:scale-95 min-h-[44px] min-w-[48px] ${
+              menuOpen ? "text-blue-600 dark:text-blue-400 font-bold" : "text-slate-500 dark:text-slate-400 font-medium"
             }`}
           >
             <LayoutGrid className="w-5 h-5 stroke-2" />
-            <span className="text-[10px] font-medium">{T("Services", "சேவைகள்")}</span>
+            <span className="text-[10px] leading-none">{T("Services", "சேவைகள்")}</span>
           </button>
 
         </div>
@@ -234,7 +234,7 @@ export default function MobileNav() {
                             key={item.path}
                             to={item.path}
                             onClick={() => setMenuOpen(false)}
-                            className={`flex items-start gap-2.5 p-3 rounded-2xl border transition-all active:scale-[0.97] ${
+                            className={`flex items-start gap-2.5 p-2.5 sm:p-3 rounded-2xl border transition-all active:scale-[0.97] min-h-[56px] ${
                               active
                                 ? "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700"
                                 : "bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700"
@@ -246,10 +246,10 @@ export default function MobileNav() {
                               <Icon className={`w-4 h-4 ${active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"}`} />
                             </div>
                             <div className="min-w-0">
-                              <p className={`text-sm font-semibold leading-tight ${active ? "text-blue-700 dark:text-blue-400" : "text-slate-800 dark:text-slate-200"}`}>
+                              <p className={`text-xs sm:text-sm font-bold leading-tight ${active ? "text-blue-700 dark:text-blue-400" : "text-slate-800 dark:text-slate-200"}`}>
                                 {T(item.en, item.ta)}
                               </p>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5 truncate">
                                 {T(item.desc_en, item.desc_ta)}
                               </p>
                             </div>

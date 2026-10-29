@@ -44,6 +44,7 @@ export default function HomeHero({ userLocation, setUserLocation }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [mapCategory, setMapCategory] = useState("all");
+  const [mobileInteractiveMap, setMobileInteractiveMap] = useState(false);
 
   const matchedDistricts = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -195,21 +196,19 @@ export default function HomeHero({ userLocation, setUserLocation }) {
             </p>
 
             {/* 4 Core Pillars Grid (Shows what entire website does) with Lucide Icons */}
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5 mb-3">
               <Link
                 to="/power-cuts-today-tamil-nadu"
-                className="group p-2 rounded-xl bg-white dark:bg-[#0D2B52] border border-civic-200 dark:border-civic-800 hover:border-amber-400 hover:shadow-xs transition-all flex items-center gap-2"
+                className="group p-2.5 sm:p-3 rounded-xl bg-white dark:bg-[#0D2B52] border border-civic-200 dark:border-civic-800 hover:border-amber-400 dark:hover:border-amber-400 hover:shadow-xs transition-all flex items-center gap-2.5 min-h-[52px]"
               >
-                <span className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <Zap className="w-3.5 h-3.5" />
+                <span className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Zap className="w-4 h-4" />
                 </span>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-1">
-                    <p className="text-[11.5px] font-bold text-civic-900 dark:text-white group-hover:text-amber-600 truncate">
-                      {T("Power & Rain Alerts", "மின்தடை & மழை எச்சரிக்கை")}
-                    </p>
-                  </div>
-                  <p className="text-[9.5px] text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-xs sm:text-[13px] font-bold text-civic-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 truncate">
+                    {T("Power & Rain Alerts", "மின்தடை & மழை எச்சரிக்கை")}
+                  </p>
+                  <p className="text-[10.5px] sm:text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
                     {T("TANGEDCO 1912, Metrowater", "மின்வாரியம், குடிநீர், மழை")}
                   </p>
                 </div>
@@ -217,16 +216,16 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
               <Link
                 to="/create"
-                className="group p-2 rounded-xl bg-white dark:bg-[#0D2B52] border border-civic-200 dark:border-civic-800 hover:border-blue-400 hover:shadow-xs transition-all flex items-center gap-2"
+                className="group p-2.5 sm:p-3 rounded-xl bg-white dark:bg-[#0D2B52] border border-civic-200 dark:border-civic-800 hover:border-blue-400 dark:hover:border-blue-400 hover:shadow-xs transition-all flex items-center gap-2.5 min-h-[52px]"
               >
-                <span className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <FileCheck2 className="w-3.5 h-3.5" />
+                <span className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <FileCheck2 className="w-4 h-4" />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[11.5px] font-bold text-civic-900 dark:text-white group-hover:text-blue-600 truncate">
+                  <p className="text-xs sm:text-[13px] font-bold text-civic-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
                     {T("Civic Proof Receipts", "குடிமக்கள் குறைதீர்ப்பு")}
                   </p>
-                  <p className="text-[9.5px] text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-[10.5px] sm:text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
                     {T("Report & track to fixed", "புகார் பதிவு & தீர்வு கண்காணிப்பு")}
                   </p>
                 </div>
@@ -234,16 +233,16 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
               <Link
                 to="/schemes"
-                className="group p-2 rounded-xl bg-white dark:bg-[#0D2B52] border border-civic-200 dark:border-civic-800 hover:border-emerald-400 hover:shadow-xs transition-all flex items-center gap-2"
+                className="group p-2.5 sm:p-3 rounded-xl bg-white dark:bg-[#0D2B52] border border-civic-200 dark:border-civic-800 hover:border-emerald-400 dark:hover:border-emerald-400 hover:shadow-xs transition-all flex items-center gap-2.5 min-h-[52px]"
               >
-                <span className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <ShieldCheck className="w-3.5 h-3.5" />
+                <span className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <ShieldCheck className="w-4 h-4" />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[11.5px] font-bold text-civic-900 dark:text-white group-hover:text-emerald-600 truncate">
+                  <p className="text-xs sm:text-[13px] font-bold text-civic-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 truncate">
                     {T("Schemes & Rights", "அரசு நலத்திட்டங்கள் & RTI")}
                   </p>
-                  <p className="text-[9.5px] text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-[10.5px] sm:text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
                     {T("Magalir Urimai ₹1k, RTI 2005", "மகளிர் உரிமை, RTI மாதிரி")}
                   </p>
                 </div>
@@ -251,16 +250,16 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
               <Link
                 to="/districts"
-                className="group p-2 rounded-xl bg-white dark:bg-[#0D2B52] border border-civic-200 dark:border-civic-800 hover:border-indigo-400 hover:shadow-xs transition-all flex items-center gap-2"
+                className="group p-2.5 sm:p-3 rounded-xl bg-white dark:bg-[#0D2B52] border border-civic-200 dark:border-civic-800 hover:border-indigo-400 dark:hover:border-indigo-400 hover:shadow-xs transition-all flex items-center gap-2.5 min-h-[52px]"
               >
-                <span className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <Building2 className="w-3.5 h-3.5" />
+                <span className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Building2 className="w-4 h-4" />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[11.5px] font-bold text-civic-900 dark:text-white group-hover:text-indigo-600 truncate">
+                  <p className="text-xs sm:text-[13px] font-bold text-civic-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">
                     {T("38 District Feeds", "38 மாவட்ட நுழைவுவாயில்")}
                   </p>
-                  <p className="text-[9.5px] text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-[10.5px] sm:text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
                     {T("Hyperlocal alerts & civic info", "உள்ளூர் எச்சரிக்கைகள் & தகவல்கள்")}
                   </p>
                 </div>
@@ -312,11 +311,11 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
               {/* Action Buttons Trio: Location + 38 Districts + Top Traffic Power Cuts */}
               {!userLocation && (
-                <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 pt-1">
                   <button
                     onClick={handleDetectLocation}
                     disabled={locating}
-                    className="inline-flex items-center gap-1.5 bg-civic-500 hover:bg-civic-600 active:scale-95 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-sm shadow-civic-500/20 disabled:opacity-80 flex-shrink-0"
+                    className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 bg-civic-500 hover:bg-civic-600 active:scale-95 text-white font-bold px-3.5 py-2.5 sm:py-2 rounded-xl text-xs transition-all shadow-sm shadow-civic-500/20 disabled:opacity-80 min-h-[44px]"
                   >
                     {locating ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5" />}
                     <span>{locating ? T("Detecting...", "கண்டறியப்படுகிறது...") : T("Use My Location", "என் இடத்தை பயன்படுத்து")}</span>
@@ -324,18 +323,18 @@ export default function HomeHero({ userLocation, setUserLocation }) {
 
                   <Link
                     to="/districts"
-                    className="inline-flex items-center gap-1.5 border border-civic-200 dark:border-civic-700 bg-white dark:bg-[#0D2B52] hover:bg-civic-50 dark:hover:bg-civic-900/40 text-civic-900 dark:text-civic-100 font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-2xs flex-shrink-0"
+                    className="inline-flex items-center justify-center gap-1.5 border border-civic-200 dark:border-civic-700 bg-white dark:bg-[#0D2B52] hover:bg-civic-50 dark:hover:bg-civic-900/40 text-civic-900 dark:text-civic-100 font-bold px-3 py-2.5 sm:py-2 rounded-xl text-xs transition-all shadow-2xs min-h-[44px]"
                   >
                     <Building2 className="w-3.5 h-3.5 text-civic-500" />
-                    <span>{T("Browse 38 Districts", "38 மாவட்டங்கள்")}</span>
+                    <span className="truncate">{T("Browse 38 Districts", "38 மாவட்டங்கள்")}</span>
                   </Link>
 
                   <Link
                     to="/power-cuts-today-tamil-nadu"
-                    className="inline-flex items-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-600/50 font-bold px-3 py-2 rounded-xl text-xs transition-all shadow-2xs flex-shrink-0"
+                    className="inline-flex items-center justify-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-600/50 font-bold px-3 py-2.5 sm:py-2 rounded-xl text-xs transition-all shadow-2xs min-h-[44px]"
                   >
                     <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                    <span>{T("Power Cuts Today", "இன்றைய மின்தடை")}</span>
+                    <span className="truncate">{T("Power Cuts Today", "இன்றைய மின்தடை")}</span>
                   </Link>
                 </div>
               )}
@@ -416,9 +415,10 @@ export default function HomeHero({ userLocation, setUserLocation }) {
             </div>
           </div>
 
-          {/* ── RIGHT: INTERACTIVE STATE RADAR MAP ── */}
+          {/* ── RIGHT: STATE RADAR MAP (Desktop Interactive / Mobile Zero-Scroll-Trap Radar) ── */}
           <div className="w-full lg:flex-1 flex flex-col">
-            <div className="w-full h-[320px] sm:h-[380px] lg:h-[450px] xl:h-[470px] rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-900 border-2 border-civic-200 dark:border-civic-800 relative shadow-xl">
+            {/* Desktop Map (Always Interactive) */}
+            <div className="hidden lg:block w-full h-[450px] xl:h-[470px] rounded-3xl overflow-hidden bg-slate-900 border-2 border-civic-200 dark:border-civic-800 relative shadow-xl">
               {shouldLoadMap ? (
                 <InteractiveHomeMap items={filteredMapItems} userLocation={userLocation} />
               ) : (
@@ -450,7 +450,7 @@ export default function HomeHero({ userLocation, setUserLocation }) {
                 </Link>
               </div>
 
-              {/* Interactive Category Filter Pills (Prominent & Touch-friendly) */}
+              {/* Interactive Category Filter Pills */}
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-1.5 z-20 pointer-events-auto">
                 <div className="flex items-center gap-1 bg-black/80 backdrop-blur-md p-1 rounded-xl border border-white/15 text-[11px] text-white shadow-lg overflow-x-auto">
                   <button
@@ -494,6 +494,112 @@ export default function HomeHero({ userLocation, setUserLocation }) {
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* Mobile Radar Card (Eliminates Scroll-Trap & Saves 380KB Bundle Execution) */}
+            <div className="block lg:hidden w-full h-[320px] sm:h-[360px] rounded-2xl overflow-hidden bg-slate-900 border-2 border-civic-200 dark:border-civic-800 relative shadow-xl">
+              {mobileInteractiveMap ? (
+                <div className="h-full w-full relative">
+                  <InteractiveHomeMap items={filteredMapItems} userLocation={userLocation} />
+                  <button
+                    onClick={() => setMobileInteractiveMap(false)}
+                    className="absolute top-3 right-3 z-30 inline-flex items-center gap-1.5 bg-black/85 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-white/20 shadow-lg active:scale-95"
+                  >
+                    <X className="w-3.5 h-3.5 text-red-400" />
+                    <span>{T("Exit Map Mode", "வெளியேறுக")}</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="h-full w-full p-4 flex flex-col justify-between relative overflow-hidden select-none">
+                  {/* Radar Pulse Visual Background */}
+                  <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-25">
+                    <div className="w-72 h-72 rounded-full border border-sky-400/40 animate-ping" style={{ animationDuration: "3.5s" }} />
+                    <div className="absolute w-52 h-52 rounded-full border border-sky-400/30" />
+                    <div className="absolute w-32 h-32 rounded-full border border-sky-400/20" />
+                    {/* Simulated TN City Beacon Dots */}
+                    <div className="absolute top-[28%] right-[28%] w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Chennai" />
+                    <div className="absolute top-[52%] left-[24%] w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Coimbatore" />
+                    <div className="absolute bottom-[32%] left-[45%] w-2 h-2 rounded-full bg-red-400 animate-pulse" title="Madurai" />
+                    <div className="absolute top-[48%] left-[48%] w-2 h-2 rounded-full bg-sky-400 animate-pulse" title="Trichy" />
+                  </div>
+
+                  {/* Top Status */}
+                  <div className="flex items-center justify-between gap-2 relative z-10">
+                    <span className="inline-flex items-center gap-1.5 bg-black/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1.5 rounded-xl border border-white/10 shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                      <span>{allMapItems.length} {T("Live Reports Statewide", "நிகழ்நேர சம்பவங்கள்")}</span>
+                    </span>
+
+                    <Link
+                      to="/explore"
+                      className="inline-flex items-center gap-1 bg-white/95 text-civic-900 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-white/20 shadow-md"
+                    >
+                      <span>{T("Full Map", "வரைபடம்")}</span>
+                      <ArrowRight className="w-3 h-3 text-civic-600" />
+                    </Link>
+                  </div>
+
+                  {/* Dynamic Statewide Pulse Quick Tiles */}
+                  <div className="grid grid-cols-3 gap-2 my-auto relative z-10">
+                    <Link
+                      to="/power-cuts-today-tamil-nadu"
+                      className="p-2.5 rounded-xl bg-black/60 border border-amber-500/40 backdrop-blur-md text-center hover:border-amber-400 transition-colors"
+                    >
+                      <p className="text-amber-400 font-black text-base leading-tight">
+                        {powerCount > 0 ? `${powerCount}` : "30+"}
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-200 mt-1 truncate">
+                        {T("⚡ Power Cuts", "⚡ மின்தடை")}
+                      </p>
+                    </Link>
+
+                    <Link
+                      to="/school-college-holiday-alerts"
+                      className="p-2.5 rounded-xl bg-black/60 border border-red-500/40 backdrop-blur-md text-center hover:border-red-400 transition-colors"
+                    >
+                      <p className="text-red-400 font-black text-base leading-tight">
+                        {rainCount > 0 ? `${rainCount}` : "20+"}
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-200 mt-1 truncate">
+                        {T("🌧️ Rain Alert", "🌧️ மழை")}
+                      </p>
+                    </Link>
+
+                    <Link
+                      to="/explore"
+                      className="p-2.5 rounded-xl bg-black/60 border border-sky-500/40 backdrop-blur-md text-center hover:border-sky-400 transition-colors"
+                    >
+                      <p className="text-sky-400 font-black text-base leading-tight">
+                        {civicCount > 0 ? `${civicCount}` : "40+"}
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-200 mt-1 truncate">
+                        {T("🛠️ Civic Issues", "🛠️ குடிமை")}
+                      </p>
+                    </Link>
+                  </div>
+
+                  {/* Zero-Scroll-Trap Action Buttons */}
+                  <div className="flex items-center gap-2 relative z-10">
+                    <Link
+                      to="/explore"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 bg-civic-500 hover:bg-civic-600 active:scale-95 text-white font-bold py-2.5 px-3 rounded-xl text-xs shadow-md shadow-civic-500/30 transition-all min-h-[44px]"
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>{T("Open Live Map", "நேரடி வரைபடம்")}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => setMobileInteractiveMap(true)}
+                      className="inline-flex items-center justify-center gap-1 bg-white/10 hover:bg-white/20 active:scale-95 text-slate-200 border border-white/20 font-bold py-2.5 px-3 rounded-xl text-xs transition-all min-h-[44px]"
+                    >
+                      <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                      <span>{T("Interact", "இயக்கு")}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

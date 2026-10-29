@@ -5,7 +5,23 @@
 ## Core Navigation & Endpoints
 - [Explore Civic Reports](https://www.vizhitn.in/explore): Live civic feed and community-verified reports across Tamil Nadu.
 - [TN Today News](https://www.vizhitn.in/tn-today): In-depth state development, infrastructure, and governance journalism.
-- [Power Cuts Today](https://www.vizhitn.in/power-cuts-today-tamil-nadu): Real-time TANGEDCO power outage alerts, water supply disruptions, and scheduled maintenance.
+- [Power Cuts Today](https://www.vizhitn.in/power-cuts-today-tamil-nadu): Real-time TANGEDCO power outage alerts, scheduled substation maintenance timings (9 AM – 2 PM), and street lists.
+- [District Power Cuts](https://www.vizhitn.in/power-cuts-today-tamil-nadu/[district]): Dedicated scheduled power cut pages for each of the 38 Tamil Nadu districts.
+- [School & College Holiday Alerts](https://www.vizhitn.in/school-college-holiday-alerts): District Collector verified heavy rain and emergency holiday announcements.
+- [Kalaignar Magalir Urimai Status](https://www.vizhitn.in/kalaignar-magalir-urimai-status): Eligibility guidelines, application status check, and appeal procedures for ₹1,000 monthly scheme.
 - [Public Safety & Scams](https://www.vizhitn.in/scams): Verified online scam warnings and official cybercrime advisories.
 - [Citizen Rights & Helplines](https://www.vizhitn.in/rights): Verified government helplines, Right to Information guides, and consumer rights.
 - [District Hubs](https://www.vizhitn.in/districts): Dedicated hubs for all 38 districts of Tamil Nadu.
+
+## Verified Official Helplines Directory
+| Department | Service | Official Number | Operating Hours |
+| :--- | :--- | :--- | :--- |
+| TANGEDCO | Electricity / Minnalagam Power Outages | 1912 / 94987 94987 | 24x7 |
+| Greater Chennai Corp | Flood, Municipal Works & Control | 1913 | 24x7 |
+| Metrowater (CMWSSB) | Drinking Water & Sewage Clearance | 044-45674567 | 24x7 |
+| Cyber Crime Wing | National Financial Fraud Helpline | 1930 | 24x7 |
+| Government of TN | Chief Minister's Helpline | 1100 | 24x7 |
+| TNDMA | State Disaster Management Authority | 1070 | 24x7 |
+| District Administration | District Disaster Management Control | 1077 | 24x7 |
+| Civil Supplies | Smart Ration Card Enquiries | 1967 | Mon–Sat |
+| Southern Railway | Railway Security & Passenger Enquiry | 139 | 24x7 |
