@@ -201,12 +201,9 @@ function determinePulse() {
   if (day === 5 && hours >= 17) {
     return 'weekend';
   }
-  // Early morning emergency / rain alert pulse (05:00 AM - 07:00 AM IST)
-  if (hours >= 5 && hours < 7) {
-    return 'rain';
-  }
-  // Main morning civic batch (07:00 AM - 11:00 AM IST)
-  if (hours >= 7 && hours < 11) {
+  // Main morning civic batch (05:00 AM - 11:00 AM IST)
+  // Emergency rain pulse is executed via explicit --pulse=rain
+  if (hours >= 5 && hours < 11) {
     return 'morning';
   }
   // Midday grievance & scheme pulse (11:00 AM - 04:00 PM IST)
@@ -262,7 +259,7 @@ function getPulseSpec(pulse, todayStr, istDate) {
         targetCount: 14,
         searchAnchors: [
           `TANGEDCO power cut shutdown schedule ${todayStr} ${rotation.primary.slice(0, 3).join(' ')}`,
-          `Tamil Nadu heavy rain school college holiday collector order ${todayStr}`,
+          `Tamil Nadu municipal development water road updates ${todayStr}`,
           `Aadhaar ration card grievance camp Tamil Nadu taluk office ${todayStr}`,
           `Southern Railway suburban train cancellation Beach Tambaram Central ${todayStr}`
         ],
@@ -273,6 +270,7 @@ Generate 14 real, scheduled civic updates for Tamil Nadu for TODAY (${todayStr})
 - 2 × post_type: "complaint" (Real civic grievance pattern: water leak, road pothole, or street light hazard)
 - 2 × post_type: "appreciation" (Recognition of sanitary workers, GCC drain desilting, or swift repair)
 TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 8 of the 14 posts cover these rotation districts, with remaining posts covering major state infrastructure corridors.
+CRITICAL INTEGRITY: DO NOT generate any school/college holiday announcements unless an official District Collector ROC order or IMD Red Alert circular was explicitly issued for TODAY.
 `,
       };
 
@@ -301,15 +299,15 @@ TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 6 of th
         targetCount: 14,
         searchAnchors: [
           `TANGEDCO tomorrow scheduled power shutdown notice Tamil Nadu ${rotation.primary.slice(0, 3).join(' ')}`,
-          `Tamil Nadu cyber crime police advisory fake bill SMS 1930`,
+          `Tamil Nadu municipal corporation street light water pipeline road repair completed ${rotation.primary.slice(0, 2).join(' ')}`,
           `Southern Railway line block train diversion Tamil Nadu tomorrow`
         ],
         mixPrompt: `
 Generate 14 evening advisories and ADVANCE notices for TOMORROW across Tamil Nadu:
-- 6 × post_type: "alert" (ADVANCE power shutdown notice for TOMORROW from TANGEDCO with exact 9 AM - 2 PM timings & streets, Southern Railway line block / train diversions)
-- 3 × post_type: "alert" (Cyber fraud warning: fake electricity bill SMS, WhatsApp job scams, OTP theft with National Cyber Helpline 1930)
-- 3 × post_type: "local_update" (Civic work completed today: street lights fixed, garbage cleared by corporation)
+- 8 × post_type: "alert" (ADVANCE power shutdown notice for TOMORROW from TANGEDCO with exact 9 AM - 2 PM timings & streets, Southern Railway line block / train diversions, Metrowater maintenance)
+- 4 × post_type: "local_update" (Civic work completed today: street lights repaired, drainage desilted, road patchwork completed by municipal corporation)
 - 2 × post_type: "appreciation" (Commendation of TANGEDCO line workers or civic staff)
+DO NOT generate repetitive cyber scam posts on fake electricity bill SMS or WhatsApp part-time job scams. Focus on real community utility.
 TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 8 posts cover tomorrow's advance notices for these districts.
 `,
       };
@@ -395,7 +393,9 @@ async function main() {
   // --- STEP 1: FETCH RECENT POSTS FROM SUPABASE FOR ANTI-DUPLICATION ---
   let supabase = null;
   let recentSlugs = new Set();
+  let recentTitles = [];
   let exclusionSummary = [];
+  let hasRecentScamAlert = false;
 
   if (supabaseUrl && supabaseKey) {
     // Bug Fix #1 (final): createClient() throws on Node.js 20 because @supabase/realtime-js
@@ -417,22 +417,31 @@ async function main() {
     console.log('[SUPABASE] Client initialized successfully.');
 
     try {
-      const fortyEightHoursAgo = new Date(Date.now() - 48 * 3600 * 1000).toISOString();
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 3600 * 1000).toISOString();
       const { data: recentPosts, error: fetchErr } = await supabase
         .from('post')
         .select('slug, title_en, district_slug, category_slug, created_date')
-        .gte('created_date', fortyEightHoursAgo)
+        .gte('created_date', fourteenDaysAgo)
         .order('created_date', { ascending: false })
-        .limit(60);
+        .limit(200);
 
       if (!fetchErr && recentPosts) {
+        const tenDaysAgo = new Date(Date.now() - 10 * 24 * 3600 * 1000).toISOString();
         recentPosts.forEach(p => {
           if (p.slug) recentSlugs.add(p.slug.toLowerCase());
           if (p.title_en) {
+            recentTitles.push(p.title_en.toLowerCase());
             exclusionSummary.push(`- [${p.district_slug || 'TN'}] ${p.title_en}`);
+            const tLower = p.title_en.toLowerCase();
+            if (p.created_date >= tenDaysAgo && (tLower.includes('scam') || tLower.includes('fraud') || tLower.includes('fake electricity') || tLower.includes('fake eb') || tLower.includes('job scam'))) {
+              hasRecentScamAlert = true;
+            }
           }
         });
-        console.log(`[ANTI-DUP] Loaded ${recentSlugs.size} existing recent post slugs from Supabase to prevent duplicates.`);
+        console.log(`[ANTI-DUP] Loaded ${recentSlugs.size} existing recent post slugs from last 14 days to prevent duplicates.`);
+        if (hasRecentScamAlert) {
+          console.log(`[ANTI-DUP] Recent cyber scam post detected in last 10 days. Scam quota active: blocking new generic scam posts.`);
+        }
       } else if (fetchErr) {
         console.warn(`[WARN] Supabase anti-dup query warning: ${fetchErr.message}`);
       }
@@ -446,11 +455,15 @@ async function main() {
   }
 
   // --- STEP 2: BUILD PROMPT FOR GEMINI WITH SEARCH GROUNDING ---
+  const scamBlockDirective = hasRecentScamAlert
+    ? `\n- CRITICAL: DO NOT generate any cyber scam, fake electricity bill SMS, or WhatsApp job scam advisories. These have already been covered and will be rejected.\n`
+    : '';
+
   const exclusionSection = exclusionSummary.length > 0
     ? `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ANTI-DUPLICATION EXCLUSION LIST (DO NOT REPEAT THESE TOPICS):
-${exclusionSummary.slice(0, 25).join('\n')}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`
+${exclusionSummary.slice(0, 60).join('\n')}
+${scamBlockDirective}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`
     : '';
 
   const masterPrompt = `
@@ -759,11 +772,19 @@ No conversational intro, no commentary outside the JSON array.
       slug = slugify(slug);
     }
 
-    // If slug already in recent database posts, add random suffix to ensure no collision
+    // Anti-duplication: Reject post if exact slug already exists in recent history
     if (recentSlugs.has(slug.toLowerCase())) {
-      console.warn(`[ANTI-DUP] Detected slug collision for "${slug}". Adding unique salt.`);
-      slug = `${slug}-${Math.floor(100 + Math.random() * 900)}`;
+      console.warn(`[ANTI-DUP SKIP] Post with slug "${slug}" already exists in recent database history. Skipping.`);
+      continue;
     }
+
+    // Title similarity check: Prevent repetitive duplicate headlines
+    const titleCheck = (title_en || '').toLowerCase().trim();
+    if (typeof recentTitles !== 'undefined' && recentTitles.some(t => t === titleCheck || (titleCheck.length > 25 && t.includes(titleCheck.slice(0, 30))))) {
+      console.warn(`[ANTI-DUP SKIP] Title "${title_en}" is too similar to an existing recent post. Skipping.`);
+      continue;
+    }
+    if (typeof recentTitles !== 'undefined') recentTitles.push(titleCheck);
     recentSlugs.add(slug.toLowerCase());
 
     const area_name = (raw.area_name || raw.area || '').trim();
@@ -785,6 +806,20 @@ No conversational intro, no commentary outside the JSON array.
       continue;
     }
     const officialRef = (raw.official_reference_number || raw.official_ref || raw.reference_number || '').trim();
+
+    // Fact-checking guard: School/college holiday claims REQUIRE a confirmed official reference/order
+    const isHolidayClaim = (title_en + ' ' + title_ta).toLowerCase().includes('holiday') || (title_en + ' ' + title_ta).toLowerCase().includes('விடுமுறை');
+    if (isHolidayClaim && !officialRef) {
+      console.warn(`[FACT-CHECK REJECT] School holiday claimed without confirmed official circular or Collector ROC: "${title_en}". Skipping.`);
+      continue;
+    }
+
+    // Scam quota guard: Prevent repetitive scam alerts
+    const isScamAlert = category_slug === 'public-safety' && ((title_en + ' ' + title_ta).toLowerCase().includes('scam') || (title_en + ' ' + title_ta).toLowerCase().includes('fraud') || (title_en + ' ' + title_ta).toLowerCase().includes('மோசடி') || (title_en + ' ' + title_ta).toLowerCase().includes('sms'));
+    if (isScamAlert && (typeof hasRecentScamAlert !== 'undefined' && hasRecentScamAlert)) {
+      console.warn(`[SCAM QUOTA REJECT] Cyber scam advisory already exists in recent 10-day history. Skipping: "${title_en}"`);
+      continue;
+    }
     const sourceMarkup = sourceUrls
       .map(url => `<li><a href="${url}" target="_blank" rel="noopener noreferrer">Official source</a></li>`)
       .join('');
@@ -994,26 +1029,32 @@ No conversational intro, no commentary outside the JSON array.
     // --- STEP 9: SMART CURATION BROADCAST TO VIZHITN WHATSAPP CHANNEL ---
     try {
       if (validPosts.length > 0) {
-        // Sort candidate posts by urgency, importance, and category
-        const sortedForWhatsApp = [...validPosts].sort((a, b) => {
+        // Exclude repetitive cyber scam warnings from WhatsApp Channel to protect subscriber retention
+        const whatsappPool = validPosts.filter(p => {
+          const t = (p.title_en || '').toLowerCase();
+          return !(p.category_slug === 'public-safety' && (t.includes('scam') || t.includes('fraud') || t.includes('fake bill') || t.includes('job') || t.includes('sms')));
+        });
+        const candidatePool = whatsappPool.length > 0 ? whatsappPool : validPosts;
+
+        // Sort candidate posts by urgency, real utility, and category
+        const sortedForWhatsApp = [...candidatePool].sort((a, b) => {
           const urgencyRank = { critical: 4, high: 3, medium: 2, low: 1 };
           const rankA = urgencyRank[a.urgency_level] || 1;
           const rankB = urgencyRank[b.urgency_level] || 1;
           if (rankA !== rankB) return rankB - rankA;
 
-          const typeRank = { alert: 3, local_update: 2, complaint: 1 };
-          const tA = typeRank[a.post_type] || 0;
-          const tB = typeRank[b.post_type] || 0;
-          if (tA !== tB) return tB - tA;
+          // Utility priority: Electricity (power cut street lists), Water, Transport, Schemes are highest value for daily readers
+          const topCats = ['electricity', 'water-sanitation', 'transport', 'government-schemes', 'education', 'local-development'];
+          const catA = topCats.indexOf(a.category_slug) !== -1 ? (topCats.length - topCats.indexOf(a.category_slug)) : 0;
+          const catB = topCats.indexOf(b.category_slug) !== -1 ? (topCats.length - topCats.indexOf(b.category_slug)) : 0;
+          if (catA !== catB) return catB - catA;
 
-          const topCats = ['education', 'electricity', 'transport', 'public-safety', 'government-schemes', 'water-sanitation'];
-          const catA = topCats.indexOf(a.category_slug) !== -1 ? 1 : 0;
-          const catB = topCats.indexOf(b.category_slug) !== -1 ? 1 : 0;
-          return catB - catA;
+          const typeRank = { alert: 3, local_update: 2, complaint: 1 };
+          return (typeRank[b.post_type] || 0) - (typeRank[a.post_type] || 0);
         });
 
         const topAlert = sortedForWhatsApp[0];
-        console.log(`[WHATSAPP] 📢 Broadcasting top civic dispatch: "${topAlert.title_ta || topAlert.title_en}" (${topAlert.urgency_level}) to channel...`);
+        console.log(`[WHATSAPP] 📢 Broadcasting high-utility civic dispatch: "${topAlert.title_ta || topAlert.title_en}" (${topAlert.urgency_level}) to channel...`);
 
         const { postToWhatsAppChannel } = await import('./lib/whatsappChannel.mjs');
         await postToWhatsAppChannel({

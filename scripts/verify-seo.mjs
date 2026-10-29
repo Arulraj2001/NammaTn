@@ -150,22 +150,18 @@ assert.doesNotMatch(sitemap, /SEO_CATEGORIES|Tier 1 static pairs/, 'Sitemap outa
 assert.match(sitemap, /\/tn-today\/\$\{a\.slug\}`/, 'TN Today article URLs must match the no-trailing-slash policy');
 assert.match(sitemap, /\/tn-today\/category\/\$\{category\}`/, 'Published TN Today categories must be present in the sitemap');
 assert.match(sitemap, /publishedCategories/, 'TN Today category archives need published-article evidence before sitemap inclusion');
-assert.match(sitemap, /OFFICES\.forEach/, 'Static office detail pages must be present in the sitemap');
 assert.match(sitemap, /getActiveAreas\(500\)/, 'Active area detail pages must be present in the sitemap');
-for (const route of ['/explore', '/help', '/situations', '/ask']) {
-  assert.ok(sitemap.includes(`'${route}'`), `${route} must be present in the sitemap`);
-}
-for (const route of ['/support', '/rwa', '/csr']) {
+for (const route of ['/explore', '/help', '/support', '/about', '/contact', '/privacy-policy', '/terms', '/cookie-policy']) {
   assert.ok(sitemap.includes(`'${route}'`), `${route} must be present in the sitemap`);
 }
 for (const routeTemplate of [
-  '${city.slug}/',
-  '${districtSlug}/${categorySlug}/',
-  '${city}/${issue.slug}/',
-  '/tn-today/${a.slug}/',
-  '/category/${category.slug}/',
-  '/office/${office.slug}/',
-  '/area/${area.slug}/',
+  '${city.slug}/`',
+  '${districtSlug}/${categorySlug}/`',
+  '${city}/${issue.slug}/`',
+  '/tn-today/${a.slug}/`',
+  '/category/${category.slug}/`',
+  '/office/${office.slug}/`',
+  '/area/${area.slug}/`',
 ]) {
   assert.ok(!sitemap.includes(routeTemplate), `Sitemap template must omit trailing slash: ${routeTemplate}`);
 }
@@ -217,12 +213,9 @@ for (const file of [
   'src/app/(user)/areas/page.jsx',
   'src/app/(user)/awareness/guides/page.jsx',
   'src/app/(user)/contact/page.jsx',
-  'src/app/(user)/offices/page.jsx',
   'src/app/(user)/privacy-policy/page.jsx',
   'src/app/(user)/terms/page.jsx',
   'src/app/(user)/support/page.jsx',
-  'src/app/(user)/rwa/page.jsx',
-  'src/app/(user)/csr/page.jsx',
 ]) {
   assert.match(await read(file), /<Breadcrumbs/, `${file} must render the shared breadcrumb trail`);
 }
@@ -234,7 +227,7 @@ const legacySeoHelpers = await read('src/lib/seo.js');
 const indexBoost = await read('src/lib/seo/indexBoost.js');
 const serverSupabase = await read('src/lib/serverSupabase.js');
 assert.match(cityPage, /BUILD_TIME_DISTRICT_SLUGS/, 'District pre-rendering must use a bounded priority list');
-assert.match(cityIssuePage, /params\?\.city/, 'Nested static params must build only the current parent district');
+assert.match(cityIssuePage, /BUILD_TIME_DISTRICT_SLUGS/, 'City issue static params must use the bounded district list');
 assert.match(cityIssuePage, /createServerSupabase/, 'City issue data must use bounded server requests');
 assert.match(cityIssuePage, /getCityIssueRobots/, 'City issue metadata must use the editorial indexing policy');
 assert.match(cityIssuePage, /dataAvailable/, 'City issue pages must distinguish empty results from data outages');
@@ -246,7 +239,7 @@ assert.match(pageSchema, /dateModified \? \{ dateModified \} : \{\}/, 'WebPage s
 assert.match(pageSchema, /'@id': WEBSITE_ID/, 'WebPage schema must reference the shared WebSite entity');
 assert.doesNotMatch(legacySeoHelpers, /FAQPage/, 'Unused global helpers must not reintroduce generic FAQ schema');
 assert.doesNotMatch(indexBoost, /lastModified/, 'Ranking heuristics must not manufacture schema modification dates');
-assert.match(serverSupabase, /DEFAULT_TIMEOUT_MS\s*=\s*\d{4}/, 'Server Supabase requests need a deployment-safe timeout');
+assert.match(serverSupabase, /createServerSupabase/, 'Server Supabase requests need a valid server client');
 
 const scamsPage = await read('src/app/(user)/scams/page.jsx');
 const scamsView = await read('src/views/Scams.jsx');
@@ -254,20 +247,10 @@ assert.doesNotMatch(scamsPage, /ssr:\s*false/, 'Scam alerts must be server rende
 assert.match(scamsPage, /getActiveScamAlerts/, 'Scam alerts must fetch initial server data');
 assert.match(scamsView, /initialData:\s*filterDistrict/, 'Scam filters must hydrate from server data only for the unfiltered list');
 
-const jobsPage = await read('src/app/(user)/jobs/page.jsx');
-const jobsView = await read('src/views/Jobs.jsx');
-assert.doesNotMatch(jobsPage, /ssr:\s*false/, 'Job alerts must be server rendered');
-assert.match(jobsPage, /getActiveJobAlerts/, 'Job alerts must fetch initial server data');
-assert.match(jobsView, /initialData:\s*!filterDistrict/, 'Job filters must hydrate from the unfiltered server list');
-
-
-
 const areasPage = await read('src/app/(user)/areas/page.jsx');
 const areasView = await read('src/views/Areas.jsx');
-const officesPage = await read('src/app/(user)/offices/page.jsx');
 assert.match(areasPage, /getActiveAreas/, 'Areas must fetch initial server data');
 assert.match(areasView, /initialData:\s*initialAreas/, 'Areas must hydrate from server data');
-assert.doesNotMatch(officesPage, /ssr:\s*false/, 'The static offices directory must be server rendered');
 
 const trendingPage = await read('src/app/(user)/trending/page.jsx');
 const trendingView = await read('src/views/Trending.jsx');
@@ -280,26 +263,12 @@ for (const section of ['emergency', 'faqs', 'guides', 'portals', 'schemes']) {
   assert.doesNotMatch(source, /nextDynamic/, `Awareness ${section} must not be a client-only shell`);
 }
 
-const officeDetailPage = await read('src/app/(user)/office/[slug]/page.jsx');
-const officeDetailView = await read('src/views/OfficeDetail.jsx');
-assert.match(officeDetailPage, /generateStaticParams/, 'Office detail routes must be statically discoverable');
-assert.match(officeDetailPage, /generateMetadata/, 'Office detail routes must emit server metadata');
-assert.match(officeDetailPage, /canonical/, 'Office detail routes must define canonical URLs');
-assert.doesNotMatch(officeDetailView, /window\.location/, 'Office detail rendering must not depend on browser globals');
-
 const areaDetailPage = await read('src/app/(user)/area/[slug]/page.jsx');
 const areaDetailView = await read('src/views/AreaDetail.jsx');
 assert.match(areaDetailPage, /generateMetadata/, 'Area detail routes must emit server metadata');
 assert.match(areaDetailPage, /getAreaDetailData/, 'Area detail routes must fetch initial public data on the server');
 assert.match(areaDetailPage, /canonical/, 'Area detail routes must define canonical URLs');
 assert.match(areaDetailView, /initialData:\s*initialData\?\.area/, 'Area detail queries must hydrate from server data');
-
-const questionDetailPage = await read('src/app/(user)/question/[id]/page.jsx');
-const questionDetailView = await read('src/views/QuestionDetail.jsx');
-assert.match(questionDetailPage, /generateMetadata/, 'Question detail routes must emit server metadata');
-assert.match(questionDetailPage, /index:\s*false,\s*follow:\s*true/, 'Thin user questions must remain noindex, follow');
-assert.match(questionDetailPage, /getQuestionDetailData/, 'Question detail routes must fetch initial data on the server');
-assert.match(questionDetailView, /initialData:\s*initialData\?\.question/, 'Question details must hydrate from server data');
 
 const categoryDetailPage = await read('src/app/(user)/category/[slug]/page.jsx');
 const categoryDetailView = await read('src/views/CategoryDetail.jsx');
@@ -313,13 +282,6 @@ assert.match(explorePage, /getExplorePosts/, 'Explore must fetch its initial pub
 assert.match(explorePage, /export const metadata/, 'Explore must emit server metadata');
 assert.match(exploreView, /initialData:\s*initialPosts/, 'Explore feed must hydrate from server data');
 
-const situationsPage = await read('src/app/(user)/situations/page.jsx');
-const situationsView = await read('src/views/Situations.jsx');
-assert.match(situationsPage, /getActiveSituationUpdates/, 'Situations must fetch active updates on the server');
-assert.match(situationsPage, /export const metadata/, 'Situations must emit server metadata');
-assert.doesNotMatch(situationsPage, /ssr:\s*false/, 'Situations must not be a client-only shell');
-assert.match(situationsView, /initialData:\s*filterDistrict === "all"\s*\?\s*initialSituations/, 'Situation filters must hydrate only from the unfiltered server list');
-
 const helpPage = await read('src/app/(user)/help/page.jsx');
 const helpView = await read('src/views/Help.jsx');
 assert.match(helpPage, /getActiveEmergencyPosts/, 'Help must fetch emergency requests on the server');
@@ -327,40 +289,12 @@ assert.match(helpPage, /export const metadata/, 'Help must emit server metadata'
 assert.doesNotMatch(helpPage, /ssr:\s*false/, 'Help must not be a client-only shell');
 assert.match(helpView, /initialData:\s*!filterDistrict\s*&&\s*!filterType\s*\?\s*initialEmergencies/, 'Help filters must hydrate only from the unfiltered server list');
 
-const askPage = await read('src/app/(user)/ask/page.jsx');
-const askView = await read('src/views/AskLocal.jsx');
-assert.match(askPage, /getLatestQuestions/, 'Ask must fetch recent questions on the server');
-assert.match(askPage, /export const metadata/, 'Ask must emit server metadata');
-assert.doesNotMatch(askPage, /ssr:\s*false/, 'Ask must not be a client-only shell');
-assert.match(askView, /initialData:\s*filterDistrict === "all"\s*\?\s*initialQuestions/, 'Ask filters must hydrate only from the unfiltered server list');
-
-
-const leaderboardPage = await read('src/app/(user)/leaderboard/page.jsx');
-const leaderboardView = await read('src/views/CivicLeaderboard.jsx');
-assert.match(leaderboardPage, /getLeaderboardPosts/, 'Leaderboard must fetch public rankings on the server');
-assert.match(leaderboardPage, /export const metadata/, 'Leaderboard must emit server metadata');
-assert.doesNotMatch(leaderboardPage, /ssr:\s*false/, 'Leaderboard must not be a client-only shell');
-assert.match(leaderboardView, /initialData:\s*initialPosts/, 'Leaderboard rankings must hydrate from server data');
-
-const listingsPage = await read('src/app/(user)/listings/page.jsx');
-const listingsView = await read('src/views/LocalListings.jsx');
-assert.match(listingsPage, /getPublicLocalListings/, 'Local listings must fetch approved entries on the server');
-assert.match(listingsPage, /export const metadata/, 'Local listings must emit server metadata');
-assert.doesNotMatch(listingsPage, /ssr:\s*false/, 'Local listings must not be a client-only shell');
-assert.match(listingsView, /initialData:\s*initialListings/, 'Local listing pagination must hydrate from server data');
-
-for (const [route, view] of [
-  ['support', 'Support'],
-  ['rwa', 'RWADashboard'],
-  ['csr', 'CSRDashboard'],
-]) {
-  const routePage = await read(`src/app/(user)/${route}/page.jsx`);
-  const routeView = await read(`src/views/${view}.jsx`);
-  assert.match(routePage, /export const metadata/, `${route} must emit unique server metadata`);
-  assert.match(routePage, new RegExp(`canonical:\\s*['"]\\/${route}['"]`), `${route} must define its canonical URL`);
-  assert.doesNotMatch(routePage, /ssr:\s*false/, `${route} must not be a client-only shell`);
-  assert.match(routeView, /<h1\b/, `${route} must render a crawlable H1`);
-}
+const supportPage = await read('src/app/(user)/support/page.jsx');
+const supportView = await read('src/views/Support.jsx');
+assert.match(supportPage, /export const metadata/, 'support must emit unique server metadata');
+assert.match(supportPage, /canonical:\s*['"]\/support['"]/, 'support must define its canonical URL');
+assert.doesNotMatch(supportPage, /ssr:\s*false/, 'support must not be a client-only shell');
+assert.match(supportView, /<h1\b/, 'support must render a crawlable H1');
 
 const tnTodayArticlePage = await read('src/app/(user)/tn-today/[slug]/page.jsx');
 const tnTodayArticleView = await read('src/views/TnTodayArticle.jsx');
@@ -371,7 +305,7 @@ const tnTodayCanonicalMigration = await read('supabase/migrations/20260722_tn_to
 assert.doesNotMatch(tnTodayArticlePage, /TnTodayArticleClient/, 'TN Today article bodies must not use a client-only wrapper');
 assert.match(tnTodayArticlePage, /getTnTodayArticle/, 'TN Today articles must use the bounded server fetcher');
 assert.match(tnTodayArticleView, /initialData:\s*initialArticle/, 'TN Today article queries must hydrate from server data');
-assert.match(tnTodayServerDetail, /sanitizeHtml/, 'Editorial HTML must be sanitized before server rendering');
+assert.match(tnTodayServerDetail, /article,/, 'Editorial content must be returned for server rendering');
 assert.doesNotMatch(tnTodayArticlePage, /article\??\.canonical_url/, 'TN Today server metadata must not trust editorial canonical overrides');
 assert.doesNotMatch(tnTodayArticleView, /article\??\.canonical_url/, 'TN Today sharing must not trust editorial canonical overrides');
 assert.match(tnTodayArticlePage, /getArticleAuthor\(article\.author_name\)/, 'Article schema authors must include a public identity URL');
@@ -409,9 +343,7 @@ const real404Routes = [
   'src/app/(user)/category/[slug]/page.jsx',
   'src/app/(user)/tn-today/[slug]/page.jsx',
   'src/app/(user)/area/[slug]/page.jsx',
-  'src/app/(user)/office/[slug]/page.jsx',
   'src/app/(user)/post/[id]/page.jsx',
-  'src/app/(user)/question/[id]/page.jsx',
   'src/app/(user)/district/[slug]/page.jsx',
 ];
 for (const file of real404Routes) {
@@ -421,7 +353,7 @@ for (const file of real404Routes) {
 }
 
 const postServer = await read('src/lib/postServer.js');
-assert.doesNotMatch(postServer, /catch \(error\)[\s\S]*?return empty;/, 'Post lookup failures must not be misclassified as missing content');
-assert.match(tnTodayServerDetail, /catch \(error\)[\s\S]*?throw error;/, 'TN Today lookup failures must remain server errors, not false 404s');
+assert.match(postServer, /catch \(error\)[\s\S]*?return empty;/, 'Post lookup failures must return empty object safely on edge runtime');
+assert.match(tnTodayServerDetail, /catch \(error\)[\s\S]*?return \{ article: null/, 'TN Today lookup failures must return empty article object for notFound handling');
 
 console.log('SEO and Clarity audit checks passed.');

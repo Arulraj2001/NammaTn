@@ -188,6 +188,13 @@ const nextConfig = {
   // ── Redirects for SEO (old URLs → new) ────────────────────────────────────
   async redirects() {
     return [
+      // Enforce canonical hostname: redirect apex (vizhitn.in) to www (www.vizhitn.in)
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'vizhitn.in' }],
+        destination: 'https://www.vizhitn.in/:path*',
+        permanent: true,
+      },
       // NOTE: Trailing-slash canonicalization is handled by `trailingSlash: false`
       // above (Next.js built-in, emits a permanent 308 `/path/` → `/path`).
       // We deliberately do NOT add a `/:path*/` catch-all here: in Vercel that

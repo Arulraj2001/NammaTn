@@ -165,16 +165,18 @@ function getPulseSpec(pulseName, dateStr) {
       author: 'VizhiTN Infrastructure & Transit Desk',
       isFeatured: true,
       searchAnchors: [
-        `Chennai Metro Phase 2 CMRL tunnel station trial run ${dateStr}`,
-        `Tamil Nadu NHAI highway elevated bypass opening ${dateStr}`,
-        `Southern Railway Tamil Nadu suburban line block Vande Bharat ${dateStr}`,
-        `Tamil Nadu Climate Change Mission dam water release ${dateStr}`
+        `Tamil Nadu NHAI highway elevated bypass opening expressway ${dateStr}`,
+        `Southern Railway Tamil Nadu suburban line quadrupling Vande Bharat terminal ${dateStr}`,
+        `Coimbatore Madurai Metro rail DPR mass transit updates ${dateStr}`,
+        `Tamil Nadu Climate Change Mission dam wetland lake restoration ${dateStr}`
       ],
-      focusDirective: `Focus on Tamil Nadu infrastructure, urban transit, or environmental milestones from the last 24–48 hours:
-- Chennai Metro Phase 2 tunneling, trial runs, or station progress (CMRL)
-- NHAI elevated corridors, city bypasses, or ring roads across Chennai, Coimbatore, Madurai, Tiruchirappalli
-- Southern Railway line quadrupling, Vande Bharat updates, or suburban terminal upgrades
-- Tamil Nadu Climate Change Mission, major lake/wetland restoration, or dam water releases (Mettur/Bhavanisagar)
+      focusDirective: `Focus on Tamil Nadu infrastructure, regional transit, or environmental milestones from the last 24–48 hours:
+- NHAI elevated corridors, city bypasses, or ring roads across Coimbatore, Madurai, Tiruchirappalli, Salem, or Chennai
+- Southern Railway line quadrupling, station redevelopments, Vande Bharat updates, or suburban terminal upgrades
+- Regional urban transit progress across Tamil Nadu (e.g. Coimbatore Metro Rail DPR, Madurai Metro DPR, bus fleet electrification)
+- Major port developments (Thoothukudi VO Chidambaranar outer harbor, Ennore connectivity) or airport expansions (Parandur, Hosur)
+- Tamil Nadu Climate Change Mission, major lake/wetland restoration, or dam water releases
+CRITICAL TOPIC EXCLUSION: Chennai Metro Phase 2 trial runs (Poonamallee-Porur / Corridor 4) has ALREADY been covered extensively. DO NOT write another article on Chennai Metro trial runs unless a completely new line commences passenger service today.
 Write 1 high-impact, flagship editorial article (750–1,000 words).`
     },
     midday: {
@@ -304,7 +306,7 @@ async function main() {
   const exclusionSection = exclusionSummary.length > 0
     ? `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 DO NOT REPEAT OR COVER THESE RECENT TOPICS ALREADY PUBLISHED IN THE LAST 30 DAYS:
-${exclusionSummary.slice(0, 20).join('\n')}
+${exclusionSummary.slice(0, 50).join('\n')}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`
     : '';
 
@@ -567,7 +569,22 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
   }
 
   const baseSlug = slugify(parsed.slug || title || title_ta);
-  const slug = recentSlugs.has(baseSlug) ? `${baseSlug}-${Date.now().toString().slice(-4)}` : baseSlug;
+  if (recentSlugs.has(baseSlug)) {
+    console.warn(`[ANTI-DUP SKIP] Article slug "${baseSlug}" already published recently. Skipping.`);
+    return;
+  }
+  const titleLower = title.toLowerCase();
+  const isDuplicateTitle = exclusionSummary.some(item => {
+    const cleanItem = item.toLowerCase();
+    if (cleanItem.includes(titleLower.slice(0, 30))) return true;
+    if (titleLower.length > 25 && cleanItem.includes(titleLower.slice(0, 25))) return true;
+    return false;
+  });
+  if (isDuplicateTitle) {
+    console.warn(`[ANTI-DUP SKIP] Article title "${title}" is too similar to recent published articles. Skipping.`);
+    return;
+  }
+  const slug = baseSlug;
 
   const content = String(parsed.content || '').trim();
   const content_ta = String(parsed.content_ta || '').trim();

@@ -106,7 +106,7 @@ export default function CookieConsent() {
         onKeyDown={handleKeyDown}
         className={`
           pointer-events-auto
-          w-full sm:w-[330px]
+          w-full sm:w-[330px] max-h-[50dvh]
           bg-white/95 dark:bg-slate-900/95 backdrop-blur-md
           border border-slate-200/90 dark:border-slate-700/80
           rounded-2xl shadow-xl shadow-slate-900/15 dark:shadow-black/50
@@ -147,13 +147,13 @@ export default function CookieConsent() {
         </p>
 
         {/* Action row */}
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {/* Accept All */}
           <button
             ref={acceptRef}
             onClick={handleAccept}
             className="
-              flex-1 py-1.5 px-3
+              py-1.5 px-3
               bg-blue-600 hover:bg-blue-700 active:scale-95
               text-white text-xs font-bold
               rounded-xl shadow-xs transition-all text-center
