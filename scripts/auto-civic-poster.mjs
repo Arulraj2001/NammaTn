@@ -131,7 +131,7 @@ async function validateOfficialSources(value, postContext = {}) {
         valid.push(response.url);
         continue;
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // Resilient fallback: If deep link times out or fails, accept verified official portal origin
     try {
@@ -141,7 +141,7 @@ async function validateOfficialSources(value, postContext = {}) {
         console.log(`[SOURCE RESILIENCE] Deep URL ${url} unverified; accepting verified official portal origin: ${parsed.origin}`);
         valid.push(parsed.origin);
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   // Domain authority fallback based on category / department if empty
@@ -543,7 +543,7 @@ No conversational intro, no commentary outside the JSON array.
 
   // --- STEP 3: CALL GEMINI API WITH SEARCH GROUNDING ---
   console.log(`[GEMINI] Calling Gemini with Google Search Grounding for real-time Tamil Nadu civic data...`);
-  
+
   const ai = new GoogleGenAI({ apiKey: geminiApiKey });
   let rawResponseText = '';
 
@@ -693,7 +693,7 @@ No conversational intro, no commentary outside the JSON array.
             try {
               const cleanMatch = match.replace(/,\s*([\]}])/g, '$1');
               recovered.push(JSON.parse(cleanMatch));
-            } catch (_) {}
+            } catch (_) { }
           }
           if (recovered.length > 0) {
             console.log(`[JSON RECOVERY] Successfully extracted ${recovered.length} valid post objects from partial response.`);
@@ -925,7 +925,7 @@ No conversational intro, no commentary outside the JSON array.
   }
 
   console.log(`[DATABASE] Saving ${validPosts.length} civic candidates for editorial review in Supabase 'post' table...`);
-  
+
   let successCount = 0;
   let failCount = 0;
   const publishedUrls = [];
@@ -1023,7 +1023,7 @@ No conversational intro, no commentary outside the JSON array.
         const sitemapUrl = encodeURIComponent(`${siteUrl}/sitemap-news.xml`);
         await fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`);
         console.log(`[GOOGLE PING ✓] Google News sitemap ping dispatched.`);
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // --- STEP 9: SMART CURATION BROADCAST TO VIZHITN WHATSAPP CHANNEL ---
@@ -1071,6 +1071,58 @@ No conversational intro, no commentary outside the JSON array.
       }
     } catch (waErr) {
       console.warn(`[WHATSAPP WARN] Channel broadcast warning: ${waErr.message}`);
+    }
+
+    // --- STEP 9B: SMART WEB PUSH BROADCAST TO SUBSCRIBED BROWSERS ---
+    try {
+      if (validPosts.length > 0 && !isDryRun && supabase) {
+        const topPushAlert = validPosts.find(p => p.post_type === 'alert' || p.urgency_level === 'high' || p.urgency_level === 'critical') || validPosts[0];
+        if (topPushAlert) {
+          const webpush = (await import('web-push')).default;
+          const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BOWJBajbZAmrHn-BWGcMUfj_BanHnC34wRU9k8IRfkITg-E399GVaQNqjuLqnZ1zqtqnhCXQRqahgM44MfXdQAU';
+          const privateKey = process.env.VAPID_PRIVATE_KEY || 'TIYR61x8WLRVVkIdyEl70bUV7t55JarB2g8JfQLmri8';
+          const subject = process.env.VAPID_SUBJECT || 'mailto:vizhitnin@gmail.com';
+          webpush.setVapidDetails(subject, publicKey, privateKey);
+
+          const { data: subscribers } = await supabase
+            .from('site_settings')
+            .select('key, value')
+            .eq('category', 'web_push');
+
+          if (subscribers && subscribers.length > 0) {
+            console.log(`[WEB PUSH] 🔔 Broadcasting alert to ${subscribers.length} web push subscribers: "${topPushAlert.title_ta || topPushAlert.title_en}"`);
+            const pushPayload = JSON.stringify({
+              title: topPushAlert.title_ta || topPushAlert.title_en,
+              body: (topPushAlert.content_ta || topPushAlert.content_en || '').slice(0, 140) + '...',
+              url: topPushAlert.canonical_url || `https://www.vizhitn.in/post/${topPushAlert.slug}`,
+              tag: `civic-${topPushAlert.category_slug}`,
+              icon: '/android-chrome-192x192.png'
+            });
+
+            let sentCount = 0;
+            const deadKeys = [];
+            for (const subRow of subscribers) {
+              try {
+                const subObj = typeof subRow.value === 'string' ? JSON.parse(subRow.value) : subRow.value;
+                if (subObj?.endpoint && subObj?.keys) {
+                  await webpush.sendNotification({ endpoint: subObj.endpoint, keys: subObj.keys }, pushPayload, { TTL: 86400 });
+                  sentCount++;
+                }
+              } catch (pushErr) {
+                if (pushErr.statusCode === 410 || pushErr.statusCode === 404) {
+                  deadKeys.push(subRow.key);
+                }
+              }
+            }
+            console.log(`[WEB PUSH ✓] Sent push notification to ${sentCount}/${subscribers.length} devices.`);
+            if (deadKeys.length > 0) {
+              await supabase.from('site_settings').delete().in('key', deadKeys);
+            }
+          }
+        }
+      }
+    } catch (pushBroadcastErr) {
+      console.warn(`[WEB PUSH WARN] Web push broadcast warning: ${pushBroadcastErr.message}`);
     }
 
     // --- STEP 10: CURATED SOCIAL MEDIA BROADCAST (FACEBOOK & INSTAGRAM) ---

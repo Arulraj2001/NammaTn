@@ -1,6 +1,7 @@
 import React from 'react';
 import Providers from './providers';
 import PublicScripts from '@/components/ads/PublicScripts';
+import PwaAndNotificationPrompt from '@/components/common/PwaAndNotificationPrompt';
 import '@/index.css';
 import { getClarityInitScript } from '@/lib/clarityScript';
 import { ORGANIZATION_ID, WEBSITE_ID } from '@/lib/schemaIdentity';
@@ -246,6 +247,7 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning>
         <Providers>
           {children}
+          <PwaAndNotificationPrompt />
         </Providers>
         <PublicScripts />
         {/* Google Tag Manager (noscript) */}
