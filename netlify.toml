@@ -1,7 +1,6 @@
 [build]
   command = "npm run build"
   publish = ".next"
-  ignore = "exit 0" # Cancels all Netlify builds on git push to save credits
 
 
 [build.environment]
