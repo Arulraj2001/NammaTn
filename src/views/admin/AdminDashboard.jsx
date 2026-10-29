@@ -1,17 +1,38 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { FileText, MessageSquare, Flag, CheckCircle, XCircle, Clock, Shield, AlertTriangle } from "lucide-react";
+import React, { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { FileText, MessageSquare, Flag, CheckCircle, XCircle, Clock, Shield, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { getDashboardStats } from "@/services/admin/posts";
 import { getPendingReports } from "@/services/admin/reports";
 import { getAllComments } from "@/services/admin/comments";
-import { getModerationLogs } from "@/services/admin/moderation";
+import { getModerationLogs, clearModerationLogs } from "@/services/admin/moderation";
 import { getQueueStats } from "@/services/ai/moderationQueue";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "@/lib/router-compat";
 
 export default function AdminDashboard() {
+  const qc = useQueryClient();
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+
+  const handleClearLogs = async () => {
+    if (!confirmClear) {
+      setConfirmClear(true);
+      setTimeout(() => setConfirmClear(false), 4000);
+      return;
+    }
+    try {
+      setIsClearing(true);
+      await clearModerationLogs();
+      qc.invalidateQueries({ queryKey: ["admin-mod-logs"] });
+      setConfirmClear(false);
+    } catch (err) {
+      console.error("Failed to clear moderation logs:", err);
+    } finally {
+      setIsClearing(false);
+    }
+  };
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: getDashboardStats,
@@ -114,6 +135,26 @@ export default function AdminDashboard() {
               <Clock className="w-4 h-4 text-blue-500" />
               Recent Actions
             </h2>
+            {logs.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearLogs}
+                disabled={isClearing}
+                className={`text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-medium transition-colors ${
+                  confirmClear
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : "text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+                } disabled:opacity-50`}
+                title="Clear moderation activity logs"
+              >
+                {isClearing ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Trash2 className="w-3.5 h-3.5" />
+                )}
+                <span>{confirmClear ? "Confirm Clear?" : "Clear"}</span>
+              </button>
+            )}
           </div>
           {logs.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-6">No moderation actions yet</p>

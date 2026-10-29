@@ -120,3 +120,22 @@ export const bulkModerateComment = async (ids, status, admin_email = "admin", no
   }
   return { succeeded, failed };
 };
+
+/**
+ * Clear or prune moderation logs from Supabase
+ * @param {Object} [options]
+ * @param {number} [options.olderThanDays] - Optional retention cutoff
+ */
+export const clearModerationLogs = async ({ olderThanDays = null } = {}) => {
+  let query = supabase.from("moderation_log").delete();
+  if (olderThanDays) {
+    const cutoff = new Date(Date.now() - olderThanDays * 86400 * 1000).toISOString();
+    query = query.lte("created_date", cutoff);
+  } else {
+    // Supabase delete() requires a filter condition to prevent accidental full-table wipes
+    query = query.neq("id", "00000000-0000-0000-0000-000000000000");
+  }
+  const { error } = await query;
+  if (error) throw error;
+  return true;
+};

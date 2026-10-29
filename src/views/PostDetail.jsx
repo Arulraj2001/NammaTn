@@ -204,6 +204,19 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
   const allPhotos = [...(post.before_photos || []), ...(post.media_urls || [])].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
   const civicStatus = post.civic_status || "reported";
 
+  // Historical alert detection (>14 days)
+  const postAgeDays = post.created_date
+    ? Math.floor((Date.now() - new Date(post.created_date).getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+  const isTimeSensitive = isAlert || [
+    'electricity',
+    'transport',
+    'water-sanitation',
+    'public-safety',
+    'education'
+  ].includes(post.category_slug);
+  const isHistorical = postAgeDays > 14 && isTimeSensitive;
+
   // Complaint needed nudge: community verified but no complaint ID
   const showComplaintNudge = isCivic &&
     (civicStatus === "community_verified" || civicStatus === "complaint_needed") &&
@@ -223,6 +236,29 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
             <ArrowLeft className="w-4 h-4" />
             {T("Back to Explore", "ஆராய்வுக்கு திரும்பு")}
           </Link>
+
+          {/* Historical Record Banner for concluded alerts (>14 days) */}
+          {isHistorical && (
+            <div className="mb-4 flex items-start gap-3 bg-amber-50/90 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/60 rounded-2xl p-4 text-amber-900 dark:text-amber-200 shadow-xs">
+              <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 text-xs sm:text-sm">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-bold text-amber-950 dark:text-amber-100">
+                    {T("Historical Civic Record (Concluded)", "வரலாற்று குடிமைப் பதிவு (முடிவடைந்தது)")}
+                  </p>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 bg-amber-200/80 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 rounded-full">
+                    {T(`${postAgeDays} days ago`, `${postAgeDays} நாட்களுக்கு முன்பு`)}
+                  </span>
+                </div>
+                <p className="text-amber-800 dark:text-amber-300/90 mt-1 text-xs leading-relaxed">
+                  {T(
+                    "This departmental notice or civic alert was scheduled in the past. It is preserved as a verified public record for community reference and neighborhood tracking.",
+                    "இந்த பராமரிப்பு அறிவிப்பு அல்லது குடிமை எச்சரிக்கை கடந்த காலத்தில் திட்டமிடப்பட்டு முடிவடைந்தது. இது சமூக குறிப்பு மற்றும் பொது ஆவணத்திற்காக இங்கு பாதுகாக்கப்படுகிறது."
+                  )}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* CIVIC RECEIPT VIEW */}
           {showCivicPath ? (
