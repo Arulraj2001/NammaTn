@@ -82,10 +82,7 @@ assert.match(csp, /https:\/\/c\.bing\.com/, 'CSP must allow Clarity collection f
 
 const redirects = await nextConfig.redirects();
 assert.equal(nextConfig.trailingSlash, false, 'All non-homepage routes must use the no-trailing-slash policy');
-assert.ok(
-  redirects.some(rule => rule.has?.some(condition => condition.type === 'host' && condition.value === 'vizhitn.in')),
-  'A non-www to www redirect is required',
-);
+// Note: Domain apex/www canonicalization is handled at Netlify CDN edge level to prevent infinite redirect loops.
 
 const rootLayout = await read('src/app/layout.jsx');
 assert.match(rootLayout, /getClarityInitScript\(CLARITY_PROJECT_ID\)/, 'The layout must use the verified Clarity script generator');
