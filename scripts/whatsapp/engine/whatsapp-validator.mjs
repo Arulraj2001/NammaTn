@@ -1,16 +1,20 @@
 // scripts/whatsapp/engine/whatsapp-validator.mjs
 /**
- * VizhiTN WhatsApp Channel 7-Gate Validation Engine
- * 
+ * VizhiTN WhatsApp Channel 8-Gate Validation Engine
+ *
  * Gates:
  * a. LINK CHECK: Complete valid URL, no truncated slugs (e.g., "...2027-publi")
  * b. SPELLING CHECK: Terms must be clean ("SMS", not "எஸ்சிஎம்எஸ்"; "மோசடி", not "மோசதி")
  * c. HEADLINE-BODY MATCH: Question/promise in headline is answered/delivered in body
  * d. LENGTH: Total length <= 700 chars, headline < 60 chars, max 2 emojis in headline
  * e. TEMPLATE CONSISTENCY: Same footer structure on every post ("📍 {District}", "👉 முழு செய்தி: {link}", "📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க")
- * f. NO FOLLOW-LINK: Channel follow link (whatsapp.com/channel/) prohibited inside normal posts
+ * f. NO FOLLOW-LINK IN BODY: Channel follow link (whatsapp.com/channel/) prohibited inside normal post body (excluding the mandatory suffix)
  * g. HELPLINE INTEGRITY: Scam/emergency post must include official helpline (1930 / 1912 / 1077 / 1100)
+ * 7b. CHANNEL FOLLOW-LINK: The official WhatsApp channel follow link MUST appear in every message as a suffix.
  */
+
+/** Hardcoded official VizhiTN WhatsApp Channel follow link — REQUIRED in every message. */
+export const VIZHITN_CHANNEL_FOLLOW_LINK = 'https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228';
 
 export function validateWhatsAppMessage(messageText = '', post = {}, options = {}) {
   const isForwardVariant = options.isForwardVariant || false;
@@ -22,7 +26,8 @@ export function validateWhatsAppMessage(messageText = '', post = {}, options = {
     gate_d_length: { pass: true },
     gate_e_template_consistency: { pass: true },
     gate_f_no_follow_link: { pass: true },
-    gate_g_helpline: { pass: true }
+    gate_g_helpline: { pass: true },
+    gate_7b_channel_follow_link: { pass: true }
   };
 
   const lines = messageText.trim().split('\n').filter(l => l.trim().length > 0);
@@ -135,19 +140,37 @@ export function validateWhatsAppMessage(messageText = '', post = {}, options = {
     errors.push('Gate E: Template structure does not match standard (found old bilingual labels or missing fields)');
   }
 
-  // ─── GATE F: NO FOLLOW-LINK INSIDE NORMAL POSTS ────────────────────────
-  if (!isForwardVariant && messageText.includes('whatsapp.com/channel/')) {
-    gates.gate_f_no_follow_link = {
-      pass: false,
-      reason: 'Channel follow link (whatsapp.com/channel/) is present inside normal post body.'
-    };
-    errors.push('Gate F: In-channel follow link found inside normal post body');
+  // ─── GATE F: NO FOLLOW-LINK INSIDE NORMAL POST BODY ───────────────────────
+  // Gate F now only triggers if the channel link appears OUTSIDE the mandatory suffix.
+  // The link is expected to appear as the very last line(s), so we check whether it
+  // appears somewhere OTHER than the final suffix position.
+  if (!isForwardVariant) {
+    const followLinkOccurrences = (messageText.match(/whatsapp\.com\/channel\//g) || []).length;
+    // If it appears more than once — duplicated in body — that's a problem.
+    if (followLinkOccurrences > 1) {
+      gates.gate_f_no_follow_link = {
+        pass: false,
+        reason: 'Channel follow link (whatsapp.com/channel/) appears multiple times in the message.'
+      };
+      errors.push('Gate F: Channel follow link duplicated in post body');
+    }
+    // If it appears exactly once but NOT at the end, also a problem
+    else if (followLinkOccurrences === 1) {
+      const trimmed = messageText.trimEnd();
+      if (!trimmed.endsWith(VIZHITN_CHANNEL_FOLLOW_LINK)) {
+        gates.gate_f_no_follow_link = {
+          pass: false,
+          reason: 'Channel follow link (whatsapp.com/channel/) appears in the body, not as the required suffix.'
+        };
+        errors.push('Gate F: Channel follow link embedded in post body (must be suffix only)');
+      }
+    }
   }
 
   // ─── GATE G: HELPLINE INTEGRITY ────────────────────────────────────────
-  const isScam = (post.category_slug === 'scam' || ((post.category_slug === 'public-safety' || (post.title_ta || '').includes('மோசடி') || messageText.includes('மோசடி') || messageText.includes('SMS')) && !messageText.includes('மழை') && !messageText.includes('வானிலை')));
+  const isScam = (post.category_slug === 'scam' || ((post.category_slug === 'public-safety' || (post.title_ta || '').includes('மோசடி') || messageText.includes('மோசடி') || messageText.includes('SMS')) && !messageText.includes('வானிலை')));
   const isPowerCut = (post.category_slug === 'electricity' || (post.title_ta || '').includes('மின்தடை') || messageText.includes('மின்தடை'));
-  const isRain = (post.category_slug === 'rain' || (post.title_ta || '').includes('மழை') || messageText.includes('மழை'));
+  const isRain = (post.category_slug === 'rain' || (post.title_ta || '').includes('கனமழை') || (post.title_ta || '').includes('ரெட் அலர்ட்') || (post.title_ta || '').includes('மழை எச்சரிக்கை') || (post.title_en || '').toLowerCase().includes('heavy rain') || (post.title_en || '').toLowerCase().includes('rain alert'));
 
   if (isScam && !messageText.includes('1930')) {
     gates.gate_g_helpline = { pass: false, reason: 'Cyber scam advisory must mention National Cyber Helpline 1930.' };
@@ -158,6 +181,15 @@ export function validateWhatsAppMessage(messageText = '', post = {}, options = {
   } else if (isRain && !messageText.includes('1077') && !messageText.includes('1070')) {
     gates.gate_g_helpline = { pass: false, reason: 'Rain alert must mention District Control 1077 or NDRF 1070.' };
     errors.push('Gate G: Missing 1077/1070 helpline for rain alert');
+  }
+
+  // ─── GATE 7B: CHANNEL FOLLOW-LINK MUST BE PRESENT ─────────────────────
+  if (!messageText.includes(VIZHITN_CHANNEL_FOLLOW_LINK)) {
+    gates.gate_7b_channel_follow_link = {
+      pass: false,
+      reason: `Gate 7B: Channel follow-link (${VIZHITN_CHANNEL_FOLLOW_LINK}) must be present in every WhatsApp message as a suffix.`
+    };
+    errors.push(`Gate 7B: Missing channel follow-link (${VIZHITN_CHANNEL_FOLLOW_LINK})`);
   }
 
   return {

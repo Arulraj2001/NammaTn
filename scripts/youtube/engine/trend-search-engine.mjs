@@ -201,40 +201,52 @@ Return ONLY a valid JSON object matching this schema:
   "tags": ["tag1", "tag2", ...]
 }`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${geminiApiKey}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.4,
-          responseMimeType: 'application/json'
-        }
-      })
-    });
+    const CANDIDATES = [
+      'gemini-flash-latest',
+      'gemini-flash-lite-latest',
+      'gemini-3.1-flash-lite-preview',
+      'gemini-3-flash-preview',
+      'gemini-pro-latest'
+    ];
 
-    if (res.ok) {
-      const data = await res.json();
-      const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (rawJson) {
-        const parsed = JSON.parse(rawJson);
-        if (parsed.titleTa && parsed.spokenHook && parsed.solutionBeat) {
-          return {
-            id: `${pillar}-${Date.now()}`,
-            pillar,
-            titleTa: parsed.titleTa,
-            titleEn: parsed.titleEn || baseTopic.titleEn,
-            spokenHook: parsed.spokenHook,
-            realityBeat: parsed.realityBeat || baseTopic.realityBeat,
-            solutionBeat: parsed.solutionBeat,
-            helpline: parsed.helpline || baseTopic.helpline,
-            ctaUrl: baseTopic.ctaUrl,
-            tags: parsed.tags && parsed.tags.length >= 10 ? parsed.tags : baseTopic.tags,
-            isLiveGrounding: true
-          };
+    for (const model of CANDIDATES) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.4,
+              responseMimeType: 'application/json'
+            }
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawJson) {
+            const parsed = JSON.parse(rawJson);
+            if (parsed.titleTa && parsed.spokenHook && parsed.solutionBeat) {
+              return {
+                id: `${pillar}-${Date.now()}`,
+                pillar,
+                titleTa: parsed.titleTa,
+                titleEn: parsed.titleEn || baseTopic.titleEn,
+                spokenHook: parsed.spokenHook,
+                realityBeat: parsed.realityBeat || baseTopic.realityBeat,
+                solutionBeat: parsed.solutionBeat,
+                helpline: parsed.helpline || baseTopic.helpline,
+                ctaUrl: baseTopic.ctaUrl,
+                tags: parsed.tags && parsed.tags.length >= 10 ? parsed.tags : baseTopic.tags,
+                isLiveGrounding: true
+              };
+            }
+          }
         }
-      }
+      } catch (_) {}
     }
   } catch (err) {
     console.warn('[TrendSearchEngine] Dynamic trend query failed, falling back to curated evergreen topic:', err.message);

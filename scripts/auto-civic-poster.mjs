@@ -206,9 +206,13 @@ function determinePulse() {
   if (hours >= 5 && hours < 11) {
     return 'morning';
   }
-  // Midday grievance & scheme pulse (11:00 AM - 04:00 PM IST)
-  if (hours >= 11 && hours < 16) {
+  // Midday grievance, schemes & jobs pulse (11:00 AM - 02:00 PM IST)
+  if (hours >= 11 && hours < 14) {
     return 'midday';
+  }
+  // Afternoon community engagement & interactive poll pulse (02:00 PM - 05:00 PM IST)
+  if (hours >= 14 && hours < 17) {
+    return 'poll';
   }
   return 'evening';
 }
@@ -268,7 +272,7 @@ Generate 14 real, scheduled civic updates for Tamil Nadu for TODAY (${todayStr})
 - 6 × post_type: "alert" (TANGEDCO power cut schedules with exact hours, Metrowater maintenance, water pipeline repair, morning bus/train alterations)
 - 4 × post_type: "local_update" (Aadhaar / Ration card grievance camps, district collectorate notices, public health camps)
 - 2 × post_type: "complaint" (Real civic grievance pattern: water leak, road pothole, or street light hazard)
-- 2 × post_type: "appreciation" (Recognition of sanitary workers, GCC drain desilting, or swift repair)
+- 2 × post_type: "appreciation" (Recognition of civic workers: MUST name (1) a specific ward number or GCC zone (e.g. Ward 42 or Zone III), (2) the exact work completed (e.g. 'cleared 14 blocked storm drains on Anna Salai'), and (3) the supervising department or designation (e.g. AE Maintenance or Sanitary Inspector). Do NOT generate vague appreciation without these three specifics.)
 TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 8 of the 14 posts cover these rotation districts, with remaining posts covering major state infrastructure corridors.
 CRITICAL INTEGRITY: DO NOT generate any school/college holiday announcements unless an official District Collector ROC order or IMD Red Alert circular was explicitly issued for TODAY.
 `,
@@ -306,7 +310,7 @@ TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 6 of th
 Generate 14 evening advisories and ADVANCE notices for TOMORROW across Tamil Nadu:
 - 8 × post_type: "alert" (ADVANCE power shutdown notice for TOMORROW from TANGEDCO with exact 9 AM - 2 PM timings & streets, Southern Railway line block / train diversions, Metrowater maintenance)
 - 4 × post_type: "local_update" (Civic work completed today: street lights repaired, drainage desilted, road patchwork completed by municipal corporation)
-- 2 × post_type: "appreciation" (Commendation of TANGEDCO line workers or civic staff)
+- 2 × post_type: "appreciation" (Recognition of civic workers: MUST name (1) a specific ward number or GCC zone (e.g. Ward 42 or Zone III), (2) the exact work completed (e.g. 'repaired 8 street lights on Nehru Street'), and (3) the supervising department or designation (e.g. AE Maintenance or Sanitary Inspector). Do NOT generate vague appreciation without these three specifics.)
 DO NOT generate repetitive cyber scam posts on fake electricity bill SMS or WhatsApp part-time job scams. Focus on real community utility.
 TODAY'S MANDATORY ROTATION DISTRICTS: ${rotation.label}. Ensure at least 8 posts cover tomorrow's advance notices for these districts.
 `,
@@ -370,7 +374,7 @@ async function main() {
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
-  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const geminiApiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   const siteUrl = process.env.SITE_URL || 'https://www.vizhitn.in';
 
   console.log(`[INFO] Current Mode: ${pulse} ${isDryRun ? '(DRY RUN)' : ''}`);
@@ -386,6 +390,23 @@ async function main() {
   const now = new Date();
   const istDate = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
   const todayStr = istDate.toISOString().slice(0, 10);
+
+  // Dedicated handling for Afternoon Interactive Community Poll slot
+  if (pulse === 'poll') {
+    console.log('[POLL PULSE] Triggering Afternoon Interactive Community Poll on WhatsApp Channel...');
+    const { spawn } = await import('node:child_process');
+    await new Promise((resolve) => {
+      const child = spawn('node', ['scripts/whatsapp-channel-bot.mjs', '--slot=poll', isDryRun ? '--dry-run' : ''].filter(Boolean), { stdio: 'inherit' });
+      child.on('close', () => resolve());
+      child.on('error', (e) => {
+        console.warn(`[POLL PULSE ERROR] ${e.message}`);
+        resolve();
+      });
+    });
+    console.log('[POLL PULSE COMPLETE] Afternoon poll broadcast executed successfully.');
+    return;
+  }
+
   const spec = getPulseSpec(pulse === 'dry-run' ? 'morning' : pulse, todayStr, istDate);
 
   console.log(`[INFO] Running: ${spec.name}`);
@@ -394,6 +415,7 @@ async function main() {
   let supabase = null;
   let recentSlugs = new Set();
   let recentTitles = [];
+  let recentEntityKeys = new Set();
   let exclusionSummary = [];
   let hasRecentScamAlert = false;
 
@@ -417,18 +439,23 @@ async function main() {
     console.log('[SUPABASE] Client initialized successfully.');
 
     try {
-      const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 3600 * 1000).toISOString();
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
       const { data: recentPosts, error: fetchErr } = await supabase
         .from('post')
-        .select('slug, title_en, district_slug, category_slug, created_date')
-        .gte('created_date', fourteenDaysAgo)
+        .select('slug, title_en, district_slug, category_slug, area_name, created_date')
+        .gte('created_date', thirtyDaysAgo)
         .order('created_date', { ascending: false })
-        .limit(200);
+        .limit(500);
 
       if (!fetchErr && recentPosts) {
         const tenDaysAgo = new Date(Date.now() - 10 * 24 * 3600 * 1000).toISOString();
+        const threeDaysAgo = new Date(Date.now() - 3 * 24 * 3600 * 1000).toISOString();
         recentPosts.forEach(p => {
           if (p.slug) recentSlugs.add(p.slug.toLowerCase());
+          if (p.area_name && p.created_date >= threeDaysAgo) {
+            const eKey = `${p.district_slug || ''}:${p.category_slug || ''}:${p.area_name.toLowerCase().trim()}`;
+            recentEntityKeys.add(eKey);
+          }
           if (p.title_en) {
             recentTitles.push(p.title_en.toLowerCase());
             exclusionSummary.push(`- [${p.district_slug || 'TN'}] ${p.title_en}`);
@@ -438,7 +465,7 @@ async function main() {
             }
           }
         });
-        console.log(`[ANTI-DUP] Loaded ${recentSlugs.size} existing recent post slugs from last 14 days to prevent duplicates.`);
+        console.log(`[ANTI-DUP] Loaded ${recentSlugs.size} existing slugs & ${recentEntityKeys.size} recent area entity keys from last 30 days to prevent duplicates.`);
         if (hasRecentScamAlert) {
           console.log(`[ANTI-DUP] Recent cyber scam post detected in last 10 days. Scam quota active: blocking new generic scam posts.`);
         }
@@ -515,7 +542,14 @@ CRITICAL EDITORIAL & SYSTEM CONSTRAINTS:
 
    • SECTION 4 — CITIZEN PRECAUTION & HELPLINE REDRESSAL (40-60 words):
      Actionable advice for local residents and commercial establishments.
-     Example: "Residents are advised to charge essential emergency inverters and water pumps in advance. For unresolved power restoration after 2:00 PM or snapped wire emergencies, contact TANGEDCO Minnalagam 24x7 control room at 1912 or WhatsApp 94987 94987."
+     Select the appropriate CTA based on the post's post_type and category_slug:
+     - alert + electricity: "Contact TANGEDCO Minnalagam 24x7 at **1912** or WhatsApp **94987 94987** for assistance after the scheduled outage window."
+     - alert + water-sanitation: "Contact Metrowater emergency at **044-45674567** or TWAD emergency tanker helpline at **1916**."
+     - alert + transport: "Check Southern Railway helpline **139** or MTC route helpline **044-25384955** for alternate services."
+     - complaint: "File an official complaint at vizhitn.in or call the relevant department helpline. Note down your complaint reference number for follow-up."
+     - appreciation: "Share this report to motivate civic workers. Tag #VizhiTN on social media to amplify civic achievements."
+     - local_update: "Visit the nearest e-Sevai centre or official department portal for service details and registration."
+     Example for alert/electricity: "Residents are advised to charge essential emergency inverters and water pumps in advance. For unresolved power restoration after 2:00 PM or snapped wire emergencies, contact TANGEDCO Minnalagam 24x7 control room at 1912 or WhatsApp 94987 94987."
 
 10. GOOGLE DISCOVER & SEARCH HIGH-CTR TITLES (TAMIL & ENGLISH):
    - title_ta: 48 to 65 Tamil characters. Put the neighborhood and core hook in the first 3 words so mobile Chrome cards grab reader attention immediately.
@@ -566,10 +600,11 @@ No conversational intro, no commentary outside the JSON array.
 
   // Use modern high-performance models
   const CANDIDATE_MODELS = [
+    'gemini-flash-latest',
     'gemini-flash-lite-latest',
     'gemini-3.1-flash-lite-preview',
-    'gemini-flash-latest',
     'gemini-3-flash-preview',
+    'gemini-pro-latest'
   ];
 
   console.log(`[GEMINI] Grounding: ${useGrounding ? 'ENABLED for all pulses (live Google Search)' : 'DISABLED (--no-grounding flag)'}`);
@@ -784,11 +819,22 @@ No conversational intro, no commentary outside the JSON array.
       console.warn(`[ANTI-DUP SKIP] Title "${title_en}" is too similar to an existing recent post. Skipping.`);
       continue;
     }
-    if (typeof recentTitles !== 'undefined') recentTitles.push(titleCheck);
-    recentSlugs.add(slug.toLowerCase());
 
     const area_name = (raw.area_name || raw.area || '').trim();
     const area_slug = slugify(area_name);
+
+    // Entity key deduplication: prevent reposting the same area's event in the same category
+    if (area_name && typeof recentEntityKeys !== 'undefined') {
+      const entityKey = `${district_slug}:${category_slug}:${area_name.toLowerCase()}`;
+      if (recentEntityKeys.has(entityKey)) {
+        console.warn(`[ANTI-DUP SKIP] Area "${area_name}" in ${district_slug} for category "${category_slug}" was already reported recently. Skipping.`);
+        continue;
+      }
+      recentEntityKeys.add(entityKey);
+    }
+
+    if (typeof recentTitles !== 'undefined') recentTitles.push(titleCheck);
+    recentSlugs.add(slug.toLowerCase());
 
     // Never manufacture engagement, verification, or civic-receipt evidence.
     const upvotes = 0;
@@ -1181,6 +1227,28 @@ No conversational intro, no commentary outside the JSON array.
       }
     } catch (twErr) {
       console.warn(`[TWITTER WARN] Twitter broadcast warning: ${twErr.message}`);
+    }
+
+    // --- STEP 12: AUTONOMOUS WHATSAPP CHANNEL BROADCAST ---
+    // Broadcasts the top priority civic alert to the official VizhiTN WhatsApp Channel
+    try {
+      if (validPosts.length > 0) {
+        const hasWaSession = Boolean(process.env.WHATSAPP_SESSION || fs.existsSync('scripts/baileys_auth/creds.json'));
+        if (hasWaSession || isDryRun) {
+          console.log(`[WHATSAPP BROADCAST] 📲 Schedulng verified civic alert dispatch to WhatsApp Channel...`);
+          const { spawn } = await import('node:child_process');
+          await new Promise((resolve) => {
+            const child = spawn('node', ['scripts/whatsapp-channel-bot.mjs', `--slot=${pulse}`, isDryRun ? '--dry-run' : ''].filter(Boolean), { stdio: 'inherit' });
+            child.on('close', () => resolve());
+            child.on('error', (e) => {
+              console.warn(`[WHATSAPP WARN] Child process error: ${e.message}`);
+              resolve();
+            });
+          });
+        }
+      }
+    } catch (waErr) {
+      console.warn(`[WHATSAPP WARN] WhatsApp broadcast warning: ${waErr.message}`);
     }
   }
 }

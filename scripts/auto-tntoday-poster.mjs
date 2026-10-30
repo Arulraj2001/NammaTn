@@ -246,7 +246,7 @@ async function main() {
   console.log(`[INFO] Pulse:        ${pulse}`);
   console.log(`[INFO] Mode:         ${isDryRun ? 'DRY RUN (No DB Writes)' : 'PRODUCTION'}`);
 
-  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const geminiApiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co';
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
   const siteUrl = process.env.SITE_URL || 'https://www.vizhitn.in';
@@ -429,10 +429,11 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
   // --- STEP 3: CALL GEMINI API WITH MULTI-MODEL FALLBACK & SEARCH GROUNDING ---
   const ai = new GoogleGenAI({ apiKey: geminiApiKey });
   const CANDIDATE_MODELS = [
+    'gemini-flash-latest',
     'gemini-flash-lite-latest',
     'gemini-3.1-flash-lite-preview',
-    'gemini-flash-latest',
     'gemini-3-flash-preview',
+    'gemini-pro-latest'
   ];
 
   let rawResponseText = '';
@@ -589,6 +590,98 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
   const content = String(parsed.content || '').trim();
   const content_ta = String(parsed.content_ta || '').trim();
 
+  // ── P1-1: INJECT INTERNAL LINKS INTO content_en (English only, max 3) ──────
+  // District slug → display name map (subset covering all 38 districts)
+  const DISTRICT_LINK_MAP = {
+    'Chennai': 'chennai', 'Coimbatore': 'coimbatore', 'Madurai': 'madurai',
+    'Tiruchirappalli': 'tiruchirappalli', 'Trichy': 'tiruchirappalli',
+    'Salem': 'salem', 'Tirunelveli': 'tirunelveli', 'Vellore': 'vellore',
+    'Erode': 'erode', 'Thoothukudi': 'thoothukudi', 'Tuticorin': 'thoothukudi',
+    'Dindigul': 'dindigul', 'Thanjavur': 'thanjavur', 'Ranipet': 'ranipet',
+    'Sivaganga': 'sivaganga', 'Virudhunagar': 'virudhunagar',
+    'Nagapattinam': 'nagapattinam', 'Kallakurichi': 'kallakurichi',
+    'Chengalpattu': 'chengalpattu', 'Tiruppur': 'tiruppur', 'Tenkasi': 'tenkasi',
+    'Mayiladuthurai': 'mayiladuthurai', 'Tirupattur': 'tirupattur',
+    'Nilgiris': 'nilgiris', 'Ooty': 'nilgiris', 'Krishnagiri': 'krishnagiri',
+    'Hosur': 'krishnagiri', 'Dharmapuri': 'dharmapuri', 'Cuddalore': 'cuddalore',
+    'Villupuram': 'villupuram', 'Perambalur': 'perambalur', 'Ariyalur': 'ariyalur',
+    'Pudukkottai': 'pudukkottai', 'Ramanathapuram': 'ramanathapuram', 'Theni': 'theni',
+    'Kancheepuram': 'kancheepuram', 'Tiruvarur': 'tiruvarur', 'Karur': 'karur',
+    'Namakkal': 'namakkal', 'Tiruvannamalai': 'tiruvannamalai',
+    'Kanyakumari': 'kanyakumari', 'Tiruvallur': 'tiruvallur'
+  };
+  // Department → category slug map for category-level links
+  const DEPT_CATEGORY_MAP = {
+    'TANGEDCO': 'electricity', 'TNEB': 'electricity',
+    'Metrowater': 'water-sanitation', 'TWAD': 'water-sanitation', 'CMWSSB': 'water-sanitation',
+    'CMRL': 'transport', 'MTC': 'transport', 'SETC': 'transport', 'Southern Railway': 'transport',
+    'GCC': 'road-infrastructure', 'NHAI': 'road-infrastructure',
+    'TNPCB': 'environment',
+    'e-Sevai': 'government-schemes', 'Aadhaar': 'government-schemes', 'Ration Card': 'government-schemes'
+  };
+
+  function injectInternalLinks(htmlContent, primaryDistrictSlug) {
+    let linked = htmlContent;
+    let linkCount = 0;
+    const MAX_LINKS = 3;
+
+    // 1. Inject category-level links for named departments/agencies (first occurrence only)
+    for (const [dept, catSlug] of Object.entries(DEPT_CATEGORY_MAP)) {
+      if (linkCount >= MAX_LINKS) break;
+      // Only match as whole word, not inside existing anchor tags
+      const deptRegex = new RegExp(`(?<!<a[^>]*?>)\\b(${dept.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b(?![^<]*?<\\/a>)`, '');
+      if (deptRegex.test(linked)) {
+        const href = `https://www.vizhitn.in/${primaryDistrictSlug || 'chennai'}/${catSlug}`;
+        linked = linked.replace(deptRegex, `<a href="${href}" rel="noopener">$1</a>`);
+        linkCount++;
+      }
+    }
+
+    // 2. Inject district-level links for named districts (first occurrence only)
+    for (const [distName, distSlug] of Object.entries(DISTRICT_LINK_MAP)) {
+      if (linkCount >= MAX_LINKS) break;
+      const distRegex = new RegExp(`(?<!<a[^>]*?>)\\b(${distName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b(?![^<]*?<\\/a>)`, '');
+      if (distRegex.test(linked)) {
+        const href = `https://www.vizhitn.in/${distSlug}`;
+        linked = linked.replace(distRegex, `<a href="${href}" rel="noopener">$1</a>`);
+        linkCount++;
+      }
+    }
+
+    if (linkCount > 0) {
+      console.log(`[INTERNAL LINKS] Injected ${linkCount} internal link(s) into content_en.`);
+    }
+    return linked;
+  }
+
+  // Apply internal link injection to English content only (preserve Tamil ligatures untouched)
+  const contentWithLinks = injectInternalLinks(content, district_slug);
+
+  // ── P2-1: AUTO-EXTRACT G.O. / CIRCULAR REFERENCE NUMBER ─────────────────
+  // Scan content for official reference patterns; use as fallback if Gemini left it empty
+  function extractOfficialReference(htmlContent) {
+    const patterns = [
+      /G\.O\.\s*Ms\.\s*No\.\s*\d+/i,
+      /G\.O\.\s*\(Ms\.\)\s*No\.\s*\d+/i,
+      /DIPR\s+PR\s+No\.\s*\d+/i,
+      /Circular\s+No\.\s*\d+\/\d+/i,
+      /ROC\s+No\.\s*\d+/i,
+      /Order\s+No\.\s*\d+/i
+    ];
+    const plainText = htmlContent.replace(/<[^>]*>/g, ' ');
+    for (const pat of patterns) {
+      const match = plainText.match(pat);
+      if (match) return match[0].trim();
+    }
+    return '';
+  }
+
+  const geminiOfficialRef = String(parsed.official_reference || parsed.reference_number || '').trim();
+  const autoExtractedRef = geminiOfficialRef || extractOfficialReference(content);
+  if (autoExtractedRef && !geminiOfficialRef) {
+    console.log(`[OFFICIAL REF AUTO-EXTRACT ✓] Extracted reference: "${autoExtractedRef}" from article content.`);
+  }
+
   // Word count calculation
   const wordCountEn = content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
   console.log(`[INFO] Article word count (English): ${wordCountEn} words`);
@@ -603,8 +696,8 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     summary_ta: String(parsed.summary_ta || '').trim(),
     why_it_matters: toMultilineText(parsed.why_it_matters),
     why_it_matters_ta: toMultilineText(parsed.why_it_matters_ta),
-    content,
-    content_ta: content_ta || content,
+    content: contentWithLinks, // P1-1: internal links injected into English content
+    content_ta: content_ta || content, // Tamil content left unchanged to preserve ligatures
     key_facts: toMultilineText(parsed.key_facts),
     key_facts_ta: toMultilineText(parsed.key_facts_ta),
     timeline: toMultilineText(parsed.timeline),
@@ -628,7 +721,8 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     updated_date: new Date().toISOString()
   };
 
-  const officialRef = String(parsed.official_reference || parsed.reference_number || '').trim();
+  // P2-1: Use auto-extracted reference if Gemini left it empty
+  const officialRef = autoExtractedRef;
   if (officialRef) {
     const badgeEn = `<div class="official-ref-badge" style="margin-bottom: 16px; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; border-radius: 4px;"><strong>Official Gazette / Circular Ref:</strong> ${officialRef}</div>`;
     const badgeTa = `<div class="official-ref-badge" style="margin-bottom: 16px; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; border-radius: 4px;"><strong>அதிகாரப்பூர்வ அரசாணை / செய்தி வெளியீடு குறிப்பு:</strong> ${officialRef}</div>`;

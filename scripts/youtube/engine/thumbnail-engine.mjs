@@ -457,3 +457,163 @@ export async function generateLongThumbnailPair({
   return { variantA: pathA, variantB: pathB };
 }
 
+/**
+ * Generates high-CTR 1280x720 Current Affairs Thumbnail for Daily 8 PM Bulletin
+ */
+export async function generateCurrentAffairsThumbnail({
+  tamilDate,
+  topHeadline = 'இன்றைய டாப் 10 நடப்பு நிகழ்வுகள்',
+  subHeadline = 'தேர்வுக்கு தேவையான முழு குறிப்புகள் & அரசு ஆவணங்கள்',
+  outputPath
+}) {
+  const fontPath = path.resolve('public/fonts/NotoSansTamil-Bold.ttf').replace(/\\/g, '/');
+
+  const htmlContent = `<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@800;900&family=Plus+Jakarta+Sans:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Noto Sans Tamil';
+      src: url('file:///${fontPath}') format('truetype');
+      font-weight: 700;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      background: radial-gradient(circle at 80% 20%, #1e1b4b 0%, #09090b 70%);
+      font-family: 'Noto Sans Tamil', 'Plus Jakarta Sans', system-ui, sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px 60px;
+      color: #fff;
+    }
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .brand-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1.5px solid rgba(239, 68, 68, 0.5);
+      padding: 8px 20px;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: #f87171;
+    }
+    .live-dot {
+      width: 12px;
+      height: 12px;
+      background: #ef4444;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #ef4444;
+    }
+    .date-badge {
+      background: #eab308;
+      color: #000;
+      font-weight: 900;
+      padding: 8px 22px;
+      border-radius: 12px;
+      font-size: 22px;
+      box-shadow: 0 6px 20px rgba(234, 179, 8, 0.4);
+    }
+    .content-box {
+      z-index: 10;
+      max-width: 1050px;
+    }
+    .main-hook {
+      font-size: 54px;
+      font-weight: 900;
+      line-height: 1.15;
+      color: #fef08a;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+      margin-bottom: 20px;
+    }
+    .sub-hook {
+      font-size: 32px;
+      font-weight: 700;
+      color: #e2e8f0;
+      line-height: 1.3;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 12px 24px;
+      border-left: 6px solid #3b82f6;
+      border-radius: 8px;
+    }
+    .footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 20px;
+    }
+    .exam-tags {
+      display: flex;
+      gap: 12px;
+    }
+    .tag {
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #cbd5e1;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .bulletin-time {
+      font-weight: 900;
+      font-size: 24px;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="top-bar">
+    <div class="brand-pill">
+      <div class="live-dot"></div>
+      <span>DAILY 24H EXPRESS</span>
+    </div>
+    <div class="date-badge">📅 ${tamilDate}</div>
+  </div>
+
+  <div class="content-box">
+    <h1 class="main-hook">${topHeadline}</h1>
+    <div class="sub-hook">${subHeadline}</div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="exam-tags">
+      <div class="tag">TNPSC GROUP 1, 2, 4</div>
+      <div class="tag">POLICE SI</div>
+      <div class="tag">GOVT SCHEMES</div>
+      <div class="tag">HIGH COURT</div>
+    </div>
+    <div class="bulletin-time">🕗 DAILY 8 PM BULLETIN</div>
+  </div>
+</body>
+</html>`;
+
+  renderHtmlToImage(htmlContent, outputPath, { width: 1280, height: 720 });
+  return outputPath;
+}
+

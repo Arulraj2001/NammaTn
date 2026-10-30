@@ -14,6 +14,7 @@ import { generateArtDirectedVisualPrompt } from '../engine/script-writer.mjs';
 import { uploadToYouTube, setYouTubeThumbnail, postPinnedComment } from '../engine/youtube-client.mjs';
 import { chunkSentenceForCaptions, generateCaptionsFromClauses, generateAssSubtitleFile } from '../engine/captions-engine.mjs';
 import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
+import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { generateShortsThumbnail, generateShortsThumbnailPair } from '../engine/thumbnail-shorts-engine.mjs';

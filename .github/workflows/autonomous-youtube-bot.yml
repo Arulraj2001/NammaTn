@@ -2,14 +2,14 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Daily ~08:15 AM IST (02:45 UTC): Morning Utility & Money Hack Short (TNEB, Patta Chitta)
-    - cron: '45 2 * * *'
-    # 2. Daily ~01:30 PM IST (08:00 UTC): Midday Cyber Scam & Urgent Warning Short (1930 Helpline)
-    - cron: '0 8 * * *'
-    # 3. Daily ~06:30 PM IST (13:00 UTC): Evening 16:9 Documentary Podcast Desk
-    - cron: '0 13 * * *'
-    # 4. Daily ~08:45 PM IST (15:15 UTC): Night Welfare Schemes & Citizen Entitlements Short
-    - cron: '15 15 * * *'
+    # 1. Daily 07:30 UTC = 01:00 PM IST (Afternoon Exam Prep Short: Top 3 Exam Facts)
+    - cron: '30 7 * * *'
+    # 2. Daily 14:00 UTC = 07:30 PM IST (Daily 8:00 PM TN 24H Current Affairs Bulletin)
+    - cron: '0 14 * * *'
+    # 3. Daily 16:00 UTC = 09:30 PM IST (Night Rapid Current Affairs Exam Recap Short)
+    - cron: '0 16 * * *'
+    # 4. Sunday 03:30 UTC = 09:00 AM IST (Sunday Weekly Revision Masterclass)
+    - cron: '30 3 * * 0'
 
   workflow_dispatch:
     inputs:
@@ -18,13 +18,12 @@ on:
         type: choice
         options:
           - auto
+          - current-affairs-bulletin
+          - current-affairs-shorts
           - utility-shorts
           - scam-shorts
-          - podcast
           - scheme-shorts
           - rights-shorts
-          - live-shorts
-          - civic-shorts
           - backfill
           - all
         default: 'auto'
@@ -76,6 +75,8 @@ jobs:
 
       - name: Execute YouTube Production Pipeline
         env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NEW_GEMINI_API_KEY: ${{ secrets.NEW_GEMINI_API_KEY }}
           YOUTUBE_GEMINI_API_KEY: ${{ secrets.YOUTUBE_GEMINI_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
           NEXT_PUBLIC_VITE_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_VITE_SUPABASE_URL || secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
@@ -108,18 +109,16 @@ jobs:
           if [ "$PIPELINE" = "backfill" ]; then
             SLOT_ARG="--backfill"
           elif [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
-            if [ "$SCHEDULE" = "45 2 * * *" ]; then
-              SLOT_ARG="--slot=utility-shorts"
-            elif [ "$SCHEDULE" = "0 8 * * *" ]; then
-              SLOT_ARG="--slot=scam-shorts"
-            elif [ "$SCHEDULE" = "0 13 * * *" ]; then
-              SLOT_ARG="--slot=podcast"
-            elif [ "$SCHEDULE" = "15 15 * * *" ]; then
-              SLOT_ARG="--slot=scheme-shorts"
+            if [ "$SCHEDULE" = "0 14 * * *" ]; then
+              SLOT_ARG="--slot=current-affairs-bulletin"
+            elif [ "$SCHEDULE" = "30 7 * * *" ] || [ "$SCHEDULE" = "0 16 * * *" ]; then
+              SLOT_ARG="--slot=current-affairs-shorts"
+            elif [ "$SCHEDULE" = "30 3 * * 0" ]; then
+              SLOT_ARG="--slot=current-affairs-bulletin"
             else
               SLOT_ARG="--slot=auto"
             fi
           fi
 
-          echo "[DISPATCH] Executing VizhiTN 90-Day YouTube Dispatcher ($SLOT_ARG $EXTRA_FLAGS)..."
+          echo "[DISPATCH] Executing VizhiTN YouTube Dispatcher ($SLOT_ARG $EXTRA_FLAGS)..."
           node scripts/youtube/dispatch-broadcast.mjs $SLOT_ARG $EXTRA_FLAGS

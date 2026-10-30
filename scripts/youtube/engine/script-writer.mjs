@@ -14,11 +14,11 @@ try {
 
 // Candidate models in reliability order (most stable first)
 const CANDIDATE_MODELS = [
-  'gemini-3.5-flash',
-  'gemini-3.5-flash-lite',
-  'gemini-3.8-flash',
-  'gemini-3.7-flash',
-  'gemini-flash-latest'
+  'gemini-flash-latest',
+  'gemini-flash-lite-latest',
+  'gemini-3.1-flash-lite-preview',
+  'gemini-3-flash-preview',
+  'gemini-pro-latest'
 ];
 
 // Category → FLUX scene visual prompt mapping for cinematic B-roll
@@ -168,6 +168,8 @@ export function generateVideoMetadata({ article, script, isShort = false, chapte
     const shortArea = areaName.length > 14 ? areaName.slice(0, 12) + '..' : areaName;
     if (script?.youtubeTitle && script.youtubeTitle.length <= 55) {
       title = script.youtubeTitle;
+    } else if (article.title_ta && article.title_ta.length <= 50) {
+      title = `${article.title_ta.replace(/[<>]/g, '').trim()} #Shorts`;
     } else {
       title = `${shortArea} அவசர அறிவிப்பு! முழு பட்டியல் ⚡ #Shorts`;
       if (title.length > 55) {

@@ -15,11 +15,12 @@ import { getBrowserExecutablePath } from './browser-detector.mjs';
 export function renderHtmlToImage(htmlContent, outputPngPath, options = {}) {
   const width = options.width || 1080;
   const height = options.height || 1920;
+  const absOutputPath = path.resolve(outputPngPath);
 
   const browserPath = getBrowserExecutablePath();
 
   // Ensure output directory exists
-  const outDir = path.dirname(outputPngPath);
+  const outDir = path.dirname(absOutputPath);
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true });
   }
@@ -30,15 +31,15 @@ export function renderHtmlToImage(htmlContent, outputPngPath, options = {}) {
 
   try {
     const fileUrl = `file:///${tempHtmlPath.replace(/\\/g, '/')}`;
-    const cmd = `"${browserPath}" --headless=new --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --default-background-color=00000000 --window-size=${width},${height} --screenshot="${outputPngPath}" "${fileUrl}"`;
+    const cmd = `"${browserPath}" --headless=new --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --default-background-color=00000000 --window-size=${width},${height} --screenshot="${absOutputPath}" "${fileUrl}"`;
 
     execSync(cmd, { stdio: 'pipe', timeout: 30000 });
 
-    if (!fs.existsSync(outputPngPath)) {
-      throw new Error(`Screenshot failed to create file at: ${outputPngPath}`);
+    if (!fs.existsSync(absOutputPath)) {
+      throw new Error(`Screenshot failed to create file at: ${absOutputPath}`);
     }
 
-    return outputPngPath;
+    return absOutputPath;
   } finally {
     // Cleanup temporary HTML file
     if (fs.existsSync(tempHtmlPath)) {

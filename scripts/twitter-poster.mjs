@@ -73,6 +73,51 @@ export function calculateTwitterWeight(text = '') {
 }
 
 /**
+ * District alias hashtag map — uses the most-searched Twitter (X) variant per district.
+ * Up to 2 hashtags per district (space-separated) to maximise reach without bloating tweet weight.
+ * Special case: krishnagiri → #Hosur if area contains 'hosur', else #Krishnagiri.
+ */
+const DISTRICT_HASHTAG_MAP = {
+  chennai: '#Chennai',
+  coimbatore: '#Coimbatore #Kovai',
+  madurai: '#Madurai',
+  tiruchirappalli: '#Trichy',
+  salem: '#Salem',
+  tirunelveli: '#Nellai',
+  vellore: '#Vellore',
+  erode: '#Erode',
+  thoothukudi: '#Tuticorin',
+  thanjavur: '#Thanjavur',
+  kancheepuram: '#Kancheepuram',
+  chengalpattu: '#Chengalpattu',
+  tiruppur: '#Tiruppur',
+  dharmapuri: '#Dharmapuri',
+  cuddalore: '#Cuddalore',
+  nagapattinam: '#Nagapattinam',
+  nilgiris: '#Ooty #Nilgiris',
+  dindigul: '#Dindigul',
+  ranipet: '#Ranipet',
+  sivaganga: '#Sivaganga',
+  virudhunagar: '#Virudhunagar',
+  kallakurichi: '#Kallakurichi',
+  tenkasi: '#Tenkasi',
+  mayiladuthurai: '#Mayiladuthurai',
+  tirupattur: '#Tirupattur',
+  villupuram: '#Villupuram',
+  perambalur: '#Perambalur',
+  ariyalur: '#Ariyalur',
+  pudukkottai: '#Pudukkottai',
+  ramanathapuram: '#Ramanathapuram',
+  theni: '#Theni',
+  tiruvarur: '#Tiruvarur',
+  karur: '#Karur',
+  namakkal: '#Namakkal',
+  tiruvannamalai: '#Tiruvannamalai',
+  kanyakumari: '#Kanyakumari',
+  tiruvallur: '#Tiruvallur'
+};
+
+/**
  * Formats a civic alert into an algorithmic 2-Tweet Thread:
  * - Tweet 1: Pure native content, helpline, question hook, hashtags (NO LINK to avoid algorithmic demotion).
  *   Strictly kept under 270 Twitter weighted points (max 280).
@@ -89,9 +134,16 @@ export function formatTwitterThread(post = {}) {
       ? 'scam'
       : rawCat;
 
-  const district = post.district_slug || post.area_name || 'TamilNadu';
-  const cleanDistrict = district.charAt(0).toUpperCase() + district.slice(1);
-  const districtTag = `#${cleanDistrict.replace(/[^a-zA-Z0-9]/g, '')}`;
+  const district = (post.district_slug || post.area_name || 'tamilnadu').toLowerCase();
+  const area = (post.area_name || '').toLowerCase();
+
+  // P1-2: Use district alias hashtag map; special-case krishnagiri for Hosur
+  let districtTag;
+  if (district === 'krishnagiri' && area.includes('hosur')) {
+    districtTag = '#Hosur';
+  } else {
+    districtTag = DISTRICT_HASHTAG_MAP[district] || `#${district.charAt(0).toUpperCase() + district.slice(1).replace(/[^a-zA-Z0-9]/g, '')}`;
+  }
   const catTag = CATEGORY_TAGS[catKey] || '#TamilNadu';
   const helpline = CATEGORY_HELPLINES[catKey] || '📞 உதவி: 112';
 
@@ -135,11 +187,19 @@ ${fullUrl}
   };
 }
 
+import { isAlreadyDispatched, recordDispatch } from './lib/dispatch-ledger.mjs';
+
 /**
  * Posts a 2-tweet thread to Twitter (X) via headless browser automation.
  */
 export async function postToTwitter(post, options = {}) {
   const isDryRun = options.isDryRun || false;
+
+  // Anti-duplication check via persistent ledger
+  if (post?.slug && isAlreadyDispatched('twitter', post.slug)) {
+    console.log(`[TWITTER BOT] Post "${post.slug}" was ALREADY tweeted previously. Skipping to prevent duplicate.`);
+    return { success: true, skippedDuplicate: true };
+  }
   const thread = formatTwitterThread(post);
 
   console.log('\n=======================================================');
@@ -282,6 +342,13 @@ export async function postToTwitter(post, options = {}) {
 
     const liveUrl = postedTweetId ? `https://x.com/Vizhitn/status/${postedTweetId}` : 'https://x.com/Vizhitn';
     console.log(`\n🎉 Thread live at: ${liveUrl}`);
+    if (post?.slug && !isDryRun) {
+      recordDispatch('twitter', post.slug, {
+        title: post.title_en || post.title_ta,
+        district: post.district_slug,
+        category: post.category_slug
+      });
+    }
     await browser.close();
     return { success: true, tweetId: postedTweetId, url: liveUrl, thread };
 

@@ -42,7 +42,7 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts'].includes(format);
+  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'current-affairs-shorts', 'current-affairs-bulletin'].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -60,13 +60,15 @@ async function handleSlot(format, isDryRun, force) {
   }
 
   const scriptMap = {
+    'current-affairs-bulletin': { script: 'scripts/youtube/pipelines/generate-current-affairs-bulletin.mjs', extraArgs: [] },
+    'current-affairs-shorts': { script: 'scripts/youtube/pipelines/generate-current-affairs-shorts.mjs', extraArgs: [] },
     'podcast': { script: 'scripts/youtube/pipelines/generate-podcast.mjs', extraArgs: [] },
     'civic-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: [] },
     'live-shorts': { script: 'scripts/youtube/pipelines/generate-live-shorts.mjs', extraArgs: [] },
     'utility-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=utility'] },
     'scam-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scam'] },
     'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scheme'] },
-    'rights-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=rights'] }
+    'rights-shorts': { script: 'scripts/youtube/pipelines/generate-rights-shorts.mjs', extraArgs: [] }
   };
 
   const entry = scriptMap[format];
@@ -232,18 +234,20 @@ async function main() {
 
   let targetFormat = null;
 
-  if (now.hours < 12) {
-    // Morning window (06:00 - 11:59 IST): High-Retention Utility & Money Hack Short
+  if (now.hours >= 19 && now.hours < 21) {
+    // Evening window (07:00 PM - 08:59 PM IST): Daily 8 PM TN 24H Current Affairs Bulletin
+    targetFormat = 'current-affairs-bulletin';
+  } else if (now.hours >= 12 && now.hours < 16) {
+    // Afternoon window (12:00 PM - 03:59 PM IST): Afternoon Exam Prep Short (01:00 PM)
+    targetFormat = 'current-affairs-shorts';
+  } else if (now.hours >= 21) {
+    // Night window (09:00 PM - 11:59 PM IST): Rapid Current Affairs Exam Recap Short (09:30 PM)
+    targetFormat = 'current-affairs-shorts';
+  } else if (now.hours < 12) {
+    // Morning window (06:00 AM - 11:59 AM IST): High-Retention Utility & Money Hack Short
     targetFormat = 'utility-shorts';
-  } else if (now.hours < 16) {
-    // Afternoon window (12:00 - 15:59 IST): Cyber Scam & Urgent Warning Short
-    targetFormat = 'scam-shorts';
-  } else if (now.hours < 20) {
-    // Evening window (16:00 - 19:59 IST): Vizhi Uncut 16:9 Documentary Podcast
-    targetFormat = 'podcast';
   } else {
-    // Night window (20:00 - 23:59 IST): Welfare Schemes & Citizen Entitlements Short
-    targetFormat = 'scheme-shorts';
+    targetFormat = 'current-affairs-shorts';
   }
 
   console.log(`[AUTO ROUTER] Target slot for ${now.hours}:${now.minutes} IST is: "${targetFormat}"`);

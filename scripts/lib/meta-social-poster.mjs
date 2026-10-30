@@ -16,6 +16,8 @@ import path from 'path';
 import fs from 'fs';
 import { renderEditorialCard } from './card-renderer.mjs';
 import { uploadCardToStorage } from './supabase-storage.mjs';
+import { generateSocialCarousel } from './carousel-generator.mjs';
+import { isAlreadyDispatched, recordDispatch } from './dispatch-ledger.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -101,7 +103,19 @@ export function formatSocialCaption(post = {}) {
   const allHashtags = Array.from(new Set([...tier1ViralTags, ...tier2Tags, ...tier3Tags])).join(' ');
 
   const targetUrl = `https://www.vizhitn.in/${post.slug ? `post/${post.slug}` : ''}`;
-  const searchQueries = `🔍 Searches: ${area || district} news today, Tamil Nadu civic alert, ${helpline || '1100'} helpline, VizhiTN`;
+  // P2-6: Category-aware search query line for better SEO / discoverability
+  const categorySearchQuery = {
+    electricity: `${area || district} power cut today, TANGEDCO shutdown ${district}`,
+    'water-sanitation': `${area || district} water supply today, Metrowater ${district}`,
+    transport: `${area || district} bus train cancelled today, MTC SETC ${district}`,
+    'public-safety': `${area || district} scam alert, cyber crime 1930 ${district}`,
+    'road-infrastructure': `${area || district} road closure today, potholes ${district}`,
+    environment: `${area || district} rain alert today, IMD warning ${district}`,
+    'government-schemes': `${area || district} govt scheme camp today, ration card ${district}`,
+    education: `${area || district} school holiday today, college closed ${district}`,
+  }[category] || `${area || district} civic news today, Tamil Nadu updates`;
+
+  const searchQueries = `🔍 Searches: ${categorySearchQuery}, VizhiTN`;
 
   const lines = [
     searchAnchor,
@@ -238,11 +252,18 @@ export async function broadcastToSocials(post = {}, options = {}) {
     customPhotoPath = null
   } = options;
 
+  const slug = post.slug || `post-${Date.now()}`;
+
+  // Anti-duplication check via persistent dispatch ledger
+  if (post.slug && isAlreadyDispatched('facebook', post.slug)) {
+    console.log(`[MetaPoster] Post "${post.slug}" already broadcasted to Facebook previously. Skipping duplicate.`);
+    return { skippedDuplicate: true, slug: post.slug };
+  }
+
   console.log('====================================================');
   console.log(`[MetaPoster] Processing Post: "${post.title_ta || post.title_en}"`);
   console.log('====================================================');
 
-  const slug = post.slug || `post-${Date.now()}`;
   const timestamp = Date.now();
 
   // 1. Photo resolution: provided image or local fallback
@@ -329,6 +350,7 @@ export async function broadcastToSocials(post = {}, options = {}) {
     sizeKb: cardResult.sizeKb,
     facebook: null,
     instagram: null,
+    carousel: null,
     errors: []
   };
 
@@ -339,9 +361,70 @@ export async function broadcastToSocials(post = {}, options = {}) {
       caption,
       link
     });
+    if (results.facebook && !isDryRun) {
+      recordDispatch('facebook', slug, {
+        title: post.title_en || post.title_ta,
+        district: post.district_slug,
+        category: post.category_slug
+      });
+    }
   } catch (err) {
     console.error('[MetaPoster] Facebook failed:', err.message);
     results.errors.push({ platform: 'facebook', error: err.message });
+  }
+
+  // 4b. P1-3: For TN Today editorial articles, also attempt a Facebook carousel post
+  //     Instagram does NOT support carousel via basic API so we skip it there.
+  const isTnToday = post.isTnToday === true || post.category === 'tn_today' || post.category_slug === 'tn-today';
+  if (isTnToday) {
+    try {
+      console.log('[MetaPoster] TN Today detected — attempting Facebook carousel generation...');
+      const carouselDir = path.resolve('public/images/carousels');
+      const carouselSlides = await generateSocialCarousel(post, carouselDir);
+      if (carouselSlides && carouselSlides.length > 0) {
+        // Upload first carousel slide as a supplementary image post on Facebook
+        // (Full multi-image carousel requires Facebook Marketing API / Ads API which is beyond basic Graph API)
+        // We post each slide as a separate photo attached to the page's album for now.
+        const carouselUrls = [];
+        for (let slideIdx = 0; slideIdx < carouselSlides.length; slideIdx++) {
+          const slide = carouselSlides[slideIdx];
+          // carousel-generator.mjs returns file-path strings; support both paths and {buffer} objects
+          let slideBuffer = null;
+          if (slide && slide.buffer) {
+            slideBuffer = slide.buffer;
+          } else if (typeof slide === 'string' && fs.existsSync(slide)) {
+            slideBuffer = fs.readFileSync(slide);
+          }
+          if (slideBuffer) {
+            const ext = (typeof slide === 'string' && slide.endsWith('.png')) ? 'png' : 'webp';
+            const slideFilename = `carousel-${slug}-slide${slideIdx + 1}-${timestamp}.${ext}`;
+            const mimeType = ext === 'png' ? 'image/png' : 'image/webp';
+            const slideUrl = await uploadCardToStorage(slideBuffer, slideFilename, mimeType);
+            if (slideUrl) carouselUrls.push(slideUrl);
+          }
+        }
+        if (carouselUrls.length > 0) {
+          results.carousel = carouselUrls;
+          console.log(`[MetaPoster] Carousel slides uploaded: ${carouselUrls.length} images`);
+          // Post the first carousel slide as a secondary Facebook photo
+          try {
+            await postToFacebookPage({
+              imageUrl: carouselUrls[0],
+              caption: `📖 ${post.title_ta || post.title_en} — Swipe through our full explainer ⬇️\n${link}`,
+              link
+            });
+            console.log('[MetaPoster] Carousel lead slide posted to Facebook.');
+          } catch (carSlideErr) {
+            console.warn('[MetaPoster] Carousel slide Facebook post warning:', carSlideErr.message);
+          }
+        }
+      } else {
+        console.warn('[MetaPoster] Carousel generation returned no slides. Using single-image post only.');
+      }
+    } catch (carErr) {
+      console.warn('[MetaPoster] Carousel generation failed (graceful fallback to single-image):', carErr.message);
+      results.errors.push({ platform: 'carousel', error: carErr.message });
+    }
   }
 
   // 5. Post to Instagram

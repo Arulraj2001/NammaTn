@@ -96,7 +96,13 @@ JSON மட்டும் திரும்ப அனுப்பு:
 {"beat1": "...", "beat2": "...", "beat3": "..."}`.trim();
 
     // Try candidate models in reliability order
-    const CANDIDATES = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
+    const CANDIDATES = [
+      'gemini-flash-latest',
+      'gemini-flash-lite-latest',
+      'gemini-3.1-flash-lite-preview',
+      'gemini-3-flash-preview',
+      'gemini-pro-latest'
+    ];
     let raw = '';
 
     for (const model of CANDIDATES) {

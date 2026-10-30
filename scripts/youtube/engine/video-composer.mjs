@@ -326,10 +326,11 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
           ? `,fade=t=in:st=0:d=0.25,fade=t=out:st=${Math.max(0, sc.durationSec - 0.4)}:d=0.4`
           : `,fade=t=in:st=0:d=0.25`;
 
+        const inputImage = sc.imagePath || sc.slidePath;
         args = [
           '-y',
           '-loop', '1',
-          '-i', sc.imagePath,
+          '-i', inputImage,
           '-i', finalAudioPath,
           '-vf', `${vfFilter}${fadeFilter}${subFilter}`,
           '-r', '30',
