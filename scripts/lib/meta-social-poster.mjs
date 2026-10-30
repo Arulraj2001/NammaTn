@@ -362,7 +362,7 @@ export async function broadcastToSocials(post = {}, options = {}) {
       link
     });
     if (results.facebook && !isDryRun) {
-      recordDispatch('facebook', slug, {
+      await recordDispatch('facebook', slug, {
         title: post.title_en || post.title_ta,
         district: post.district_slug,
         category: post.category_slug

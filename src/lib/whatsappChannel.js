@@ -234,11 +234,16 @@ export function formatRealNewsWhatsAppBulletin(options) {
   const url = options.url || post.canonical_url || (post.slug ? `https://www.vizhitn.in/post/${post.slug}` : 'https://www.vizhitn.in');
 
   const cat = (options.category || post.category_slug || '').toLowerCase();
-  const isElectricity = cat === 'electricity' || title.includes('மின்தடை') || cleanBody.includes('மின்தடை');
-  const isRain = cat === 'rain' || title.includes('மழை') || title.includes('வானிலை') || title.includes('விடுமுறை');
-  const isScam = cat === 'scam' || cat === 'public-safety' || title.includes('மோசடி') || title.includes('SMS');
-  const isWater = cat === 'water-sanitation' || title.includes('குடிநீர்') || title.includes('சாக்கடை') || title.includes('குப்பை');
-  const isTransport = cat === 'transport' || title.includes('மெட்ரோ') || title.includes('ரயில்') || title.includes('பேருந்து');
+  const postType = (post.post_type || '').toLowerCase();
+
+  // Strict category detection: Transport must never be hijacked by Electricity keywords
+  const isTransport = cat === 'transport' || title.includes('ரயில்') || title.includes('மெட்ரோ') || title.includes('பேருந்து') || title.includes('போக்குவரத்து');
+  const isRain = !isTransport && (cat === 'rain' || cat === 'environment' || title.includes('மழை') || title.includes('வானிலை') || title.includes('விடுமுறை'));
+  const isScam = !isTransport && (cat === 'scam' || cat === 'public-safety' || title.includes('மோசடி') || title.includes('SMS'));
+  const isWater = !isTransport && (cat === 'water-sanitation' || title.includes('குடிநீர்') || title.includes('சாக்கடை') || title.includes('குப்பை'));
+  const isElectricityShutdown = !isTransport && (cat === 'electricity' || title.includes('மின்தடை')) && (postType === 'alert' || title.includes('மின்தடை'));
+  const isElectricityCivic = !isTransport && cat === 'electricity' && !isElectricityShutdown;
+  const isScheme = cat === 'government-schemes' || title.includes('திட்டம்') || title.includes('உரிமை') || title.includes('ரேஷன்') || title.includes('முகாம்');
 
   const sentences = cleanBody.split(/(?<=[.!?।])\s+/).filter(Boolean);
   let lead = sentences[0] || title;
@@ -246,42 +251,61 @@ export function formatRealNewsWhatsAppBulletin(options) {
     lead += ' ' + sentences[1];
   }
 
-  // 1. Electricity Alert
-  if (isElectricity) {
+  // 1. Metro & Railway Transport (Takes priority over electricity power block mentions)
+  if (isTransport) {
+    const isTrain = title.includes('ரயில்') || cleanBody.includes('ரயில்') || cleanBody.includes('Southern Railway') || cleanBody.includes('Line Block');
+    const isMetro = title.includes('மெட்ரோ') || cleanBody.includes('Metro');
+    const icon = isTrain ? '🚆' : (isMetro ? '🚇' : '🚌');
+    const headline = formatHeadline(title, icon);
+    const transportHelpline = isTrain ? '139 (ரயில்வே தகவல்)' : (isMetro ? '1916 (சென்னை மெட்ரோ)' : '103 (போக்குவரத்து கட்டுப்பாட்டு அறை)');
+
+    return `${headline}\n\n${lead}\n\n📍 *பாதை / பகுதி:* ${fullLocation}\n📞 *உதவி மையம்:* ${transportHelpline}\n\n🔗 *முழு விவரம் & நேர மாற்றங்கள்:*\n${url}`;
+  }
+
+  // 2. Electricity Shutdown Alert (Power Cuts)
+  if (isElectricityShutdown) {
     const headline = formatHeadline(title, '⚡');
     const timeText = extractTimeSnippet(cleanBody);
     const streets = extractStreetSnippet(cleanBody) || (areaName ? `${areaName} மற்றும் சுற்றுவட்டார பகுதிகள்` : `${districtTa} முக்கிய பகுதிகள்`);
 
-    return `${headline}\n\n${lead}\n\n⏰ *நேரம்:* ${timeText}\n📍 *பாதிக்கப்படும் பகுதிகள்:* ${streets}\n📞 *மின்தடை உதவி:* 1912 (மின்னகம்)\n\n🔗 *முழு தெரு பட்டியல் & விவரம்:*\n${url}`;
+    return `${headline}\n\n${lead}\n\n⏰ *நேரம்:* ${timeText}\n📍 *பாதிக்கப்படும் பகுதிகள்:* ${streets}\n📞 *மின்தடை உதவி:* 1912 (மின்னகம்)\n\n🔗 *முழு விவரம்:*\n${url}`;
   }
 
-  // 2. Rain / Weather / Holiday Alert
+  // 3. Electricity Civic Issues (Streetlights, wire repair, etc. - NOT a shutdown)
+  if (isElectricityCivic) {
+    const headline = formatHeadline(title, '💡');
+    return `${headline}\n\n${lead}\n\n📍 *பகுதி:* ${fullLocation}\n📞 *மின்வாரிய புகார் உதவி:* 1912 (மின்னகம்)\n\n🔗 *முழு விவரம்:*\n${url}`;
+  }
+
+  // 4. Rain / Weather / Holiday Alert
   if (isRain) {
     const headline = formatHeadline(title, '🌧️');
     return `${headline}\n\n${lead}\n\n📍 *மாவட்டம்:* ${districtTa}\n📞 *பேரிடர் கட்டுப்பாட்டு அறை:* 1077 | 1070\n\n🔗 *முழு விவரங்கள்:*\n${url}`;
   }
 
-  // 3. Cyber Scam Advisory
+  // 5. Cyber Scam Advisory
   if (isScam) {
     const headline = formatHeadline(title, '🚨');
     return `${headline}\n\n${lead}\n\n⚠️ *முக்கிய எச்சரிக்கை:*\n• சந்தேகத்திற்குரிய லிங்க்குகளை கிளிக் செய்யாதீர்கள்\n• OTP, வங்கி ரகசிய எண்களை யாரிடமும் பகிராதீர்கள்\n📞 *சைபர் கிரைம் உதவி:* 1930\n\n🔗 *முழு எச்சரிக்கை விவரம்:*\n${url}`;
   }
 
-  // 4. Water, Drainage & Sanitation
+  // 6. Water, Drainage & Sanitation
   if (isWater) {
     const icon = title.includes('குப்பை') || title.includes('தூய்மை') ? '🧹' : '💧';
     const headline = formatHeadline(title, icon);
-    const helpline = extractHelpline(cleanBody, '1913');
-    return `${headline}\n\n${lead}\n\n📍 *பகுதி:* ${fullLocation}\n📞 *மாநகராட்சி / புகார் உதவி:* ${helpline}\n\n🔗 *முழு செய்தி:*\n${url}`;
+    const isChennai = (post.district_slug || '').toLowerCase() === 'chennai';
+    const defaultHelpline = isChennai ? '1913' : '1916 (TWAD) / 1100';
+    const helpline = extractHelpline(cleanBody, defaultHelpline);
+    return `${headline}\n\n${lead}\n\n📍 *பகுதி:* ${fullLocation}\n📞 *புகார் உதவி மையம்:* ${helpline}\n\n🔗 *முழு செய்தி:*\n${url}`;
   }
 
-  // 5. Metro & Transport
-  if (isTransport) {
-    const headline = formatHeadline(title, '🚇');
-    return `${headline}\n\n${lead}\n\n📍 *பாதை / பகுதி:* ${fullLocation}\n${options.helpline ? `📞 *உதவி எண்:* ${options.helpline}\n` : ''}\n🔗 *முழு விவரம்:*\n${url}`;
+  // 7. Government Welfare Schemes & Camps
+  if (isScheme) {
+    const headline = formatHeadline(title, '📋');
+    return `${headline}\n\n${lead}\n\n📍 *மாவட்டம் / பகுதி:* ${fullLocation}\n📞 *அரசு உதவி மையம்:* 1100 (முதலமைச்சர் உதவி மையம்)\n\n🔗 *முழு செய்தி & விண்ணப்பிக்கும் விவரம்:*\n${url}`;
   }
 
-  // 6. General Civic & Schemes
+  // 8. General Civic Notice
   const headline = formatHeadline(title, '📢');
   const helpline = extractHelpline(cleanBody, options.helpline?.match(/\d{4,}/)?.[0] || '1100');
   return `${headline}\n\n${lead}\n\n📍 *பகுதி:* ${fullLocation}\n📞 *அரசு அவசர உதவி:* ${helpline}\n\n🔗 *முழு செய்தி:*\n${url}`;

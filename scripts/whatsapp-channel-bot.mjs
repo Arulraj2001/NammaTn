@@ -191,7 +191,7 @@ async function main() {
     if (!isDryRun) {
       const res = await sendToChannelDirectly(pollMessage);
       if (res) {
-        recordDispatch('whatsapp', pollSlug, { title: pollToday.question, category: 'poll' });
+        await recordDispatch('whatsapp', pollSlug, { title: pollToday.question, category: 'poll' });
       }
     }
     return;
@@ -292,7 +292,7 @@ async function main() {
   // Live broadcast
   const sendResult = await sendToChannelDirectly(formatted.message);
   if (sendResult) {
-    recordDispatch('whatsapp', selectedPost.slug, {
+    await recordDispatch('whatsapp', selectedPost.slug, {
       title: selectedPost.title_ta || selectedPost.title_en,
       district: selectedPost.district_slug,
       category: selectedPost.category_slug

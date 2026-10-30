@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 
 import { getDailyCurrentAffairsPackage, getNowIst } from '../engine/live-current-affairs-fetcher.mjs';
 import { buildLongFormBulletinScript } from '../engine/bulletin-script-builder.mjs';
@@ -38,8 +38,15 @@ function synthesizeSpeech(text, outputPath, voice = 'ta-IN-PallaviNeural') {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
   const cleanText = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-  const cmd = `"${python}" -m edge_tts --voice "${voice}" --rate="+4%" --text "${cleanText.replace(/"/g, '\\"')}" --write-media "${outputPath}"`;
-  execSync(cmd, { stdio: 'pipe', timeout: 30000 });
+  const tempTextFile = path.join(dir, `tts-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.txt`);
+  fs.writeFileSync(tempTextFile, cleanText, 'utf-8');
+
+  try {
+    const args = ['-m', 'edge_tts', '--voice', voice, '--rate=+4%', '--file', tempTextFile, '--write-media', outputPath];
+    execFileSync(python, args, { stdio: 'pipe', timeout: 45000, windowsHide: true });
+  } finally {
+    try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch (_) {}
+  }
 
   if (!fs.existsSync(outputPath)) {
     throw new Error(`TTS synthesis failed to write file: ${outputPath}`);

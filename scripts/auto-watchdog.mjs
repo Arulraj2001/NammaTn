@@ -64,10 +64,11 @@ function istDayBounds() {
 }
 
 async function initSupabase() {
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co';
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!process.env.GEMINI_API_KEY) {
-    console.error('[FATAL] GEMINI_API_KEY is required for recovery backfills.');
+  const geminiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!geminiKey) {
+    console.error('[FATAL] GEMINI_API_KEY (or NEW_GEMINI_API_KEY) is required for recovery backfills.');
     process.exit(1);
   }
   if (!url || !key) {

@@ -210,18 +210,9 @@ async function main() {
   // Autonomous Self-Healing: Verify if any earlier slot scheduled for today was missed!
   if (!force && !isDryRun) {
     const expected = getExpectedUploadsSoFar(todayIst);
+    // Past 01:30 PM IST (810 mins): verify daily live current affairs short was completed
     if (now.totalMinutes >= 810) {
-      expected.push({ format: 'live-shorts', title: 'Daily Live Civic Short', time_ist: '01:30 PM' });
-    }
-    // Also include daily podcast if after 05:55 PM IST (1072 minutes) and in database or calendar
-    if (now.totalMinutes >= 1072) {
-      let ep = null;
-      try { ep = await getEpisodeFromDatabase(todayIst); } catch (_) {}
-      const hasPodcast = Boolean(ep || getScheduledUploadForSlot('podcast', todayIst));
-      if (hasPodcast) {
-        const pTitle = ep?.topic_title || ep?.title_ta || ep?.title_en || 'Daily Vizhi Uncut Podcast';
-        expected.push({ format: 'podcast', title: pTitle, time_ist: '05:55 PM' });
-      }
+      expected.push({ format: 'current-affairs-shorts', title: 'Daily Current Affairs Exam Short', time_ist: '01:00 PM' });
     }
     for (const item of expected) {
       const status = await isBroadcastCompletedToday(item.format, todayIst);

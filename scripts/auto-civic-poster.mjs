@@ -144,23 +144,26 @@ async function validateOfficialSources(value, postContext = {}) {
     } catch (_) { }
   }
 
-  // Domain authority fallback based on category / department if empty
+  // Domain authority fallback based on category / department / district if empty
   if (valid.length === 0) {
     const combined = `${value || ''} ${postContext.category_slug || ''} ${postContext.assigned_department || ''}`.toLowerCase();
+    const district = (postContext.district_slug || '').toLowerCase().trim();
+    const isChennai = district === 'chennai';
+
     if (combined.includes('electricity') || combined.includes('tangedco') || combined.includes('tneb') || combined.includes('1912')) {
       valid.push('https://www.tnebltd.gov.in');
     } else if (combined.includes('metrowater') || combined.includes('twad') || combined.includes('water')) {
-      valid.push('https://chennaimetrowater.tn.gov.in');
+      valid.push(isChennai ? 'https://chennaimetrowater.tn.gov.in' : 'https://www.twadboard.tn.gov.in');
     } else if (combined.includes('corporation') || combined.includes('gcc') || combined.includes('1913')) {
-      valid.push('https://chennaicorporation.gov.in');
-    } else if (combined.includes('transport') || combined.includes('cmrl') || combined.includes('metro')) {
+      valid.push(isChennai ? 'https://chennaicorporation.gov.in' : (district ? `https://${district}.nic.in` : 'https://www.tn.gov.in'));
+    } else if (combined.includes('metro') && isChennai) {
       valid.push('https://cmrl.in');
-    } else if (combined.includes('railway') || combined.includes('train') || combined.includes('139')) {
+    } else if (combined.includes('railway') || combined.includes('train') || combined.includes('139') || combined.includes('transport')) {
       valid.push('https://sr.indianrailways.gov.in');
     } else if (combined.includes('rain') || combined.includes('weather') || combined.includes('imd')) {
       valid.push('https://mausam.imd.gov.in');
     } else {
-      valid.push('https://www.tn.gov.in');
+      valid.push(district ? `https://${district}.nic.in` : 'https://www.tn.gov.in');
     }
   }
 
@@ -636,35 +639,11 @@ No conversational intro, no commentary outside the JSON array.
     }
   }
 
-  // Phase 2: If grounding exhausted or unavailable, fall back to standard JSON generation
+  // Strict Zero-Fallback Policy: Never hallucinate civic events or fake power cuts offline
   if (!rawResponseText) {
-    console.warn(`[GEMINI FALLBACK] Grounding unavailable or quota limited. Retrying standard generation with JSON mode across candidate models...`);
-    for (const modelName of CANDIDATE_MODELS) {
-      try {
-        console.log(`[GEMINI FALLBACK] Attempting model: ${modelName} (standard JSON mode)...`);
-        const response = await ai.models.generateContent({
-          model: modelName,
-          contents: masterPrompt,
-          config: {
-            responseMimeType: 'application/json',
-          }
-        });
-
-        rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        if (rawResponseText) {
-          console.log(`[GEMINI ✓] Successfully received standard response from ${modelName}`);
-          break;
-        }
-      } catch (stdErr) {
-        console.warn(`[GEMINI WARN] Standard generation on ${modelName} failed: ${stdErr.message}`);
-        lastError = stdErr;
-      }
-    }
-  }
-
-  if (!rawResponseText) {
-    console.error(`[FATAL] All candidate Gemini models failed. Last error: ${lastError?.message}`);
-    process.exit(1);
+    console.warn(`[ZERO-FALLBACK POLICY] Live Google Search Grounding was unavailable or quota-limited (last error: ${lastError?.message}).`);
+    console.warn(`[ZERO-FALLBACK POLICY] In strict accordance with the Zero-Hallucination rule, exiting cleanly with 0 posts published.`);
+    return;
   }
 
   console.log(`[RAW RESPONSE LENGTH]: ${rawResponseText.length} characters`);
@@ -845,7 +824,7 @@ No conversational intro, no commentary outside the JSON array.
     const location_text = (raw.location_text || (area_name ? `${area_name}, ${district_slug}` : district_slug)).trim();
     const sourceUrls = await validateOfficialSources(
       Array.isArray(raw.official_sources) ? raw.official_sources.join('\n') : raw.official_sources,
-      { category_slug, assigned_department }
+      { category_slug, assigned_department, district_slug }
     );
     if (sourceUrls.length === 0) {
       console.warn(`[SKIP] ${title_en || slug}: no reachable approved official source URL.`);
@@ -1072,52 +1051,7 @@ No conversational intro, no commentary outside the JSON array.
       } catch (_) { }
     }
 
-    // --- STEP 9: SMART CURATION BROADCAST TO VIZHITN WHATSAPP CHANNEL ---
-    try {
-      if (validPosts.length > 0) {
-        // Exclude repetitive cyber scam warnings from WhatsApp Channel to protect subscriber retention
-        const whatsappPool = validPosts.filter(p => {
-          const t = (p.title_en || '').toLowerCase();
-          return !(p.category_slug === 'public-safety' && (t.includes('scam') || t.includes('fraud') || t.includes('fake bill') || t.includes('job') || t.includes('sms')));
-        });
-        const candidatePool = whatsappPool.length > 0 ? whatsappPool : validPosts;
-
-        // Sort candidate posts by urgency, real utility, and category
-        const sortedForWhatsApp = [...candidatePool].sort((a, b) => {
-          const urgencyRank = { critical: 4, high: 3, medium: 2, low: 1 };
-          const rankA = urgencyRank[a.urgency_level] || 1;
-          const rankB = urgencyRank[b.urgency_level] || 1;
-          if (rankA !== rankB) return rankB - rankA;
-
-          // Utility priority: Electricity (power cut street lists), Water, Transport, Schemes are highest value for daily readers
-          const topCats = ['electricity', 'water-sanitation', 'transport', 'government-schemes', 'education', 'local-development'];
-          const catA = topCats.indexOf(a.category_slug) !== -1 ? (topCats.length - topCats.indexOf(a.category_slug)) : 0;
-          const catB = topCats.indexOf(b.category_slug) !== -1 ? (topCats.length - topCats.indexOf(b.category_slug)) : 0;
-          if (catA !== catB) return catB - catA;
-
-          const typeRank = { alert: 3, local_update: 2, complaint: 1 };
-          return (typeRank[b.post_type] || 0) - (typeRank[a.post_type] || 0);
-        });
-
-        const topAlert = sortedForWhatsApp[0];
-        console.log(`[WHATSAPP] 📢 Broadcasting high-utility civic dispatch: "${topAlert.title_ta || topAlert.title_en}" (${topAlert.urgency_level}) to channel...`);
-
-        const { postToWhatsAppChannel } = await import('./lib/whatsappChannel.mjs');
-        await postToWhatsAppChannel({
-          title: topAlert.title_ta || topAlert.title_en,
-          summary: topAlert.content_ta || topAlert.content_en,
-          url: topAlert.canonical_url,
-          category: topAlert.category_slug,
-          urgency: topAlert.urgency_level,
-          district: topAlert.district_slug,
-          helpline: topAlert.assigned_department,
-          image: topAlert.media_urls?.[0] || null,
-          post: topAlert
-        });
-      }
-    } catch (waErr) {
-      console.warn(`[WHATSAPP WARN] Channel broadcast warning: ${waErr.message}`);
-    }
+    // (Step 9 WhatsApp direct dispatch removed; dispatches are strictly managed by Step 12 via whatsapp-channel-bot.mjs and dispatch-ledger)
 
     // --- STEP 9B: SMART WEB PUSH BROADCAST TO SUBSCRIBED BROWSERS ---
     try {

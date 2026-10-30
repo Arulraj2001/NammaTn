@@ -2,17 +2,36 @@
 /**
  * VizhiTN Autonomous Cross-Platform Dispatch Ledger
  * Enforces 100% Zero-Duplicate and Anti-Stale Policies across all publishing channels.
- * Tracks every message sent to WhatsApp, Twitter, Facebook, and Instagram.
- * Already-broadcasted posts are NEVER re-dispatched.
+ * Backed by Supabase `site_settings` for cross-runner persistence in GitHub Actions,
+ * with local JSON fallback.
  */
 
 import fs from 'fs';
 import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+
+try {
+  if (typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile('.env.local');
+  }
+} catch (_) {}
 
 const LEDGER_DIR = path.resolve('scripts/data');
 const LEDGER_FILE = path.join(LEDGER_DIR, 'broadcast-ledger.json');
 
-function ensureLedgerExists() {
+const supabaseUrl = process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
+
+let supabase = null;
+if (supabaseUrl && supabaseKey) {
+  try {
+    supabase = createClient(supabaseUrl, supabaseKey);
+  } catch (_) {}
+}
+
+let inMemoryEntries = [];
+
+function ensureLocalLedgerExists() {
   if (!fs.existsSync(LEDGER_DIR)) {
     fs.mkdirSync(LEDGER_DIR, { recursive: true });
   }
@@ -21,8 +40,8 @@ function ensureLedgerExists() {
   }
 }
 
-function readLedger() {
-  ensureLedgerExists();
+function readLocalLedger() {
+  ensureLocalLedgerExists();
   try {
     const raw = fs.readFileSync(LEDGER_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
@@ -32,14 +51,55 @@ function readLedger() {
   }
 }
 
-function writeLedger(entries) {
-  ensureLedgerExists();
+function writeLocalLedger(entries) {
+  ensureLocalLedgerExists();
   try {
     fs.writeFileSync(LEDGER_FILE, JSON.stringify({ entries: entries.slice(-1000) }, null, 2), 'utf-8');
   } catch (err) {
-    console.warn('[LEDGER WARN] Failed to save dispatch ledger:', err.message);
+    console.warn('[LEDGER WARN] Failed to save local dispatch ledger:', err.message);
   }
 }
+
+// ── Top-Level Sync from Supabase site_settings ─────────────────────────────
+try {
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('key, value')
+      .eq('category', 'dispatch_ledger');
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      data.forEach(row => {
+        try {
+          const val = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+          const [plat, ...rest] = (row.key || '').split(':');
+          const slug = rest.join(':') || val?.slug;
+          if (plat && slug) {
+            inMemoryEntries.push({
+              platform: plat.toLowerCase().trim(),
+              slug: slug.toLowerCase().trim(),
+              title: val?.title || '',
+              district: val?.district || '',
+              category: val?.category || '',
+              dispatched_at: val?.time || val?.dispatched_at || new Date().toISOString()
+            });
+          }
+        } catch (_) {}
+      });
+      console.log(`[LEDGER SYNC ✓] Loaded ${inMemoryEntries.length} historical dispatches from Supabase cloud ledger.`);
+    }
+  }
+} catch (syncErr) {
+  console.warn('[LEDGER WARN] Supabase sync notice:', syncErr.message);
+}
+
+// Merge any local ledger entries
+const localEntries = readLocalLedger();
+localEntries.forEach(le => {
+  if (!inMemoryEntries.some(e => e.platform === le.platform && e.slug === le.slug)) {
+    inMemoryEntries.push(le);
+  }
+});
 
 /**
  * Checks if a post slug was already broadcast to a specific platform.
@@ -49,40 +109,64 @@ function writeLedger(entries) {
  */
 export function isAlreadyDispatched(platform, slug) {
   if (!slug) return false;
-  const entries = readLedger();
   const cleanSlug = slug.toLowerCase().trim();
   const plat = platform.toLowerCase().trim();
-  return entries.some(e => e.platform === plat && e.slug.toLowerCase().trim() === cleanSlug);
+  return inMemoryEntries.some(e => e.platform === plat && e.slug.toLowerCase().trim() === cleanSlug);
 }
 
 /**
- * Records a successful broadcast in the persistent ledger.
+ * Records a successful broadcast in the persistent ledger (both Supabase & local disk).
  * @param {string} platform - 'whatsapp' | 'twitter' | 'facebook' | 'instagram'
  * @param {string} slug - Unique post slug
  * @param {object} meta - Additional metadata { title, district, category }
  */
-export function recordDispatch(platform, slug, meta = {}) {
+export async function recordDispatch(platform, slug, meta = {}) {
   if (!slug) return;
-  const entries = readLedger();
   const cleanSlug = slug.toLowerCase().trim();
   const plat = platform.toLowerCase().trim();
 
   // Avoid duplicate entries in ledger itself
-  if (entries.some(e => e.platform === plat && e.slug.toLowerCase().trim() === cleanSlug)) {
+  if (inMemoryEntries.some(e => e.platform === plat && e.slug.toLowerCase().trim() === cleanSlug)) {
     return;
   }
 
-  entries.push({
+  const newEntry = {
     platform: plat,
     slug: cleanSlug,
     title: meta.title || '',
     district: meta.district || '',
     category: meta.category || '',
     dispatched_at: new Date().toISOString()
-  });
+  };
 
-  writeLedger(entries);
-  console.log(`[LEDGER ✓] Recorded "${cleanSlug}" as dispatched to [${plat.toUpperCase()}]. Total logged: ${entries.length}`);
+  inMemoryEntries.push(newEntry);
+  writeLocalLedger(inMemoryEntries);
+
+  // Persist to Supabase site_settings for cross-runner persistence in GitHub Actions
+  if (supabase) {
+    try {
+      const dbKey = `${plat}:${cleanSlug}`;
+      const { data: existing } = await supabase
+        .from('site_settings')
+        .select('id, key')
+        .eq('key', dbKey)
+        .maybeSingle();
+
+      if (!existing) {
+        await supabase
+          .from('site_settings')
+          .insert({
+            key: dbKey,
+            category: 'dispatch_ledger',
+            value: JSON.stringify(newEntry)
+          });
+      }
+    } catch (dbErr) {
+      console.warn(`[LEDGER WARN] Failed to persist dispatch to Supabase: ${dbErr.message}`);
+    }
+  }
+
+  console.log(`[LEDGER ✓] Recorded "${cleanSlug}" as dispatched to [${plat.toUpperCase()}]. Total logged: ${inMemoryEntries.length}`);
 }
 
 /**
@@ -122,4 +206,3 @@ export function isEventStale(dateString) {
   } catch (_) {}
   return false;
 }
-

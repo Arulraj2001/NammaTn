@@ -95,7 +95,7 @@ function isApprovedOfficialUrl(urlString) {
   }
 }
 
-async function validateOfficialSources(value) {
+async function validateOfficialSources(value, postContext = {}) {
   const rawUrls = extractUrls(value);
   const candidates = [...new Set(rawUrls.filter(isApprovedOfficialUrl))];
   const valid = [];
@@ -125,19 +125,22 @@ async function validateOfficialSources(value) {
     } catch (_) {}
   }
 
-  // Domain authority fallback based on topic if all failed
+  // Domain authority fallback based on topic / district if all failed
   if (valid.length === 0) {
     const text = String(value || '').toLowerCase();
-    if (text.includes('cmrl') || text.includes('metro')) {
+    const district = (postContext.district_slug || '').toLowerCase().trim();
+    const isChennai = district === 'chennai';
+
+    if (text.includes('cmrl') || (text.includes('metro') && isChennai)) {
       valid.push('https://cmrl.in');
     } else if (text.includes('railway') || text.includes('southern railway') || text.includes('vande bharat')) {
       valid.push('https://sr.indianrailways.gov.in');
     } else if (text.includes('tangedco') || text.includes('tneb') || text.includes('power')) {
       valid.push('https://www.tnebltd.gov.in');
-    } else if (text.includes('corporation') || text.includes('gcc') || text.includes('chennai')) {
-      valid.push('https://chennaicorporation.gov.in');
+    } else if (text.includes('corporation') || text.includes('gcc') || isChennai) {
+      valid.push(isChennai ? 'https://chennaicorporation.gov.in' : (district ? `https://${district}.nic.in` : 'https://www.tn.gov.in'));
     } else {
-      valid.push('https://www.tn.gov.in');
+      valid.push(district && district !== 'tamil-nadu' ? `https://${district}.nic.in` : 'https://www.tn.gov.in');
     }
   }
 
@@ -462,35 +465,11 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     }
   }
 
-  // Phase 2: If grounding exhausted or unavailable, fall back to standard JSON generation
+  // Strict Zero-Fallback Policy: Never hallucinate state editorial news or G.O.s offline
   if (!rawResponseText) {
-    console.warn(`[GEMINI FALLBACK] Grounding unavailable or quota limited. Retrying standard generation across candidate models...`);
-    for (const modelName of CANDIDATE_MODELS) {
-      try {
-        console.log(`[GEMINI FALLBACK] Attempting ${modelName} (standard JSON mode)...`);
-        const response = await ai.models.generateContent({
-          model: modelName,
-          contents: masterPrompt,
-          config: {
-            responseMimeType: 'application/json',
-          }
-        });
-
-        rawResponseText = response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        if (rawResponseText) {
-          console.log(`[GEMINI ✓] Received standard response from ${modelName}`);
-          successfulModel = modelName;
-          break;
-        }
-      } catch (stdErr) {
-        console.warn(`[GEMINI WARN] Standard generation on ${modelName} failed: ${stdErr.message}`);
-      }
-    }
-  }
-
-  if (!rawResponseText) {
-    console.error('[FATAL] All candidate Gemini models failed to generate content.');
-    process.exit(1);
+    console.warn(`[ZERO-FALLBACK POLICY] Live Google Search Grounding was unavailable or quota-limited.`);
+    console.warn(`[ZERO-FALLBACK POLICY] In strict accordance with the Zero-Hallucination rule, exiting cleanly with 0 articles published.`);
+    return;
   }
 
   // --- STEP 4: PARSE JSON WITH MULTI-PASS RECOVERY ---
@@ -838,24 +817,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
     console.warn(`[GOOGLE PING WARN] ${pingErr.message}`);
   }
 
-  // --- STEP 9: INSTANT BROADCAST TO VIZHITN WHATSAPP CHANNEL ---
-  try {
-    const { postToWhatsAppChannel } = await import('./lib/whatsappChannel.mjs');
-    console.log(`[WHATSAPP] Broadcasting article to official WhatsApp Channel...`);
-    const broadcastTitle = articleObj.title_ta || articleObj.title;
-    const broadcastSummary = articleObj.subtitle_ta || articleObj.summary_ta || articleObj.subtitle || articleObj.summary;
-    await postToWhatsAppChannel({
-      title: broadcastTitle,
-      summary: broadcastSummary,
-      url: publishedUrl,
-      category: articleObj.category,
-      urgency: 'normal',
-      district: articleObj.district_name || articleObj.district_slug,
-      image: articleObj.featured_image || null
-    });
-  } catch (waErr) {
-    console.warn(`[WHATSAPP WARN] Channel broadcast warning: ${waErr.message}`);
-  }
+  // (Step 9 WhatsApp direct dispatch removed; all WhatsApp broadcasts are strictly managed by whatsapp-channel-bot.mjs via dispatch-ledger)
 
   // --- STEP 10: BROADCAST TO META SOCIALS (FACEBOOK & INSTAGRAM) ---
   const hasMetaCreds = Boolean(process.env.META_PAGE_ID && process.env.META_PAGE_ACCESS_TOKEN);

@@ -343,7 +343,7 @@ export async function postToTwitter(post, options = {}) {
     const liveUrl = postedTweetId ? `https://x.com/Vizhitn/status/${postedTweetId}` : 'https://x.com/Vizhitn';
     console.log(`\n🎉 Thread live at: ${liveUrl}`);
     if (post?.slug && !isDryRun) {
-      recordDispatch('twitter', post.slug, {
+      await recordDispatch('twitter', post.slug, {
         title: post.title_en || post.title_ta,
         district: post.district_slug,
         category: post.category_slug
@@ -351,10 +351,6 @@ export async function postToTwitter(post, options = {}) {
     }
     await browser.close();
     return { success: true, tweetId: postedTweetId, url: liveUrl, thread };
-
-    console.log('✅ Automated Twitter Thread completed successfully!');
-    await browser.close();
-    return { success: true, thread };
   } catch (err) {
     await browser.close().catch(() => {});
     throw err;
