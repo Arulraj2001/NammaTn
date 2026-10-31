@@ -15,6 +15,7 @@ import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleLongFormVideo, getAudioDuration } from '../engine/video-composer.mjs';
 import { generateCurrentAffairsThumbnail } from '../engine/thumbnail-engine.mjs';
 import { uploadToYouTube, setYouTubeThumbnail } from '../engine/youtube-client.mjs';
+import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -32,23 +33,40 @@ function getPythonBinary() {
   return 'python';
 }
 
-function synthesizeSpeech(text, outputPath, voice = 'ta-IN-PallaviNeural') {
-  const python = getPythonBinary();
+async function synthesizeSpeech(text, outputPath, voice = 'ta-IN-PallaviNeural') {
+  const cleanText = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  const cleanText = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  // 1. Prioritize Google Gemini Lifelike Neural Voice (via NEW_GEMINI_API_KEY)
+  const geminiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (geminiKey) {
+    try {
+      console.log(`[TTS] Synthesizing via Google Gemini Lifelike Voice for: "${cleanText.slice(0, 40)}..."`);
+      await synthesizeGeminiSpeech(cleanText, outputPath, { voice: 'kavitha' });
+      if (fs.existsSync(outputPath) && fs.statSync(outputPath).size > 1000) {
+        console.log(`[TTS ✓] Gemini speech generated successfully: ${path.basename(outputPath)}`);
+        return outputPath;
+      }
+    } catch (geminiErr) {
+      console.warn(`[TTS WARN] Gemini TTS unavailable (${geminiErr.message}). Seamlessly falling back to Edge-TTS...`);
+    }
+  }
+
+  // 2. Safe Fallback to Microsoft Edge-TTS
+  const python = getPythonBinary();
   const tempTextFile = path.join(dir, `tts-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.txt`);
   fs.writeFileSync(tempTextFile, cleanText, 'utf-8');
 
   try {
     const args = ['-m', 'edge_tts', '--voice', voice, '--rate=+4%', '--file', tempTextFile, '--write-media', outputPath];
     execFileSync(python, args, { stdio: 'pipe', timeout: 45000, windowsHide: true });
+    console.log(`[TTS ✓] Edge-TTS speech generated: ${path.basename(outputPath)}`);
   } finally {
     try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch (_) {}
   }
 
-  if (!fs.existsSync(outputPath)) {
+  if (!fs.existsSync(outputPath) || fs.statSync(outputPath).size === 0) {
     throw new Error(`TTS synthesis failed to write file: ${outputPath}`);
   }
   return outputPath;
@@ -103,7 +121,7 @@ async function main() {
   renderHtmlToImage(introSlideHtml, introSlidePath, { width: 1920, height: 1080 });
 
   const introAudioPath = path.join(sessionDir, 'audio_0_intro.mp3');
-  synthesizeSpeech(scriptPkg.intro.text, introAudioPath);
+  await synthesizeSpeech(scriptPkg.intro.text, introAudioPath);
   const introDuration = getAudioDuration(introAudioPath);
 
   chapters.push({
@@ -133,7 +151,7 @@ async function main() {
     renderHtmlToImage(slideHtml, slidePath, { width: 1920, height: 1080 });
 
     const audioPath = path.join(sessionDir, `audio_${i + 1}.mp3`);
-    synthesizeSpeech(seg.spokenText, audioPath);
+    await synthesizeSpeech(seg.spokenText, audioPath);
     const duration = getAudioDuration(audioPath);
 
     chapters.push({
@@ -159,7 +177,7 @@ async function main() {
   renderHtmlToImage(outroSlideHtml, outroSlidePath, { width: 1920, height: 1080 });
 
   const outroAudioPath = path.join(sessionDir, 'audio_outro.mp3');
-  synthesizeSpeech(scriptPkg.outro.text, outroAudioPath);
+  await synthesizeSpeech(scriptPkg.outro.text, outroAudioPath);
   const outroDuration = getAudioDuration(outroAudioPath);
 
   chapters.push({

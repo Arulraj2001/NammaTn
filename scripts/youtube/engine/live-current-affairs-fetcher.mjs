@@ -104,7 +104,15 @@ function safeJsonParse(raw) {
   try {
     return JSON.parse(raw);
   } catch (err) {
-    const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+    let cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+    // Strip comments
+    cleaned = cleaned.replace(/\/\/[^\n]*/g, '');
+    // Fix unquoted keys like _comment: or key:
+    cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, (match, p1, p2) => `${p1}"${p2}":`);
+    cleaned = cleaned.replace(/""([^"]+)""\s*:/g, '"$1":');
+    // Remove trailing commas
+    cleaned = cleaned.replace(/,\s*([}\]])/g, '$1');
+
     try {
       return JSON.parse(cleaned);
     } catch (_) {
@@ -137,6 +145,7 @@ Select exactly 8 to 10 of the most significant, fact-checked news events that ar
 
 CRITICAL JSON RULE:
 Never use internal double quotes (\") inside Tamil text strings. If you need quotes around scheme names or titles, always use single quotes ('...').
+Never include commentary or unquoted keys like _comment. Return strictly valid JSON.
 
 Distribute them across these 6 syllabus categories:
 1. "government_schemes" (Tamil Nadu Govt Schemes, Cabinet Orders, Subsidies, Welfare)
@@ -175,7 +184,12 @@ Output format MUST be valid JSON:
 }
 `;
 
-  const CANDIDATES = ['gemini-flash-lite-latest', 'gemini-flash-latest'];
+  const CANDIDATES = [
+    'gemini-flash-lite-latest',
+    'gemini-3.1-flash-lite-preview',
+    'gemini-flash-latest',
+    'gemini-3.8-flash'
+  ];
 
   for (const apiKey of API_KEYS) {
     for (const model of CANDIDATES) {
@@ -184,7 +198,7 @@ Output format MUST be valid JSON:
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          signal: AbortSignal.timeout(20000),
+          signal: AbortSignal.timeout(50000),
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
