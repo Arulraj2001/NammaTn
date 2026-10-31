@@ -42,7 +42,7 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'current-affairs-shorts', 'current-affairs-bulletin'].includes(format);
+  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'current-affairs-shorts', 'current-affairs-bulletin', 'quiz-shorts', 'emergency-alert'].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -67,7 +67,9 @@ async function handleSlot(format, isDryRun, force) {
     'live-shorts': { script: 'scripts/youtube/pipelines/generate-live-shorts.mjs', extraArgs: [] },
     'utility-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=utility'] },
     'scam-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scam'] },
-    'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scheme'] },
+    'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-scheme-shorts.mjs', extraArgs: [] },
+    'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: [] },
+    'emergency-alert': { script: 'scripts/youtube/pipelines/generate-emergency-alert.mjs', extraArgs: [] },
     'rights-shorts': { script: 'scripts/youtube/pipelines/generate-rights-shorts.mjs', extraArgs: [] }
   };
 
