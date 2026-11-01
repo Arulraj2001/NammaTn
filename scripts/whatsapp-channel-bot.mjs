@@ -238,9 +238,13 @@ async function main() {
     if (isAlreadyDispatched('whatsapp', p.slug)) {
       return false;
     }
-    // Check if event is stale (older than today)
-    if (isEventStale(p.created_date)) {
-      return false;
+    // Check if event is stale (for time-sensitive alerts with past dates)
+    if (p.post_type === 'alert' && isEventStale(p.created_date)) {
+      const fullText = `${p.title_en || ''} ${p.title_ta || ''} ${p.content_en || ''}`;
+      const isAdvanceNotice = fullText.includes('Tomorrow') || fullText.includes('நாளை') || fullText.includes(now.date);
+      if (!isAdvanceNotice) {
+        return false;
+      }
     }
     return true;
   });

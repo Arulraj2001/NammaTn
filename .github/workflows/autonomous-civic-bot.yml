@@ -52,7 +52,19 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Broadcast Dedicated Afternoon Community Poll to WhatsApp Channel
+        if: github.event.schedule == '30 8 * * *' || github.event.inputs.pulse == 'poll'
+        env:
+          WHATSAPP_SESSION: ${{ secrets.WHATSAPP_SESSION }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          NEXT_PUBLIC_VITE_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_VITE_SUPABASE_URL || secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          echo "Broadcasting dedicated 2:00 PM Afternoon Community Poll to WhatsApp Channel..."
+          node scripts/whatsapp-channel-bot.mjs --slot=poll
+
       - name: Run Autonomous Civic Poster
+        if: github.event.schedule != '30 8 * * *' && github.event.inputs.pulse != 'poll'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NEW_GEMINI_API_KEY: ${{ secrets.NEW_GEMINI_API_KEY }}
@@ -78,8 +90,19 @@ jobs:
             node scripts/auto-civic-poster.mjs
           fi
 
+      - name: Guaranteed Fallback WhatsApp Channel Dispatch
+        if: always() && github.event.schedule != '30 8 * * *' && github.event.inputs.pulse != 'poll'
+        env:
+          WHATSAPP_SESSION: ${{ secrets.WHATSAPP_SESSION }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          NEXT_PUBLIC_VITE_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_VITE_SUPABASE_URL || secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          echo "Executing guaranteed standalone WhatsApp Channel dispatch check..."
+          node scripts/whatsapp-channel-bot.mjs --slot=auto
+
       - name: Ping Search Engines via IndexNow
-        if: success()
+        if: success() && github.event.schedule != '30 8 * * *' && github.event.inputs.pulse != 'poll'
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

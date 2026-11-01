@@ -3,6 +3,9 @@
 // custom thumbnail upload, and auto-pinned engagement comment.
 
 import fs from 'fs';
+import { shareYouTubeBroadcastToWhatsApp } from './whatsapp-youtube-sharer.mjs';
+
+export { shareYouTubeBroadcastToWhatsApp };
 
 /**
  * Exchanges a persistent OAuth2 refresh token for a fresh access token
@@ -56,7 +59,8 @@ export async function uploadToYouTube({
   tags = [],
   categoryId = '25',
   privacyStatus = 'public',
-  isShort = false
+  isShort = false,
+  autoShareToWhatsApp = true
 }) {
   if (!fs.existsSync(videoFilePath)) {
     throw new Error(`Video file does not exist: ${videoFilePath}`);
@@ -75,9 +79,26 @@ export async function uploadToYouTube({
     console.log(`Tags: ${tags.join(', ')}`);
     console.log(`Privacy: ${privacyStatus}`);
     console.log(`AI Disclosure: Synthetic Voice & Visuals Tagged (2026 Policy Compliant)`);
+    const mockUrl = isShort ? 'https://youtube.com/shorts/DRY_RUN' : 'https://youtube.com/watch?v=DRY_RUN';
+
+    if (autoShareToWhatsApp !== false) {
+      try {
+        await shareYouTubeBroadcastToWhatsApp({
+          videoId: 'DRY_RUN_MOCK_ID',
+          videoUrl: mockUrl,
+          title,
+          description,
+          isShort,
+          dryRun: true
+        });
+      } catch (waErr) {
+        console.warn(`[YOUTUBE -> WHATSAPP WARN] Auto-share dry-run error: ${waErr.message}`);
+      }
+    }
+
     return {
       videoId: 'DRY_RUN_MOCK_ID',
-      videoUrl: isShort ? 'https://youtube.com/shorts/DRY_RUN' : 'https://youtube.com/watch?v=DRY_RUN',
+      videoUrl: mockUrl,
       dryRun: true
     };
   }
@@ -224,6 +245,22 @@ export async function uploadToYouTube({
   const videoUrl = isShort ? `https://youtube.com/shorts/${videoId}` : `https://youtube.com/watch?v=${videoId}`;
 
   console.log(`[YOUTUBE SUCCESS] Video uploaded successfully: ${videoUrl}`);
+
+  if (autoShareToWhatsApp !== false) {
+    try {
+      await shareYouTubeBroadcastToWhatsApp({
+        videoId,
+        videoUrl,
+        title: safeTitle,
+        description: safeDescription,
+        isShort,
+        dryRun: false
+      });
+    } catch (waErr) {
+      console.warn(`[YOUTUBE -> WHATSAPP WARN] Auto-share live error: ${waErr.message}`);
+    }
+  }
+
   return { videoId, videoUrl, dryRun: false };
 }
 
