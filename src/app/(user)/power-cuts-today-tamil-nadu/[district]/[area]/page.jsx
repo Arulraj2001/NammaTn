@@ -20,6 +20,9 @@ export async function generateMetadata({ params }) {
   const area = getPowerCutArea(district.slug, params.area);
   if (!area) notFound();
 
+  const posts = await fetchAreaElectricityPosts(district.slug, area.name_en, area.slug);
+  const hasActiveOutage = posts && posts.length > 0;
+
   const todayFormatted = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   const title = `${area.name_en} Power Cut Today (${todayFormatted}): Scheduled EB Shutdown Timings & Streets | ${area.name_ta || area.name_en} மின்தடை`;
   const description = `Live ${area.name_en} (${district.name_en}) scheduled power shutdown timings, affected feeder lines and streets today (${todayFormatted}). Emergency TANGEDCO Minnalagam helpline: 1912.`;
@@ -68,9 +71,14 @@ export async function generateMetadata({ params }) {
       images: [ogImageUrl],
     },
     robots: {
-      index: true,
+      index: hasActiveOutage,
       follow: true,
-      googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+      googleBot: {
+        index: hasActiveOutage,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }

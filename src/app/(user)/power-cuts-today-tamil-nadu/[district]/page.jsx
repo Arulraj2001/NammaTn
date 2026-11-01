@@ -17,6 +17,9 @@ export async function generateMetadata({ params }) {
   const district = getDistrictBySlug(params.district);
   if (!district) notFound();
 
+  const posts = await fetchDistrictElectricityPosts(district.slug);
+  const hasActiveOutage = posts && posts.length > 0;
+
   const todayFormatted = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   const title = `${district.name_en} Power Cut Today (${todayFormatted}): Scheduled EB Shutdown Timings & Streets | ${district.name_ta} மின்தடை`;
   const description = `Live ${district.name_en} TANGEDCO scheduled power shutdown timings, affected substations, and streets today (${todayFormatted}). Emergency EB helpline: 1912.`;
@@ -65,9 +68,14 @@ export async function generateMetadata({ params }) {
       images: [ogImageUrl],
     },
     robots: {
-      index: true,
+      index: hasActiveOutage,
       follow: true,
-      googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+      googleBot: {
+        index: hasActiveOutage,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }

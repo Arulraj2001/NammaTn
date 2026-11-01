@@ -36,13 +36,16 @@ export default async function sitemap() {
 
   const issueDates = new Map();    // "city:issue" -> last modified date
   const districtDates = new Map(); // city.slug     -> last modified date
+  const powerCutDistrictDates = new Map(); // district.slug -> last modified date
+  const powerCutAreaDates = new Map();     // "district:area" -> last modified date
+  const holidayDistrictDates = new Map();  // district.slug -> last modified date
 
   try {
     const supabase = createServerSupabase();
     if (supabase) {
       const { data: activePairs, error } = await supabase
         .from('post')
-        .select('district_slug, category_slug, created_date, updated_date')
+        .select('district_slug, category_slug, area_slug, area_name, location_text, created_date, updated_date, post_type')
         .eq('status', 'active')
         .not('district_slug', 'is', null)
         .not('category_slug', 'is', null);
@@ -60,6 +63,24 @@ export default async function sitemap() {
         if (!DISTRICT_MAP[p.district_slug] || !changedAt) return;
         bump(districtDates, p.district_slug, changedAt);
         if (CATEGORY_MAP[p.category_slug]) bump(issueDates, `${p.district_slug}:${p.category_slug}`, changedAt);
+
+        // Track active power cuts by district and area
+        if (p.category_slug === 'electricity') {
+          bump(powerCutDistrictDates, p.district_slug, changedAt);
+          if (p.area_slug) {
+            bump(powerCutAreaDates, `${p.district_slug}:${p.area_slug.toLowerCase()}`, changedAt);
+          }
+          if (p.area_name) {
+            try {
+              bump(powerCutAreaDates, `${p.district_slug}:${slugifyArea(p.area_name)}`, changedAt);
+            } catch (_) {}
+          }
+        }
+
+        // Track active school / college holiday alerts
+        if (['education', 'public-safety', 'weather', 'general'].includes(p.category_slug) && p.post_type === 'alert') {
+          bump(holidayDistrictDates, p.district_slug, changedAt);
+        }
       });
     }
   } catch (e) {
@@ -292,29 +313,39 @@ export default async function sitemap() {
     });
   });
 
-  // ── District-specific School Holiday & Power Cut Hubs (38 districts each) ──
+  // ── District-specific School Holiday & Power Cut Hubs (Only emit with active DB reports) ──
+  // Prevents "Thin content / Doorway page" penalties by only indexing hubs with live data.
   DISTRICTS.forEach(city => {
-    entries.push({
-      url: `${SITE_URL}/school-college-holiday-alerts/${city.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'hourly',
-      priority: 0.9,
-    });
-    entries.push({
-      url: `${SITE_URL}/power-cuts-today-tamil-nadu/${city.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'hourly',
-      priority: 0.9,
-    });
+    if (holidayDistrictDates.has(city.slug)) {
+      const lastModified = holidayDistrictDates.get(city.slug);
+      entries.push({
+        url: `${SITE_URL}/school-college-holiday-alerts/${city.slug}`,
+        ...(lastModified ? { lastModified: new Date(lastModified) } : { lastModified: new Date() }),
+        changeFrequency: 'hourly',
+        priority: 0.9,
+      });
+    }
 
+    if (powerCutDistrictDates.has(city.slug)) {
+      const lastModified = powerCutDistrictDates.get(city.slug);
+      entries.push({
+        url: `${SITE_URL}/power-cuts-today-tamil-nadu/${city.slug}`,
+        ...(lastModified ? { lastModified: new Date(lastModified) } : { lastModified: new Date() }),
+        changeFrequency: 'hourly',
+        priority: 0.9,
+      });
+    }
   });
 
-  // Programmatic Localities / Substation Landing Pages (pSEO High-Intent Engine)
+  // Programmatic Localities / Substation Landing Pages (Only emit with active DB reports)
   const allPowerCutAreas = getAllPowerCutAreaStaticParams();
   allPowerCutAreas.forEach(({ district, area }) => {
+    const key = `${district}:${area.toLowerCase()}`;
+    if (!powerCutAreaDates.has(key)) return;
+    const lastModified = powerCutAreaDates.get(key);
     entries.push({
       url: `${SITE_URL}/power-cuts-today-tamil-nadu/${district}/${area}`,
-      lastModified: new Date(),
+      ...(lastModified ? { lastModified: new Date(lastModified) } : { lastModified: new Date() }),
       changeFrequency: 'hourly',
       priority: 0.85,
     });

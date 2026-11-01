@@ -16,6 +16,9 @@ export async function generateMetadata({ params }) {
   const district = getDistrictBySlug(params.district);
   if (!district) notFound();
 
+  const posts = await fetchDistrictHolidayAlertPosts(district.slug);
+  const hasActiveAlert = posts && posts.length > 0;
+
   const title = `${district.name_en} School & College Holiday Alerts: Rain Order & Collector Notices | ${district.name_ta} பள்ளி விடுமுறை`;
   const description = `Live ${district.name_en} district school and college holiday updates declared by District Collector. Check IMD heavy rain alerts, red/orange warnings, and 24x7 control room 1077.`;
   const canonical = `${SITE_URL}/school-college-holiday-alerts/${district.slug}`;
@@ -63,9 +66,14 @@ export async function generateMetadata({ params }) {
       images: [ogImageUrl],
     },
     robots: {
-      index: true,
+      index: hasActiveAlert,
       follow: true,
-      googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+      googleBot: {
+        index: hasActiveAlert,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }
