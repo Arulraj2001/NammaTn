@@ -578,10 +578,10 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                   <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
                   {format(pubDate, "d MMMM yyyy")}
                 </span>
-                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <Link to="/editorial-team" className="flex items-center gap-1.5 whitespace-nowrap hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                   <User className="w-3.5 h-3.5 flex-shrink-0" />
                   {article.author_name || "VizhiTN Editorial Team"}
-                </span>
+                </Link>
                 <span className="flex items-center gap-1.5 whitespace-nowrap">
                   <Clock className="w-3.5 h-3.5 flex-shrink-0" />
                   {article.reading_time || 5} min read
@@ -686,6 +686,48 @@ export default function TnTodayArticle({ initialArticle = null, initialRelatedAr
                 </div>
               </div>
             )}
+
+            {/* Editorial Trust & Author Byline Box */}
+            <div className="mt-8 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-5 shadow-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700 pb-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-600/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 font-bold flex items-center justify-center text-sm border border-blue-200 dark:border-blue-800">
+                    {(article.author_name || "A")[0]}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-slate-900 dark:text-white text-sm">
+                        {article.author_name || "VizhiTN Editorial Team"}
+                      </span>
+                      <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                        <CheckCircle2 className="w-3 h-3" /> Verified Desk
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Contributing Correspondent · VizhiTN Newsroom
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  to="/editorial-team"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold flex items-center gap-1"
+                >
+                  View Editorial Masthead <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+              <div className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <span>
+                  Published under the{" "}
+                  <Link to="/editorial-policy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                    VizhiTN Editorial Standards
+                  </Link>{" "}
+                  and verified against primary government releases.
+                </span>
+                <Link to="/fact-check-policy" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold whitespace-nowrap">
+                  Fact-Check Policy →
+                </Link>
+              </div>
+            </div>
 
             {/* Share row */}
             <div className="mt-6 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4">

@@ -43,7 +43,8 @@ export function generateNewsArticleSchema({
     dateModified: dateModified || datePublished || new Date().toISOString(),
     author: author || {
       '@type': 'Person',
-      name: authorName || 'VizhiTN Reporter',
+      name: authorName || 'Arulraj',
+      url: 'https://www.vizhitn.in/editorial-team',
     },
     publisher: publisher || {
       '@type': 'Organization',

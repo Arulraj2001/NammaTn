@@ -325,6 +325,7 @@ export default async function sitemap() {
     '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',
     '/scams', '/trending', '/tn-today',
     '/explore', '/help', '/support',
+    '/editorial-team', '/editorial-policy', '/fact-check-policy',
     '/about', '/press', '/contact', '/privacy-policy', '/terms', '/how-to-use',
     '/disclaimer', '/cookie-policy',
   ].forEach(path => {

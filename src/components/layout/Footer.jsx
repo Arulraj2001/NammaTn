@@ -46,6 +46,9 @@ const FOOTER_COLUMNS = [
     ta_title: "உதவி & கொள்கை",
     links: [
       { path: "/about",          en: "About VizhiTN",  ta: "VizhiTN பற்றி" },
+      { path: "/editorial-team", en: "Editorial Team", ta: "ஆசிரியர் குழு" },
+      { path: "/editorial-policy", en: "Editorial Policy", ta: "ஆசிரியர்க் கொள்கை" },
+      { path: "/fact-check-policy", en: "Fact Check & Corrections", ta: "சரிபார்ப்பு & திருத்தங்கள்" },
       { path: "/press",          en: "Press & Media",  ta: "செய்தி & ஊடகம்" },
       { path: "/help",           en: "Help Centre",    ta: "உதவி மையம்" },
       { path: "/helplines",      en: "Helplines Desk", ta: "அவசர எண்கள்" },
