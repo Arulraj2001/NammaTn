@@ -2,18 +2,12 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Daily 02:00 UTC = 07:30 AM IST (Morning 5-Second Exam Quiz Short)
+    # 1. Daily 02:00 UTC = 07:30 AM IST (Morning TNPSC "One-Mark Sure Shot" Interactive Quiz Short)
     - cron: '0 2 * * *'
-    # 2. Daily 07:30 UTC = 01:00 PM IST (Afternoon Exam Prep Short: Top 3 Exam Facts)
-    - cron: '30 7 * * *'
-    # 3. Daily 11:00 UTC = 04:30 PM IST (Evening Govt Scheme Guide Short)
+    # 2. Daily 11:00 UTC = 04:30 PM IST (Evening Govt Scheme & Citizen Action Short)
     - cron: '0 11 * * *'
-    # 4. Daily 14:00 UTC = 07:30 PM IST (Daily 8:00 PM TN 24H Current Affairs Bulletin)
+    # 3. Daily 14:00 UTC = 07:30 PM IST (Daily 18-20 Minute GK Audio Storytelling Masterclass)
     - cron: '0 14 * * *'
-    # 5. Daily 16:00 UTC = 09:30 PM IST (Night Rapid Current Affairs Exam Recap Short)
-    - cron: '0 16 * * *'
-    # 6. Sunday 03:30 UTC = 09:00 AM IST (Sunday Weekly Revision Masterclass)
-    - cron: '30 3 * * 0'
 
   workflow_dispatch:
     inputs:
@@ -22,14 +16,15 @@ on:
         type: choice
         options:
           - auto
-          - current-affairs-bulletin
-          - current-affairs-shorts
+          - gk-masterclass
           - quiz-shorts
           - scheme-shorts
           - emergency-alert
           - utility-shorts
           - scam-shorts
           - rights-shorts
+          - current-affairs-bulletin
+          - current-affairs-shorts
           - backfill
           - all
         default: 'auto'
@@ -46,7 +41,7 @@ jobs:
   youtube-publish:
     name: Autonomous YouTube Video Production
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 45
 
     steps:
       - name: Checkout Repository
@@ -117,12 +112,10 @@ jobs:
           elif [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
             if [ "$SCHEDULE" = "0 2 * * *" ]; then
               SLOT_ARG="--slot=quiz-shorts"
-            elif [ "$SCHEDULE" = "30 7 * * *" ] || [ "$SCHEDULE" = "0 16 * * *" ]; then
-              SLOT_ARG="--slot=current-affairs-shorts"
             elif [ "$SCHEDULE" = "0 11 * * *" ]; then
               SLOT_ARG="--slot=scheme-shorts"
-            elif [ "$SCHEDULE" = "0 14 * * *" ] || [ "$SCHEDULE" = "30 3 * * 0" ]; then
-              SLOT_ARG="--slot=current-affairs-bulletin"
+            elif [ "$SCHEDULE" = "0 14 * * *" ]; then
+              SLOT_ARG="--slot=gk-masterclass"
             else
               SLOT_ARG="--slot=auto"
             fi

@@ -54,3 +54,25 @@ export function getHostAvatarDataUri(hostName) {
 
   return '';
 }
+
+const cachedStickman = {};
+
+/**
+ * Returns a Stickman / Crayon asset from scripts/youtube/assets/stickman as a Base64 data URI
+ * @param {string} assetName - e.g. 'book-study-crayon.png', 'clock-crayon.png'
+ * @returns {string} data:image/png;base64,...
+ */
+export function getStickmanAssetDataUri(assetName) {
+  if (cachedStickman[assetName]) return cachedStickman[assetName];
+
+  const assetPath = path.resolve(process.cwd(), 'scripts', 'youtube', 'assets', 'stickman', assetName);
+  if (fs.existsSync(assetPath)) {
+    try {
+      const buffer = fs.readFileSync(assetPath);
+      cachedStickman[assetName] = `data:image/png;base64,${buffer.toString('base64')}`;
+      return cachedStickman[assetName];
+    } catch (_) {}
+  }
+
+  return '';
+}

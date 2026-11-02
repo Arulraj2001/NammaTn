@@ -42,7 +42,7 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'current-affairs-shorts', 'current-affairs-bulletin', 'quiz-shorts', 'emergency-alert'].includes(format);
+  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'current-affairs-shorts', 'current-affairs-bulletin', 'quiz-shorts', 'emergency-alert', 'gk-masterclass'].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -69,6 +69,7 @@ async function handleSlot(format, isDryRun, force) {
     'scam-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scam'] },
     'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-scheme-shorts.mjs', extraArgs: [] },
     'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: [] },
+    'gk-masterclass': { script: 'scripts/youtube/pipelines/generate-gk-masterclass.mjs', extraArgs: [] },
     'emergency-alert': { script: 'scripts/youtube/pipelines/generate-emergency-alert.mjs', extraArgs: [] },
     'rights-shorts': { script: 'scripts/youtube/pipelines/generate-rights-shorts.mjs', extraArgs: [] }
   };
@@ -228,19 +229,17 @@ async function main() {
   let targetFormat = null;
 
   if (now.hours >= 19 && now.hours < 21) {
-    // Evening window (07:00 PM - 08:59 PM IST): Daily 8 PM TN 24H Current Affairs Bulletin
-    targetFormat = 'current-affairs-bulletin';
-  } else if (now.hours >= 12 && now.hours < 16) {
-    // Afternoon window (12:00 PM - 03:59 PM IST): Afternoon Exam Prep Short (01:00 PM)
-    targetFormat = 'current-affairs-shorts';
-  } else if (now.hours >= 21) {
-    // Night window (09:00 PM - 11:59 PM IST): Rapid Current Affairs Exam Recap Short (09:30 PM)
-    targetFormat = 'current-affairs-shorts';
+    // Evening window (07:00 PM - 08:59 PM IST): Daily 18-20m TNPSC GK Audio Storytelling Masterclass
+    targetFormat = 'gk-masterclass';
+  } else if (now.hours >= 16 && now.hours < 19) {
+    // Late afternoon/evening window (04:00 PM - 06:59 PM IST): Scheme Guide / Scam Alert Short
+    targetFormat = 'scheme-shorts';
   } else if (now.hours < 12) {
-    // Morning window (06:00 AM - 11:59 AM IST): High-Retention Utility & Money Hack Short
-    targetFormat = 'utility-shorts';
+    // Morning window (06:00 AM - 11:59 AM IST): TNPSC "One-Mark Sure Shot" Interactive Quiz Short
+    targetFormat = 'quiz-shorts';
   } else {
-    targetFormat = 'current-affairs-shorts';
+    // Default afternoon window
+    targetFormat = 'quiz-shorts';
   }
 
   console.log(`[AUTO ROUTER] Target slot for ${now.hours}:${now.minutes} IST is: "${targetFormat}"`);

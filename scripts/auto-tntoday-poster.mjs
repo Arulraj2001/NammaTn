@@ -165,7 +165,7 @@ function getPulseSpec(pulseName, dateStr) {
       name: 'TN Today Morning Edition (Transit, Infrastructure & Environment)',
       pulse: 'morning',
       targetCategories: ['infrastructure', 'transport', 'environment'],
-      author: 'VizhiTN Infrastructure & Transit Desk',
+      author: 'S. Soundarapandian',
       isFeatured: true,
       searchAnchors: [
         `Tamil Nadu NHAI highway elevated bypass opening expressway ${dateStr}`,
@@ -186,7 +186,7 @@ Write 1 high-impact, flagship editorial article (750–1,000 words).`
       name: 'TN Today Midday Edition (Governance, Schemes & Citizen Services)',
       pulse: 'midday',
       targetCategories: ['governance', 'social', 'education', 'healthcare'],
-      author: 'VizhiTN Governance & Policy Desk',
+      author: 'K. Meenakshi Sundaram',
       isFeatured: false,
       searchAnchors: [
         `Kalaignar Magalir Urimai Thogai government order ${dateStr}`,
@@ -205,7 +205,7 @@ Write 1 in-depth, citizen-first analytical article (750–1,000 words).`
       name: 'TN Today Evening Edition (Economy, Agriculture & Statewide Features)',
       pulse: 'evening',
       targetCategories: ['economy', 'agriculture', 'technology', 'india'],
-      author: 'VizhiTN State & Economy Desk',
+      author: 'Arulraj',
       isFeatured: false,
       searchAnchors: [
         `SIPCOT Tamil Nadu investment semiconductor EV manufacturing ${dateStr}`,
