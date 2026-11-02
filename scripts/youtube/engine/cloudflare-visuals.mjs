@@ -79,7 +79,8 @@ export async function generateYouTubeSceneVisual(prompt, outputFilePath, aspectR
         },
         body: JSON.stringify({
           prompt: `${prompt}, realistic photo, Tamil Nadu India setting, authentic documentary journalism style, hyper-detailed, 8k, cinematic natural lighting, no text, no watermark`
-        })
+        }),
+        signal: AbortSignal.timeout(15000)
       });
 
       if (!response.ok) {

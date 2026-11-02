@@ -42,7 +42,7 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'current-affairs-shorts', 'current-affairs-bulletin', 'quiz-shorts', 'emergency-alert', 'gk-masterclass'].includes(format);
+  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -60,16 +60,12 @@ async function handleSlot(format, isDryRun, force) {
   }
 
   const scriptMap = {
-    'current-affairs-bulletin': { script: 'scripts/youtube/pipelines/generate-current-affairs-bulletin.mjs', extraArgs: [] },
-    'current-affairs-shorts': { script: 'scripts/youtube/pipelines/generate-current-affairs-shorts.mjs', extraArgs: [] },
     'podcast': { script: 'scripts/youtube/pipelines/generate-podcast.mjs', extraArgs: [] },
     'civic-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: [] },
     'live-shorts': { script: 'scripts/youtube/pipelines/generate-live-shorts.mjs', extraArgs: [] },
     'utility-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=utility'] },
     'scam-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scam'] },
     'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-scheme-shorts.mjs', extraArgs: [] },
-    'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: [] },
-    'gk-masterclass': { script: 'scripts/youtube/pipelines/generate-gk-masterclass.mjs', extraArgs: [] },
     'emergency-alert': { script: 'scripts/youtube/pipelines/generate-emergency-alert.mjs', extraArgs: [] },
     'rights-shorts': { script: 'scripts/youtube/pipelines/generate-rights-shorts.mjs', extraArgs: [] }
   };
@@ -228,18 +224,17 @@ async function main() {
 
   let targetFormat = null;
 
-  if (now.hours >= 19 && now.hours < 21) {
-    // Evening window (07:00 PM - 08:59 PM IST): Daily 18-20m TNPSC GK Audio Storytelling Masterclass
-    targetFormat = 'gk-masterclass';
-  } else if (now.hours >= 16 && now.hours < 19) {
-    // Late afternoon/evening window (04:00 PM - 06:59 PM IST): Scheme Guide / Scam Alert Short
+  if (now.hours >= 19 && now.hours < 22) {
+    // Evening Window (07:00 PM - 09:59 PM IST): Vizhi Uncut Citizen Watchdog & Scam Investigation
+    targetFormat = 'podcast';
+  } else if (now.hours >= 14 && now.hours < 19) {
+    // Afternoon Window (02:00 PM - 06:59 PM IST): Govt Scheme Guide & Citizen Money Unlock Short
     targetFormat = 'scheme-shorts';
-  } else if (now.hours < 12) {
-    // Morning window (06:00 AM - 11:59 AM IST): TNPSC "One-Mark Sure Shot" Interactive Quiz Short
-    targetFormat = 'quiz-shorts';
+  } else if (now.hours < 14) {
+    // Morning Window (06:00 AM - 01:59 PM IST): Citizen Legal Rights & Police/RTI Shield Short
+    targetFormat = 'rights-shorts';
   } else {
-    // Default afternoon window
-    targetFormat = 'quiz-shorts';
+    targetFormat = 'scam-shorts';
   }
 
   console.log(`[AUTO ROUTER] Target slot for ${now.hours}:${now.minutes} IST is: "${targetFormat}"`);

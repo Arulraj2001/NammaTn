@@ -112,9 +112,9 @@ async function main() {
     .replace('{{TOTAL_SEGMENTS}}', scriptPkg.segments.length.toString())
     .replace('{{TAMIL_DATE}}', scriptPkg.tamilDate)
     .replace('{{HEADLINE_TA}}', 'தமிழ்நாடு 24 மணி நேர நடப்பு நிகழ்வுகள்')
-    .replace('{{CORE_FACTS_TA}}', 'இன்றைய முக்கிய அரசுத் திட்டங்கள், நீதிமன்றத் தீர்ப்புகள், மற்றும் டி.என்.பி.எஸ்.சி தேர்வுக்கான முக்கியக் குறிப்புகள்.')
-    .replace('{{EXAM_POINTER_TA}}', 'TNPSC Group 1, 2, 4, Police SI & Banking தேர்வுகளுக்கான பிரத்யேக பாடத் தொகுப்பு.')
-    .replace('{{RECALL_QUESTION_TA}}', 'முழு வீடியோவைப் பார்த்து குறிப்பெடுத்துக் கொள்ளுங்கள்.')
+    .replace('{{CORE_FACTS_TA}}', 'இன்றைய முக்கிய அரசுத் திட்டங்கள், நீதிமன்றத் தீர்ப்புகள், மற்றும் பொதுமக்களுக்கான முக்கிய வழிகாட்டல்கள்.')
+    .replace('{{EXAM_POINTER_TA}}', 'பொதுமக்கள் நலன் மற்றும் அன்றாட நிர்வாக நடைமுறைகளுக்கான முக்கியத் தகவல்கள்.')
+    .replace('{{RECALL_QUESTION_TA}}', 'முழு வீடியோவைப் பார்த்து பயனுள்ள தகவல்களை தெரிந்து கொள்ளுங்கள்.')
     .replace('{{SOURCE_NAME}}', 'DIPR / High Court / தமிழக அரசு');
 
   const introSlidePath = path.join(sessionDir, 'slide_0_intro.png');
@@ -189,13 +189,13 @@ async function main() {
 
   // Step 4: Video Assembly
   console.log('\n[STEP 4/6] Assembling full 1080p Long-Form Bulletin Video with FFmpeg...');
-  const outputVideoPath = path.join(sessionDir, `TNPSC_Current_Affairs_${now.dateStr}.mp4`);
+  const outputVideoPath = path.join(sessionDir, `TN_Civic_Bulletin_${now.dateStr}.mp4`);
   assembleLongFormVideo({ chapters, outputPath: outputVideoPath });
   console.log(`[VIDEO OK] Video assembled successfully at: ${outputVideoPath}`);
 
   // Step 5: High-CTR Thumbnail Generation
   console.log('\n[STEP 5/6] Generating 1280x720 High-CTR Thumbnail...');
-  const thumbnailPath = path.join(sessionDir, `TNPSC_Current_Affairs_Thumb_${now.dateStr}.png`);
+  const thumbnailPath = path.join(sessionDir, `TN_Civic_Bulletin_Thumb_${now.dateStr}.png`);
   await generateCurrentAffairsThumbnail({
     tamilDate: scriptPkg.tamilDate,
     topHeadline: scriptPkg.segments[0]?.headlineTa || 'இன்றைய டாப் 10 நடப்பு நிகழ்வுகள்',

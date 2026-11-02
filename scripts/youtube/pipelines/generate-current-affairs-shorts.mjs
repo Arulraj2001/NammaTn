@@ -163,15 +163,15 @@ function buildShortSlideHtml(event, index, total, tamilDate) {
 </head>
 <body>
   <div class="top-badge">
-    <div class="pill">TNPSC 1-MIN RECAP</div>
+    <div class="pill">TN 1-MIN CIVIC UPDATE</div>
     <div class="date">📅 ${tamilDate}</div>
   </div>
 
   <div class="content-box">
-    <div class="item-num">முக்கிய நடப்பு நிகழ்வு ${index} / ${total}</div>
+    <div class="item-num">முக்கிய மக்கள் செய்தி ${index} / ${total}</div>
     <h1 class="headline">${event.headline_ta}</h1>
     <div class="pointer-box">
-      <div class="pointer-label">⭐ தேர்வு குறிப்பு (EXAM POINTER)</div>
+      <div class="pointer-label">⭐ பொதுமக்கள் பார்வை (PUBLIC INFO)</div>
       <p class="pointer-text">${event.exam_pointer_ta}</p>
     </div>
   </div>
@@ -188,7 +188,7 @@ async function main() {
   const skipUpload = isDryRun || process.argv.includes('--skip-upload');
 
   console.log('====================================================');
-  console.log('VizhiTN Daily TNPSC Current Affairs Shorts Engine');
+  console.log('VizhiTN Daily Civic & Development Shorts Engine');
   console.log(`Execution Mode: ${isDryRun ? 'DRY RUN' : 'PRODUCTION'}`);
   console.log('====================================================');
 
@@ -226,7 +226,7 @@ async function main() {
     });
   }
 
-  const outputVideoPath = path.join(sessionDir, `TNPSC_Shorts_${pkg.date}.mp4`);
+  const outputVideoPath = path.join(sessionDir, `TN_Civic_Shorts_${pkg.date}.mp4`);
   console.log('[COMPOSING SHORTS] Assembling 9:16 portrait video...');
   assembleMultiSceneShortsVideo({ scenes, outputPath: outputVideoPath });
   console.log(`[SHORTS VIDEO OK] Rendered: ${outputVideoPath}`);
@@ -243,9 +243,9 @@ async function main() {
   const res = await uploadToYouTube({
     videoFilePath: outputVideoPath,
     title: shortsData.title,
-    description: `இன்றைய டாப் 3 நடப்பு நிகழ்வுகள் (${shortsData.tamilDate}). TNPSC Group 1, 2, 4, Police SI தேர்வுகளுக்கான குறிப்புகள்.\n\n#Shorts #TNPSC #TNPSCCurrentAffairs #TamilNaduNews #VizhiTN`,
-    tags: ['TNPSC Current Affairs', 'Tamil Nadu Shorts', 'TNPSC Exam Shorts', 'Daily Current Affairs Tamil', 'Shorts'],
-    categoryId: '27',
+    description: `இன்றைய டாப் 3 மக்கள் செய்திகள் (${shortsData.tamilDate}). தமிழ்நாடு அரசு அறிவிப்புகள் & மக்கள் வழிகாட்டல்.\n\n#Shorts #TamilNaduNews #GovtSchemes #TamilUpdates #VizhiTN`,
+    tags: ['Tamil Nadu News', 'Tamil Nadu Shorts', 'Civic Tamil', 'Daily News Tamil', 'Shorts'],
+    categoryId: '25',
     privacyStatus: 'public',
     isShort: true
   });

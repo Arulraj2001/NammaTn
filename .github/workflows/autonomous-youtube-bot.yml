@@ -2,11 +2,11 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Daily 02:00 UTC = 07:30 AM IST (Morning TNPSC "One-Mark Sure Shot" Interactive Quiz Short)
+    # 1. Daily 02:00 UTC = 07:30 AM IST (Morning Citizen Legal Rights & Police Check Rules Short)
     - cron: '0 2 * * *'
-    # 2. Daily 11:00 UTC = 04:30 PM IST (Evening Govt Scheme & Citizen Action Short)
+    # 2. Daily 11:00 UTC = 04:30 PM IST (Evening Govt Scheme Guide & Citizen Benefits Short)
     - cron: '0 11 * * *'
-    # 3. Daily 14:00 UTC = 07:30 PM IST (Daily 18-20 Minute GK Audio Storytelling Masterclass)
+    # 3. Daily 14:00 UTC = 07:30 PM IST (Daily Citizen Watchdog & Scam Investigation Long-Form)
     - cron: '0 14 * * *'
 
   workflow_dispatch:
@@ -16,15 +16,13 @@ on:
         type: choice
         options:
           - auto
-          - gk-masterclass
-          - quiz-shorts
-          - scheme-shorts
-          - emergency-alert
-          - utility-shorts
-          - scam-shorts
           - rights-shorts
-          - current-affairs-bulletin
-          - current-affairs-shorts
+          - scheme-shorts
+          - podcast
+          - scam-shorts
+          - utility-shorts
+          - emergency-alert
+          - civic-shorts
           - backfill
           - all
         default: 'auto'
@@ -111,11 +109,11 @@ jobs:
             SLOT_ARG="--backfill"
           elif [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
             if [ "$SCHEDULE" = "0 2 * * *" ]; then
-              SLOT_ARG="--slot=quiz-shorts"
+              SLOT_ARG="--slot=rights-shorts"
             elif [ "$SCHEDULE" = "0 11 * * *" ]; then
               SLOT_ARG="--slot=scheme-shorts"
             elif [ "$SCHEDULE" = "0 14 * * *" ]; then
-              SLOT_ARG="--slot=gk-masterclass"
+              SLOT_ARG="--slot=podcast"
             else
               SLOT_ARG="--slot=auto"
             fi
