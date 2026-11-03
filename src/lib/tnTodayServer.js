@@ -1,5 +1,4 @@
 import { createServerSupabase } from '@/lib/serverSupabase';
-import sanitizeHtml from 'sanitize-html';
 
 // featured_image is intentionally excluded from the server-side list select.
 // It stores base64 image data (~200KB/row), making 50 rows = ~10MB which
@@ -22,6 +21,9 @@ const ARTICLE_DETAIL_FIELDS = [
   'is_featured', 'view_count', 'created_date', 'updated_date',
   'district_slug', 'district_name',
 ].join(',');
+
+// In-memory cache to deduplicate parallel requests (e.g. generateMetadata and Page)
+const articleCache = new Map();
 
 export async function getTnTodayArchive(category = null) {
   const supabase = createServerSupabase({ timeoutMs: 10000 });
@@ -53,50 +55,63 @@ export async function getTnTodayArchive(category = null) {
 }
 
 export async function getTnTodayArticle(slug) {
-  const supabase = createServerSupabase({ timeoutMs: 10000 });
   if (!slug) return { article: null, relatedArticles: [] };
-  if (!supabase) throw new Error('Supabase is not configured');
+
+  if (articleCache.has(slug)) {
+    return articleCache.get(slug);
+  }
+
+  const supabase = createServerSupabase({ timeoutMs: 10000 });
+  if (!supabase) {
+    console.warn('[tn-today] Supabase is not configured');
+    return { article: null, relatedArticles: [] };
+  }
 
   try {
-    const { data: article, error } = await supabase
+    const { data: rawArticle, error } = await supabase
       .from('tn_today')
-      .select('*')
+      .select(ARTICLE_DETAIL_FIELDS)
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle();
-    if (error) throw error;
-    if (!article) return { article: null, relatedArticles: [] };
 
-    const { data: related, error: relatedError } = await supabase
-      .from('tn_today')
-      .select(ARTICLE_FIELDS)
-      .eq('status', 'published')
-      .eq('category', article.category)
-      .neq('slug', slug)
-      .order('publish_date', { ascending: false })
-      .limit(3);
-    if (relatedError) throw relatedError;
+    if (error) {
+      console.warn(`[tn-today:${slug}] Fetch query error:`, error.message);
+      return { article: null, relatedArticles: [] };
+    }
+    if (!rawArticle) return { article: null, relatedArticles: [] };
 
-    return {
-      article: {
-        ...article,
-        safe_content: sanitizeHtml(article.content || '', {
-          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2']),
-          allowedAttributes: {
-            ...sanitizeHtml.defaults.allowedAttributes,
-            img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
-            a: ['href', 'name', 'target', 'rel'],
-          },
-          allowedSchemes: ['http', 'https', 'mailto', 'tel'],
-          transformTags: {
-            a: sanitizeHtml.simpleTransform('a', { rel: 'noopener noreferrer' }, true),
-          },
-        }),
-      },
-      relatedArticles: related || [],
+    // Prevent oversized base64 images (>500KB) from breaking Next.js 2MB page data cache
+    const article = { ...rawArticle };
+    if (article.featured_image && article.featured_image.startsWith('data:') && article.featured_image.length > 500000) {
+      article.featured_image = null;
+    }
+
+    let related = [];
+    try {
+      const { data, error: relError } = await supabase
+        .from('tn_today')
+        .select(ARTICLE_FIELDS)
+        .eq('status', 'published')
+        .eq('category', article.category)
+        .neq('slug', slug)
+        .order('publish_date', { ascending: false })
+        .limit(3);
+
+      if (!relError && data) related = data;
+    } catch {
+      // Non-fatal: related articles should never break main article rendering
+    }
+
+    const result = {
+      article,
+      relatedArticles: related,
     };
+
+    articleCache.set(slug, result);
+    return result;
   } catch (error) {
-    console.warn(`[tn-today:${slug}] Server article fetch failed:`, error.message);
-    throw error;
+    console.warn(`[tn-today:${slug}] Server article fetch error:`, error.message);
+    return { article: null, relatedArticles: [] };
   }
 }

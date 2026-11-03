@@ -1,4 +1,4 @@
-import { getArticleBySlug } from '@/lib/awarenessServer';
+import { getArticleBySlug, getAllArticles } from '@/lib/awarenessServer';
 import AwarenessArticleDetail from '@/views/AwarenessArticleDetail';
 import { notFound } from 'next/navigation';
 import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
@@ -6,8 +6,11 @@ import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
-export const runtime = 'edge';
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return getAllArticles().map(a => ({ slug: a.slug }));
+}
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;

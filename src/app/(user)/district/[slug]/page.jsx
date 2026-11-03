@@ -4,8 +4,6 @@
 import { notFound, permanentRedirect } from 'next/navigation';
 import { DISTRICT_MAP, DISTRICTS } from '@/lib/seo-data';
  
-export const runtime = 'edge';
-
 export async function generateStaticParams() {
   return DISTRICTS.map(d => ({ slug: d.slug }));
 }

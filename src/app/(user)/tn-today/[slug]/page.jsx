@@ -1,6 +1,7 @@
 import TnTodayArticle from '@/views/TnTodayArticle';
 import { notFound } from 'next/navigation';
-import { getTnTodayArticle, getTnTodayArchive } from '@/lib/tnTodayServer';
+import { getTnTodayArticle } from '@/lib/tnTodayServer';
+import { createServerSupabase } from '@/lib/serverSupabase';
 import { getTnTodayCanonical } from '@/lib/tnTodayUrl';
 import { getPageTitle, getSocialTitle } from '@/lib/metadataTitle';
 import { toMetaDescription } from '@/lib/metaDescription';
@@ -9,32 +10,37 @@ import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
-export const runtime = 'edge';
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const { articles } = await getTnTodayArchive();
-  return (articles || []).map(a => ({ slug: a.slug })).filter(a => !!a.slug);
+  const supabase = createServerSupabase();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from('tn_today')
+    .select('slug')
+    .eq('status', 'published')
+    .order('publish_date', { ascending: false })
+    .limit(500);
+  return (data || []).map(a => ({ slug: a.slug })).filter(a => !!a.slug);
 }
 
-export async function generateMetadata({ params, searchParams }) {
+export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
   const { article } = await getTnTodayArticle(slug);
   if (!article) notFound();
 
-  const isTamil = searchParams?.lang === 'ta';
   const tamilTitle = article.seo_title_ta || article.title_ta || '';
   const tamilDesc = article.seo_description_ta || article.subtitle_ta || article.summary_ta || '';
 
-  const rawTitle = (isTamil && tamilTitle) ? tamilTitle : (article.seo_title || article.title);
+  const rawTitle = article.seo_title || article.title;
   const title = getPageTitle(rawTitle, 'TN Today');
   const socialTitle = getSocialTitle(title);
 
-  const rawDesc = (isTamil && tamilDesc) ? tamilDesc : (article.seo_description || article.subtitle || article.summary);
+  const rawDesc = article.seo_description || article.subtitle || article.summary;
   const description = toMetaDescription(
     rawDesc,
-    isTamil ? 'தமிழ்நாடு சமூக செய்திகள் மற்றும் பொது நல தகவல்கள் — VizhiTN.' : 'Tamil Nadu civic news and public-interest update from VizhiTN.',
+    'Tamil Nadu civic news and public-interest update from VizhiTN.',
   );
 
   const categorySlug = article.category || 'general';
@@ -48,18 +54,16 @@ export async function generateMetadata({ params, searchParams }) {
     ogUrl.searchParams.set('title', article.seo_title || article.title || 'TN Today');
     if (tamilTitle) ogUrl.searchParams.set('title_ta', tamilTitle);
     ogUrl.searchParams.set('category', categorySlug);
-    ogUrl.searchParams.set('lang', (isTamil || tamilTitle) ? 'ta' : 'en');
+    ogUrl.searchParams.set('lang', tamilTitle ? 'ta' : 'en');
     if (cleanImage) ogUrl.searchParams.set('image', cleanImage);
     socialImage = ogUrl.toString();
   }
   const image = socialImage;
   const canonical = getTnTodayCanonical(article.slug);
-  const pageUrl = isTamil ? `${canonical}?lang=ta` : canonical;
   const publishedTime = article.publish_date || article.created_date;
   const modifiedTime = article.updated_date || publishedTime;
 
   const keywordsList = [
-    isTamil ? article.seo_keywords_ta : article.seo_keywords,
     article.seo_keywords,
     article.seo_keywords_ta,
     article.category,
@@ -84,10 +88,10 @@ export async function generateMetadata({ params, searchParams }) {
       type: 'article',
       title: socialTitle,
       description,
-      url: pageUrl,
+      url: canonical,
       siteName: 'VizhiTN',
-      locale: isTamil ? 'ta_IN' : 'en_IN',
-      alternateLocale: isTamil ? ['en_IN'] : ['ta_IN'],
+      locale: 'en_IN',
+      alternateLocale: ['ta_IN'],
       images: [{ url: image, width: 1200, height: 675, alt: title }],
       publishedTime,
       modifiedTime,
@@ -104,22 +108,20 @@ export async function generateMetadata({ params, searchParams }) {
   };
 }
 
-export default async function Page({ params, searchParams }) {
+export default async function Page({ params }) {
   const resolvedParams = await params;
-  const resolvedSearchParams = await searchParams;
   const slug = resolvedParams?.slug;
   const { article, relatedArticles } = await getTnTodayArticle(slug);
   if (!article) notFound();
   const canonical = getTnTodayCanonical(article?.slug || slug);
-  const isTamil = resolvedSearchParams?.lang === 'ta';
 
   const articleSchema = article
     ? generateNewsArticleSchema({
-        headline: (isTamil && article.title_ta) ? article.title_ta : (article.seo_title || article.title),
+        headline: article.seo_title || article.title,
         headlineTa: article.seo_title_ta || article.title_ta || null,
-        description: (isTamil && article.subtitle_ta) ? article.subtitle_ta : (article.seo_description || (article.subtitle || '').slice(0, 160)),
+        description: article.seo_description || (article.subtitle || '').slice(0, 160),
         descriptionTa: article.seo_description_ta || (article.subtitle_ta || '').slice(0, 160),
-        url: isTamil ? `${canonical}?lang=ta` : canonical,
+        url: canonical,
         imageUrl: (article.featured_image && !article.featured_image.includes('/api/og?'))
           ? article.featured_image
           : `${SITE_URL}/images/tntoday/${article.category || 'general'}.webp`,
@@ -129,7 +131,7 @@ export default async function Page({ params, searchParams }) {
         author: getArticleAuthor(article.author_name),
         publisher: getPublisherSchema(),
         section: article.category || 'Tamil Nadu News',
-        language: isTamil ? 'ta-IN' : 'en-IN',
+        language: 'en-IN',
       })
     : null;
 
@@ -137,9 +139,9 @@ export default async function Page({ params, searchParams }) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: isTamil ? 'முகப்பு' : 'Home', item: SITE_URL },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
       { '@type': 'ListItem', position: 2, name: 'TN Today', item: `${SITE_URL}/tn-today` },
-      { '@type': 'ListItem', position: 3, name: (isTamil && article.title_ta) ? article.title_ta : article.title, item: canonical },
+      { '@type': 'ListItem', position: 3, name: article.title, item: canonical },
     ],
   } : null;
 
@@ -148,10 +150,9 @@ export default async function Page({ params, searchParams }) {
       {articleSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />}
       {breadcrumbSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />}
       <TnTodayArticle
-        initialSlug={params.slug}
+        initialSlug={slug}
         initialArticle={article}
         initialRelatedArticles={relatedArticles}
-        initialLang={searchParams?.lang}
       />
     </>
   );

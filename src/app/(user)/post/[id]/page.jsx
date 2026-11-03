@@ -11,7 +11,6 @@ import { getPostUrl, getPostCanonicalUrl } from '@/lib/postUrl';
 
 const SITE_URL = 'https://www.vizhitn.in';
 
-export const runtime = 'edge';
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
