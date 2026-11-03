@@ -42,7 +42,7 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['tangedco-shorts', 'gk-lesson-shorts', 'quiz-shorts', 'weekly-mock', 'utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
+  const isPillarShort = ['tangedco-shorts', 'gk-lesson-shorts', 'quiz-shorts', 'pyq-50-drill', 'weekly-mock', 'utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -63,6 +63,7 @@ async function handleSlot(format, isDryRun, force) {
     'tangedco-shorts': { script: 'scripts/youtube/pipelines/generate-tangedco-shorts.mjs', extraArgs: [] },
     'gk-lesson-shorts': { script: 'scripts/youtube/pipelines/generate-gk-lesson-shorts.mjs', extraArgs: [] },
     'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-interactive-shorts.mjs', extraArgs: [] },
+    'pyq-50-drill': { script: 'scripts/youtube/pipelines/generate-50-pyq-drill.mjs', extraArgs: [] },
     'weekly-mock': { script: 'scripts/youtube/pipelines/generate-weekly-mega-mock.mjs', extraArgs: [] },
     'podcast': { script: 'scripts/youtube/pipelines/generate-podcast.mjs', extraArgs: [] },
     'civic-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: [] },

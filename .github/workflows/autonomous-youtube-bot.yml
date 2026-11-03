@@ -10,7 +10,9 @@ on:
     - cron: '0 8 * * *'
     # 4. Daily 13:30 UTC = 07:00 PM IST (Evening 5-Question Rapid Timer Quiz Short)
     - cron: '30 13 * * *'
-    # 5. Sunday 04:30 UTC = 10:00 AM IST (Sunday Weekly 20-Minute Mega Mock Test)
+    # 5. Daily 15:00 UTC = 08:30 PM IST (Evening 50 PYQ Rapid-Fire Speed Drill)
+    - cron: '0 15 * * *'
+    # 6. Sunday 04:30 UTC = 10:00 AM IST (Sunday Weekly 20-Minute Mega Mock Test)
     - cron: '30 4 * * 0'
 
   workflow_dispatch:
@@ -24,6 +26,7 @@ on:
           - gk-lesson-shorts
           - rights-shorts
           - quiz-shorts
+          - pyq-50-drill
           - weekly-mock
           - scheme-shorts
           - podcast
@@ -124,6 +127,8 @@ jobs:
               SLOT_ARG="--slot=rights-shorts"
             elif [ "$SCHEDULE" = "30 13 * * *" ]; then
               SLOT_ARG="--slot=quiz-shorts"
+            elif [ "$SCHEDULE" = "0 15 * * *" ]; then
+              SLOT_ARG="--slot=pyq-50-drill"
             elif [ "$SCHEDULE" = "30 4 * * 0" ]; then
               SLOT_ARG="--slot=weekly-mock"
             else
