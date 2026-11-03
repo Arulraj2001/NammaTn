@@ -519,3 +519,4 @@ main().catch(err => {
   console.error('[FATAL GK LESSON ERROR]:', err);
   process.exit(1);
 });
+

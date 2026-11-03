@@ -877,3 +877,4 @@ main().catch(err => {
   console.error('[FATAL WEEKLY MOCK ERROR]:', err);
   process.exit(1);
 });
+

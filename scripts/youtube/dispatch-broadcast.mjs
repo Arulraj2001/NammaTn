@@ -42,7 +42,7 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['gk-lesson-shorts', 'quiz-shorts', 'weekly-mock', 'utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
+  const isPillarShort = ['tangedco-shorts', 'gk-lesson-shorts', 'quiz-shorts', 'weekly-mock', 'utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -60,6 +60,7 @@ async function handleSlot(format, isDryRun, force) {
   }
 
   const scriptMap = {
+    'tangedco-shorts': { script: 'scripts/youtube/pipelines/generate-tangedco-shorts.mjs', extraArgs: [] },
     'gk-lesson-shorts': { script: 'scripts/youtube/pipelines/generate-gk-lesson-shorts.mjs', extraArgs: [] },
     'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-interactive-shorts.mjs', extraArgs: [] },
     'weekly-mock': { script: 'scripts/youtube/pipelines/generate-weekly-mega-mock.mjs', extraArgs: [] },
@@ -236,8 +237,11 @@ async function main() {
   } else if (now.hours >= 12 && now.hours < 17) {
     // Afternoon Window (12:00 PM - 04:59 PM IST): Citizen Legal Shield & Dispute Guide Short
     targetFormat = 'rights-shorts';
+  } else if (now.hours >= 5 && (now.hours < 7 || (now.hours === 7 && now.minutes < 15))) {
+    // Early Morning Window (05:00 AM - 07:15 AM IST): TANGEDCO Power Cut & School Holiday Alert
+    targetFormat = 'tangedco-shorts';
   } else {
-    // Morning Window (06:00 AM - 11:59 AM IST): Morning High-Density GK Masterclass Short
+    // Morning Study Window (07:15 AM - 11:59 AM IST): Morning High-Density GK Masterclass Short
     targetFormat = 'gk-lesson-shorts';
   }
 
