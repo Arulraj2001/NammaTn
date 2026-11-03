@@ -42,7 +42,7 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
+  const isPillarShort = ['gk-lesson-shorts', 'quiz-shorts', 'weekly-mock', 'utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -60,6 +60,9 @@ async function handleSlot(format, isDryRun, force) {
   }
 
   const scriptMap = {
+    'gk-lesson-shorts': { script: 'scripts/youtube/pipelines/generate-gk-lesson-shorts.mjs', extraArgs: [] },
+    'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-interactive-shorts.mjs', extraArgs: [] },
+    'weekly-mock': { script: 'scripts/youtube/pipelines/generate-weekly-mega-mock.mjs', extraArgs: [] },
     'podcast': { script: 'scripts/youtube/pipelines/generate-podcast.mjs', extraArgs: [] },
     'civic-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: [] },
     'live-shorts': { script: 'scripts/youtube/pipelines/generate-live-shorts.mjs', extraArgs: [] },
@@ -224,17 +227,18 @@ async function main() {
 
   let targetFormat = null;
 
-  if (now.hours >= 19 && now.hours < 22) {
-    // Evening Window (07:00 PM - 09:59 PM IST): Vizhi Uncut Citizen Watchdog & Scam Investigation
-    targetFormat = 'podcast';
-  } else if (now.hours >= 14 && now.hours < 19) {
-    // Afternoon Window (02:00 PM - 06:59 PM IST): Govt Scheme Guide & Citizen Money Unlock Short
-    targetFormat = 'scheme-shorts';
-  } else if (now.hours < 14) {
-    // Morning Window (06:00 AM - 01:59 PM IST): Citizen Legal Rights & Police/RTI Shield Short
+  // Sunday 10:00 AM IST Mega Mock Test Window
+  if (now.dayOfWeek === 0 && now.hours >= 9 && now.hours < 12) {
+    targetFormat = 'weekly-mock';
+  } else if (now.hours >= 17 && now.hours < 22) {
+    // Evening Window (05:00 PM - 09:59 PM IST): 5-Question Rapid Timer Quiz Short
+    targetFormat = 'quiz-shorts';
+  } else if (now.hours >= 12 && now.hours < 17) {
+    // Afternoon Window (12:00 PM - 04:59 PM IST): Citizen Legal Shield & Dispute Guide Short
     targetFormat = 'rights-shorts';
   } else {
-    targetFormat = 'scam-shorts';
+    // Morning Window (06:00 AM - 11:59 AM IST): Morning High-Density GK Masterclass Short
+    targetFormat = 'gk-lesson-shorts';
   }
 
   console.log(`[AUTO ROUTER] Target slot for ${now.hours}:${now.minutes} IST is: "${targetFormat}"`);

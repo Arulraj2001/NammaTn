@@ -51,7 +51,7 @@ async function main() {
 
   // 2. Draft Spoken Conversational 3-Scene Script — PROBLEM FIRST, never "ஹலோ மக்களே"
   const scene1Script = [
-    topic.hookTa   // opens with the problem in the viewer's face
+    `உங்கள் உழைப்பில் சம்பாதித்த பணத்தையும் உங்கள் உரிமையையும் யாரும் பறிக்க முடியாது! ${topic.hookTa}`
   ];
 
   const scene2Script = [
@@ -62,23 +62,23 @@ async function main() {
   const scene3Script = [
     `Step 3: ${topic.step3Legal}`,
     `Official உதவிக்கு ${topic.helplineText}-ஐ call பண்ணுங்க.`,
-    `இதே போன்ற மக்கள் உரிமை தகவல்கள் மற்றும் அரசு எச்சரிக்கைகளை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணிக்கோங்க!`
+    `அநீதியை எதிர்த்து நிற்க, சட்டம் எப்போதும் உங்கள் பக்கம் இருக்கிறது! இதுபோன்ற மக்கள் உரிமை வழிகாட்டல்களை உடனே பெற — இப்பவே VizhiTN-ஐ Follow பண்ணிக்கோங்க!`
   ];
 
   // 3. Synthesize Audio for each scene with micro-chunk engine
   console.log('[TTS] Synthesizing Scene 1 audio (Problem Hook)...');
   const s1AudioPath = path.join(outDir, `rights_s1_audio_${Date.now()}.mp3`);
-  await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+3%' });
+  await synthesizeSpeech(scene1Script, s1AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+10%' });
   const s1Dur = getAudioDuration(s1AudioPath);
 
   console.log('[TTS] Synthesizing Scene 2 audio (Behavior & Evidence)...');
   const s2AudioPath = path.join(outDir, `rights_s2_audio_${Date.now()}.mp3`);
-  await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+3%' });
+  await synthesizeSpeech(scene2Script, s2AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+10%' });
   const s2Dur = getAudioDuration(s2AudioPath);
 
   console.log('[TTS] Synthesizing Scene 3 audio (Legal Sections & Helplines)...');
   const s3AudioPath = path.join(outDir, `rights_s3_audio_${Date.now()}.mp3`);
-  await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+3%' });
+  await synthesizeSpeech(scene3Script, s3AudioPath, { voice: YOUTUBE_CONFIG.voices.tamilFemale, rate: '+10%' });
   const s3Dur = getAudioDuration(s3AudioPath);
 
   const totalDur = s1Dur + s2Dur + s3Dur;

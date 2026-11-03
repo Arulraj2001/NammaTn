@@ -58,7 +58,7 @@ async function synthesizeSpeech(text, outputPath, voice = 'ta-IN-PallaviNeural')
   fs.writeFileSync(tempTextFile, cleanText, 'utf-8');
 
   try {
-    const args = ['-m', 'edge_tts', '--voice', voice, '--rate=+5%', '--file', tempTextFile, '--write-media', outputPath];
+    const args = ['-m', 'edge_tts', '--voice', voice, '--rate=+10%', '--file', tempTextFile, '--write-media', outputPath];
     execFileSync(python, args, { stdio: 'pipe', timeout: 45000, windowsHide: true });
     console.log(`[SCHEME TTS ✓] Edge-TTS speech generated: ${path.basename(outputPath)}`);
   } finally {
