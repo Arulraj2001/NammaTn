@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 import { createServerSupabase } from '@/lib/serverSupabase';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
+
+async function sha256Hex(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 export async function GET() {
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BOWJBajbZAmrHn-BWGcMUfj_BanHnC34wRU9k8IRfkITg-E399GVaQNqjuLqnZ1zqtqnhCXQRqahgM44MfXdQAU';
@@ -25,7 +33,8 @@ export async function POST(request) {
     }
 
     // Unique deterministic key from endpoint hash
-    const endpointHash = crypto.createHash('sha256').update(subscription.endpoint).digest('hex').slice(0, 32);
+    const fullHash = await sha256Hex(subscription.endpoint);
+    const endpointHash = fullHash.slice(0, 32);
     const subKey = `webpush_${endpointHash}`;
 
     const { error: upsertErr } = await supabase.from('site_settings').upsert(

@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import webpush from 'web-push';
+import { buildPushPayload } from '@block65/webcrypto-web-push';
 import { createServerSupabase } from '@/lib/serverSupabase';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 function isAuthorized(request) {
@@ -34,7 +34,11 @@ export async function POST(request) {
     const privateKey = process.env.VAPID_PRIVATE_KEY || 'TIYR61x8WLRVVkIdyEl70bUV7t55JarB2g8JfQLmri8';
     const subject = process.env.VAPID_SUBJECT || 'mailto:vizhitnin@gmail.com';
 
-    webpush.setVapidDetails(subject, publicKey, privateKey);
+    const vapid = {
+      subject,
+      publicKey,
+      privateKey,
+    };
 
     const supabase = createServerSupabase({ useServiceRole: true });
     if (!supabase) {
@@ -79,7 +83,7 @@ export async function POST(request) {
         return;
       }
 
-      if (!subData?.endpoint || !subData?.keys) {
+      if (!subData?.endpoint || !subData?.keys?.p256dh || !subData?.keys?.auth) {
         deadSubKeys.push(row.key);
         return;
       }
@@ -90,21 +94,32 @@ export async function POST(request) {
       }
 
       try {
-        await webpush.sendNotification(
+        const pushPayload = await buildPushPayload(
+          {
+            data: payload,
+            options: { ttl: 86400 },
+          },
           {
             endpoint: subData.endpoint,
             keys: subData.keys,
           },
-          payload,
-          { TTL: 86400 }
+          vapid
         );
-        sentCount++;
+
+        const pushRes = await fetch(subData.endpoint, pushPayload);
+
+        if (pushRes.ok) {
+          sentCount++;
+        } else {
+          failedCount++;
+          // 410 Gone or 404 Not Found indicates expired or unsubscribed endpoint
+          if (pushRes.status === 410 || pushRes.status === 404) {
+            deadSubKeys.push(row.key);
+          }
+        }
       } catch (err) {
         failedCount++;
-        // 410 Gone or 404 Not Found indicates expired or unsubscribed endpoint
-        if (err.statusCode === 410 || err.statusCode === 404) {
-          deadSubKeys.push(row.key);
-        }
+        console.error(`[WebPush] Push failed for ${subData.endpoint}:`, err.message);
       }
     });
 
