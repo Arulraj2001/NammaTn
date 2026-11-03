@@ -19,6 +19,8 @@ import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
 import { generateLongThumbnailPair } from '../engine/thumbnail-engine.mjs';
 import { getTodayIst } from '../engine/calendar-reader.mjs';
 import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
+import { shareYouTubeBroadcastToWhatsApp } from '../engine/whatsapp-youtube-sharer.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -821,30 +823,61 @@ Official Portal: https://vizhitn.in
     'TNPSC History', 'TNPSC Polity', 'Keezhadi', 'Velu Nachiyar', 'VizhiTN'
   ];
 
+  const videoTitle = `${packageData.titleTa.slice(0, 85)} | VizhiTN`;
+
   if (isDryRun) {
     console.log('\n[DRY RUN COMPLETE ✓] Video rendered successfully without uploading.');
     console.log(`Video File: ${masterVideoPath}`);
     console.log(`Duration: ${totalMin}m ${totalSec}s`);
     console.log(`Thumbnail: ${thumbPath}`);
+
+    // Dry-run preview for WhatsApp Channel
+    await shareYouTubeBroadcastToWhatsApp({
+      videoId: 'DRY_RUN_ID',
+      videoUrl: 'https://youtu.be/DRY_RUN_ID',
+      title: videoTitle,
+      description,
+      isShort: false,
+      dryRun: true
+    });
+
+    // Dry-run preview for Facebook Page Videos
+    await crossPostVideoToMetaSocials({
+      videoFilePath: masterVideoPath,
+      thumbnailFilePath: thumbPath,
+      title: videoTitle,
+      caption: description,
+      isReel: false,
+      isDryRun: true
+    });
+
     return;
   }
 
   // 6. Upload to YouTube
   console.log('[UPLOAD] Uploading 20-minute Mega Mock Test to YouTube...');
-  const uploadResult = await uploadToYouTube({
-    videoPath: masterVideoPath,
-    title: `${packageData.titleTa.slice(0, 85)} | VizhiTN`,
-    description,
-    tags,
-    categoryId: '27' // Education category
-  });
+  let uploadResult = null;
+  try {
+    uploadResult = await uploadToYouTube({
+      videoPath: masterVideoPath,
+      title: videoTitle,
+      description,
+      tags,
+      categoryId: '27' // Education category
+    });
+  } catch (ytErr) {
+    console.warn('[YOUTUBE UPLOAD WARN]', ytErr.message);
+  }
 
-  if (uploadResult?.videoId) {
-    console.log(`[UPLOAD SUCCESS ✓] Video published: https://youtu.be/${uploadResult.videoId}`);
+  const liveVideoId = uploadResult?.videoId || uploadResult?.id;
+  const liveVideoUrl = uploadResult?.videoUrl || (liveVideoId ? `https://youtu.be/${liveVideoId}` : 'https://youtube.com/@VizhiTn');
+
+  if (liveVideoId) {
+    console.log(`[UPLOAD SUCCESS ✓] Video published: ${liveVideoUrl}`);
 
     if (fs.existsSync(thumbPath)) {
       try {
-        await setYouTubeThumbnail(uploadResult.videoId, thumbPath);
+        await setYouTubeThumbnail(liveVideoId, thumbPath);
       } catch (tErr) {
         console.warn('[THUMBNAIL UPLOAD WARN]', tErr.message);
       }
@@ -857,19 +890,46 @@ Official Portal: https://vizhitn.in
 📖 சமச்சீர் கல்வி பாடநூல் அடிப்படையில் தொடர்ந்து பயிற்சி செய்ய VizhiTN-ஐ சப்ஸ்கிரைப் செய்து வச்சுக்கோங்க! வெற்றி நமதே! 🔥`;
 
     try {
-      await postPinnedComment(uploadResult.videoId, pinnedCommentText);
+      await postPinnedComment(liveVideoId, pinnedCommentText);
       console.log('[PINNED COMMENT ✓] Posted and pinned encouragement comment.');
     } catch (_) {}
 
     await recordBroadcastSuccess({
       format: 'weekly-mock',
-      youtubeVideoId: uploadResult.videoId,
+      youtubeVideoId: liveVideoId,
       title: packageData.titleTa,
       metadata: {
         durationSec: currentCumulativeSec,
         questionsCount: questions.length
       }
     });
+
+    // Cross-Post 1: WhatsApp Channel (High-CTR Rich Card)
+    try {
+      await shareYouTubeBroadcastToWhatsApp({
+        videoId: liveVideoId,
+        videoUrl: liveVideoUrl,
+        title: videoTitle,
+        description,
+        isShort: false
+      });
+    } catch (waErr) {
+      console.warn('[WHATSAPP SHARE WARN]', waErr.message);
+    }
+
+    // Cross-Post 2: Facebook Page Watch Video (16:9)
+    try {
+      await crossPostVideoToMetaSocials({
+        videoFilePath: masterVideoPath,
+        thumbnailFilePath: thumbPath,
+        title: videoTitle,
+        caption: description,
+        isReel: false,
+        isDryRun: false
+      });
+    } catch (metaErr) {
+      console.warn('[META SOCIALS WARN]', metaErr.message);
+    }
   }
 }
 

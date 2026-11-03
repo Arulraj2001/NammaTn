@@ -10,6 +10,60 @@ const GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
 const GRAPH_VIDEO_API_BASE = 'https://graph-video.facebook.com/v21.0';
 
 /**
+ * Robust HTML tag and entity stripper for clean social captions.
+ */
+function stripHtml(str = '') {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Format Instagram-optimized Reel caption:
+ * - Strictly <850 characters to prevent Meta Graph API container rejection
+ * - Strip raw URLs (Instagram captions do NOT have clickable hyperlinks)
+ * - Retain 5-6 viral hashtags
+ * - Add Bio / YouTube call-to-action
+ */
+export function formatSafeInstaCaption(rawCaption = '', title = '') {
+  let clean = stripHtml(rawCaption);
+
+  // Extract up to 6 hashtags
+  const hashtags = (clean.match(/#[\w\u0B80-\u0BFF]+/g) || []).slice(0, 6);
+
+  // Remove existing URLs and hashtags from body
+  clean = clean.replace(/https?:\/\/\S+/gi, '').replace(/#[\w\u0B80-\u0BFF]+/g, '').trim();
+
+  // Clamp body if needed
+  if (clean.length > 350) {
+    clean = clean.slice(0, 340).trim() + '...';
+  }
+
+  const parts = [
+    clean || title,
+    '',
+    '💬 உங்கள் கருத்து என்ன? கமெண்டில் சொல்லுங்கள் 👇',
+    '📌 தொடர் வீடியோக்கள் & முழு விவரங்களுக்கு Bio லிங்கை பார்க்கவும் ↗️',
+    '👉 தமிழ்நாடு முக்கிய அறிவிப்புகளுக்கு @vizhi_tn பக்கத்தை Follow செய்யுங்கள்!',
+    '',
+    hashtags.length > 0 ? hashtags.join(' ') : '#VizhiTN #TamilNadu #ReelsIndia #Shorts'
+  ].filter(Boolean);
+
+  const res = parts.join('\n');
+  return res.length > 850 ? res.slice(0, 840) + '...' : res;
+}
+
+/**
  * Cross-posts a rendered MP4 video to Facebook Page & Instagram Reels
  *
  * @param {Object} params
@@ -45,10 +99,12 @@ export async function crossPostVideoToMetaSocials({
   const hasMetaCreds = Boolean(pageId && pageToken && instaId);
 
   if (isDryRun || !hasMetaCreds) {
+    const safeInsta = formatSafeInstaCaption(caption, title);
     console.log(`[META DRY-RUN] Video ready for social broadcast (${fileSizeMb} MB)`);
     console.log(`Title: ${title}`);
     console.log(`Format: ${isReel ? 'Instagram Reel & FB Video (9:16)' : 'Facebook Watch Video (16:9)'}`);
-    console.log(`Caption Preview:\n${caption.slice(0, 150)}...\n`);
+    console.log(`[META DRY-RUN] Instagram Reel Caption Preview (${safeInsta.length} chars):\n${safeInsta}\n`);
+    console.log(`[META DRY-RUN] Facebook Video Description Preview:\n${stripHtml(caption).slice(0, 180)}...\n`);
     if (!hasMetaCreds) {
       console.log('[META NOTICE] Missing META_PAGE_ID, META_PAGE_ACCESS_TOKEN, or META_INSTA_ACCOUNT_ID in .env.local.');
       console.log('Cross-posting to Instagram/Facebook is currently in dry-run mode.');
@@ -108,7 +164,7 @@ export async function crossPostVideoToMetaSocials({
     const fbPayload = {
       file_url: publicVideoUrl,
       title: title,
-      description: caption,
+      description: stripHtml(caption),
       access_token: activePageToken
     };
     if (publicCoverUrl) {
@@ -128,6 +184,23 @@ export async function crossPostVideoToMetaSocials({
     } else {
       console.log(`[META FB SUCCESS] Facebook Video Published! Video ID: ${fbData.id}`);
       results.facebook = fbData;
+
+      // Post YouTube subscription link in first comment to protect video organic reach from external link penalty
+      if (fbData.id && activePageToken) {
+        const ytMatch = caption.match(/https?:\/\/(?:youtu\.be|www\.youtube\.com)\/\S+/i);
+        const ytLink = ytMatch ? ytMatch[0] : 'https://youtube.com/@VizhiTn';
+        try {
+          await fetch(`${GRAPH_API_BASE}/${fbData.id}/comments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: `▶️ YouTube-ல் காண & சப்ஸ்கிரைப் செய்ய:\n🔗 ${ytLink}`,
+              access_token: activePageToken
+            })
+          });
+          console.log('[META FB FIRST COMMENT ✓] Added YouTube link in Facebook first comment.');
+        } catch (_) {}
+      }
     }
   } catch (err) {
     console.warn(`[META FB ERROR] ${err.message}`);
@@ -137,11 +210,12 @@ export async function crossPostVideoToMetaSocials({
   // 3. Publish to Instagram Reels (if 9:16 format)
   if (isReel && instaId) {
     try {
+      const safeInstaCaption = formatSafeInstaCaption(caption, title);
       console.log(`[META] Step 1: Creating Instagram Reel Container for account ${instaId}...`);
       const reelPayload = {
         media_type: 'REELS',
         video_url: publicVideoUrl,
-        caption: caption,
+        caption: safeInstaCaption,
         share_to_feed: true,
         access_token: pageToken
       };

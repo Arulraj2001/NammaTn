@@ -15,6 +15,8 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { getBrandLogoDataUri, getStickmanAssetDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
+import { shareYouTubeBroadcastToWhatsApp } from '../engine/whatsapp-youtube-sharer.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -497,22 +499,77 @@ async function main() {
     console.log('\n--- [DRY RUN PREVIEW] ---');
     console.log(`Title: ${videoTitle}`);
     console.log(`Video File: ${outputVideoPath}`);
+
+    // Dry-run preview for WhatsApp Channel
+    await shareYouTubeBroadcastToWhatsApp({
+      videoId: 'DRY_RUN_ID',
+      videoUrl: 'https://youtube.com/shorts/DRY_RUN_ID',
+      title: videoTitle,
+      description: videoDescription,
+      isShort: true,
+      dryRun: true
+    });
+
+    // Dry-run preview for Instagram Reels & Facebook
+    await crossPostVideoToMetaSocials({
+      videoFilePath: outputVideoPath,
+      title: videoTitle,
+      caption: videoDescription,
+      isReel: true,
+      isDryRun: true
+    });
+
     console.log('[SUCCESS ✓] Morning GK Lesson pipeline verified successfully.');
     return;
   }
 
   console.log('[YOUTUBE] Uploading Morning Lesson Short...');
-  const res = await uploadToYouTube({
-    videoFilePath: outputVideoPath,
-    title: videoTitle,
-    description: videoDescription,
-    tags: ['TNPSC', pkg.unit, 'Samacheer Kalvi', 'TNPSC Group 4', 'Tamil Nadu GK', 'Shorts'],
-    categoryId: '27',
-    privacyStatus: 'public',
-    isShort: true
-  });
+  let res = null;
+  try {
+    res = await uploadToYouTube({
+      videoFilePath: outputVideoPath,
+      title: videoTitle,
+      description: videoDescription,
+      tags: ['TNPSC', pkg.unit, 'Samacheer Kalvi', 'TNPSC Group 4', 'Tamil Nadu GK', 'Shorts'],
+      categoryId: '27',
+      privacyStatus: 'public',
+      isShort: true
+    });
+    console.log(`[YOUTUBE PUBLISHED ✓] Live: ${res?.videoUrl || res?.id}`);
+  } catch (ytErr) {
+    console.warn('[YOUTUBE UPLOAD WARN]', ytErr.message);
+  }
 
-  console.log(`[YOUTUBE PUBLISHED ✓] Live: ${res?.videoUrl || res?.id}`);
+  const liveVideoId = res?.videoId || res?.id;
+  const liveVideoUrl = res?.videoUrl || (liveVideoId ? `https://youtu.be/${liveVideoId}` : 'https://youtube.com/@VizhiTn');
+
+  // Cross-Post 1: WhatsApp Channel
+  try {
+    if (liveVideoId) {
+      await shareYouTubeBroadcastToWhatsApp({
+        videoId: liveVideoId,
+        videoUrl: liveVideoUrl,
+        title: videoTitle,
+        description: videoDescription,
+        isShort: true
+      });
+    }
+  } catch (waErr) {
+    console.warn('[WHATSAPP SHARE WARN]', waErr.message);
+  }
+
+  // Cross-Post 2: Meta Socials (Instagram Reels & Facebook Video)
+  try {
+    await crossPostVideoToMetaSocials({
+      videoFilePath: outputVideoPath,
+      title: videoTitle,
+      caption: videoDescription,
+      isReel: true,
+      isDryRun: false
+    });
+  } catch (metaErr) {
+    console.warn('[META SOCIALS WARN]', metaErr.message);
+  }
 }
 
 main().catch(err => {

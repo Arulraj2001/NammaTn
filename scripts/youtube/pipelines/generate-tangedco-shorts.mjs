@@ -18,6 +18,8 @@ import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
 import { generateShortsThumbnailPair } from '../engine/thumbnail-shorts-engine.mjs';
 import { getTodayIst } from '../engine/calendar-reader.mjs';
 import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
+import { shareYouTubeBroadcastToWhatsApp } from '../engine/whatsapp-youtube-sharer.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -568,43 +570,99 @@ https://vizhitn.in/power-cuts-today-tamil-nadu
     console.log(`Title: ${videoTitle}`);
     console.log(`Video File: ${finalVideoPath}`);
     console.log('\n[PINNED COMMENT PREVIEW]:\n' + pinnedComment);
+
+    // Dry-run preview for WhatsApp Channel
+    await shareYouTubeBroadcastToWhatsApp({
+      videoId: 'DRY_RUN_ID',
+      videoUrl: 'https://youtube.com/shorts/DRY_RUN_ID',
+      title: videoTitle,
+      description,
+      isShort: true,
+      dryRun: true
+    });
+
+    // Dry-run preview for Instagram Reels & Facebook
+    await crossPostVideoToMetaSocials({
+      videoFilePath: finalVideoPath,
+      thumbnailFilePath: thumbPath,
+      title: videoTitle,
+      caption: description,
+      isReel: true,
+      isDryRun: true
+    });
+
     console.log('[SUCCESS ✓] TANGEDCO / Holiday Short pipeline verified successfully.');
     return;
   }
 
   // 7. Upload to YouTube
   console.log('[UPLOAD] Uploading Short to YouTube...');
-  const uploadResult = await uploadToYouTube({
-    videoPath: finalVideoPath,
-    title: videoTitle,
-    description,
-    tags,
-    categoryId: '25' // News & Politics
-  });
+  let uploadResult = null;
+  try {
+    uploadResult = await uploadToYouTube({
+      videoPath: finalVideoPath,
+      title: videoTitle,
+      description,
+      tags,
+      categoryId: '25' // News & Politics
+    });
+  } catch (ytErr) {
+    console.warn('[YOUTUBE UPLOAD WARN]', ytErr.message);
+  }
 
-  if (uploadResult?.videoId) {
-    console.log(`[UPLOAD SUCCESS ✓] Published: https://youtu.be/${uploadResult.videoId}`);
+  const liveVideoId = uploadResult?.videoId || uploadResult?.id;
+  const liveVideoUrl = uploadResult?.videoUrl || (liveVideoId ? `https://youtu.be/${liveVideoId}` : 'https://youtube.com/@VizhiTn');
+
+  if (liveVideoId) {
+    console.log(`[UPLOAD SUCCESS ✓] Published: ${liveVideoUrl}`);
 
     if (fs.existsSync(thumbPath)) {
       try {
-        await setYouTubeThumbnail(uploadResult.videoId, thumbPath);
+        await setYouTubeThumbnail(liveVideoId, thumbPath);
       } catch (_) {}
     }
 
     try {
-      await postPinnedComment(uploadResult.videoId, pinnedComment);
+      await postPinnedComment(liveVideoId, pinnedComment);
       console.log('[PINNED COMMENT ✓] Posted crowd-source invitation comment.');
     } catch (_) {}
 
     await recordBroadcastSuccess({
       format: 'tangedco-shorts',
-      youtubeVideoId: uploadResult.videoId,
+      youtubeVideoId: liveVideoId,
       title: payload.titleTa,
       metadata: {
         type: payload.type,
         date: todayIst
       }
     });
+
+    // Cross-Post 1: WhatsApp Channel
+    try {
+      await shareYouTubeBroadcastToWhatsApp({
+        videoId: liveVideoId,
+        videoUrl: liveVideoUrl,
+        title: videoTitle,
+        description,
+        isShort: true
+      });
+    } catch (waErr) {
+      console.warn('[WHATSAPP SHARE WARN]', waErr.message);
+    }
+
+    // Cross-Post 2: Meta Socials (Instagram Reels & Facebook Video)
+    try {
+      await crossPostVideoToMetaSocials({
+        videoFilePath: finalVideoPath,
+        thumbnailFilePath: thumbPath,
+        title: videoTitle,
+        caption: description,
+        isReel: true,
+        isDryRun: false
+      });
+    } catch (metaErr) {
+      console.warn('[META SOCIALS WARN]', metaErr.message);
+    }
   }
 }
 
@@ -612,3 +670,4 @@ main().catch(err => {
   console.error('[FATAL TANGEDCO SHORTS ERROR]:', err);
   process.exit(1);
 });
+

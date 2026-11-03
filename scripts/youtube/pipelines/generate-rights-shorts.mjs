@@ -17,6 +17,7 @@ import { fetchFreeBrollClip } from '../engine/broll-fetcher.mjs';
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
+import { shareYouTubeBroadcastToWhatsApp } from '../engine/whatsapp-youtube-sharer.mjs';
 import { generateShortsThumbnail, generateShortsThumbnailPair } from '../engine/thumbnail-shorts-engine.mjs';
 import { generateSeoVideoFilename } from '../engine/seo-filename.mjs';
 import { runQualityControl } from '../engine/qc-engine.mjs';
@@ -302,7 +303,23 @@ async function main() {
     console.warn('[YOUTUBE WARN] YouTube upload encountered an issue:', ytErr.message);
   }
 
-  // 11. Cross-Post to Meta Socials (Instagram Reels & Facebook Videos) - ALWAYS EXECUTED
+  // 11. Cross-Post to WhatsApp Channel
+  try {
+    const liveVideoId = uploadResult?.videoId || 'DRY_RUN_ID';
+    const liveVideoUrl = uploadResult?.videoUrl || `https://youtube.com/shorts/${liveVideoId}`;
+    await shareYouTubeBroadcastToWhatsApp({
+      videoId: liveVideoId,
+      videoUrl: liveVideoUrl,
+      title: ytTitle,
+      description: socialCaption,
+      isShort: true,
+      dryRun: isDryRun
+    });
+  } catch (waErr) {
+    console.warn('[WHATSAPP SHARE WARN]', waErr.message);
+  }
+
+  // 12. Cross-Post to Meta Socials (Instagram Reels & Facebook Videos) - ALWAYS EXECUTED
   try {
     await crossPostVideoToMetaSocials({
       videoFilePath: videoOutputPath,

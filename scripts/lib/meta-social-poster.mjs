@@ -27,6 +27,25 @@ try {
 
 const GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
 
+/**
+ * Robust HTML tag and entity stripper for clean social captions.
+ */
+export function stripHtml(str = '') {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 const VIRAL_HASHTAG_MAP = {
   electricity: ['#TANGEDCO', '#PowerCut', '#EBPowerCut', '#Minnalagam', '#ElectricityBoard', '#TamilNaduPowerCut'],
   'water-sanitation': ['#MetroWater', '#TWAD', '#WaterSupply', '#ChennaiWater', '#DrinkingWater', '#TamilNaduWater'],
@@ -51,12 +70,11 @@ function getCategoryHashtags(categorySlug = '') {
 }
 
 /**
- * Format post content into high-converting Instagram & Facebook caption.
- * Incorporates 2026 first-line search anchor, Instagram Save/Share signals,
- * Facebook discussion hooks, and 3-tier viral hashtag clusters.
+ * Format post content into high-converting Facebook caption.
+ * Incorporates first-line search anchor, discussion hooks, and verified helplines.
  */
 export function formatSocialCaption(post = {}) {
-  const titleTa = post.title_ta || post.title_en || 'முக்கிய அறிவிப்பு | VizhiTN';
+  const titleTa = stripHtml(post.title_ta || post.title_en || 'முக்கிய அறிவிப்பு | VizhiTN');
   const category = (post.category_slug || 'general').toLowerCase();
   const district = post.district_slug || 'tamil-nadu';
   const area = post.area_name || '';
@@ -70,18 +88,20 @@ export function formatSocialCaption(post = {}) {
   else if (category.includes('safe') || category.includes('scam')) emojiHeader = '🚨';
   else if (category.includes('politic')) emojiHeader = '🗳️';
 
-  const bullets = [];
-  if (post.bullet1) bullets.push(post.bullet1);
-  if (post.bullet2) bullets.push(post.bullet2);
-  if (post.bullet3) bullets.push(post.bullet3);
+  const cleanContent = stripHtml(post.content_ta || post.content_en || '');
 
-  // If no manual bullets, construct from content
-  if (bullets.length === 0 && post.content_ta) {
-    const sentences = post.content_ta.split('. ').filter(Boolean).slice(0, 3);
+  const bullets = [];
+  if (post.bullet1) bullets.push(stripHtml(post.bullet1));
+  if (post.bullet2) bullets.push(stripHtml(post.bullet2));
+  if (post.bullet3) bullets.push(stripHtml(post.bullet3));
+
+  // If no manual bullets, construct from clean content
+  if (bullets.length === 0 && cleanContent) {
+    const sentences = cleanContent.split('. ').filter(Boolean).slice(0, 3);
     sentences.forEach((s) => bullets.push(`➔ ${s.trim()}`));
   }
 
-  // 1. Search anchor (first line, indexed by Instagram & Meta search algorithms in 2026)
+  // 1. Search anchor
   const areaPrefix = area ? `${area} | ` : '';
   const searchAnchor = `vizhi_tn ${emojiHeader} ${areaPrefix}${titleTa}`;
 
@@ -89,38 +109,24 @@ export function formatSocialCaption(post = {}) {
   const saveShareHook = '📌 உங்கள் பகுதி உள்ளதா என்பதைச் சரிபார்க்க சேமித்து (Save) வைத்துக் கொள்ளுங்கள்! நண்பர்களுக்கும் குடும்பத்தினருக்கும் பகிருங்கள் (Share) ↗️';
   const discussionHook = '💬 உங்கள் பகுதியில் தற்போதைய நிலை என்ன? கமெண்டில் சொல்லுங்கள் 👇';
 
-  // 3. Multi-tier hashtags (25-30 live trending Meta tags)
+  // 3. Multi-tier hashtags
   const tier1ViralTags = [
     '#VizhiTN', '#TamilNadu', '#TamilNaduNews', '#TNGovt',
-    '#Reels', '#ReelsIndia', '#TamilReels', '#TrendingReels', '#ViralReels',
-    '#ExplorePage', '#TamilNews', '#BreakingNews', '#TamilTrending', '#TNNews'
+    '#TamilNews', '#BreakingNews', '#TamilTrending', '#TNNews'
   ];
   const tier2Tags = getCategoryHashtags(category);
-  const districtTag = `#${district.replace(/[^a-zA-Z0-9]/g, '')}`;
+  const districtTag = district ? `#${district.replace(/[^a-zA-Z0-9]/g, '')}` : '';
   const areaTag = area ? `#${area.replace(/[^a-zA-Z0-9]/g, '')}` : '';
-  const tier3Tags = [districtTag, areaTag, '#CivicAlert', '#PublicSafety', '#DailyUpdate', '#HyperlocalNews'].filter(Boolean);
+  const tier3Tags = [districtTag, areaTag, '#CivicAlert', '#PublicSafety'].filter(Boolean);
 
-  const allHashtags = Array.from(new Set([...tier1ViralTags, ...tier2Tags, ...tier3Tags])).join(' ');
+  const allHashtags = Array.from(new Set([...tier1ViralTags, ...tier2Tags, ...tier3Tags])).slice(0, 15).join(' ');
 
   const targetUrl = `https://www.vizhitn.in/${post.slug ? `post/${post.slug}` : ''}`;
-  // P2-6: Category-aware search query line for better SEO / discoverability
-  const categorySearchQuery = {
-    electricity: `${area || district} power cut today, TANGEDCO shutdown ${district}`,
-    'water-sanitation': `${area || district} water supply today, Metrowater ${district}`,
-    transport: `${area || district} bus train cancelled today, MTC SETC ${district}`,
-    'public-safety': `${area || district} scam alert, cyber crime 1930 ${district}`,
-    'road-infrastructure': `${area || district} road closure today, potholes ${district}`,
-    environment: `${area || district} rain alert today, IMD warning ${district}`,
-    'government-schemes': `${area || district} govt scheme camp today, ration card ${district}`,
-    education: `${area || district} school holiday today, college closed ${district}`,
-  }[category] || `${area || district} civic news today, Tamil Nadu updates`;
-
-  const searchQueries = `🔍 Searches: ${categorySearchQuery}, VizhiTN`;
 
   const lines = [
     searchAnchor,
     '',
-    post.content_ta || post.content_en || '',
+    cleanContent,
     '',
     bullets.length > 0 ? 'முக்கிய விவரங்கள் 👇' : '',
     ...bullets,
@@ -134,12 +140,65 @@ export function formatSocialCaption(post = {}) {
     'மேலும் முழு விவரங்களை அறிய 👇',
     `🔗 ${targetUrl}`,
     '',
-    searchQueries,
-    '',
     allHashtags
   ].filter((line, idx, arr) => line !== '' || (arr[idx - 1] !== '' && idx > 0));
 
   return lines.join('\n');
+}
+
+/**
+ * Format post content into a clean, concise, high-CTR Instagram caption (<850 chars).
+ * Strictly complies with Instagram container character limits, strips HTML,
+ * eliminates unclickable raw URLs, and uses 5-7 focused hashtags to prevent shadowbanning.
+ */
+export function formatInstagramCaption(post = {}) {
+  const titleTa = stripHtml(post.title_ta || post.title_en || 'முக்கிய அறிவிப்பு | VizhiTN');
+  const category = (post.category_slug || 'general').toLowerCase();
+  const district = post.district_slug || 'tamil-nadu';
+  const area = post.area_name || '';
+  const helpline = post.assigned_department?.match(/\d{4,}/)?.[0] || '';
+
+  let emojiHeader = '📢';
+  if (category.includes('electric') || category.includes('power')) emojiHeader = '⚡';
+  else if (category.includes('educat') || category.includes('scheme')) emojiHeader = '💻';
+  else if (category.includes('water')) emojiHeader = '💧';
+  else if (category.includes('road') || category.includes('infra')) emojiHeader = '🛣️';
+  else if (category.includes('safe') || category.includes('scam')) emojiHeader = '🚨';
+  else if (category.includes('politic')) emojiHeader = '🗳️';
+
+  const areaPrefix = area ? `${area} | ` : '';
+  const headerLine = `${emojiHeader} ${areaPrefix}${titleTa}`;
+
+  // Clean and clamp content for Instagram (around 250-300 chars max)
+  let cleanContent = stripHtml(post.content_ta || post.content_en || '');
+  if (cleanContent.length > 280) {
+    cleanContent = cleanContent.slice(0, 270).trim() + '...';
+  }
+
+  // 5-7 focused hashtags (algorithmically optimal on Instagram in 2026)
+  const categoryTags = (getCategoryHashtags(category) || []).slice(0, 3);
+  const districtTag = district ? `#${district.replace(/[^a-zA-Z0-9]/g, '')}` : '';
+  const areaTag = area ? `#${area.replace(/[^a-zA-Z0-9]/g, '')}` : '';
+  const tags = Array.from(new Set(['#VizhiTN', '#TamilNadu', districtTag, areaTag, ...categoryTags]))
+    .filter(Boolean)
+    .slice(0, 6)
+    .join(' ');
+
+  const lines = [
+    headerLine,
+    '',
+    cleanContent,
+    '',
+    helpline ? `📞 அவசர உதவி எண்: ${helpline}` : '',
+    '💬 உங்கள் பகுதியில் தற்போதைய நிலை என்ன? கமெண்டில் சொல்லுங்கள் 👇',
+    '📌 முழு விவரங்களை அறிய Bio-வில் உள்ள லிங்கை கிளிக் செய்யவும் ↗️',
+    '👉 தொடர் எச்சரிக்கைகளுக்கு @vizhi_tn பக்கத்தை Follow செய்யுங்கள்.',
+    '',
+    tags
+  ].filter((line, idx, arr) => line !== '' || (arr[idx - 1] !== '' && idx > 0));
+
+  const finalCaption = lines.join('\n');
+  return finalCaption.length > 850 ? finalCaption.slice(0, 840) + '...' : finalCaption;
 }
 
 /**
@@ -195,6 +254,10 @@ export async function postToInstagramFeed({ imageUrl, caption }) {
     throw new Error('Missing META_INSTA_ACCOUNT_ID or META_PAGE_ACCESS_TOKEN');
   }
 
+  // Sanitize and strictly enforce Instagram caption limits (<850 chars)
+  const cleanCaption = stripHtml(caption || '');
+  const safeCaption = cleanCaption.length > 850 ? cleanCaption.slice(0, 840) + '...' : cleanCaption;
+
   console.log(`[MetaPoster] Step 1: Creating Instagram Media Container for account ${instaId}...`);
 
   const containerRes = await fetch(`${GRAPH_API_BASE}/${instaId}/media`, {
@@ -202,7 +265,7 @@ export async function postToInstagramFeed({ imageUrl, caption }) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       image_url: imageUrl,
-      caption: caption,
+      caption: safeCaption,
       access_token: token
     })
   });
@@ -315,6 +378,7 @@ export async function broadcastToSocials(post = {}, options = {}) {
   });
 
   const caption = formatSocialCaption(post);
+  const instaCaption = formatInstagramCaption(post);
   let link = 'https://www.vizhitn.in';
   if (post.slug) {
     if (post.isTnToday || post.category === 'tn_today' || post.category_slug === 'tn-today') {
@@ -431,7 +495,7 @@ export async function broadcastToSocials(post = {}, options = {}) {
   try {
     results.instagram = await postToInstagramFeed({
       imageUrl: publicImageUrl,
-      caption
+      caption: instaCaption
     });
   } catch (err) {
     console.error('[MetaPoster] Instagram failed:', err.message);

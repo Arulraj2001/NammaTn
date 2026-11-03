@@ -17,6 +17,8 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { getBrandLogoDataUri, getStickmanAssetDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube, postPinnedComment } from '../engine/youtube-client.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
+import { shareYouTubeBroadcastToWhatsApp } from '../engine/whatsapp-youtube-sharer.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -528,28 +530,82 @@ async function main() {
     console.log(`Title: ${videoTitle}`);
     console.log(`Video File: ${outputVideoPath}`);
     console.log('\n[PINNED COMMENT PREVIEW]:\n' + answerKeyText);
+
+    // Dry-run preview for WhatsApp Channel
+    await shareYouTubeBroadcastToWhatsApp({
+      videoId: 'DRY_RUN_ID',
+      videoUrl: 'https://youtube.com/shorts/DRY_RUN_ID',
+      title: videoTitle,
+      description: videoDescription,
+      isShort: true,
+      dryRun: true
+    });
+
+    // Dry-run preview for Instagram Reels & Facebook
+    await crossPostVideoToMetaSocials({
+      videoFilePath: outputVideoPath,
+      title: videoTitle,
+      caption: videoDescription,
+      isReel: true,
+      isDryRun: true
+    });
+
     console.log('[SUCCESS ✓] Evening Quiz pipeline verified successfully.');
     return;
   }
 
   console.log('[YOUTUBE] Uploading Evening Quiz Short...');
-  const res = await uploadToYouTube({
-    videoFilePath: outputVideoPath,
-    title: videoTitle,
-    description: videoDescription,
-    tags: ['TNPSC Quiz', 'Tamil Nadu GK', 'One Mark Sure Shot', 'TNPSC Group 4', 'Shorts'],
-    categoryId: '27',
-    privacyStatus: 'public',
-    isShort: true
-  });
+  let res = null;
+  try {
+    res = await uploadToYouTube({
+      videoFilePath: outputVideoPath,
+      title: videoTitle,
+      description: videoDescription,
+      tags: ['TNPSC Quiz', 'Tamil Nadu GK', 'One Mark Sure Shot', 'TNPSC Group 4', 'Shorts'],
+      categoryId: '27',
+      privacyStatus: 'public',
+      isShort: true
+    });
+  } catch (ytErr) {
+    console.warn('[YOUTUBE UPLOAD WARN]', ytErr.message);
+  }
 
-  if (res?.id) {
-    console.log(`[YOUTUBE PUBLISHED ✓] Live Video ID: ${res.id}`);
+  const liveVideoId = res?.videoId || res?.id;
+  const liveVideoUrl = res?.videoUrl || (liveVideoId ? `https://youtu.be/${liveVideoId}` : 'https://youtube.com/@VizhiTn');
+
+  if (liveVideoId) {
+    console.log(`[YOUTUBE PUBLISHED ✓] Live Video ID: ${liveVideoId}`);
     try {
-      await postPinnedComment(res.id, answerKeyText);
+      await postPinnedComment(liveVideoId, answerKeyText);
       console.log('[PINNED COMMENT ✓] Official Answer Key pinned successfully.');
     } catch (commentErr) {
       console.warn('[PINNED COMMENT WARN] Could not pin comment automatically:', commentErr.message);
+    }
+
+    // Cross-Post 1: WhatsApp Channel
+    try {
+      await shareYouTubeBroadcastToWhatsApp({
+        videoId: liveVideoId,
+        videoUrl: liveVideoUrl,
+        title: videoTitle,
+        description: videoDescription,
+        isShort: true
+      });
+    } catch (waErr) {
+      console.warn('[WHATSAPP SHARE WARN]', waErr.message);
+    }
+
+    // Cross-Post 2: Meta Socials (Instagram Reels & Facebook Video)
+    try {
+      await crossPostVideoToMetaSocials({
+        videoFilePath: outputVideoPath,
+        title: videoTitle,
+        caption: videoDescription,
+        isReel: true,
+        isDryRun: false
+      });
+    } catch (metaErr) {
+      console.warn('[META SOCIALS WARN]', metaErr.message);
     }
   }
 }

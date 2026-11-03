@@ -173,8 +173,9 @@ export async function shareYouTubeBroadcastToWhatsApp({
     return false;
   }
 
+  const isDryRun = dryRun || process.argv.includes('--dry-run') || videoId === 'DRY_RUN_MOCK_ID' || videoId === 'DRY_RUN_ID';
   const dispatchSlug = `yt-${videoId}`;
-  if (isAlreadyDispatched('whatsapp', dispatchSlug)) {
+  if (!isDryRun && isAlreadyDispatched('whatsapp', dispatchSlug)) {
     console.log(`[WhatsAppShare ANTI-DUP] Video ${videoId} has already been shared to WhatsApp Channel. Skipping.`);
     return false;
   }
@@ -187,8 +188,6 @@ export async function shareYouTubeBroadcastToWhatsApp({
     isShort,
     category
   });
-
-  const isDryRun = dryRun || process.argv.includes('--dry-run') || videoId === 'DRY_RUN_MOCK_ID';
 
   console.log('\n====================================================');
   console.log(`[WHATSAPP AUTO-SHARE] ${isShort ? 'SHORTS' : 'BULLETIN VIDEO'}: "${title}"`);
