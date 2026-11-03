@@ -3,7 +3,7 @@
 import React from 'react';
 import nextDynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
-import { DISTRICT_MAP, BUILD_TIME_DISTRICT_SLUGS, SITE_URL } from '@/lib/seo-data';
+import { DISTRICT_MAP, DISTRICTS, SITE_URL } from '@/lib/seo-data';
 import { getDistrictBySlug } from '@/lib/districts';
 import { getDistrictMetaDescription } from '@/lib/metaDescription';
 import PageSchema from '@/components/seo/PageSchema';
@@ -14,9 +14,9 @@ export const revalidate = 3600;
 // DistrictDetail renders with SSR enabled
 const DistrictDetail = nextDynamic(() => import('@/views/DistrictDetail'), { ssr: true });
 
-// Pre-render priority districts; all other valid districts generate on demand.
+// Pre-render all 38 districts at build time so they exist as static assets on Cloudflare CDN
 export async function generateStaticParams() {
-  return BUILD_TIME_DISTRICT_SLUGS.map((city) => ({ city }));
+  return DISTRICTS.map((d) => ({ city: d.slug }));
 }
 
 export async function generateMetadata({ params }) {

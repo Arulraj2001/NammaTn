@@ -5,11 +5,6 @@
 export const SITE_URL = 'https://www.vizhitn.in';
 export const SITE_NAME = 'VizhiTN';
 
-// Pre-render the highest-traffic districts during deployment. All other valid
-// district routes use Next.js on-demand generation and the same hourly cache.
-export const BUILD_TIME_DISTRICT_SLUGS = [
-  'chennai', 'coimbatore', 'madurai', 'salem', 'tiruchirappalli',
-];
 
 // ── District data ─────────────────────────────────────────────────────────────
 // slug    → used in canonical district URL (/[city]/)
@@ -57,6 +52,7 @@ export const DISTRICTS = [
 ];
 
 export const DISTRICT_MAP = Object.fromEntries(DISTRICTS.map(d => [d.slug, d]));
+export const BUILD_TIME_DISTRICT_SLUGS = DISTRICTS.map(d => d.slug);
 
 // ── Category / Issue data ─────────────────────────────────────────────────────
 // These slugs match category slugs stored in the DB and referenced across VizhiTN.
