@@ -42,7 +42,7 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['tangedco-shorts', 'gk-lesson-shorts', 'quiz-shorts', 'pyq-50-drill', 'motivation-shorts', 'weekly-mock', 'utility-shorts', 'scam-shorts', 'scheme-shorts', 'rights-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
+  const isPillarShort = ['quiz-shorts', 'rights-shorts', 'scheme-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -60,20 +60,15 @@ async function handleSlot(format, isDryRun, force) {
   }
 
   const scriptMap = {
-    'tangedco-shorts': { script: 'scripts/youtube/pipelines/generate-tangedco-shorts.mjs', extraArgs: [] },
-    'gk-lesson-shorts': { script: 'scripts/youtube/pipelines/generate-gk-lesson-shorts.mjs', extraArgs: [] },
-    'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-interactive-shorts.mjs', extraArgs: [] },
-    'pyq-50-drill': { script: 'scripts/youtube/pipelines/generate-50-pyq-drill.mjs', extraArgs: [] },
-    'motivation-shorts': { script: 'scripts/youtube/pipelines/generate-motivation-shorts.mjs', extraArgs: [] },
-    'weekly-mock': { script: 'scripts/youtube/pipelines/generate-weekly-mega-mock.mjs', extraArgs: [] },
+    'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: [] },
+    'rights-shorts': { script: 'scripts/youtube/pipelines/generate-rights-shorts.mjs', extraArgs: [] },
+    'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-scheme-shorts.mjs', extraArgs: [] },
+    'emergency-alert': { script: 'scripts/youtube/pipelines/generate-emergency-alert.mjs', extraArgs: [] },
     'podcast': { script: 'scripts/youtube/pipelines/generate-podcast.mjs', extraArgs: [] },
     'civic-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: [] },
     'live-shorts': { script: 'scripts/youtube/pipelines/generate-live-shorts.mjs', extraArgs: [] },
     'utility-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=utility'] },
-    'scam-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scam'] },
-    'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-scheme-shorts.mjs', extraArgs: [] },
-    'emergency-alert': { script: 'scripts/youtube/pipelines/generate-emergency-alert.mjs', extraArgs: [] },
-    'rights-shorts': { script: 'scripts/youtube/pipelines/generate-rights-shorts.mjs', extraArgs: [] }
+    'scam-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scam'] }
   };
 
   const entry = scriptMap[format];
@@ -230,27 +225,12 @@ async function main() {
 
   let targetFormat = null;
 
-  // Sunday 10:00 AM IST Mega Mock Test Window
-  if (now.dayOfWeek === 0 && now.hours >= 9 && now.hours < 12) {
-    targetFormat = 'weekly-mock';
-  } else if ((now.hours === 21 && now.minutes >= 30) || now.hours >= 22) {
-    // Night Reflection Window (09:30 PM - 11:59 PM IST): Daily Night Motivation Short
-    targetFormat = 'motivation-shorts';
-  } else if (now.hours === 20 || (now.hours === 21 && now.minutes < 30)) {
-    // Prime Heavy Study Window (08:00 PM - 09:29 PM IST): 50 PYQ Rapid Speed Drill (<5 Mins)
-    targetFormat = 'pyq-50-drill';
-  } else if (now.hours >= 17 && now.hours < 20) {
-    // Evening Window (05:00 PM - 07:59 PM IST): 5-Question Rapid Timer Quiz Short
+  if (now.hours < 12) {
+    // Morning Window (06:00 AM - 11:59 AM IST): "One-Mark Sure Shot" Interactive Quiz Short
     targetFormat = 'quiz-shorts';
-  } else if (now.hours >= 12 && now.hours < 17) {
-    // Afternoon Window (12:00 PM - 04:59 PM IST): Citizen Legal Shield & Dispute Guide Short
-    targetFormat = 'rights-shorts';
-  } else if (now.hours >= 5 && (now.hours < 7 || (now.hours === 7 && now.minutes < 15))) {
-    // Early Morning Window (05:00 AM - 07:15 AM IST): TANGEDCO Power Cut & School Holiday Alert
-    targetFormat = 'tangedco-shorts';
   } else {
-    // Morning Study Window (07:15 AM - 11:59 AM IST): Morning High-Density GK Masterclass Short
-    targetFormat = 'gk-lesson-shorts';
+    // Afternoon & Evening Window (12:00 PM - 11:59 PM IST): Citizen Legal Shield & Rights Short
+    targetFormat = 'rights-shorts';
   }
 
   console.log(`[AUTO ROUTER] Target slot for ${now.hours}:${now.minutes} IST is: "${targetFormat}"`);

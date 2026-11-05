@@ -2,20 +2,10 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Daily 01:00 UTC = 06:30 AM IST (TANGEDCO Power Cut & School Holiday Alert Short)
-    - cron: '0 1 * * *'
-    # 2. Daily 02:00 UTC = 07:30 AM IST (Morning High-Density GK Masterclass Short)
+    # 1. Daily 02:00 UTC = 07:30 AM IST (Morning "One-Mark Sure Shot" Interactive Quiz Short)
     - cron: '0 2 * * *'
-    # 3. Daily 08:00 UTC = 01:30 PM IST (Afternoon Citizen Legal Shield & Rights Short)
+    # 2. Daily 08:00 UTC = 01:30 PM IST (Afternoon Citizen Legal Shield & Rights Short)
     - cron: '0 8 * * *'
-    # 4. Daily 13:30 UTC = 07:00 PM IST (Evening 5-Question Rapid Timer Quiz Short)
-    - cron: '30 13 * * *'
-    # 5. Daily 15:00 UTC = 08:30 PM IST (Evening 50 PYQ Rapid-Fire Speed Drill)
-    - cron: '0 15 * * *'
-    # 6. Daily 16:15 UTC = 09:45 PM IST (Daily Night Motivation & Life Lesson Short)
-    - cron: '15 16 * * *'
-    # 7. Sunday 04:30 UTC = 10:00 AM IST (Sunday Weekly 20-Minute Mega Mock Test)
-    - cron: '30 4 * * 0'
 
   workflow_dispatch:
     inputs:
@@ -24,21 +14,12 @@ on:
         type: choice
         options:
           - auto
-          - tangedco-shorts
-          - gk-lesson-shorts
-          - rights-shorts
           - quiz-shorts
-          - pyq-50-drill
-          - motivation-shorts
-          - weekly-mock
+          - rights-shorts
           - scheme-shorts
-          - podcast
-          - scam-shorts
-          - utility-shorts
           - emergency-alert
+          - podcast
           - civic-shorts
-          - backfill
-          - all
         default: 'auto'
       dry_run:
         description: 'Dry Run Mode (true = render video only, no YouTube upload)'
@@ -122,20 +103,10 @@ jobs:
           if [ "$PIPELINE" = "backfill" ]; then
             SLOT_ARG="--backfill"
           elif [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
-            if [ "$SCHEDULE" = "0 1 * * *" ]; then
-              SLOT_ARG="--slot=tangedco-shorts"
-            elif [ "$SCHEDULE" = "0 2 * * *" ]; then
-              SLOT_ARG="--slot=gk-lesson-shorts"
+            if [ "$SCHEDULE" = "0 2 * * *" ]; then
+              SLOT_ARG="--slot=quiz-shorts"
             elif [ "$SCHEDULE" = "0 8 * * *" ]; then
               SLOT_ARG="--slot=rights-shorts"
-            elif [ "$SCHEDULE" = "30 13 * * *" ]; then
-              SLOT_ARG="--slot=quiz-shorts"
-            elif [ "$SCHEDULE" = "0 15 * * *" ]; then
-              SLOT_ARG="--slot=pyq-50-drill"
-            elif [ "$SCHEDULE" = "15 16 * * *" ]; then
-              SLOT_ARG="--slot=motivation-shorts"
-            elif [ "$SCHEDULE" = "30 4 * * 0" ]; then
-              SLOT_ARG="--slot=weekly-mock"
             else
               SLOT_ARG="--slot=auto"
             fi
