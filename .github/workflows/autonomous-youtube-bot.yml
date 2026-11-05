@@ -2,24 +2,32 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Daily 02:00 UTC = 07:30 AM IST (Morning "One-Mark Sure Shot" Interactive Quiz Short)
+    # 1. Daily 01:15 UTC = 06:45 AM IST (Live Civic Alert: School Holidays / TANGEDCO Power Cut + WhatsApp Channel Sync)
+    - cron: '15 1 * * *'
+    # 2. Daily 02:00 UTC = 07:30 AM IST (TNPSC One-Mark Sure Shot Part 1: Morning Question - Unanswered Challenge)
     - cron: '0 2 * * *'
-    # 2. Daily 08:00 UTC = 01:30 PM IST (Afternoon Citizen Legal Shield & Rights Short)
+    # 3. Daily 05:00 UTC = 10:30 AM IST (TNPSC Samacheer Masterclass: Morning Deep Explanation - Who, When, Book, PYQ)
+    - cron: '0 5 * * *'
+    # 4. Daily 08:00 UTC = 01:30 PM IST (Citizen Legal Shield & Dispute Rights Short + Auto-Crosspost to FB & IG)
     - cron: '0 8 * * *'
+    # 5. Daily 13:00 UTC = 06:30 PM IST (TNPSC One-Mark Sure Shot Part 2: Evening Question - Unanswered Challenge)
+    - cron: '0 13 * * *'
+    # 6. Daily 15:30 UTC = 09:00 PM IST (TNPSC Samacheer Masterclass: Evening Deep Explanation - Who, When, Book, PYQ)
+    - cron: '30 15 * * *'
 
   workflow_dispatch:
     inputs:
       pipeline_type:
-        description: 'Video Broadcast Slot to Generate'
+        description: 'Dedicated Broadcast Slot to Execute'
         type: choice
         options:
           - auto
-          - quiz-shorts
+          - civic-alert
+          - quiz-morning-q
+          - quiz-morning-a
           - rights-shorts
-          - scheme-shorts
-          - emergency-alert
-          - podcast
-          - civic-shorts
+          - quiz-evening-q
+          - quiz-evening-a
         default: 'auto'
       dry_run:
         description: 'Dry Run Mode (true = render video only, no YouTube upload)'
@@ -87,6 +95,7 @@ jobs:
           META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
           META_INSTA_ACCOUNT_ID: ${{ secrets.META_INSTA_ACCOUNT_ID }}
+          WHATSAPP_SESSION: ${{ secrets.WHATSAPP_SESSION }}
           SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
           CHROME_BIN: '/usr/bin/google-chrome'
         run: |
@@ -100,17 +109,23 @@ jobs:
           fi
 
           SLOT_ARG="--slot=$PIPELINE"
-          if [ "$PIPELINE" = "backfill" ]; then
-            SLOT_ARG="--backfill"
-          elif [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
-            if [ "$SCHEDULE" = "0 2 * * *" ]; then
-              SLOT_ARG="--slot=quiz-shorts"
+          if [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
+            if [ "$SCHEDULE" = "15 1 * * *" ]; then
+              SLOT_ARG="--slot=civic-alert"
+            elif [ "$SCHEDULE" = "0 2 * * *" ]; then
+              SLOT_ARG="--slot=quiz-morning-q"
+            elif [ "$SCHEDULE" = "0 5 * * *" ]; then
+              SLOT_ARG="--slot=quiz-morning-a"
             elif [ "$SCHEDULE" = "0 8 * * *" ]; then
               SLOT_ARG="--slot=rights-shorts"
+            elif [ "$SCHEDULE" = "0 13 * * *" ]; then
+              SLOT_ARG="--slot=quiz-evening-q"
+            elif [ "$SCHEDULE" = "30 15 * * *" ]; then
+              SLOT_ARG="--slot=quiz-evening-a"
             else
               SLOT_ARG="--slot=auto"
             fi
           fi
 
-          echo "[DISPATCH] Executing VizhiTN YouTube Dispatcher ($SLOT_ARG $EXTRA_FLAGS)..."
+          echo "[DISPATCH] Executing VizhiTN Dedicated Broadcast Dispatcher ($SLOT_ARG $EXTRA_FLAGS)..."
           node scripts/youtube/dispatch-broadcast.mjs $SLOT_ARG $EXTRA_FLAGS

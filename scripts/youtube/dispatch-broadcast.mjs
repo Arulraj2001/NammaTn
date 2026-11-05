@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/youtube/dispatch-broadcast.mjs
-// VizhiTN 90-Day Intelligent Broadcast Dispatcher & Anti-Delay Router
-// Resolves true IST clock, checks 90-day calendar, guards against duplicates via Supabase log.
+// VizhiTN Dedicated Broadcast Dispatcher & Anti-Delay Router
+// Orchestrates the 6 Dedicated Daily Slots with YouTube API Quota Guards and WhatsApp Channel Sync.
 
 import fs from 'fs';
 import { spawn } from 'node:child_process';
@@ -42,7 +42,20 @@ async function handleSlot(format, isDryRun, force) {
     } catch (_) {}
   }
 
-  const isPillarShort = ['quiz-shorts', 'rights-shorts', 'scheme-shorts', 'emergency-alert', 'civic-shorts', 'podcast'].includes(format);
+  const isPillarShort = [
+    'civic-alert',
+    'quiz-morning-q',
+    'quiz-morning-a',
+    'rights-shorts',
+    'quiz-evening-q',
+    'quiz-evening-a',
+    'quiz-shorts',
+    'quiz-morning',
+    'quiz-evening',
+    'emergency-alert',
+    'scheme-shorts',
+    'podcast'
+  ].includes(format);
 
   // For calendar-driven formats, ensure calendar entry OR database episode exists unless forced or pillar short
   if (format !== 'live-shorts' && !isPillarShort && !calEntry && !dbEpisode && !force) {
@@ -60,15 +73,31 @@ async function handleSlot(format, isDryRun, force) {
   }
 
   const scriptMap = {
-    'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: [] },
+    // 1. 06:45 AM IST — Live Civic Alert (School Holidays / TANGEDCO Power Cuts + WhatsApp Channel Sync)
+    'civic-alert': { script: 'scripts/youtube/pipelines/generate-civic-alert.mjs', extraArgs: [] },
+    'emergency-alert': { script: 'scripts/youtube/pipelines/generate-civic-alert.mjs', extraArgs: [] },
+
+    // 2. 07:30 AM IST — TNPSC One-Mark Sure Shot Part 1 (Morning Question, Unanswered, Comment-Driven)
+    'quiz-morning-q': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: ['--slot=quiz-morning-q', '--mode=question'] },
+    'quiz-morning': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: ['--slot=quiz-morning-q', '--mode=question'] },
+    'quiz-shorts': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: ['--slot=quiz-morning-q', '--mode=question'] },
+
+    // 3. 10:30 AM IST — TNPSC Samacheer Masterclass (Morning Deep Explanation: Who, When, Book, PYQ)
+    'quiz-morning-a': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: ['--slot=quiz-morning-a', '--mode=explanation'] },
+
+    // 4. 01:30 PM IST — Citizen Legal Shield & Dispute Rights (Police, Tenant, Consumer, Auto-Crosspost to FB/IG)
     'rights-shorts': { script: 'scripts/youtube/pipelines/generate-rights-shorts.mjs', extraArgs: [] },
+
+    // 5. 06:30 PM IST — TNPSC One-Mark Sure Shot Part 2 (Evening Question, Unanswered, Comment-Driven)
+    'quiz-evening-q': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: ['--slot=quiz-evening-q', '--mode=question'] },
+    'quiz-evening': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: ['--slot=quiz-evening-q', '--mode=question'] },
+
+    // 6. 09:00 PM IST — TNPSC Samacheer Masterclass (Evening Deep Explanation: Who, When, Book, PYQ)
+    'quiz-evening-a': { script: 'scripts/youtube/pipelines/generate-quiz-shorts.mjs', extraArgs: ['--slot=quiz-evening-a', '--mode=explanation'] },
+
+    // Other pipelines
     'scheme-shorts': { script: 'scripts/youtube/pipelines/generate-scheme-shorts.mjs', extraArgs: [] },
-    'emergency-alert': { script: 'scripts/youtube/pipelines/generate-emergency-alert.mjs', extraArgs: [] },
-    'podcast': { script: 'scripts/youtube/pipelines/generate-podcast.mjs', extraArgs: [] },
-    'civic-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: [] },
-    'live-shorts': { script: 'scripts/youtube/pipelines/generate-live-shorts.mjs', extraArgs: [] },
-    'utility-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=utility'] },
-    'scam-shorts': { script: 'scripts/youtube/pipelines/generate-shorts.mjs', extraArgs: ['--pillar=scam'] }
+    'podcast': { script: 'scripts/youtube/pipelines/generate-podcast.mjs', extraArgs: [] }
   };
 
   const entry = scriptMap[format];
@@ -91,8 +120,6 @@ async function handleSlot(format, isDryRun, force) {
 
 /**
  * Autonomous A/B Thumbnail Optimization Auditor
- * Checks videos published >= 4 hours ago. If viewCount < 25 and Variant B exists,
- * automatically swaps the thumbnail to Variant B via YouTube Data API.
  */
 async function auditAndAutoSwapThumbnails() {
   console.log('\n[A/B THUMBNAIL AUDITOR] Auditing recent broadcasts for CTR auto-swap...');
@@ -100,41 +127,21 @@ async function auditAndAutoSwapThumbnails() {
     const historyPath = path.resolve('scripts/youtube/calendar/broadcast-history.json');
     if (!fs.existsSync(historyPath)) return;
     const history = JSON.parse(fs.readFileSync(historyPath, 'utf-8'));
-    const now = Date.now();
+    const candidates = history.filter(h => h.status === 'published' && h.youtube_video_id && !h.thumbnail_b_swapped && h.thumbnail_b_path);
+
     let swapCount = 0;
-
-    for (const record of history) {
-      if (!record.youtube_video_id || record.youtube_video_id === 'DRY_RUN_MOCK_ID') continue;
-      const meta = record.metadata || {};
-      if (meta.ab_swapped) continue;
-      if (!meta.thumbnail_b_path || !fs.existsSync(meta.thumbnail_b_path)) continue;
-
-      // Check age: must be at least 4 hours old
-      const publishedAt = new Date(record.created_at || record.broadcast_date).getTime();
-      const ageHours = (now - publishedAt) / (1000 * 3600);
-      if (ageHours < 4) {
-        console.log(`[A/B AUDIT] Video ${record.youtube_video_id} is ${ageHours.toFixed(1)}h old (evaluates at >= 4h).`);
-        continue;
-      }
-
-      console.log(`[A/B AUDIT] Checking video stats for ${record.youtube_video_id} ("${record.title}")...`);
-      const stats = await getVideoStatistics(record.youtube_video_id);
-      if (!stats) continue;
-
-      console.log(`[A/B AUDIT] Video ${record.youtube_video_id} stats: ${stats.viewCount} views in ${ageHours.toFixed(1)} hours.`);
-      if (stats.viewCount < 25) {
-        console.warn(`[A/B THUMBNAIL SWAP ⚡] Video ${record.youtube_video_id} has < 25 views (${stats.viewCount}). Swapping to Variant B!`);
-        await setYouTubeThumbnail(record.youtube_video_id, meta.thumbnail_b_path);
-        meta.ab_swapped = true;
-        meta.ab_swapped_at = new Date().toISOString();
-        meta.views_at_swap = stats.viewCount;
-        swapCount++;
-      } else {
-        console.log(`[A/B AUDIT ✓] Video ${record.youtube_video_id} performing well (${stats.viewCount} views). Retaining Variant A.`);
-        meta.ab_swapped = true; // Evaluated
+    for (const item of candidates) {
+      const stats = await getVideoStatistics(item.youtube_video_id);
+      if (stats && stats.viewCount < 25 && fs.existsSync(item.thumbnail_b_path)) {
+        console.log(`[A/B SWAP] Video "${item.title}" has ${stats.viewCount} views. Auto-swapping to Variant B thumbnail...`);
+        const ok = await setYouTubeThumbnail(item.youtube_video_id, item.thumbnail_b_path);
+        if (ok) {
+          item.thumbnail_b_swapped = true;
+          item.thumbnail_b_swapped_at = new Date().toISOString();
+          swapCount++;
+        }
       }
     }
-
     if (swapCount > 0) {
       fs.writeFileSync(historyPath, JSON.stringify(history, null, 2), 'utf-8');
       console.log(`[A/B THUMBNAIL AUDITOR ✓] Saved ${swapCount} thumbnail swap(s) to history.`);
@@ -147,90 +154,50 @@ async function auditAndAutoSwapThumbnails() {
 async function main() {
   const isDryRun = process.argv.includes('--dry-run');
   const force = process.argv.includes('--force');
-  const isBackfill = process.argv.includes('--backfill');
-  const isAuditOnly = process.argv.includes('--audit-thumbnails');
   const slotArg = process.argv.find(a => a.startsWith('--slot='))?.split('=')[1] || 'auto';
 
-  // Run autonomous A/B thumbnail audit
-  if (isAuditOnly) {
+  if (process.argv.includes('--audit-thumbnails')) {
     await auditAndAutoSwapThumbnails();
     return;
   }
-
 
   const now = getNowIst();
   const todayIst = now.date;
 
   console.log('====================================================');
-  console.log('VizhiTN Intelligent Broadcast Dispatcher');
-  console.log(`Current IST: ${now.date} ${now.hours.toString().padStart(2, '0')}:${now.minutes.toString().padStart(2, '0')} (Day ${now.dayOfWeek})`);
+  console.log('VizhiTN Dedicated Broadcast Dispatcher');
+  console.log(`Current IST: ${now.date} ${now.hours.toString().padStart(2, '0')}:${now.minutes.toString().padStart(2, '0')} (Total Minutes: ${now.totalMinutes})`);
   console.log('====================================================');
 
-  // Mode 1: Backfill mode (used by Watchdog)
-  if (isBackfill) {
-    console.log('[WATCHDOG MODE] Checking for any missed broadcasts today...');
-    const expected = getExpectedUploadsSoFar(todayIst);
-
-    // If past 01:30 PM IST (810 mins), live-shorts should also have run
-    if (now.totalMinutes >= 810) {
-      expected.push({ format: 'live-shorts', title: 'Daily Live Civic Short', time_ist: '01:30 PM' });
-    }
-
-    console.log(`[INFO] Found ${expected.length} broadcasts expected up to current time.`);
-
-    for (const item of expected) {
-      const status = await isBroadcastCompletedToday(item.format, todayIst);
-      if (!status.published) {
-        console.warn(`[WATCHDOG ALERT] Missed broadcast detected: ${item.format} ("${item.title}"). Backfilling now!`);
-        await handleSlot(item.format, isDryRun, force);
-      } else {
-        console.log(`[WATCHDOG OK ✓] ${item.format} is verified published.`);
-      }
-    }
-    return;
-  }
-
-  // Mode 2: Explicit slot
+  // Mode 1: Explicit slot
   if (slotArg && slotArg !== 'auto') {
-    if (slotArg === 'all') {
-      const scheduled = getScheduledUploadsForDate(todayIst);
-      await handleSlot('live-shorts', isDryRun, force);
-      for (const item of scheduled) {
-        await handleSlot(item.format, isDryRun, force);
-      }
-      return;
-    }
     await handleSlot(slotArg, isDryRun, force);
     return;
   }
 
-  // Mode 3: Auto slot resolution based on real-world IST time & calendar
-  console.log('[AUTO ROUTER] Determining active broadcast slot by IST hour...');
-
-  // Autonomous Self-Healing: Verify if any earlier slot scheduled for today was missed!
-  if (!force && !isDryRun) {
-    const expected = getExpectedUploadsSoFar(todayIst);
-    // Past 01:30 PM IST (810 mins): verify daily live current affairs short was completed
-    if (now.totalMinutes >= 810) {
-      expected.push({ format: 'current-affairs-shorts', title: 'Daily Current Affairs Exam Short', time_ist: '01:00 PM' });
-    }
-    for (const item of expected) {
-      const status = await isBroadcastCompletedToday(item.format, todayIst);
-      if (!status.published) {
-        console.warn(`[AUTO CATCH-UP] Detected missed broadcast for earlier slot today: ${item.format} ("${item.title}"). Catching up now!`);
-        await handleSlot(item.format, isDryRun, false);
-      }
-    }
-  }
+  // Mode 2: Auto slot resolution based on real-world IST time
+  console.log('[AUTO ROUTER] Determining active broadcast slot by IST time...');
 
   let targetFormat = null;
 
-  if (now.hours < 12) {
-    // Morning Window (06:00 AM - 11:59 AM IST): "One-Mark Sure Shot" Interactive Quiz Short
-    targetFormat = 'quiz-shorts';
-  } else {
-    // Afternoon & Evening Window (12:00 PM - 11:59 PM IST): Citizen Legal Shield & Rights Short
+  if (now.totalMinutes < 435) {
+    // 00:00 to 07:15 IST -> Slot 1: Live Civic Alert (School Holidays / TANGEDCO Power Cut)
+    targetFormat = 'civic-alert';
+  } else if (now.totalMinutes < 570) {
+    // 07:16 to 09:30 IST -> Slot 2: TNPSC Morning Question (Unanswered Challenge)
+    targetFormat = 'quiz-morning-q';
+  } else if (now.totalMinutes < 750) {
+    // 09:31 to 12:30 IST -> Slot 3: TNPSC Morning Samacheer Masterclass (Deep Explanation)
+    targetFormat = 'quiz-morning-a';
+  } else if (now.totalMinutes < 1050) {
+    // 12:31 to 17:30 IST -> Slot 4: Citizen Legal Shield & Dispute Rights
     targetFormat = 'rights-shorts';
+  } else if (now.totalMinutes < 1230) {
+    // 17:31 to 20:30 IST -> Slot 5: TNPSC Evening Question (Unanswered Challenge)
+    targetFormat = 'quiz-evening-q';
+  } else {
+    // 20:31 to 23:59 IST -> Slot 6: TNPSC Evening Samacheer Masterclass (Deep Explanation)
+    targetFormat = 'quiz-evening-a';
   }
 
   console.log(`[AUTO ROUTER] Target slot for ${now.hours}:${now.minutes} IST is: "${targetFormat}"`);
