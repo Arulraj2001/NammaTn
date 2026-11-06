@@ -2,18 +2,12 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Daily 01:15 UTC = 06:45 AM IST (Live Civic Alert: School Holidays / TANGEDCO Power Cut + WhatsApp Channel Sync)
-    - cron: '15 1 * * *'
-    # 2. Daily 02:00 UTC = 07:30 AM IST (TNPSC One-Mark Sure Shot Part 1: Morning Question - Unanswered Challenge)
-    - cron: '0 2 * * *'
-    # 3. Daily 05:00 UTC = 10:30 AM IST (TNPSC Samacheer Masterclass: Morning Deep Explanation - Who, When, Book, PYQ)
-    - cron: '0 5 * * *'
-    # 4. Daily 08:00 UTC = 01:30 PM IST (Citizen Legal Shield & Dispute Rights Short + Auto-Crosspost to FB & IG)
+    # 1. Daily 01:30 UTC = 07:00 AM IST (Statewide Civic Lifeline Alert: Power Cuts & School Holidays + WhatsApp Channel Sync)
+    - cron: '30 1 * * *'
+    # 2. Daily 08:00 UTC = 01:30 PM IST (TN Mega Projects & Real Scam Exposes + Auto-sync to FB & IG Reels)
     - cron: '0 8 * * *'
-    # 5. Daily 13:00 UTC = 06:30 PM IST (TNPSC One-Mark Sure Shot Part 2: Evening Question - Unanswered Challenge)
-    - cron: '0 13 * * *'
-    # 6. Daily 15:30 UTC = 09:00 PM IST (TNPSC Samacheer Masterclass: Evening Deep Explanation - Who, When, Book, PYQ)
-    - cron: '30 15 * * *'
+    # 3. Daily 13:30 UTC = 07:00 PM IST (Tamil Nadu Untold Mysteries & Engineering Marvels)
+    - cron: '30 13 * * *'
 
   workflow_dispatch:
     inputs:
@@ -23,11 +17,8 @@ on:
         options:
           - auto
           - civic-alert
-          - quiz-morning-q
-          - quiz-morning-a
-          - rights-shorts
-          - quiz-evening-q
-          - quiz-evening-a
+          - infotainment-afternoon
+          - infotainment-evening
         default: 'auto'
       dry_run:
         description: 'Dry Run Mode (true = render video only, no YouTube upload)'
@@ -110,18 +101,12 @@ jobs:
 
           SLOT_ARG="--slot=$PIPELINE"
           if [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
-            if [ "$SCHEDULE" = "15 1 * * *" ]; then
+            if [ "$SCHEDULE" = "30 1 * * *" ]; then
               SLOT_ARG="--slot=civic-alert"
-            elif [ "$SCHEDULE" = "0 2 * * *" ]; then
-              SLOT_ARG="--slot=quiz-morning-q"
-            elif [ "$SCHEDULE" = "0 5 * * *" ]; then
-              SLOT_ARG="--slot=quiz-morning-a"
             elif [ "$SCHEDULE" = "0 8 * * *" ]; then
-              SLOT_ARG="--slot=rights-shorts"
-            elif [ "$SCHEDULE" = "0 13 * * *" ]; then
-              SLOT_ARG="--slot=quiz-evening-q"
-            elif [ "$SCHEDULE" = "30 15 * * *" ]; then
-              SLOT_ARG="--slot=quiz-evening-a"
+              SLOT_ARG="--slot=infotainment-afternoon"
+            elif [ "$SCHEDULE" = "30 13 * * *" ]; then
+              SLOT_ARG="--slot=infotainment-evening"
             else
               SLOT_ARG="--slot=auto"
             fi
