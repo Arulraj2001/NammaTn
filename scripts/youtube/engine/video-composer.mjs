@@ -254,10 +254,10 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       const sc = scenes[idx];
       const isLastScene = idx === scenes.length - 1;
 
-      // Mix audio with dynamic sidechain ducking
+      // Mix audio with transition SFX (continuous music bed is overlaid across entire video at concatenation)
       const mixedAudioPath = path.join(outDir, `_temp_short_audio_mix_${sessionId}_${idx}.mp3`);
       tempAudioMixes.push(mixedAudioPath);
-      const finalAudioPath = mixAudioWithSoundDesign(sc.audioPath, mixedAudioPath, { isLastScene });
+      const finalAudioPath = mixAudioWithSoundDesign(sc.audioPath, mixedAudioPath, { isLastScene, includeBed: false });
 
       const clipPath = path.join(outDir, `_temp_short_scene_${sessionId}_${idx}.mp4`);
       tempClips.push(clipPath);
@@ -350,12 +350,19 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       console.log(`[COMPOSER] Scene ${idx + 1}/${scenes.length} rendered (${hasBgVideo ? 'Video B-Roll' : 'Ken Burns Motion'}): ${(sc.durationSec).toFixed(1)}s`);
     }
 
-    // Concatenate all scene clips into final Short
+    // Concatenate all scene clips into final Short with continuous background music bed
     const concatListPath = path.join(outDir, `_temp_short_concat_${sessionId}.txt`);
     const fileEntries = tempClips.map(c => `file '${c.replace(/\\/g, '/')}'`).join('\n');
     fs.writeFileSync(concatListPath, fileEntries, 'utf-8');
 
-    const concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
+    const hasMusicBed = sfxExists(SFX.bed);
+    let concatCmd = '';
+    if (hasMusicBed) {
+      // Loop broadcast bed smoothly under entire narration, ducked to 16% volume
+      concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -stream_loop -1 -i "${SFX.bed}" -filter_complex "[0:a]volume=1.0[maina]; [1:a]volume=0.16[bga]; [maina][bga]amix=inputs=2:duration=first:dropout_transition=2[aout]" -map 0:v -map "[aout]" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
+    } else {
+      concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
+    }
     execSync(concatCmd, { stdio: 'pipe', timeout: 120000 });
 
     try { fs.unlinkSync(concatListPath); } catch {}

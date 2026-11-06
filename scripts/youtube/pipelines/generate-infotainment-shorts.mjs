@@ -65,7 +65,7 @@ async function synthesizeSpeech(text, outputPath, voice = 'ta-IN-ValluvarNeural'
   fs.writeFileSync(tempTextFile, cleanText, 'utf-8');
 
   try {
-    const edgeCmd = `${python} -m edge_tts --voice "${voice}" --rate=+6% --file "${tempTextFile}" --write-media "${outputPath}"`;
+    const edgeCmd = `${python} -m edge_tts --voice "${voice}" --rate=+14% --file "${tempTextFile}" --write-media "${outputPath}"`;
     execSync(edgeCmd, { stdio: 'pipe', timeout: 30000 });
     return outputPath;
   } finally {
@@ -73,6 +73,411 @@ async function synthesizeSpeech(text, outputPath, voice = 'ta-IN-ValluvarNeural'
       try { fs.unlinkSync(tempTextFile); } catch {}
     }
   }
+}
+
+/**
+ * Dynamic Multi-Beat Slide Renderer (Vibrant Editorial Style)
+ * Renders high-contrast, platform-native visual mockups for Instagram Reels.
+ */
+function generateDynamicBeatSlideHtml({ beat, topic, brandLogoDataUri, index, total }) {
+  // Render segmented progress bar
+  const progressBars = Array.from({ length: total }, (_, i) => {
+    const isCompleted = i <= index;
+    const bg = isCompleted ? (beat.badgeColor || '#2563EB') : 'rgba(148, 163, 184, 0.35)';
+    return `<div style="flex: 1; height: 8px; border-radius: 4px; background: ${bg};"></div>`;
+  }).join('');
+
+  let centerVisualHtml = '';
+
+  if (beat.type === 'phone-mockup') {
+    centerVisualHtml = `
+      <div class="phone-card">
+        <div class="phone-notch"></div>
+        <div class="phone-status">
+          <span>9:41</span>
+          <span>5G 📶 100% 🔋</span>
+        </div>
+        <div class="sms-bubble-container">
+          <div class="sms-sender-row">
+            <div class="sms-avatar">🚨</div>
+            <div class="sms-sender-info">
+              <div class="sms-sender-name">${beat.sender || 'Traffic Police Alert'}</div>
+              <div class="sms-sender-sub">SMS / Text Message</div>
+            </div>
+            <div class="sms-time">Now</div>
+          </div>
+          <div class="sms-bubble">
+            ${beat.smsText}
+          </div>
+          <div class="sms-warning-banner">
+            <span class="warn-icon">⚠️</span>
+            <span>${beat.warningBadge || 'போலி மெசேஜ் — லிங்கை தொடாதீர்கள்!'}</span>
+          </div>
+        </div>
+        <div class="phone-caution-footer">
+          <span>👆 இந்த லிங்கை தொட்டால் அடுத்த நொடி என்ன நடக்கும்?</span>
+        </div>
+      </div>
+    `;
+  } else if (beat.type === 'apk-alert') {
+    centerVisualHtml = `
+      <div class="apk-card">
+        <div class="apk-icon-box">📦</div>
+        <div class="apk-title">${beat.fileName || 'Traffic_Police_Pay.apk'}</div>
+        <div class="apk-file-type">Android Application Package (APK)</div>
+        <div class="apk-alert-badge">${beat.alertNotice}</div>
+        <div class="apk-danger-box">
+          <div class="apk-danger-title">⚠️ மால்வேர் எப்படி செயல்படுகிறது?</div>
+          <div class="apk-danger-text">
+            இது அதிகாரப்பூர்வ ஆப் அல்ல! இதை இன்ஸ்டால் செய்தால், உங்கள் மொபைல் போனின் OTP, வாட்ஸ்அப் மற்றும் வங்கி தகவல்கள் ஹேக்கர் கைக்கு சென்றுவிடும்!
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (beat.type === 'threat-flow') {
+    const stepsHtml = (beat.steps || []).map(s => `
+      <div class="flow-step-card">
+        <div class="flow-step-num">${s.num}</div>
+        <div class="flow-step-body">
+          <div class="flow-step-title">${s.title}</div>
+          <div class="flow-step-desc">${s.desc}</div>
+        </div>
+      </div>
+    `).join('');
+
+    centerVisualHtml = `
+      <div class="flow-container">
+        ${stepsHtml}
+      </div>
+    `;
+  } else if (beat.type === 'url-compare') {
+    centerVisualHtml = `
+      <div class="compare-container">
+        <div class="compare-card fake">
+          <div class="compare-tag fake">❌ போலி இணையதளம் (Scam Link)</div>
+          <div class="compare-url fake">${beat.fakeUrl}</div>
+          <div class="compare-note">bit.ly, .apk, .xyz போன்ற மர்மமான லிங்க்களை ஒருபோதும் தொடாதீர்கள்!</div>
+        </div>
+        <div class="compare-vs-badge">VS</div>
+        <div class="compare-card real">
+          <div class="compare-tag real">✅ அதிகாரப்பூர்வ அரசு தளம்</div>
+          <div class="compare-url real">${beat.realUrl}</div>
+          <div class="compare-note">மத்திய / மாநில அரசின் உண்மையான அபராதங்களை இங்கு மட்டுமே சரிபார்க்கவும்.</div>
+        </div>
+      </div>
+    `;
+  } else if (beat.type === 'golden-hour') {
+    centerVisualHtml = `
+      <div class="golden-card">
+        <div class="golden-timer-pill">${beat.goldenHourNote || '⏱️ முதல் 2 மணி நேரத்திற்குள் அழைக்கவும்!'}</div>
+        <div class="helpline-hero">
+          <div class="helpline-phone-icon">📞</div>
+          <div class="helpline-number">${beat.helpline || '1930'}</div>
+          <div class="helpline-title">${beat.helplineLabel || 'தேசிய சைபர் கிரைம் அவசர உதவி எண்'}</div>
+        </div>
+        <div class="golden-info-box">
+          பணம் திருடப்பட்ட உடனே 1930 எண்ணை அழைத்தால், ஹேக்கர் பணம் எடுப்பதற்கு முன் வங்கி கணக்கு உடனடியாக முடக்கப்படும்!
+        </div>
+        <div class="golden-portal">portal: cybercrime.gov.in</div>
+      </div>
+    `;
+  } else if (beat.type === 'share-cta') {
+    centerVisualHtml = `
+      <div class="cta-card">
+        <div class="cta-shield-icon">🛡️</div>
+        <div class="cta-heading">${beat.title}</div>
+        <div class="cta-subheading">${beat.subtitle}</div>
+        <div class="cta-share-box">
+          <div class="cta-share-btn">${beat.sharePrompt || '📲 குடும்ப WhatsApp குழுவில் உடனே பகிருங்கள் ↗️'}</div>
+        </div>
+        <div class="cta-follow-badge">
+          ${brandLogoDataUri ? `<img src="${brandLogoDataUri}" class="cta-follow-logo" alt="VizhiTN">` : ''}
+          <span>${beat.followPrompt || '👉 @vizhi_tn பக்கத்தை Follow செய்யுங்கள்!'}</span>
+        </div>
+      </div>
+    `;
+  } else {
+    centerVisualHtml = `
+      <div class="generic-beat-card">
+        <div class="generic-title">${beat.title}</div>
+        <div class="generic-desc">${beat.subtitle || ''}</div>
+      </div>
+    `;
+  }
+
+  return `<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px; height: 1920px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #F8FAFC 0%, #EEF2F6 45%, #E2E8F0 100%);
+      font-family: 'Noto Sans Tamil', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #0F172A;
+      position: relative;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      position: absolute; top: 45px; left: 60px; right: 60px;
+      display: flex; gap: 10px; z-index: 20;
+    }
+
+    /* Top Brand Bar */
+    .top-bar {
+      position: absolute; top: 80px; left: 60px; right: 60px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 10;
+    }
+    .brand-pill {
+      display: flex; align-items: center; gap: 14px;
+      background: #FFFFFF; border: 3px solid #CBD5E1;
+      padding: 12px 28px; border-radius: 999px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+    }
+    .brand-logo { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+    .brand-name { font-size: 26px; font-weight: 900; color: #0F172A; }
+    .pillar-chip {
+      background: ${beat.badgeColor || '#2563EB'};
+      color: #FFFFFF; font-size: 24px; font-weight: 900;
+      padding: 12px 30px; border-radius: 999px;
+      box-shadow: 0 6px 20px ${beat.badgeColor || '#2563EB'}44;
+    }
+
+    /* Header Box */
+    .header-box {
+      position: absolute; top: 180px; left: 60px; right: 60px;
+      z-index: 10;
+    }
+    .beat-headline {
+      font-size: 52px; font-weight: 900; line-height: 1.25; color: #0F172A;
+      margin-bottom: 12px;
+    }
+    .beat-subheadline {
+      font-size: 28px; font-weight: 700; color: #475569;
+    }
+
+    /* Center Visual Area */
+    .center-visual-area {
+      position: absolute; top: 380px; left: 60px; right: 60px; bottom: 150px;
+      display: flex; justify-content: center; align-items: center;
+      z-index: 10;
+    }
+
+    /* Phone Mockup Styles */
+    .phone-card {
+      width: 100%; max-width: 960px;
+      background: #FFFFFF; border: 4px solid #CBD5E1;
+      border-radius: 44px; padding: 40px;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+      display: flex; flex-direction: column; gap: 28px;
+    }
+    .phone-notch {
+      width: 160px; height: 8px; background: #94A3B8;
+      border-radius: 4px; margin: 0 auto;
+    }
+    .phone-status {
+      display: flex; justify-content: space-between;
+      font-size: 22px; font-weight: 800; color: #64748B;
+    }
+    .sms-bubble-container {
+      background: #F8FAFC; border: 3px solid #E2E8F0;
+      border-radius: 32px; padding: 36px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .sms-sender-row {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .sms-avatar {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: #FEE2E2; border: 2px solid #FCA5A5;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 30px;
+    }
+    .sms-sender-name { font-size: 28px; font-weight: 900; color: #0F172A; }
+    .sms-sender-sub { font-size: 20px; font-weight: 700; color: #64748B; }
+    .sms-time { margin-left: auto; font-size: 22px; font-weight: 700; color: #94A3B8; }
+    .sms-bubble {
+      background: #FFFFFF; border: 3px solid #CBD5E1;
+      border-radius: 24px; padding: 26px 30px;
+      font-size: 32px; font-weight: 800; line-height: 1.4; color: #0F172A;
+    }
+    .sms-warning-banner {
+      background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+      color: #FFFFFF; border-radius: 20px; padding: 20px 28px;
+      font-size: 28px; font-weight: 900; display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+    }
+    .phone-caution-footer {
+      font-size: 28px; font-weight: 800; color: #DC2626; text-align: center;
+    }
+
+    /* APK Alert Card Styles */
+    .apk-card {
+      width: 100%; max-width: 960px;
+      background: #FFFFFF; border: 4px solid #F97316;
+      border-radius: 44px; padding: 48px;
+      box-shadow: 0 25px 60px rgba(249, 115, 22, 0.15);
+      text-align: center;
+    }
+    .apk-icon-box {
+      font-size: 96px; margin-bottom: 20px;
+    }
+    .apk-title {
+      font-size: 44px; font-weight: 900; color: #0F172A; margin-bottom: 8px;
+    }
+    .apk-file-type {
+      font-size: 24px; font-weight: 800; color: #64748B; margin-bottom: 28px;
+    }
+    .apk-alert-badge {
+      display: inline-block; background: #FEF2F2; border: 3px solid #EF4444;
+      color: #DC2626; font-size: 30px; font-weight: 900;
+      padding: 18px 36px; border-radius: 999px; margin-bottom: 32px;
+    }
+    .apk-danger-box {
+      background: #FFF7ED; border: 3px solid #FDBA74;
+      border-radius: 28px; padding: 32px; text-align: left;
+    }
+    .apk-danger-title { font-size: 30px; font-weight: 900; color: #C2410C; margin-bottom: 12px; }
+    .apk-danger-text { font-size: 28px; font-weight: 700; color: #7C2D12; line-height: 1.45; }
+
+    /* Threat Flow Styles */
+    .flow-container {
+      width: 100%; display: flex; flex-direction: column; gap: 24px;
+    }
+    .flow-step-card {
+      background: #FFFFFF; border: 4px solid #E2E8F0;
+      border-radius: 32px; padding: 32px 36px;
+      display: flex; align-items: center; gap: 28px;
+      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
+    }
+    .flow-step-num {
+      width: 76px; height: 76px; border-radius: 24px;
+      background: #FEE2E2; border: 3px solid #FCA5A5;
+      color: #DC2626; font-size: 40px; font-weight: 900;
+      display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+    }
+    .flow-step-title { font-size: 34px; font-weight: 900; color: #0F172A; margin-bottom: 6px; }
+    .flow-step-desc { font-size: 24px; font-weight: 700; color: #64748B; }
+
+    /* URL Compare Styles */
+    .compare-container {
+      width: 100%; display: flex; flex-direction: column; gap: 28px;
+    }
+    .compare-card {
+      background: #FFFFFF; border-radius: 36px; padding: 40px;
+      box-shadow: 0 15px 40px rgba(15, 23, 42, 0.08);
+    }
+    .compare-card.fake { border: 4px solid #EF4444; background: #FEF2F2; }
+    .compare-card.real { border: 4px solid #10B981; background: #ECFDF5; }
+    .compare-tag {
+      font-size: 26px; font-weight: 900; margin-bottom: 14px;
+    }
+    .compare-tag.fake { color: #DC2626; }
+    .compare-tag.real { color: #059669; }
+    .compare-url {
+      font-size: 38px; font-weight: 900; line-height: 1.3; margin-bottom: 12px;
+    }
+    .compare-url.fake { color: #991B1B; text-decoration: line-through; }
+    .compare-url.real { color: #065F46; }
+    .compare-note { font-size: 24px; font-weight: 700; color: #475569; }
+    .compare-vs-badge {
+      width: 70px; height: 70px; border-radius: 50%;
+      background: #0F172A; color: #FFFFFF; font-size: 26px; font-weight: 900;
+      display: flex; justify-content: center; align-items: center;
+      margin: -10px auto; z-index: 5; border: 4px solid #FFFFFF;
+    }
+
+    /* Golden Hour Helpline Styles */
+    .golden-card {
+      width: 100%; background: #FFFFFF; border: 4px solid #10B981;
+      border-radius: 44px; padding: 48px; text-align: center;
+      box-shadow: 0 25px 60px rgba(16, 185, 129, 0.15);
+    }
+    .golden-timer-pill {
+      display: inline-block; background: #FEF3C7; border: 3px solid #F59E0B;
+      color: #B45309; font-size: 28px; font-weight: 900;
+      padding: 14px 32px; border-radius: 999px; margin-bottom: 30px;
+    }
+    .helpline-hero {
+      background: #F0FDF4; border: 4px solid #86EFAC;
+      border-radius: 36px; padding: 36px; margin-bottom: 28px;
+    }
+    .helpline-phone-icon { font-size: 80px; margin-bottom: 10px; }
+    .helpline-number { font-size: 96px; font-weight: 900; color: #15803D; letter-spacing: 4px; }
+    .helpline-title { font-size: 30px; font-weight: 800; color: #166534; }
+    .golden-info-box {
+      font-size: 28px; font-weight: 700; color: #1E293B; line-height: 1.45; margin-bottom: 18px;
+    }
+    .golden-portal { font-size: 26px; font-weight: 800; color: #0284C7; }
+
+    /* Share CTA Styles */
+    .cta-card {
+      width: 100%; background: #FFFFFF; border: 4px solid #8B5CF6;
+      border-radius: 44px; padding: 50px; text-align: center;
+      box-shadow: 0 25px 60px rgba(139, 92, 246, 0.15);
+    }
+    .cta-shield-icon { font-size: 110px; margin-bottom: 20px; }
+    .cta-heading { font-size: 48px; font-weight: 900; color: #0F172A; margin-bottom: 12px; }
+    .cta-subheading { font-size: 28px; font-weight: 700; color: #64748B; margin-bottom: 36px; }
+    .cta-share-box {
+      background: #F5F3FF; border: 3px solid #DDD6FE;
+      border-radius: 30px; padding: 26px; margin-bottom: 28px;
+    }
+    .cta-share-btn { font-size: 34px; font-weight: 900; color: #6D28D9; }
+    .cta-follow-badge {
+      display: inline-flex; align-items: center; gap: 16px;
+      background: #0F172A; color: #FFFFFF; font-size: 30px; font-weight: 900;
+      padding: 18px 40px; border-radius: 999px;
+    }
+    .cta-follow-logo { width: 44px; height: 44px; border-radius: 50%; }
+
+    /* Bottom Instagram-Native Footer */
+    .insta-footer-bar {
+      position: absolute; bottom: 50px; left: 60px; right: 60px;
+      background: #0F172A; border-radius: 26px; padding: 22px 36px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+    }
+    .footer-brand { font-size: 26px; font-weight: 800; color: #F8FAFC; }
+    .footer-follow-btn {
+      font-size: 26px; font-weight: 900; color: #FFFFFF;
+      background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+      padding: 10px 28px; border-radius: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-container">
+    ${progressBars}
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-pill">
+      ${brandLogoDataUri ? `<img src="${brandLogoDataUri}" class="brand-logo" alt="VizhiTN">` : ''}
+      <span class="brand-name">விழி தமிழ்நாடு</span>
+    </div>
+    <div class="pillar-chip">${beat.tag || topic.pillarLabel}</div>
+  </div>
+
+  <div class="header-box">
+    <div class="beat-headline">${beat.title}</div>
+    <div class="beat-subheadline">${beat.subtitle}</div>
+  </div>
+
+  <div class="center-visual-area">
+    ${centerVisualHtml}
+  </div>
+
+  <div class="insta-footer-bar">
+    <div class="footer-brand">📢 விழி தமிழ்நாடு • கள ஆய்வு & உண்மை விவரங்கள்</div>
+    <div class="footer-follow-btn">Follow @vizhi_tn</div>
+  </div>
+</body>
+</html>`;
 }
 
 /**
@@ -479,50 +884,76 @@ async function main() {
 
   const brandLogoDataUri = getBrandLogoDataUri();
 
-  // Scene 1: Disruptive Hook (0-15s)
-  console.log('[SCENE 1] Synthesizing Hook...');
-  const s1Spoken = `${topic.hookSpoken} ${topic.realitySpoken}`;
-  const s1AudioPath = path.join(sessionDir, 'info_audio_1.mp3');
-  await synthesizeSpeech(s1Spoken, s1AudioPath);
-  const s1Dur = getAudioDuration(s1AudioPath);
+  const scenes = [];
 
-  const s1Html = generateHookSlideHtml({ topic, brandLogoDataUri });
-  const s1Path = path.join(sessionDir, 'info_slide_1.png');
-  renderHtmlToImage(s1Html, s1Path, { width: 1080, height: 1920 });
+  if (topic.beats && topic.beats.length > 0) {
+    console.log(`[DYNAMIC BEATS] Rendering ${topic.beats.length} fast-paced visual beats...`);
+    for (let bIdx = 0; bIdx < topic.beats.length; bIdx++) {
+      const beat = topic.beats[bIdx];
+      console.log(`[BEAT ${bIdx + 1}/${topic.beats.length}] Synthesizing "${beat.title}"...`);
+      const bAudioPath = path.join(sessionDir, `beat_audio_${bIdx + 1}.mp3`);
+      await synthesizeSpeech(beat.spoken, bAudioPath);
+      const bDur = getAudioDuration(bAudioPath);
 
-  // Scene 2: The Deep Data, Key Stats & Technical Blueprints (15-35s)
-  console.log('[SCENE 2] Synthesizing Data & Proof...');
-  const s2Spoken = topic.dataSpoken;
-  const s2AudioPath = path.join(sessionDir, 'info_audio_2.mp3');
-  await synthesizeSpeech(s2Spoken, s2AudioPath);
-  const s2Dur = getAudioDuration(s2AudioPath);
+      const bHtml = generateDynamicBeatSlideHtml({
+        beat,
+        topic,
+        brandLogoDataUri,
+        index: bIdx,
+        total: topic.beats.length
+      });
+      const bSlidePath = path.join(sessionDir, `beat_slide_${bIdx + 1}.png`);
+      renderHtmlToImage(bHtml, bSlidePath, { width: 1080, height: 1920 });
 
-  const s2Html = generateDataSlideHtml({ topic, brandLogoDataUri });
-  const s2Path = path.join(sessionDir, 'info_slide_2.png');
-  renderHtmlToImage(s2Html, s2Path, { width: 1080, height: 1920 });
+      // Snappy duration with zero silent gaps: exact audio duration + 0.05s
+      const cleanDuration = Math.max(2.0, parseFloat((bDur + 0.05).toFixed(2)));
+      scenes.push({
+        imagePath: bSlidePath,
+        slidePath: bSlidePath,
+        audioPath: bAudioPath,
+        durationSec: cleanDuration
+      });
+    }
+  } else {
+    // 3-scene legacy fallback with clean duration
+    console.log('[LEGACY 3-SCENE FALLBACK] Rendering 3 scenes...');
+    const s1Spoken = `${topic.hookSpoken} ${topic.realitySpoken}`;
+    const s1AudioPath = path.join(sessionDir, 'info_audio_1.mp3');
+    await synthesizeSpeech(s1Spoken, s1AudioPath);
+    const s1Dur = getAudioDuration(s1AudioPath);
+    const s1Html = generateHookSlideHtml({ topic, brandLogoDataUri });
+    const s1Path = path.join(sessionDir, 'info_slide_1.png');
+    renderHtmlToImage(s1Html, s1Path, { width: 1080, height: 1920 });
 
-  // Scene 3: The Climax, Reality Impact & Discussion CTA (35-45s)
-  console.log('[SCENE 3] Synthesizing Climax & CTA...');
-  const s3Spoken = topic.climaxSpoken;
-  const s3AudioPath = path.join(sessionDir, 'info_audio_3.mp3');
-  await synthesizeSpeech(s3Spoken, s3AudioPath);
-  const s3Dur = getAudioDuration(s3AudioPath);
+    const s2Spoken = topic.dataSpoken;
+    const s2AudioPath = path.join(sessionDir, 'info_audio_2.mp3');
+    await synthesizeSpeech(s2Spoken, s2AudioPath);
+    const s2Dur = getAudioDuration(s2AudioPath);
+    const s2Html = generateDataSlideHtml({ topic, brandLogoDataUri });
+    const s2Path = path.join(sessionDir, 'info_slide_2.png');
+    renderHtmlToImage(s2Html, s2Path, { width: 1080, height: 1920 });
 
-  const s3Html = generateClimaxSlideHtml({ topic, brandLogoDataUri });
-  const s3Path = path.join(sessionDir, 'info_slide_3.png');
-  renderHtmlToImage(s3Html, s3Path, { width: 1080, height: 1920 });
+    const s3Spoken = topic.climaxSpoken;
+    const s3AudioPath = path.join(sessionDir, 'info_audio_3.mp3');
+    await synthesizeSpeech(s3Spoken, s3AudioPath);
+    const s3Dur = getAudioDuration(s3AudioPath);
+    const s3Html = generateClimaxSlideHtml({ topic, brandLogoDataUri });
+    const s3Path = path.join(sessionDir, 'info_slide_3.png');
+    renderHtmlToImage(s3Html, s3Path, { width: 1080, height: 1920 });
 
-  // Assemble Video
-  const scenes = [
-    { imagePath: s1Path, slidePath: s1Path, audioPath: s1AudioPath, durationSec: Math.ceil(s1Dur) + 1 },
-    { imagePath: s2Path, slidePath: s2Path, audioPath: s2AudioPath, durationSec: Math.ceil(s2Dur) + 1 },
-    { imagePath: s3Path, slidePath: s3Path, audioPath: s3AudioPath, durationSec: Math.ceil(s3Dur) + 1 }
-  ];
+    scenes.push(
+      { imagePath: s1Path, slidePath: s1Path, audioPath: s1AudioPath, durationSec: parseFloat((s1Dur + 0.05).toFixed(2)) },
+      { imagePath: s2Path, slidePath: s2Path, audioPath: s2AudioPath, durationSec: parseFloat((s2Dur + 0.05).toFixed(2)) },
+      { imagePath: s3Path, slidePath: s3Path, audioPath: s3AudioPath, durationSec: parseFloat((s3Dur + 0.05).toFixed(2)) }
+    );
+  }
 
   const outputVideoPath = path.join(sessionDir, `VizhiTN_${topic.id}.mp4`);
   console.log('[COMPOSING SHORTS] Assembling Infotainment Video...');
   assembleMultiSceneShortsVideo({ scenes, outputPath: outputVideoPath });
   console.log(`[VIDEO OK] Rendered: ${outputVideoPath}`);
+
+  const coverImagePath = scenes[0]?.imagePath || null;
 
   const videoTitle = topic.titleTa;
   const videoDescription = `${topic.titleTa}\n\nவிழி தமிழ்நாடு — கள ஆய்வு & புலனாய்வு ஆவணப் பதிவு.\n\n📌 முக்கியத் தகவல்கள்:\n${topic.hookSpoken}\n\n${topic.realitySpoken}\n\n${topic.dataSpoken}\n\n💬 உங்கள் கருத்து என்ன? கீழே கமெண்ட் செய்யுங்கள்!\n\n${(topic.hashtags || []).join(' ')}`;
@@ -537,7 +968,7 @@ async function main() {
     try {
       await crossPostVideoToMetaSocials({
         videoFilePath: outputVideoPath,
-        thumbnailFilePath: s1Path,
+        thumbnailFilePath: coverImagePath,
         title: videoTitle,
         caption: videoDescription,
         isReel: true,
@@ -576,7 +1007,7 @@ async function main() {
     console.log('\n[SOCIAL SYNC] Crossposting Infotainment video to Facebook & Instagram Reels...');
     await crossPostVideoToMetaSocials({
       videoFilePath: outputVideoPath,
-      thumbnailFilePath: s1Path,
+      thumbnailFilePath: coverImagePath,
       title: videoTitle,
       caption: videoDescription,
       isReel: true,
