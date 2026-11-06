@@ -534,6 +534,16 @@ async function main() {
     console.log(`Title: ${videoTitle}`);
     console.log(`Pinned Comment Preview: ${pinnedCommentText}`);
     console.log(`Video File: ${outputVideoPath}`);
+    try {
+      await crossPostVideoToMetaSocials({
+        videoFilePath: outputVideoPath,
+        thumbnailFilePath: s1Path,
+        title: videoTitle,
+        caption: videoDescription,
+        isReel: true,
+        isDryRun: true
+      });
+    } catch (_) {}
     console.log('[SUCCESS ✓] Infotainment pipeline dry-run completed successfully.');
     return;
   }
@@ -561,19 +571,20 @@ async function main() {
     }
   }
 
-  // Auto-crosspost to Facebook & Instagram Reels for afternoon slot
-  if (slotArg.includes('afternoon') && res.videoId) {
-    try {
-      console.log('[SOCIAL SYNC] Crossposting to Facebook & Instagram Reels...');
-      await crossPostVideoToMetaSocials({
-        videoFilePath: outputVideoPath,
-        title: videoTitle,
-        description: videoDescription
-      });
-      console.log('[SOCIAL SYNC ✓] Meta crosspost complete!');
-    } catch (metaErr) {
-      console.warn('[SOCIAL SYNC WARN] Meta crosspost failed:', metaErr.message);
-    }
+  // Auto-crosspost to Facebook & Instagram Reels for both afternoon & evening slots
+  try {
+    console.log('\n[SOCIAL SYNC] Crossposting Infotainment video to Facebook & Instagram Reels...');
+    await crossPostVideoToMetaSocials({
+      videoFilePath: outputVideoPath,
+      thumbnailFilePath: s1Path,
+      title: videoTitle,
+      caption: videoDescription,
+      isReel: true,
+      isDryRun: false
+    });
+    console.log('[SOCIAL SYNC ✓] Meta Reels crosspost complete!');
+  } catch (metaErr) {
+    console.warn('[SOCIAL SYNC WARN] Meta Reels crosspost failed:', metaErr.message);
   }
 }
 
@@ -581,3 +592,4 @@ main().catch(err => {
   console.error('[FATAL INFOTAINMENT ERROR]:', err);
   process.exit(1);
 });
+

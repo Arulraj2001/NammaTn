@@ -1154,32 +1154,12 @@ No conversational intro, no commentary outside the JSON array.
       console.warn(`[WEB PUSH WARN] Web push broadcast warning: ${pushBroadcastErr.message}`);
     }
 
-    // --- STEP 10: CURATED SOCIAL MEDIA BROADCAST (FACEBOOK & INSTAGRAM) ---
-    // Broadcasts the top civic alert(s) as high-contrast editorial cards to Facebook & Instagram
-    const hasMetaCreds = Boolean(process.env.META_PAGE_ID && process.env.META_PAGE_ACCESS_TOKEN);
-    const enableSocial = hasMetaCreds || process.argv.includes('--social') || process.env.ENABLE_SOCIAL_BROADCAST === 'true';
-    if (enableSocial && validPosts.length > 0) {
-      try {
-        const sortedForSocial = [...validPosts].sort((a, b) => {
-          const urgencyRank = { critical: 4, high: 3, medium: 2, low: 1 };
-          const rankA = urgencyRank[a.urgency_level] || 1;
-          const rankB = urgencyRank[b.urgency_level] || 1;
-          if (rankA !== rankB) return rankB - rankA;
-          const typeRank = { alert: 3, local_update: 2, complaint: 1 };
-          return (typeRank[b.post_type] || 0) - (typeRank[a.post_type] || 0);
-        });
-
-        const topSocialPosts = sortedForSocial.slice(0, 2);
-        console.log(`[SOCIAL BROADCAST] Broadcasting top ${topSocialPosts.length} priority civic alert(s) to Facebook & Instagram...`);
-        const { broadcastBatchToSocials } = await import('./lib/meta-social-poster.mjs');
-        await broadcastBatchToSocials(topSocialPosts, {
-          delayMs: 3000,
-          isDryRun: isDryRun
-        });
-      } catch (sErr) {
-        console.warn(`[SOCIAL BROADCAST WARN] ${sErr.message}`);
-      }
-    }
+    // --- STEP 10: SOCIAL MEDIA BROADCAST (FACEBOOK & INSTAGRAM) ---
+    // [ARCHITECTURAL UPDATE]: Static image card posting to Meta feed has been decommissioned.
+    // Organic reach for static image cards is 0 on Meta for new accounts.
+    // All visual Meta distribution is migrated to high-converting 9:16 Reels via generate-infotainment-shorts.mjs.
+    // Local civic utility notices are strictly routed to WhatsApp Channel & Web Search.
+    console.log('[SOCIAL BROADCAST NOTICE] Static image broadcasting to Meta (FB/IG) is decommissioned. Visual reach migrated to 9:16 Reels pipeline.');
 
     // --- STEP 11: AUTONOMOUS TWITTER (X) BROADCAST ---
     // Broadcasts top priority civic alert to @Vizhitn via headless zero-cost automation

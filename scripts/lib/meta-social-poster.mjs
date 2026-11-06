@@ -309,6 +309,16 @@ export async function postToInstagramFeed({ imageUrl, caption }) {
  * @param {object} options - Options { isDryRun, skipAiPhoto, customPhotoPath }
  */
 export async function broadcastToSocials(post = {}, options = {}) {
+  const forceImages = process.argv.includes('--force-social-images') || process.env.FORCE_SOCIAL_IMAGES === 'true';
+  if (!forceImages) {
+    console.log('[MetaPoster NOTICE] Static image broadcasting to Meta (Facebook/Instagram) is decommissioned in favor of 9:16 Reels.');
+    console.log('[MetaPoster NOTICE] Organic photo reach is 0 for non-followers. To force static images, pass --force-social-images.');
+    return {
+      decommissioned: true,
+      message: 'Static image broadcast decommissioned. Use Reels pipeline.'
+    };
+  }
+
   const {
     isDryRun = false,
     skipAiPhoto = false,
@@ -514,6 +524,18 @@ export async function broadcastToSocials(post = {}, options = {}) {
  * @returns {Promise<{ total: number, successful: Array, failed: Array }>}
  */
 export async function broadcastBatchToSocials(posts = [], options = {}) {
+  const forceImages = process.argv.includes('--force-social-images') || process.env.FORCE_SOCIAL_IMAGES === 'true';
+  if (!forceImages) {
+    console.log('[MetaPoster Batch NOTICE] Static image broadcasting to Meta (Facebook/Instagram) is decommissioned in favor of 9:16 Reels.');
+    console.log('[MetaPoster Batch NOTICE] Organic photo reach is 0 for non-followers. To force static images, pass --force-social-images.');
+    return {
+      total: posts.length,
+      decommissioned: true,
+      successful: [],
+      failed: []
+    };
+  }
+
   const { delayMs = 3000, isDryRun = false } = options;
 
   console.log('====================================================');

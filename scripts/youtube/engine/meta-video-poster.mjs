@@ -54,9 +54,9 @@ export function formatSafeInstaCaption(rawCaption = '', title = '') {
     '',
     '💬 உங்கள் கருத்து என்ன? கமெண்டில் சொல்லுங்கள் 👇',
     '📌 தொடர் வீடியோக்கள் & முழு விவரங்களுக்கு Bio லிங்கை பார்க்கவும் ↗️',
-    '👉 தமிழ்நாடு முக்கிய அறிவிப்புகளுக்கு @vizhi_tn பக்கத்தை Follow செய்யுங்கள்!',
+    '👉 தமிழ்நாடு முக்கிய தகவல்களுக்கு @vizhi_tn பக்கத்தை Follow செய்யுங்கள்!',
     '',
-    hashtags.length > 0 ? hashtags.join(' ') : '#VizhiTN #TamilNadu #ReelsIndia #Shorts'
+    hashtags.length > 0 ? hashtags.join(' ') : '#VizhiTN #TamilNadu #TamilReels #ReelsIndia #Shorts'
   ].filter(Boolean);
 
   const res = parts.join('\n');
@@ -96,7 +96,7 @@ export async function crossPostVideoToMetaSocials({
   const pageToken = process.env.META_PAGE_ACCESS_TOKEN;
   const instaId = process.env.META_INSTA_ACCOUNT_ID;
 
-  const hasMetaCreds = Boolean(pageId && pageToken && instaId);
+  const hasMetaCreds = Boolean(pageToken && (pageId || instaId));
 
   if (isDryRun || !hasMetaCreds) {
     const safeInsta = formatSafeInstaCaption(caption, title);
@@ -106,7 +106,7 @@ export async function crossPostVideoToMetaSocials({
     console.log(`[META DRY-RUN] Instagram Reel Caption Preview (${safeInsta.length} chars):\n${safeInsta}\n`);
     console.log(`[META DRY-RUN] Facebook Video Description Preview:\n${stripHtml(caption).slice(0, 180)}...\n`);
     if (!hasMetaCreds) {
-      console.log('[META NOTICE] Missing META_PAGE_ID, META_PAGE_ACCESS_TOKEN, or META_INSTA_ACCOUNT_ID in .env.local.');
+      console.log('[META NOTICE] Missing META_PAGE_ACCESS_TOKEN and (META_PAGE_ID or META_INSTA_ACCOUNT_ID).');
       console.log('Cross-posting to Instagram/Facebook is currently in dry-run mode.');
     }
     return {
@@ -149,8 +149,9 @@ export async function crossPostVideoToMetaSocials({
 
   try {
     // 2. Publish to Facebook Page Video (Uses graph-video.facebook.com endpoint)
-    try {
-      console.log(`[META] Publishing to Facebook Page (${pageId})...`);
+    if (pageId && pageToken) {
+      try {
+        console.log(`[META] Publishing to Facebook Page (${pageId})...`);
     // Retrieve page-specific access token if available
     let activePageToken = pageToken;
     try {
@@ -206,6 +207,7 @@ export async function crossPostVideoToMetaSocials({
     console.warn(`[META FB ERROR] ${err.message}`);
     results.errors.push({ platform: 'facebook', error: err.message });
   }
+}
 
   // 3. Publish to Instagram Reels (if 9:16 format)
   if (isReel && instaId) {

@@ -400,3 +400,4 @@ export function getInfotainmentTopicForSlot(slot = 'infotainment-afternoon', dat
   const index = dayOfYear % INFOTAINMENT_CATALOG.length;
   return INFOTAINMENT_CATALOG[index];
 }
+
