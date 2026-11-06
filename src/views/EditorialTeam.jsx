@@ -15,58 +15,58 @@ export default function EditorialTeam() {
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
   usePageMeta({
-    title: "Editorial Board & Newsroom Leadership | VizhiTN",
-    description: "Meet the editorial board, civic researchers, and correspondents responsible for verifying public data, municipal alerts, and government welfare reporting across Tamil Nadu.",
+    title: "Team & Community Contributors | VizhiTN",
+    description: "Meet the independent citizen developers, community researchers, and volunteers maintaining VizhiTN - a personal non-governmental civic proof initiative across Tamil Nadu.",
   });
 
   const TEAM_MEMBERS = [
     {
       name_en: "Arulraj",
       name_ta: "அருள்ராஜ்",
-      role_en: "Founder & Editor-in-Chief",
-      role_ta: "நிறுவனர் & தலைமை ஆசிரியர்",
-      expertise_en: "Civic Technology, Open Data & Editorial Standards",
-      expertise_ta: "குடிமைத் தொழில்நுட்பம் & தகவல் சரிபார்ப்பு",
-      bio_en: "Technology researcher and open-data specialist based in Tamil Nadu. Founded VizhiTN to bring radical transparency to district civic grievances, municipal shutdown alerts, and public welfare scheme access.",
-      bio_ta: "தமிழ்நாட்டைச் சேர்ந்த தகவல் தொழில்நுட்ப ஆய்வாளர். அனைத்து 38 மாவட்டங்களிலும் அரசு திட்டங்கள், மின்/குடிநீர் எச்சரிக்கைகள் மற்றும் மக்கள் குறைதீர்க்கும் வெளிப்படைத்தன்மையை உருவாக்க VizhiTN தளத்தை வழிநடத்துகிறார்.",
-      email: "arulraj@vizhitn.in",
-      location: "Chennai Bureau"
+      role_en: "Founder & Independent Developer",
+      role_ta: "நிறுவனர் & மென்பொருள் வடிவமைப்பாளர்",
+      expertise_en: "Civic Open Data & Platform Development",
+      expertise_ta: "குடிமைத் தரவு & தள கட்டமைப்பு",
+      bio_en: "Independent developer and technology enthusiast from Tamil Nadu. Built VizhiTN out of personal civic interest to provide a clean, open, non-governmental platform for tracking power shutdown schedules, holiday advisories, and public welfare information.",
+      bio_ta: "தமிழ்நாட்டைச் சேர்ந்த சுயேச்சை மென்பொருள் உருவாக்குநர். மக்கள் பயன்பாட்டிற்காக தனிப்பட்ட ஆர்வத்தில், மின்வெட்டு அறிவிப்புகள், விடுமுறை எச்சரிக்கைகள் மற்றும் அரசு நலத்திட்ட வழிகாட்டிகளை எளிதாக அறிய VizhiTN தளத்தை உருவாக்கினார்.",
+      email: "vizhitnin@gmail.com",
+      location: "Chennai"
     },
     {
-      name_en: "S. Soundarapandian",
-      name_ta: "எஸ். சௌந்தரபாண்டியன்",
-      role_en: "Senior Municipal & Infrastructure Desk Lead",
-      role_ta: "நகராட்சி & கட்டமைப்பு தலைமைச் செய்தியாளர்",
-      expertise_en: "TANGEDCO Power Grid, Metrowater & Metro Rail",
-      expertise_ta: "மின்வாரியம், குடிநீர் வாரியம் & மெட்ரோ போக்குவரத்து",
-      bio_en: "Over a decade of field reporting on Tamil Nadu state infrastructure. Specializes in verifying TANGEDCO substation schedules, CMWSSB pipeline maintenance, and Southern Railway suburban corridor updates.",
-      bio_ta: "தமிழகத்தின் பெருநகர கட்டமைப்பு பணிகளை களத்தில் ஆய்வு செய்து வரும் மூத்த செய்தியாளர். மின்வாரிய பராமரிப்பு, மெட்ரோ ரயில் விரிவாக்கம் மற்றும் ரயில்வே வழித்தட மாற்றங்களை ஆவணப்படுத்துகிறார்.",
-      email: "infrastructure@vizhitn.in",
-      location: "Chennai & Chengalpattu"
+      name_en: "Sivakumar",
+      name_ta: "சிவகுமார்",
+      role_en: "Community Contributor & Ground Verification",
+      role_ta: "சமூக பங்களிப்பாளர் & கள சரிபார்ப்பு",
+      expertise_en: "Municipal Services, TANGEDCO Alerts & Local Infrastructure",
+      expertise_ta: "நகராட்சி பணிகள் & மின்வாரிய அறிவிப்புகள்",
+      bio_en: "Citizen volunteer and community researcher assisting with cross-verifying local municipal circulars, TANGEDCO power cut schedules, and public transit updates against primary departmental releases.",
+      bio_ta: "நகராட்சி அறிவிப்புகள், மின்வாரிய பராமரிப்பு கால அட்டவணைகள் மற்றும் உள்ளூர் மக்கள் குறைதீர்ப்பு தகவல்களை அதிகாரப்பூர்வ சுற்றறிக்கைகளுடன் சரிபார்க்க உதவும் குடிமை ஆர்வலர்.",
+      email: "vizhitnin@gmail.com",
+      location: "Tamil Nadu"
     },
     {
-      name_en: "K. Meenakshi Sundaram",
-      name_ta: "கே. மீனாட்சி சுந்தரம்",
-      role_en: "District Grievances & Rural Governance Lead",
-      role_ta: "மாவட்ட குறைதீர்ப்பு & ஊரக வளர்ச்சி பிரிவு",
-      expertise_en: "PDS / Ration Cards, Patta Chitta & Welfare Schemes",
-      expertise_ta: "ரேஷன் அட்டை, பட்டா சிட்டா & அரசு நலத்திட்டங்கள்",
-      bio_en: "Covers Taluk office citizen grievance days, e-Sevai portal services, Patta transfers, and agricultural procurement centers (DPCs) across the Kongu belt, Cauvery Delta, and Southern districts.",
-      bio_ta: "வட்டார அலுவலக மக்கள் குறைதீர்ப்பு முகாம்கள், இ-சேவை மைய சேவைகள், இணையவழி பட்டா மாறுதல் மற்றும் டெல்டா நேரடி நெல் கொள்முதல் நிலைய நிலவரங்களை தொடர்ந்து கண்காணித்து வருகிறார்.",
-      email: "governance@vizhitn.in",
-      location: "Madurai & Delta Bureau"
+      name_en: "Arulmozhli",
+      name_ta: "அருள்மொழி",
+      role_en: "Community Contributor & Public Data Research",
+      role_ta: "சமூக பங்களிப்பாளர் & பொதுத் தரவு ஆய்வு",
+      expertise_en: "e-Sevai Portals, Citizen Rights & Welfare Schemes",
+      expertise_ta: "இ-சேவை வழிகாட்டிகள் & மக்கள் நலத்திட்டங்கள்",
+      bio_en: "Citizen researcher tracking government welfare gazettes, e-Sevai online procedures, Smart Ration Card services, and grievance day mechanisms to produce practical bilingual awareness guides.",
+      bio_ta: "அரசு நலத்திட்டங்கள், இ-சேவை இணையதள நடைமுறைகள், ரேஷன் அட்டை சேவைகள் மற்றும் பொதுமக்கள் உரிமைகள் குறித்த எளிய வழிகாட்டல்களை ஆவணப்படுத்தும் சமூக ஆய்வாளர்.",
+      email: "vizhitnin@gmail.com",
+      location: "Tamil Nadu"
     },
     {
-      name_en: "Dr. M. Sangeetha",
-      name_ta: "டாக்டர் எம். சங்கீதா",
-      role_en: "Public Health & Safety Editorial Advisor",
-      role_ta: "பொது சுகாதாரம் & மக்கள் பாதுகாப்பு ஆலோசகர்",
-      expertise_en: "Community Health, Monsoon Alerts & Cyber Fraud Redressal",
-      expertise_ta: "சுகாதார வழிகாட்டுதல், மழை எச்சரிக்கை & சைபர் பாதுகாப்பு",
-      bio_en: "Advises on public health bulletins, monsoon epidemiology preparedness, and citizen cyber fraud advisories linked to official helplines (1930, 1070, 1077).",
-      bio_ta: "மழைக்கால முன்னெச்சரிக்கைகள், முதலமைச்சரின் விரிவான மருத்துவக் காப்பீடு திட்டம் மற்றும் சைபர் குற்ற புகார்கள் (1930) குறித்த விழிப்புணர்வு உள்ளடக்கத்தை வழிநடத்துகிறார்.",
-      email: "publichealth@vizhitn.in",
-      location: "Coimbatore Bureau"
+      name_en: "Vigneshwaran",
+      name_ta: "விக்னேஸ்வரன்",
+      role_en: "Community Contributor & Platform Support",
+      role_ta: "சமூக பங்களிப்பாளர் & பயனர் உதவி",
+      expertise_en: "Citizen Helpdesk, Cyber Safety & Fact Redressal",
+      expertise_ta: "உதவி மையம், சைபர் விழிப்புணர்வு & பிழை திருத்தம்",
+      bio_en: "Citizen volunteer helping review user feedback, maintain verified emergency helpline records (1930, 1912, 1070), and ensure all user-submitted corrections are reviewed promptly.",
+      bio_ta: "பொதுமக்கள் அனுப்பும் கருத்துக்கள் மற்றும் பிழை திருத்தங்களை ஆய்வு செய்வதோடு, அவசர உதவி எண்களின் உண்மைத்தன்மையை உறுதி செய்ய உதவும் தன்னார்வ பங்களிப்பாளர்.",
+      email: "vizhitnin@gmail.com",
+      location: "Tamil Nadu"
     }
   ];
 
@@ -98,28 +98,48 @@ export default function EditorialTeam() {
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold uppercase tracking-wider mb-4">
             <Users className="w-3.5 h-3.5 text-blue-300" />
-            {T("VizhiTN Newsroom Masthead", "VizhiTN ஆசிரியர் குழு")}
+            {T("VizhiTN Citizen Team", "VizhiTN குடிமை தன்னார்வக் குழு")}
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
-            {T("Meet the Editorial Board", "எங்கள் ஆசிரியர் மற்றும் ஆய்வுக் குழு")}
+            {T("Our Team & Community Contributors", "எங்கள் குழு & தன்னார்வ பங்களிப்பாளர்கள்")}
           </h1>
           <p className="max-w-2xl mx-auto text-base sm:text-lg text-blue-100/90 leading-relaxed">
             {T(
-              "Independent journalists, public data researchers, and civic analysts dedicated to radical transparency across all 38 districts of Tamil Nadu.",
-              "தமிழ்நாட்டின் 38 மாவட்டங்களிலும் துல்லியமான, சரிபார்க்கப்பட்ட குடிமைத் தகவல்கள் மற்றும் அரசு திட்டங்களை மக்களுக்கு கொண்டு சேர்க்கும் ஆசிரியர் குழு."
+              "VizhiTN is an independent, non-governmental civic information initiative created by citizen volunteers out of personal interest to help Tamil Nadu residents track public services, utility alerts, and welfare schemes.",
+              "VizhiTN என்பது தமிழ்நாடு மக்களின் பயன்பாட்டிற்காக தனிப்பட்ட ஆர்வத்தில் உருவாக்கப்பட்ட ஒரு சுயேச்சையான, அரசு சாரா குடிமைத் தகவல் தளமாகும்."
             )}
           </p>
         </div>
       </section>
 
+      {/* Non-Governmental Disclaimer Notice */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/60 text-amber-900 dark:text-amber-200 text-xs sm:text-sm leading-relaxed shadow-xs">
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-amber-950 dark:text-amber-100 mb-1">
+                {T("Independent Citizen Initiative — Not an Official Government Portal", "சுயேச்சையான பொதுமக்கள் தளம் — அரசு அதிகாரப்பூர்வ தளம் அல்ல")}
+              </p>
+              <p>
+                {T(
+                  "VizhiTN is built and maintained by independent citizen volunteers out of personal civic passion. It is NOT affiliated with, sponsored by, or endorsed by the Government of Tamil Nadu, the Government of India, or any municipal body. All utility schedules, helpline numbers, and public announcements are cross-referenced from publicly accessible departmental circulars for community awareness.",
+                  "VizhiTN தளம் எவ்வித அரசு சார்பும் அற்ற, தனிப்பட்ட ஆர்வத்தில் இயங்கும் குடிமக்கள் தகவல் தளமாகும். இத்தளம் தமிழ்நாடு அரசு அல்லது எந்தவொரு அரசு துறையுடனும் நேரடியாக தொடர்புடையது அல்ல. இதில் உள்ள தகவல்கள் அனைத்தும் பொதுமக்கள் வசதிக்காக அரசு செய்திக்குறிப்புகளிலிருந்து தொகுத்து வழங்கப்படுகின்றன."
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Core Masthead Profiles */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
-            {T("Editorial Leadership & Beat Leads", "தலைமை ஆசிரியர்கள் & துறை செய்தியாளர்கள்")}
+            {T("Founding Team & Contributors", "தள வடிவமைப்பாளர் & பங்களிப்பாளர்கள்")}
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            {T("Each article on VizhiTN is authored and verified under the direct supervision of our beat leads.", "VizhiTN தளத்தின் ஒவ்வொரு செய்தியும் உரிய துறை செய்தியாளர்களின் நேரடி மேற்பார்வையில் சரிபார்க்கப்படுகிறது.")}
+            {T("Dedicated volunteers curating open civic records across all 38 districts of Tamil Nadu.", "தமிழ்நாட்டின் 38 மாவட்டங்களிலும் பொதுத் தகவல்களை ஒருங்கிணைத்து மக்களுக்கு வழங்கும் தன்னார்வலர்கள்.")}
           </p>
         </div>
 

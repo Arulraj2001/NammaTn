@@ -178,7 +178,7 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
   const isRoutingToAdmin = window.location.pathname.startsWith('/admin');
 
   if (isMaintenance && !isAdmin && !isRoutingToAdmin) {
-    return <MaintenancePage logo={settings.site_logo_url} supportEmail={settings.support_email || "support@vizhitn.in"} />;
+    return <MaintenancePage logo={settings.site_logo_url} supportEmail={settings.support_email || "vizhitnin@gmail.com"} />;
   }
 
   return (

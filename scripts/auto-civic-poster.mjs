@@ -900,15 +900,12 @@ No conversational intro, no commentary outside the JSON array.
     const refBadgeEn = officialRef ? `<p class="official-ref-badge" style="margin: 8px 0; font-size: 0.875rem;"><strong>Official Circular/Order Ref:</strong> ${officialRef}</p>` : '';
     const refBadgeTa = officialRef ? `<p class="official-ref-badge" style="margin: 8px 0; font-size: 0.875rem;"><strong>அதிகாரப்பூர்வ ஆணை / குறிப்பு எண்:</strong> ${officialRef}</p>` : '';
 
-    const sourceSectionEn = `<h2>Official sources</h2>${refBadgeEn}<ul>${sourceMarkup}</ul>`;
-    const sourceSectionTa = `<h2>அதிகாரப்பூர்வ ஆதாரங்கள்</h2>${refBadgeTa}<ul>${sourceMarkup}</ul>`;
-
-    // Build Post Object
+    // Build Post Object (Plain text only - do NOT inject raw HTML tags into content fields)
     const normalizedPost = {
       title_en: title_en || title_ta,
       title_ta: title_ta || title_en,
-      content_en: `${content_en || content_ta}\n${sourceSectionEn}`,
-      content_ta: `${content_ta || content_en}\n${sourceSectionTa}`,
+      content_en: (content_en || content_ta || '').trim(),
+      content_ta: (content_ta || content_en || '').trim(),
       post_type,
       district_slug,
       category_slug,

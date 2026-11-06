@@ -326,15 +326,15 @@ export default function About() {
               </div>
               <div>
                 <div className="text-[10px] font-black uppercase tracking-wider text-red-500 dark:text-red-400 mb-0.5">
-                  {T("FOUNDER & EDITOR-IN-CHIEF", "நிறுவனர் & தலைமை ஆசிரியர்")}
+                  {T("FOUNDER & INDEPENDENT DEVELOPER", "நிறுவனர் & மென்பொருள் வடிவமைப்பாளர்")}
                 </div>
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
                   Arulraj
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   {T(
-                    "Civic technologist & journalist based in Chennai, Tamil Nadu. Founded VizhiTN in 2026 to give Tamil Nadu citizens a verified, permanent platform for civic accountability.",
-                    "சென்னையை தளமாக கொண்ட குடிமை தொழில்நுட்ப வல்லுனர் & பத்திரிகையாளர். தமிழ்நாடு குடிமக்களுக்கு சரிபார்க்கப்பட்ட குடிமை ஆதார தளம் வழங்க 2026-ல் VizhiTN ஐ நிறுவினார்."
+                    "Independent software developer from Tamil Nadu. Built VizhiTN in 2026 out of personal civic interest as a free, non-governmental public information platform. Collaborating with community contributors Sivakumar, Arulmozhli, and Vigneshwaran.",
+                    "தமிழ்நாட்டைச் சேர்ந்த சுயேச்சை மென்பொருள் உருவாக்குநர். அரசு சார்பற்ற, பொதுமக்கள் பயன்பாட்டிற்கான எளிய தகவல் தளமாக 2026-ல் தனிப்பட்ட ஆர்வத்தில் VizhiTN ஐ உருவாக்கினார். சமூக பங்களிப்பாளர்கள் சிவகுமார், அருள்மொழி மற்றும் விக்னேஸ்வரனுடன் இணைந்து செயல்படுகிறார்."
                   )}
                 </p>
                 <div className="flex items-center gap-2 mt-2">

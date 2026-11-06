@@ -243,6 +243,16 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* ── Non-Governmental Citizen Initiative Disclaimer ── */}
+        <div className="border-t border-civic-200/60 dark:border-civic-800/60 mt-8 pt-4 pb-1 text-center">
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 max-w-4xl mx-auto leading-relaxed">
+            {T(
+              "VizhiTN is an independent, non-governmental civic information platform built by citizen volunteers out of personal interest. It is NOT affiliated with, authorized by, or endorsed by the Government of Tamil Nadu or any municipal body. All departmental circulars, helplines, and public utility notices are compiled from publicly accessible government releases for citizen convenience. Contact: vizhitnin@gmail.com",
+              "VizhiTN என்பது அரசு சாரா, பொதுமக்கள் பயன்பாட்டிற்காக தனிப்பட்ட ஆர்வத்தில் உருவாக்கப்பட்ட ஒரு சுயேச்சையான குடிமைத் தகவல் தளமாகும். இத்தளம் தமிழ்நாடு அரசு அல்லது எந்தவொரு அரசு துறையுடனும் நேரடியாக தொடர்புடையது அல்ல. தொடர்புக்கு: vizhitnin@gmail.com"
+            )}
+          </p>
+        </div>
+
         {/* ── Bottom copyright + legal bar ── */}
         <div className="border-t border-civic-200/80 dark:border-civic-800/80 mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
@@ -259,15 +269,15 @@ export default function Footer() {
             </button>
             <span className="text-civic-300 dark:text-civic-700 select-none">|</span>
             <Link to="/terms" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
-              {T("Terms", "ழெவிடுகள்")}
+              {T("Terms", "விதிமுறைகள்")}
             </Link>
             <span className="text-civic-300 dark:text-civic-700 select-none">|</span>
             <Link to="/about" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
               {T("About", "பற்றி")}
             </Link>
             <span className="text-civic-300 dark:text-civic-700 select-none">|</span>
-            <a href={`mailto:${settings.contact_email || settings.support_email || "contact@vizhitn.in"}`} className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
-              {T("Advertise", "விளம்பரம்")}
+            <a href="mailto:vizhitnin@gmail.com" className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-civic-600 dark:hover:text-civic-300 transition-colors">
+              {T("Contact", "தொடர்பு")}
             </a>
           </div>
           <p className="text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1">
