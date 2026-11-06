@@ -27,5 +27,5 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-Sitemap: https://www.vizhitn.in/sitemap.xml
-Sitemap: https://www.vizhitn.in/sitemap-news.xml
+Sitemap: https://vizhitn.in/sitemap.xml
+Sitemap: https://vizhitn.in/sitemap-news.xml

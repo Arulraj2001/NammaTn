@@ -154,7 +154,7 @@ export async function generateVerifiedFourSceneScript({
       area,
       district,
       content: content.slice(0, 300),
-      url: sourceData.cta_url || sourceData.url || `https://www.vizhitn.in/post/${sourceData.slug || ''}`
+      url: sourceData.cta_url || sourceData.url || `https://vizhitn.in/post/${sourceData.slug || ''}`
     },
     scenes: [
       {

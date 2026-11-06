@@ -2,7 +2,7 @@ import AwarenessPortals from '@/views/AwarenessPortals';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { getAllPortals } from '@/lib/awarenessServer';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const metadata = {
   title: 'Verified Tamil Nadu Official Government Portals & e-Services | VizhiTN',

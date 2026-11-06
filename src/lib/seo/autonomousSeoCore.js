@@ -710,7 +710,7 @@ export async function buildAutonomousSitemapFleet() {
 
   const fleet = await runFleetAsync(allPages);
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.vizhitn.in';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://vizhitn.in';
 
   return fleet.map(d => ({
     url:               `${SITE_URL}${d.pageSlug}`,
@@ -844,7 +844,7 @@ export async function governedFleetAsync(
   const loopOutput = computeWeightAdjustments(mergedSnapshot, currentWeights || DEFAULT_SUBSYSTEM_WEIGHTS);
 
   // Step 7: Build sitemap data
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.vizhitn.in';
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://vizhitn.in';
   const sitemapData = governedFleet.map(d => ({
     url:               `${SITE_URL}${d.pageSlug}`,
     priority:          d.sitemapPriority,

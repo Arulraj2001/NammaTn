@@ -94,7 +94,7 @@ export default function DistrictGateway() {
             return (
               <Link
                 key={district.slug}
-                to={`/district/${district.slug}`}
+                to={`/${district.slug}`}
                 className="group p-3 rounded-2xl bg-white dark:bg-[#0D2B52] border-2 border-civic-200 dark:border-civic-800 hover:border-civic-500 hover:bg-civic-50/70 dark:hover:bg-civic-900/60 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between gap-1 mb-1">

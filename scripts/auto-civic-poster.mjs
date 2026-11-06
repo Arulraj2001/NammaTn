@@ -125,7 +125,7 @@ async function validateOfficialSources(value, postContext = {}) {
         method: 'GET',
         redirect: 'follow',
         signal: AbortSignal.timeout(6_000),
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VizhiTN-Civic-Validator/1.0; +https://www.vizhitn.in)' }
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VizhiTN-Civic-Validator/1.0; +https://vizhitn.in)' }
       });
       if (response.ok && isApprovedOfficialUrl(response.url)) {
         valid.push(response.url);
@@ -437,7 +437,7 @@ async function main() {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
   const geminiApiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-  const siteUrl = process.env.SITE_URL || 'https://www.vizhitn.in';
+  const siteUrl = process.env.SITE_URL || 'https://vizhitn.in';
 
   console.log(`[INFO] Current Mode: ${pulse} ${isDryRun ? '(DRY RUN)' : ''}`);
   console.log(`[INFO] Supabase URL: ${supabaseUrl ? supabaseUrl.replace(/^https?:\/\/([^.]+).*/, '$1...') : 'MISSING'}`);
@@ -1123,7 +1123,7 @@ No conversational intro, no commentary outside the JSON array.
             const pushPayload = JSON.stringify({
               title: topPushAlert.title_ta || topPushAlert.title_en,
               body: (topPushAlert.content_ta || topPushAlert.content_en || '').slice(0, 140) + '...',
-              url: topPushAlert.canonical_url || `https://www.vizhitn.in/post/${topPushAlert.slug}`,
+              url: topPushAlert.canonical_url || `https://vizhitn.in/post/${topPushAlert.slug}`,
               tag: `civic-${topPushAlert.category_slug}`,
               icon: '/android-chrome-192x192.png'
             });

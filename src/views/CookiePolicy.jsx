@@ -86,7 +86,7 @@ export default function CookiePolicy() {
   usePageMeta({
     title: "Cookie Policy | VizhiTN — Analytics, AdSense & Consent Controls",
     description: "Read VizhiTN's full cookie policy. Understand which cookies are strictly necessary vs optional analytics and Google AdSense advertising cookies. Manage your preferences anytime.",
-    canonical: "https://www.vizhitn.in/cookie-policy",
+    canonical: "https://vizhitn.in/cookie-policy",
   });
 
   return (

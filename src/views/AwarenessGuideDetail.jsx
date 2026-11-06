@@ -66,14 +66,14 @@ export default function AwarenessGuideDetail({ guide }) {
   };
 
   const handleCopyLink = () => {
-    const url = typeof window !== "undefined" ? window.location.href : `https://www.vizhitn.in/awareness/guide/${guide.slug}`;
+    const url = typeof window !== "undefined" ? window.location.href : `https://vizhitn.in/awareness/guide/${guide.slug}`;
     navigator.clipboard.writeText(url);
     setCopiedUrl(true);
     setTimeout(() => setCopiedUrl(false), 2000);
   };
 
   const handleWhatsAppShare = () => {
-    const url = typeof window !== "undefined" ? window.location.href : `https://www.vizhitn.in/awareness/guide/${guide.slug}`;
+    const url = typeof window !== "undefined" ? window.location.href : `https://vizhitn.in/awareness/guide/${guide.slug}`;
     const msg = `📢 *${title}*\n\n🏛️ *${T("Department:", "துறை:")}* ${dept}\n⏱️ *${T("Resolution SLA:", "தீர்வு காலக்கெடு:")}* ${sla}\n\n📖 *${T("Read Full Action SOP & Phone Scripts:", "படிப்படியான தீர்வு முறை & தொலைபேசி வழிகாட்டல்:")}*\n${url}\n\n_Via VizhiTN Civic Platform_`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
   };

@@ -48,7 +48,7 @@ async function main() {
         try {
           console.log(`Sending live test broadcast to ${channelJid}...`);
           const sent = await sock.sendMessage(channelJid, {
-            text: `📢 *VizhiTN தானியங்கி அறிவிப்பு அமைப்பு (Autonomous Alert)*\n\nவாட்ஸ்அப் சேனல் இணைப்பு வெற்றிகரமாக முடிந்தது! இனி தமிழ்நாடு முக்கிய செய்திகள், மழை விடுமுறை மற்றும் மின்தடை அறிவிப்புகள் உடனுக்குடன் பகிரப்படும்.\n\n🌐 இணையதளம்: https://www.vizhitn.in`,
+            text: `📢 *VizhiTN தானியங்கி அறிவிப்பு அமைப்பு (Autonomous Alert)*\n\nவாட்ஸ்அப் சேனல் இணைப்பு வெற்றிகரமாக முடிந்தது! இனி தமிழ்நாடு முக்கிய செய்திகள், மழை விடுமுறை மற்றும் மின்தடை அறிவிப்புகள் உடனுக்குடன் பகிரப்படும்.\n\n🌐 இணையதளம்: https://vizhitn.in`,
           });
           console.log("🚀 MESSAGE SENT SUCCESSFULLY TO CHANNEL! Result:", sent?.key?.id);
         } catch (postErr) {

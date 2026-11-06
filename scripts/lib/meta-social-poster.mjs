@@ -121,7 +121,7 @@ export function formatSocialCaption(post = {}) {
 
   const allHashtags = Array.from(new Set([...tier1ViralTags, ...tier2Tags, ...tier3Tags])).slice(0, 15).join(' ');
 
-  const targetUrl = `https://www.vizhitn.in/${post.slug ? `post/${post.slug}` : ''}`;
+  const targetUrl = `https://vizhitn.in/${post.slug ? `post/${post.slug}` : ''}`;
 
   const lines = [
     searchAnchor,
@@ -389,12 +389,12 @@ export async function broadcastToSocials(post = {}, options = {}) {
 
   const caption = formatSocialCaption(post);
   const instaCaption = formatInstagramCaption(post);
-  let link = 'https://www.vizhitn.in';
+  let link = 'https://vizhitn.in';
   if (post.slug) {
     if (post.isTnToday || post.category === 'tn_today' || post.category_slug === 'tn-today') {
-      link = `https://www.vizhitn.in/tn-today/${post.slug}`;
+      link = `https://vizhitn.in/tn-today/${post.slug}`;
     } else {
-      link = `https://www.vizhitn.in/post/${post.slug}`;
+      link = `https://vizhitn.in/post/${post.slug}`;
     }
   }
 

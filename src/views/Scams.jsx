@@ -195,7 +195,7 @@ export default function Scams({ initialScams = [] }) {
     ? (lang === "ta" ? selectedDistrictObj.name_ta : selectedDistrictObj.name_en)
     : T("All Tamil Nadu Districts", "அனைத்து மாவட்டங்கள்");
 
-  const pageUrl = "https://www.vizhitn.in/scams";
+  const pageUrl = "https://vizhitn.in/scams";
   const shareText = encodeURIComponent(
     `⚠️ *${districtNameDisplay} Local Scam & Cyber Fraud Alerts*
 ` +

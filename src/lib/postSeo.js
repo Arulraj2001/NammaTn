@@ -1,6 +1,6 @@
 import { toMetaDescription } from '@/lib/metaDescription';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 function slugify(value) {
   return String(value || '')

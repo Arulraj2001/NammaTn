@@ -106,7 +106,7 @@ async function validateOfficialSources(value, postContext = {}) {
         method: 'GET',
         redirect: 'follow',
         signal: AbortSignal.timeout(6_000),
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VizhiTN-Source-Validator/1.0; +https://www.vizhitn.in)' }
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VizhiTN-Source-Validator/1.0; +https://vizhitn.in)' }
       });
       if (response.ok && isApprovedOfficialUrl(response.url)) {
         valid.push(response.url);
@@ -252,7 +252,7 @@ async function main() {
   const geminiApiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co';
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
-  const siteUrl = process.env.SITE_URL || 'https://www.vizhitn.in';
+  const siteUrl = process.env.SITE_URL || 'https://vizhitn.in';
 
   if (!geminiApiKey) {
     console.error('[FATAL] GEMINI_API_KEY environment variable is required.');
@@ -610,7 +610,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
       // Only match as whole word, not inside existing anchor tags
       const deptRegex = new RegExp(`(?<!<a[^>]*?>)\\b(${dept.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b(?![^<]*?<\\/a>)`, '');
       if (deptRegex.test(linked)) {
-        const href = `https://www.vizhitn.in/${primaryDistrictSlug || 'chennai'}/${catSlug}`;
+        const href = `https://vizhitn.in/${primaryDistrictSlug || 'chennai'}/${catSlug}`;
         linked = linked.replace(deptRegex, `<a href="${href}" rel="noopener">$1</a>`);
         linkCount++;
       }
@@ -621,7 +621,7 @@ Return ONLY a valid JSON object matching this exact schema (use arrays of string
       if (linkCount >= MAX_LINKS) break;
       const distRegex = new RegExp(`(?<!<a[^>]*?>)\\b(${distName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b(?![^<]*?<\\/a>)`, '');
       if (distRegex.test(linked)) {
-        const href = `https://www.vizhitn.in/${distSlug}`;
+        const href = `https://vizhitn.in/${distSlug}`;
         linked = linked.replace(distRegex, `<a href="${href}" rel="noopener">$1</a>`);
         linkCount++;
       }

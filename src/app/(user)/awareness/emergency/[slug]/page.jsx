@@ -3,7 +3,7 @@ import AwarenessEmergencyDetail from '@/views/AwarenessEmergencyDetail';
 import { notFound } from 'next/navigation';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const revalidate = 3600;
 

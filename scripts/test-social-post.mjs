@@ -33,7 +33,7 @@ async function main() {
 
   const results = await broadcastToSocials(samplePost, {
     isDryRun: isDryRun,
-    siteOrigin: 'https://www.vizhitn.in'
+    siteOrigin: 'https://vizhitn.in'
   });
 
   console.log('Results:', JSON.stringify(results, null, 2));

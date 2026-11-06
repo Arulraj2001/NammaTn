@@ -5,7 +5,7 @@ import { DISTRICTS, getDistrictBySlug } from '@/lib/districts';
 import { notFound } from 'next/navigation';
 import { generateSpecialAnnouncementSchema } from '@/lib/seo/newsSchema';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 export const revalidate = 900; // 15 minutes fresh cache
 
 export async function generateStaticParams() {
@@ -66,10 +66,10 @@ export async function generateMetadata({ params }) {
       images: [ogImageUrl],
     },
     robots: {
-      index: hasActiveAlert,
+      index: true,
       follow: true,
       googleBot: {
-        index: hasActiveAlert,
+        index: true,
         follow: true,
         'max-image-preview': 'large',
         'max-snippet': -1,

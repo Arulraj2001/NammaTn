@@ -153,7 +153,7 @@ async function callGeminiWhatsAppPrompt({ post, retryFeedback, isForwardVariant 
     ? categoryRules.map(r => `• ${r}`).join('\n')
     : "";
 
-  const postUrl = post.canonical_url || post.url || (post.slug ? `https://www.vizhitn.in/post/${post.slug}` : 'https://www.vizhitn.in');
+  const postUrl = post.canonical_url || post.url || (post.slug ? `https://vizhitn.in/post/${post.slug}` : 'https://vizhitn.in');
 
   const prompt = `
 நீ VizhiTN WhatsApp channel bot formatter.

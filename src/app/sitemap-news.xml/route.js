@@ -4,7 +4,7 @@
 
 import { createServerSupabase } from '@/lib/serverSupabase';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 export const revalidate = 1800; // 30 minutes cache
 
 function escapeXml(unsafe) {

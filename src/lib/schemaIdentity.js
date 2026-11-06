@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://www.vizhitn.in';
+export const SITE_URL = 'https://vizhitn.in';
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 

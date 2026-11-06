@@ -80,7 +80,7 @@ export default function Disclaimer() {
   usePageMeta({
     title: "Disclaimer | VizhiTN — UGC & Editorial Independence Notice",
     description: "VizhiTN is an independent civic platform hosting citizen-submitted reports. Read our UGC disclaimer, content moderation policy, and accuracy notices for Tamil Nadu civic content.",
-    canonical: "https://www.vizhitn.in/disclaimer",
+    canonical: "https://vizhitn.in/disclaimer",
   });
 
   return (

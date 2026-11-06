@@ -2,7 +2,7 @@
 // Single source of truth for all programmatic SEO metadata.
 // Used by: generateMetadata(), schema components, internal linking components.
 
-export const SITE_URL = 'https://www.vizhitn.in';
+export const SITE_URL = 'https://vizhitn.in';
 export const SITE_NAME = 'VizhiTN';
 
 

@@ -2,7 +2,7 @@ import AwarenessGuides from '@/views/AwarenessGuides';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { getAllGuides } from '@/lib/awarenessServer';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const metadata = {
   title: 'Tamil Nadu Civic Problem Action Guides & Helplines | VizhiTN',

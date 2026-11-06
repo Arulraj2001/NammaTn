@@ -231,7 +231,7 @@ export function formatRealNewsWhatsAppBulletin(options) {
   const districtTa = formatDistrictTamil(options.district || post.district_slug || '');
   const areaName = (post.area_name || '').trim();
   const fullLocation = areaName ? `${areaName}, ${districtTa}` : districtTa;
-  const url = options.url || post.canonical_url || (post.slug ? `https://www.vizhitn.in/post/${post.slug}` : 'https://www.vizhitn.in');
+  const url = options.url || post.canonical_url || (post.slug ? `https://vizhitn.in/post/${post.slug}` : 'https://vizhitn.in');
 
   const cat = (options.category || post.category_slug || '').toLowerCase();
   const postType = (post.post_type || '').toLowerCase();

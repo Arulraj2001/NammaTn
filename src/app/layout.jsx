@@ -8,7 +8,7 @@ import { ORGANIZATION_ID, WEBSITE_ID } from '@/lib/schemaIdentity';
 
 // AdSense publisher ID is loaded dynamically from Supabase site_settings and admin panel
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 const SITE_NAME = 'VizhiTN';
 const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'xp7k5wqipw';
 
@@ -114,6 +114,56 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="//googleads.g.doubleclick.net" />
         <link rel="dns-prefetch" href="//www.googletagservices.com" />
         <link rel="dns-prefetch" href="//www.clarity.ms" />
+        {/* Google Consent Mode v2 — Default states must run before GTM/GA4 */}
+        <script
+          id="google-consent-mode"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              window.gtag = gtag;
+
+              // 1. Regional Default: EEA, UK & Switzerland (Strict Opt-in for Analytics & Ads)
+              gtag('consent', 'default', {
+                'analytics_storage': 'denied',
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'region': ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH']
+              });
+
+              // 2. Global Default: Rest of World / India (Performance telemetry granted, Ads denied)
+              gtag('consent', 'default', {
+                'analytics_storage': 'granted',
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied'
+              });
+
+              // 3. Immediately apply prior citizen consent choice if stored in localStorage
+              try {
+                var saved = localStorage.getItem('VizhiTN_cookie_consent');
+                if (saved === 'accepted') {
+                  gtag('consent', 'update', {
+                    'analytics_storage': 'granted',
+                    'ad_storage': 'granted',
+                    'ad_user_data': 'granted',
+                    'ad_personalization': 'granted'
+                  });
+                } else if (saved === 'rejected') {
+                  gtag('consent', 'update', {
+                    'analytics_storage': 'denied',
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied'
+                  });
+                }
+              } catch(e) {}
+            `,
+          }}
+        />
+
         {/* Google Tag Manager — deferred to idle to unblock FCP and LCP */}
         <script
           suppressHydrationWarning

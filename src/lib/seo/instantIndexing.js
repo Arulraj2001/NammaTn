@@ -1,7 +1,7 @@
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 // IndexNow host-verification key. IndexNow validates the host by fetching
-// https://www.vizhitn.in/{this key}.txt (served from /public). The key, the
+// https://vizhitn.in/{this key}.txt (served from /public). The key, the
 // filename of the key file, and this value MUST always match.
 const INDEXNOW_KEY = '6dda567a62b7b1c8c971a8b90bda6a0ed368c012cc32df60eee7144a99444b56';
 

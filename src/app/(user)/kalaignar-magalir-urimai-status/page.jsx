@@ -17,9 +17,9 @@ export const metadata = {
   alternates: {
     canonical: "/kalaignar-magalir-urimai-status",
     languages: {
-      "ta-IN": "https://www.vizhitn.in/kalaignar-magalir-urimai-status?lang=ta",
-      "en-IN": "https://www.vizhitn.in/kalaignar-magalir-urimai-status?lang=en",
-      "x-default": "https://www.vizhitn.in/kalaignar-magalir-urimai-status",
+      "ta-IN": "https://vizhitn.in/kalaignar-magalir-urimai-status?lang=ta",
+      "en-IN": "https://vizhitn.in/kalaignar-magalir-urimai-status?lang=en",
+      "x-default": "https://vizhitn.in/kalaignar-magalir-urimai-status",
     },
   },
   keywords: [
@@ -45,7 +45,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.vizhitn.in/og-image.png",
+        url: "https://vizhitn.in/og-image.png",
         width: 1200,
         height: 630,
         alt: "Kalaignar Magalir Urimai Thogai Tamil Nadu",

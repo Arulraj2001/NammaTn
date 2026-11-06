@@ -17,7 +17,7 @@ const read = relativePath => readFile(path.join(root, relativePath), 'utf8');
 
 assert.equal(
   getTnTodayCanonical('sample-story'),
-  'https://www.vizhitn.in/tn-today/sample-story',
+  'https://vizhitn.in/tn-today/sample-story',
   'TN Today canonicals must use the current www VizhiTN article route',
 );
 assert.equal(getPageTitle('Local Update | VizhiTN | VizhiTN'), 'Local Update', 'Repeated site-name suffixes must be removed');
@@ -66,11 +66,11 @@ assert.deepEqual(
   },
   'Editorial city/issue pages must be indexable regardless of live report count',
 );
-assert.equal(ORGANIZATION_ID, 'https://www.vizhitn.in/#organization', 'Organization schema needs one stable ID');
-assert.equal(WEBSITE_ID, 'https://www.vizhitn.in/#website', 'WebSite schema needs one stable ID');
+assert.equal(ORGANIZATION_ID, 'https://vizhitn.in/#organization', 'Organization schema needs one stable ID');
+assert.equal(WEBSITE_ID, 'https://vizhitn.in/#website', 'WebSite schema needs one stable ID');
 assert.equal(getPublisherSchema()['@id'], ORGANIZATION_ID, 'Article publishers must reference the site Organization');
-assert.equal(getArticleAuthor().url, 'https://www.vizhitn.in', 'Editorial-team authorship must resolve to the publisher');
-assert.equal(getArticleAuthor('Named Contributor').url, 'https://www.vizhitn.in/about', 'Named authors must include a public URL');
+assert.equal(getArticleAuthor().url, 'https://vizhitn.in/editorial-team', 'Editorial-team authorship must resolve to editorial team');
+assert.equal(getArticleAuthor('Named Contributor').url, 'https://vizhitn.in/editorial-team', 'Named authors must include editorial team URL');
 assert.ok(TN_TODAY_CATEGORY_MAP.infrastructure, 'TN Today routes and navigation must share one category inventory');
 
 process.env.NODE_ENV = 'production';

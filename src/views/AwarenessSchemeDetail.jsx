@@ -64,14 +64,14 @@ export default function AwarenessSchemeDetail({ scheme }) {
   };
 
   const handleCopyLink = () => {
-    const url = typeof window !== "undefined" ? window.location.href : `https://www.vizhitn.in/schemes/${scheme.slug}`;
+    const url = typeof window !== "undefined" ? window.location.href : `https://vizhitn.in/schemes/${scheme.slug}`;
     navigator.clipboard.writeText(url);
     setCopiedUrl(true);
     setTimeout(() => setCopiedUrl(false), 2000);
   };
 
   const handleWhatsAppShare = () => {
-    const url = typeof window !== "undefined" ? window.location.href : `https://www.vizhitn.in/schemes/${scheme.slug}`;
+    const url = typeof window !== "undefined" ? window.location.href : `https://vizhitn.in/schemes/${scheme.slug}`;
     const msg = `📢 *${name}*\n\n🏛️ *${T("Department:", "துறை:")}* ${dept}\n💰 *${T("Entitlement:", "நிதி உதவி / பலன்:")}* ${benefit}\n\n📄 *${T("Check Eligibility & Application Steps:", "தகுதி & விண்ணப்பிக்கும் முழு விவரம்:")}*\n${url}\n\n_Via VizhiTN Civic Platform_`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
   };

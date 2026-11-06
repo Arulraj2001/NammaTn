@@ -362,7 +362,7 @@ export async function buildSitemapFleet() {
   const fleet = orchestrateFleet(allPages, trends, 5);
 
   return fleet.map(d => ({
-    url:               `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.vizhitn.in'}${d.pageSlug}`,
+    url:               `${process.env.NEXT_PUBLIC_SITE_URL || 'https://vizhitn.in'}${d.pageSlug}`,
     priority:          d.crawlData.sitemapPriority,
     changefreq:        d.crawlData.changefreq,
     tierLevel:         d.tierLevel,

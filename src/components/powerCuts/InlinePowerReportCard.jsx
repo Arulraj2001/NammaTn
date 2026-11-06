@@ -130,7 +130,7 @@ export default function InlinePowerReportCard({ district, area = null, onReportS
       `📍 Street: ${submittedPost.location_text}\n` +
       `🔖 Civic Receipt ID: ${submittedPost.civic_receipt_id}\n` +
       `🚨 TANGEDCO 24x7 Helpline: 1912\n` +
-      `Track & confirm on VizhiTN: https://www.vizhitn.in/power-cuts-today-tamil-nadu/${district?.slug || "chennai"}`
+      `Track & confirm on VizhiTN: https://vizhitn.in/power-cuts-today-tamil-nadu/${district?.slug || "chennai"}`
     );
 
     return (

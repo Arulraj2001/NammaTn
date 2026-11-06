@@ -461,7 +461,7 @@ export default function EsevaiCertificateFinder() {
       `*Fee:* ${fee}\n*Apply Online:* ${svc.portal_url}\n\n` +
       `*Required Documents:*\n` +
       docs.map((d, i) => `✓ ${d}`).join("\n") +
-      `\n\nShared via VizhiTN: https://www.vizhitn.in/esevai`;
+      `\n\nShared via VizhiTN: https://vizhitn.in/esevai`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, "_blank");
   };

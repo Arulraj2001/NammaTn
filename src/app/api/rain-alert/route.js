@@ -33,7 +33,7 @@ import { ensureBilingualPost } from '@/services/translate';
 import { getISTDateSlug } from '@/lib/autoPublish/districtRotation';
 import { attachIncidentPhotosToPosts } from '@/lib/incidentPhotoMatcher';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 const GEMINI_MODEL = 'gemini-3.1-flash-lite';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 

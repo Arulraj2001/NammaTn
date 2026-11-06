@@ -178,7 +178,7 @@ export default function InlineCivicReportCard({
       `📍 Location: ${submittedPost.location_text}, ${districtDisplayName}\n` +
       `🔖 Civic Receipt ID: ${submittedPost.civic_receipt_id}\n` +
       `📞 Department Helpline: ${currentDept.phone}\n` +
-      `Confirm & Verify this issue: https://www.vizhitn.in/${district?.slug || "chennai"}`
+      `Confirm & Verify this issue: https://vizhitn.in/${district?.slug || "chennai"}`
     );
 
     return (

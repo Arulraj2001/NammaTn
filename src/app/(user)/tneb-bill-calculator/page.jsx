@@ -12,9 +12,9 @@ export const metadata = {
   alternates: {
     canonical: "/tneb-bill-calculator",
     languages: {
-      "ta-IN": "https://www.vizhitn.in/tneb-bill-calculator?lang=ta",
-      "en-IN": "https://www.vizhitn.in/tneb-bill-calculator?lang=en",
-      "x-default": "https://www.vizhitn.in/tneb-bill-calculator",
+      "ta-IN": "https://vizhitn.in/tneb-bill-calculator?lang=ta",
+      "en-IN": "https://vizhitn.in/tneb-bill-calculator?lang=en",
+      "x-default": "https://vizhitn.in/tneb-bill-calculator",
     },
   },
   keywords: [
@@ -42,7 +42,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.vizhitn.in/og-image.png",
+        url: "https://vizhitn.in/og-image.png",
         width: 1200,
         height: 630,
         alt: "TNEB Electricity Bill Calculator Tamil Nadu",
@@ -92,7 +92,7 @@ export default function TnebBillCalculatorPage() {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "TNEB Electricity Bill Calculator Tamil Nadu",
-    url: "https://www.vizhitn.in/tneb-bill-calculator",
+    url: "https://vizhitn.in/tneb-bill-calculator",
     applicationCategory: "UtilityApplication",
     operatingSystem: "All",
     offers: {

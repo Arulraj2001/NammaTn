@@ -26,7 +26,7 @@ async function loadTamilFont() {
     } catch (_) {}
 
     try {
-      const res = await fetch('https://www.vizhitn.in/fonts/NotoSansTamil-Bold.ttf');
+      const res = await fetch('https://vizhitn.in/fonts/NotoSansTamil-Bold.ttf');
       if (res.ok) return await res.arrayBuffer();
     } catch (_) {}
 

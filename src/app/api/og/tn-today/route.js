@@ -32,7 +32,7 @@ async function loadTamilFont() {
 
     // 2. Production origin
     try {
-      const res = await fetch('https://www.vizhitn.in/fonts/NotoSansTamil-Bold.ttf');
+      const res = await fetch('https://vizhitn.in/fonts/NotoSansTamil-Bold.ttf');
       if (res.ok) return await res.arrayBuffer();
     } catch (_) {}
 
@@ -60,8 +60,8 @@ export async function GET(request) {
 
     const rawImage = searchParams.get('image') || searchParams.get('img') || searchParams.get('photo');
     const bgImageUrl = rawImage
-      ? (rawImage.startsWith('http') ? rawImage : `https://www.vizhitn.in${rawImage}`)
-      : `https://www.vizhitn.in/images/categories/${categoryKey}.webp`;
+      ? (rawImage.startsWith('http') ? rawImage : `https://vizhitn.in${rawImage}`)
+      : `https://vizhitn.in/images/categories/${categoryKey}.webp`;
 
     const isTamil = lang === 'ta' && Boolean(titleTa);
     const theme = THEMES[categoryKey] || THEMES.general;

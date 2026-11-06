@@ -453,7 +453,7 @@ export default function AdminTnToday() {
     if (!article) return;
     setBroadcastingId(article.id);
     try {
-      const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://www.vizhitn.in';
+      const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://vizhitn.in';
       const pageUrl = `${siteUrl}/tn-today/${article.slug}`;
       const res = await fetch('/api/admin/broadcast-whatsapp', {
         method: 'POST',

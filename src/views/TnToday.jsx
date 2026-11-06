@@ -230,7 +230,7 @@ export default function TnToday({ initialArticles = [], initialFeatured = null }
   usePageMeta({
     title: activeCategory ? `${activeCategory.label} | TN Today` : "TN Today - Tamil Nadu Community News & Journalism",
     description: "Daily verified community news, civic updates, scheme breakdowns, and deep dives across Tamil Nadu.",
-    canonical: "https://www.vizhitn.in/tn-today",
+    canonical: "https://vizhitn.in/tn-today",
   });
 
   const { data: featured } = useQuery({

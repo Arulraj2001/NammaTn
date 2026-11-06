@@ -14,9 +14,9 @@ export const metadata = {
   alternates: {
     canonical: "/tnpds-smart-ration-card-status",
     languages: {
-      "ta-IN": "https://www.vizhitn.in/tnpds-smart-ration-card-status?lang=ta",
-      "en-IN": "https://www.vizhitn.in/tnpds-smart-ration-card-status?lang=en",
-      "x-default": "https://www.vizhitn.in/tnpds-smart-ration-card-status",
+      "ta-IN": "https://vizhitn.in/tnpds-smart-ration-card-status?lang=ta",
+      "en-IN": "https://vizhitn.in/tnpds-smart-ration-card-status?lang=en",
+      "x-default": "https://vizhitn.in/tnpds-smart-ration-card-status",
     },
   },
   keywords: [
@@ -42,7 +42,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.vizhitn.in/og-image.png",
+        url: "https://vizhitn.in/og-image.png",
         width: 1200,
         height: 630,
         alt: "TNPDS Smart Ration Card Verification",

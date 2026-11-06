@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ChevronRight, Home } from 'lucide-react';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 function normalizeItems(items) {
   const crumbs = [{ name: 'Home', href: '/' }, ...(items || [])];

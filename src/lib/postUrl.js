@@ -10,6 +10,6 @@ export function getPostUrl(post) {
   return `/post/${idOrSlug}`;
 }
 
-export function getPostCanonicalUrl(post, siteUrl = "https://www.vizhitn.in") {
+export function getPostCanonicalUrl(post, siteUrl = "https://vizhitn.in") {
   return `${siteUrl}${getPostUrl(post)}`;
 }

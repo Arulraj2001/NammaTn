@@ -47,7 +47,7 @@ export default function AwarenessRightDetail({ right }) {
     const title = lang === "ta" ? right.name_ta : right.name_en;
     const desc = lang === "ta" ? right.desc_ta : right.desc_en;
     const section = lang === "ta" ? right.statutory_section_ta : right.statutory_section_en;
-    const url = typeof window !== "undefined" ? window.location.href : `https://www.vizhitn.in/rights/${right.slug}`;
+    const url = typeof window !== "undefined" ? window.location.href : `https://vizhitn.in/rights/${right.slug}`;
     const msg = `⚖️ *${title}*\n📜 *${section || T("Statutory Law in Tamil Nadu", "தமிழ்நாடு சட்டப்பூர்வ உரிமை")}*\n\n🛡️ *${T("Your Legal Rights in Tamil Nadu:", "தமிழ்நாட்டில் உங்கள் சட்டப்பூர்வ உரிமைகள்:")}*\n${desc}\n\n📄 *${T("Read Full Statutory Rules, Script & Helplines:", "முழு சட்ட விதிகள், வார்த்தைகள் & உதவி எண்கள்:")}*\n${url}\n\n_Via VizhiTN Civic Transparency Platform_`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
   };

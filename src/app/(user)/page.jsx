@@ -8,8 +8,8 @@ const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'NewsMediaOrganization',
   name: 'VizhiTN',
-  url: 'https://www.vizhitn.in',
-  logo: 'https://www.vizhitn.in/apple-touch-icon.png',
+  url: 'https://vizhitn.in',
+  logo: 'https://vizhitn.in/apple-touch-icon.png',
   email: 'vizhitnin@gmail.com',
   sameAs: [
     'https://facebook.com/vizhitn',
@@ -39,7 +39,7 @@ export const metadata = {
   description: "Report civic issues, see live alerts, track complaints, and discover official updates in Tamil Nadu. All in one place, verified by citizens.",
   alternates: {
     // Self-canonical on homepage prevents www vs non-www duplication
-    canonical: 'https://www.vizhitn.in/',
+    canonical: 'https://vizhitn.in/',
   },
 };
 

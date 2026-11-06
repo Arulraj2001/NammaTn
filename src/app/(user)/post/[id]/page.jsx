@@ -9,7 +9,7 @@ import { buildPostSeo } from '@/lib/postSeo';
 import { generateNewsArticleSchema, generateSpecialAnnouncementSchema } from '@/lib/seo/newsSchema';
 import { getPostUrl, getPostCanonicalUrl } from '@/lib/postUrl';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const revalidate = 3600;
 

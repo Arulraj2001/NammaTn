@@ -33,11 +33,14 @@ export function useParams() {
 // 4. useLocation mapping
 export function useLocation() {
   const pathname = usePathname() || '';
-  const searchParams = useNextSearchParams();
+  let search = '';
+  if (typeof window !== 'undefined') {
+    search = window.location.search || '';
+  }
   return {
     pathname,
-    search: searchParams ? `?${searchParams.toString()}` : '',
-    hash: '',
+    search,
+    hash: typeof window !== 'undefined' ? window.location.hash || '' : '',
     state: null,
   };
 }

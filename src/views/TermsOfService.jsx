@@ -169,7 +169,7 @@ export default function TermsOfService() {
   usePageMeta({
     title: "Terms of Service | VizhiTN — Citizen Charter & Platform Governance",
     description: "Read the official terms governing civic proof reporting, anti-deepfake standards, emergency disclaimers, and IT Rules 2021 compliance across Tamil Nadu.",
-    canonical: "https://www.vizhitn.in/terms",
+    canonical: "https://vizhitn.in/terms",
   });
 
   const toggleSection = (num) => {

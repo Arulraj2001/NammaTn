@@ -35,7 +35,7 @@ export const HIGH_RETENTION_PILLARS = {
         realityBeat: 'TNEB-ல் 500 யூனிட்டுக்கு மேல் போனால் மொத்த யூனிட்டுக்குமான கட்டண விகிதம் உயரும். மேலும் 100 இலவச யூனிட் கணக்கீடும் மாறும்.',
         solutionBeat: 'vizhitn.in/tneb-bill-calculator கருவியைப் பயன்படுத்தி உங்கள் மின் பயன்பாட்டை முன்கூட்டியே கணக்கிட்டு பணத்தை மிச்சப்படுத்துங்கள்.',
         helpline: 'TANGEDCO மின்னகம்: 1912',
-        ctaUrl: 'https://www.vizhitn.in/tneb-bill-calculator',
+        ctaUrl: 'https://vizhitn.in/tneb-bill-calculator',
         tags: [
           'TNEB Bill Calculation Tamil', 'TNEB Electricity Bill', 'EB Bill Calculator Tamil',
           'TNEB 100 Units Free', 'TNEB Tariff Slabs 2026', 'How to reduce EB bill',
@@ -54,7 +54,7 @@ export const HIGH_RETENTION_PILLARS = {
         realityBeat: 'தமிழ்நாடு அரசு இப்போது anyvany.tn.gov.in மூலம் பட்டா மாறுதல் விண்ணப்பங்களை முழுமையாக ஆன்லைனில் செயல்படுத்தியுள்ளது.',
         solutionBeat: 'கிரயப்பத்திரம் மற்றும் EC பதிவேற்றி உடனே விண்ணப்பிக்கலாம். விண்ணப்ப நிலையை vizhitn.in-ல் நேரடியாக டிராக் செய்யுங்கள்.',
         helpline: 'வருவாய்த்துறை உதவி: 1100',
-        ctaUrl: 'https://www.vizhitn.in/patta-chitta-online-status',
+        ctaUrl: 'https://vizhitn.in/patta-chitta-online-status',
         tags: [
           'Patta Chitta Online Tamil', 'Patta Name Transfer Tamil', 'Tamil Nilam Online',
           'How to apply patta online', 'Patta Chitta Download', 'Villangam Certificate Online',
@@ -80,7 +80,7 @@ export const HIGH_RETENTION_PILLARS = {
         realityBeat: 'கொரியரில் போதைப்பொருள் வந்ததாக மிரட்டி, போலியான சுப்ரீம் கோர்ட் வாரண்ட் காட்டி பல மணி நேரம் அடைத்து வைத்து பணத்தை பறிக்கிறார்கள்.',
         solutionBeat: 'போலீஸ் ஒருபோதும் வீடியோ காலில் கைது செய்யாது. உடனடியாக 1930 சைபர் கிரைம் உதவி எண்ணை அழைத்து வங்கி கணக்குகளை முடக்குங்கள்!',
         helpline: 'தேசிய சைபர் கிரைம்: 1930',
-        ctaUrl: 'https://www.vizhitn.in/scams',
+        ctaUrl: 'https://vizhitn.in/scams',
         tags: [
           'Digital Arrest Scam Tamil', 'Cyber Crime 1930 Helpline', 'Fake Police Video Call',
           'CBI Scam Tamil Nadu', 'FedEx Courier Scam', 'Online Fraud Alert Tamil',
@@ -98,7 +98,7 @@ export const HIGH_RETENTION_PILLARS = {
         realityBeat: 'மின்சார வாரியம் ஒருபோதும் 10 இலக்க மொபைல் எண்களில் இருந்தோ அல்லது APK ஆப் பதிவிறக்க லிங்க் வழியாகவோ எச்சரிக்கை அனுப்பாது.',
         solutionBeat: 'மின்தடை மற்றும் பில் நிலுவை விவரங்களை TANGEDCO-வின் 1912 என்ற அதிகாரப்பூர்வ எண்ணில் மட்டுமே சரிபாருங்கள்!',
         helpline: 'மின்னகம் 24x7: 1912 | சைபர்: 1930',
-        ctaUrl: 'https://www.vizhitn.in/scams',
+        ctaUrl: 'https://vizhitn.in/scams',
         tags: [
           'EB Bill SMS Scam Tamil', 'Electricity Bill Fraud Alert', 'TANGEDCO Fake SMS',
           'Power cut message fraud', 'Cyber Crime Tamil Nadu', '1930 Helpline',
@@ -122,7 +122,7 @@ export const HIGH_RETENTION_PILLARS = {
         realityBeat: 'விண்ணப்பம் நிராகரிக்கப்பட்டதற்கான காரணத்தை e-Sevai போர்ட்டலில் அறிந்து, 30 நாட்களுக்குள் RDO அலுவலகத்தில் மேல்முறையீடு செய்யலாம்.',
         solutionBeat: 'தேவையான வருமானச் சான்றிதழ் மற்றும் ஆவணங்களை தயார் செய்து மேல்முறையீடு செய்யுங்கள். முழு வழிகாட்டியை vizhitn.in-ல் படியுங்கள்!',
         helpline: 'முதலமைச்சர் உதவி மையம்: 1100',
-        ctaUrl: 'https://www.vizhitn.in/schemes',
+        ctaUrl: 'https://vizhitn.in/schemes',
         tags: [
           'Magalir Urimai Thogai Tamil', 'Kalaignar Magalir Urimai Status', 'Magalir Urimai Rejected Appeal',
           '1000 Rupees Scheme Tamil Nadu', 'RDO Appeal Magalir Urimai', 'CM Helpline 1100',
@@ -146,7 +146,7 @@ export const HIGH_RETENTION_PILLARS = {
         realityBeat: 'மோட்டார் வாகன சட்டத்தின்படி வாகன சாவியை வலுக்கட்டாயமாக பிடுங்க எந்த போலீஸ் அதிகாரிக்கும் அதிகாரம் இல்லை. SI அல்லது அதற்கு மேல் உள்ள அதிகாரிகளே அபராதம் விதிக்க முடியும்.',
         solutionBeat: 'டிஜிலாக்கர் (DigiLocker) செயலியில் உங்கள் RC மற்றும் ஓட்டுனர் உரிமத்தை காண்பித்தால் போதுமானது. அசல் ஆவணங்களை தர வேண்டிய அவசியமில்லை.',
         helpline: 'போக்குவரத்து உதவி: 103 | CM Cell: 1100',
-        ctaUrl: 'https://www.vizhitn.in/rights',
+        ctaUrl: 'https://vizhitn.in/rights',
         tags: [
           'Traffic Police Rules Tamil', 'Vehicle Check Rights Tamil', 'Motor Vehicle Act 2026',
           'Traffic Challan Rights', 'DigiLocker Valid or Not Tamil', 'Citizen Rights Tamil Nadu',

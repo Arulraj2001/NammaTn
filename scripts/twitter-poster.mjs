@@ -173,7 +173,7 @@ export function formatTwitterThread(post = {}) {
   }
 
   // Tweet 2: Link reply
-  const fullUrl = post.canonical_url || post.url || (post.slug ? `https://www.vizhitn.in/post/${post.slug}` : 'https://www.vizhitn.in');
+  const fullUrl = post.canonical_url || post.url || (post.slug ? `https://vizhitn.in/post/${post.slug}` : 'https://vizhitn.in');
   const tweet2 = `👉 முழு விவரங்கள் & அதிகாரப்பூர்வ அறிவிப்பை படிக்க:
 ${fullUrl}
 

@@ -222,7 +222,7 @@ export default function TnebBillCalculator() {
   }, [totalUnits]);
 
   const handleShare = () => {
-    const text = `💡 My TNEB Electricity Bill Estimate for ${totalUnits} Units:\n💰 Total Payable: ₹${calculation.payable}\n🎁 Govt Subsidy Saved: ₹${calculation.subsidySaved}\nCalculate yours instantly at: https://www.vizhitn.in/tneb-bill-calculator`;
+    const text = `💡 My TNEB Electricity Bill Estimate for ${totalUnits} Units:\n💰 Total Payable: ₹${calculation.payable}\n🎁 Govt Subsidy Saved: ₹${calculation.subsidySaved}\nCalculate yours instantly at: https://vizhitn.in/tneb-bill-calculator`;
     if (navigator.share) {
       navigator.share({ title: "TNEB Bill Calculator | VizhiTN", text });
     } else {
@@ -254,9 +254,9 @@ export default function TnebBillCalculator() {
               <Zap className="w-3.5 h-3.5 fill-current" />
               {T("Official TNERC Tariff LT-1A (2024–2026)", "அதிகாரப்பூர்வ TNERC கட்டண முறை (LT-1A)")}
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {T("Tamil Nadu TNEB Electricity Bill Calculator", "தமிழ்நாடு TNEB மின் கட்டண கால்குலேட்டர்")}
-            </h2>
+            </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
               {T("Instant bi-monthly domestic slab calculation with 100/200 units free subsidy breakdown.", "இரு மாதங்களுக்கான வீட்டு மின்சார கட்டணம் மற்றும் இலவச மானிய கணக்கீடு.")}
             </p>

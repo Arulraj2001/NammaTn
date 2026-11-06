@@ -66,8 +66,8 @@ export default function HolidayAlerts({ initialPosts = [], targetDistrict = null
     : T("All Tamil Nadu Districts", "அனைத்து மாவட்டங்கள்");
 
   const pageUrl = targetDistrict
-    ? `https://www.vizhitn.in/school-college-holiday-alerts/${targetDistrict.slug}`
-    : "https://www.vizhitn.in/school-college-holiday-alerts";
+    ? `https://vizhitn.in/school-college-holiday-alerts/${targetDistrict.slug}`
+    : "https://vizhitn.in/school-college-holiday-alerts";
 
   const shareText = encodeURIComponent(
     `📢 *${districtNameDisplay} School & College Holiday Update*\n` +
@@ -386,6 +386,28 @@ export default function HolidayAlerts({ initialPosts = [], targetDistrict = null
                     {T(
                       `The ${districtNameDisplay} District Collector evaluates local rain intensity, waterlogged subways, and school accessibility to declare holidays.`,
                       `${districtNameDisplay} மாவட்ட ஆட்சித் தலைவர் மழை அளவை பொறுத்து விடுமுறை அறிவிப்பை வெளியிடுவார்.`
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-1">
+                    {T(`How to confirm if tomorrow or today is a school holiday in ${districtNameDisplay}?`, `${districtNameDisplay} மாவட்டத்தில் இன்று/நாளை பள்ளி விடுமுறையா என்பதை எப்படி அறிவது?`)}
+                  </h4>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    {T(
+                      `Official heavy rain school holiday orders are released directly by the ${districtNameDisplay} District Collectorate. Announcements are typically issued between 6:00 AM and 7:15 AM on the morning of school days or late evening during continuous depression rain. Check the live status bar above or call the 1077 District Disaster Management Control Room.`,
+                      `${districtNameDisplay} மாவட்ட ஆட்சியரின் அதிகாரப்பூர்வ செய்திக்குறிப்பு அடிப்படையில் காலை 6:00 முதல் 7:15 மணிக்குள் அல்லது முந்தைய நாள் இரவு விடுமுறை அறிவிப்பு வெளியாகும். 1077 அவசர உதவி எண்ணிலும் அறியலாம்.`
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-1">
+                    {T(`Do colleges also get leave when schools are closed in ${districtNameDisplay}?`, `பள்ளிகளுக்கு விடுமுறை அளிக்கப்பட்டால் கல்லூரிகளுக்கும் விடுமுறை பொருந்துமா?`)}
+                  </h4>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    {T(
+                      "Not always. District Collector circulars specifically mention either 'Schools only' (பள்ளிகளுக்கு மட்டும்) or 'Both Schools and Colleges' (பள்ளி மற்றும் கல்லூரிகள்). Professional colleges and university semester exams follow separate circulars unless an explicit general holiday is notified.",
+                      "எப்போதும் ஒரே மாதிரி இருக்காது. மாவட்ட ஆட்சியர் ஆணையில் 'பள்ளிகளுக்கு மட்டும்' அல்லது 'பள்ளி மற்றும் கல்லூரிகளுக்கு' என தெளிவாக குறிப்பிடப்படும். பல்கலைக்கழக தேர்வுகள் குறித்த அறிவிப்பு தனியாக வெளியாகும்."
                     )}
                   </p>
                 </div>

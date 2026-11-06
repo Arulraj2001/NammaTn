@@ -5,7 +5,7 @@
 
 import { getSocialTitle } from './metadataTitle';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 const DEFAULT = {
   title: 'VizhiTN – Tamil Nadu Civic & Community Platform',

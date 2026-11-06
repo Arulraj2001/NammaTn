@@ -8,13 +8,13 @@ export async function POST(request) {
   try {
     const body = await request.json().catch(() => ({}));
     const urls = body.urls || [
-      'https://www.vizhitn.in/',
-      'https://www.vizhitn.in/tn-today',
-      'https://www.vizhitn.in/school-college-holiday-alerts',
-      'https://www.vizhitn.in/power-cuts-today-tamil-nadu',
-      'https://www.vizhitn.in/esevai',
-      'https://www.vizhitn.in/rti',
-      'https://www.vizhitn.in/helplines',
+      'https://vizhitn.in/',
+      'https://vizhitn.in/tn-today',
+      'https://vizhitn.in/school-college-holiday-alerts',
+      'https://vizhitn.in/power-cuts-today-tamil-nadu',
+      'https://vizhitn.in/esevai',
+      'https://vizhitn.in/rti',
+      'https://vizhitn.in/helplines',
     ];
 
     console.log(`[API /admin/ping-indexnow] Dispatching ${urls.length} URLs to IndexNow...`);

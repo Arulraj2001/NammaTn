@@ -48,7 +48,7 @@ export const dynamic = 'force-dynamic';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 const GEMINI_MODEL = 'gemini-3.1-flash-lite'; // Stable, fast, ideal for structured JSON batch output
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const OFFICIAL_SOURCE_HOSTS = {

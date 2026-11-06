@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getAreaDetailData, getPublicArea, getStaticAreaSlugs } from '@/lib/publicHubServer';
 import { BreadcrumbJsonLd } from '@/components/seo/Breadcrumbs';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const revalidate = 3600;
 

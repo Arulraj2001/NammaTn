@@ -11,7 +11,7 @@ export const metadata = {
     description: 'Learn your legal protections, RTI drafting templates, and police vehicle check rules in Tamil Nadu.',
     url: '/rights',
     type: 'website',
-    images: [{ url: 'https://www.vizhitn.in/images/evergreen/rti-rights.jpg', width: 1200, height: 630, alt: 'Tamil Nadu Citizen Rights' }]
+    images: [{ url: 'https://vizhitn.in/images/evergreen/rti-rights.jpg', width: 1200, height: 630, alt: 'Tamil Nadu Citizen Rights' }]
   },
 };
 

@@ -17,7 +17,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.vizhitn.in/images/evergreen/rti-rights.jpg",
+        url: "https://vizhitn.in/images/evergreen/rti-rights.jpg",
         width: 1200,
         height: 630,
         alt: "Tamil Nadu RTI Application Generator",
@@ -74,6 +74,15 @@ export default function RtiPage() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <header className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Tamil Nadu RTI Application Generator (RTI மாதிரி விண்ணப்பம்)
+          </h1>
+          <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-300">
+            Create legally compliant, bilingual (Tamil & English) RTI drafts for road audits, patta transfer delays, TANGEDCO power cut logs, and municipal complaints in under 2 minutes.
+          </p>
+        </header>
+
         {/* Infographic Visual Banner */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] rounded-2xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-800 mb-8 bg-slate-900 print:hidden">
           <Image

@@ -2,7 +2,7 @@ import AwarenessSchemes from '@/views/AwarenessSchemes';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { getAllSchemes } from '@/lib/awarenessServer';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const metadata = {
   title: 'Tamil Nadu Government Schemes Encyclopedia 2026 (திட்டங்கள்) | VizhiTN',

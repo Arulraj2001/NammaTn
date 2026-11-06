@@ -16,9 +16,9 @@ export const metadata = {
   alternates: {
     canonical: "/patta-chitta-online-status",
     languages: {
-      "ta-IN": "https://www.vizhitn.in/patta-chitta-online-status?lang=ta",
-      "en-IN": "https://www.vizhitn.in/patta-chitta-online-status?lang=en",
-      "x-default": "https://www.vizhitn.in/patta-chitta-online-status",
+      "ta-IN": "https://vizhitn.in/patta-chitta-online-status?lang=ta",
+      "en-IN": "https://vizhitn.in/patta-chitta-online-status?lang=en",
+      "x-default": "https://vizhitn.in/patta-chitta-online-status",
     },
   },
   keywords: [
@@ -45,7 +45,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.vizhitn.in/og-image.png",
+        url: "https://vizhitn.in/og-image.png",
         width: 1200,
         height: 630,
         alt: "Patta Chitta Online Verification Tamil Nadu",

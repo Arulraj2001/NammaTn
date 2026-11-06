@@ -81,10 +81,10 @@ export default function PowerCutsToday({
     : null;
 
   const pageUrl = targetArea
-    ? `https://www.vizhitn.in/power-cuts-today-tamil-nadu/${targetDistrict.slug}/${targetArea.slug}`
+    ? `https://vizhitn.in/power-cuts-today-tamil-nadu/${targetDistrict.slug}/${targetArea.slug}`
     : targetDistrict
-    ? `https://www.vizhitn.in/power-cuts-today-tamil-nadu/${targetDistrict.slug}`
-    : "https://www.vizhitn.in/power-cuts-today-tamil-nadu";
+    ? `https://vizhitn.in/power-cuts-today-tamil-nadu/${targetDistrict.slug}`
+    : "https://vizhitn.in/power-cuts-today-tamil-nadu";
 
   const shareTitle = targetArea
     ? `${areaNameDisplay} (${districtNameDisplay})`

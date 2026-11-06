@@ -48,14 +48,14 @@ export default function AwarenessPortalDetail({ portal }) {
   };
 
   const handleCopyPage = () => {
-    const url = typeof window !== "undefined" ? window.location.href : `https://www.vizhitn.in/awareness/portal/${portal.slug}`;
+    const url = typeof window !== "undefined" ? window.location.href : `https://vizhitn.in/awareness/portal/${portal.slug}`;
     navigator.clipboard.writeText(url);
     setCopiedPage(true);
     setTimeout(() => setCopiedPage(false), 2000);
   };
 
   const handleWhatsAppShare = () => {
-    const pageUrl = typeof window !== "undefined" ? window.location.href : `https://www.vizhitn.in/awareness/portal/${portal.slug}`;
+    const pageUrl = typeof window !== "undefined" ? window.location.href : `https://vizhitn.in/awareness/portal/${portal.slug}`;
     const msg = `🏛️ *${name}*\n\n🔗 *${T("Official URL:", "அதிகாரப்பூர்வ முகவரி:")}* ${portal.url}\n\n📄 *${T("Services & Verification Guide:", "சேவை வழிகாட்டல் விபரம்:")}*\n${pageUrl}\n\n_Via VizhiTN Civic Platform_`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
   };

@@ -9,13 +9,13 @@ export const metadata = {
   description:
     "Press resources for VizhiTN — Tamil Nadu's civic proof platform covering all 38 districts. Media kit, key facts, platform overview and press contact.",
   alternates: {
-    canonical: 'https://www.vizhitn.in/press',
+    canonical: 'https://vizhitn.in/press',
   },
   openGraph: {
     title: 'Press & Media | VizhiTN — Tamil Nadu Civic Platform',
     description:
       "Press resources for VizhiTN — Tamil Nadu's civic proof platform covering all 38 districts. Media kit, key facts, platform overview and press contact.",
-    url: 'https://www.vizhitn.in/press',
+    url: 'https://vizhitn.in/press',
     type: 'website',
   },
   twitter: {

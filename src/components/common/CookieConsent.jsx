@@ -75,6 +75,14 @@ export default function CookieConsent() {
 
   const handleAccept = () => {
     try { localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted'); } catch {}
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        'analytics_storage': 'granted',
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted'
+      });
+    }
     setVisible(false);
     // Reload after transition to initialise AdSense with consent
     setTimeout(() => window.location.reload(), 400);
@@ -82,6 +90,14 @@ export default function CookieConsent() {
 
   const handleReject = () => {
     try { localStorage.setItem(COOKIE_CONSENT_KEY, 'rejected'); } catch {}
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+      });
+    }
     setVisible(false);
   };
 

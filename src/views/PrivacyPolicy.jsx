@@ -168,7 +168,7 @@ export default function PrivacyPolicy() {
   usePageMeta({
     title: "Privacy Policy | VizhiTN — Citizen Data Protection & DPDPA Disclosures",
     description: "Read how VizhiTN protects citizen data, enforces zero passive GPS tracking, safeguards whistleblower identity, and complies with India's DPDPA 2023.",
-    canonical: "https://www.vizhitn.in/privacy-policy",
+    canonical: "https://vizhitn.in/privacy-policy",
   });
 
   // Filter chapters based on search query

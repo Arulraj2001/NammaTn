@@ -8,7 +8,7 @@ import { toMetaDescription } from '@/lib/metaDescription';
 import { getArticleAuthor, getPublisherSchema } from '@/lib/schemaIdentity';
 import { generateNewsArticleSchema } from '@/lib/seo/newsSchema';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const revalidate = 3600;
 

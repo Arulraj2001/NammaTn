@@ -17,7 +17,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.vizhitn.in/images/evergreen/esevai-guide.jpg",
+        url: "https://vizhitn.in/images/evergreen/esevai-guide.jpg",
         width: 1200,
         height: 630,
         alt: "Tamil Nadu e-Sevai Services Guide",

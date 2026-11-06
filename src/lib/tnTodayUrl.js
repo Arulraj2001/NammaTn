@@ -1,4 +1,4 @@
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export function getTnTodayCanonical(slug) {
   const normalizedSlug = typeof slug === 'string'

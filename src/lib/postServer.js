@@ -40,15 +40,40 @@ export async function getPublicPostDetail(idOrSlug) {
     let post = null;
 
     if (isUuid) {
-      const [postResult, scamResult, emergencyResult] = await Promise.all([
-        supabase.from('post').select('*').eq('id', raw).maybeSingle(),
-        supabase.from('scam_alert').select('*').eq('id', raw).maybeSingle().catch(() => ({ data: null })),
-        supabase.from('emergency_post').select('*').eq('id', raw).maybeSingle().catch(() => ({ data: null })),
+      const fetchPost = async () => {
+        try {
+          const { data } = await supabase.from('post').select('*').eq('id', raw).maybeSingle();
+          return data;
+        } catch {
+          return null;
+        }
+      };
+      const fetchScam = async () => {
+        try {
+          const { data } = await supabase.from('scam_alert').select('*').eq('id', raw).maybeSingle();
+          return data;
+        } catch {
+          return null;
+        }
+      };
+      const fetchEmerg = async () => {
+        try {
+          const { data } = await supabase.from('emergency_post').select('*').eq('id', raw).maybeSingle();
+          return data;
+        } catch {
+          return null;
+        }
+      };
+
+      const [postData, scamData, emergencyData] = await Promise.all([
+        fetchPost(),
+        fetchScam(),
+        fetchEmerg(),
       ]);
 
-      post = postResult.data;
-      if (!post && scamResult?.data?.status === 'active') post = formatScam(scamResult.data);
-      if (!post && emergencyResult?.data?.status === 'active') post = formatEmergency(emergencyResult.data);
+      post = postData;
+      if (!post && scamData?.status === 'active') post = formatScam(scamData);
+      if (!post && emergencyData?.status === 'active') post = formatEmergency(emergencyData);
     } else {
       // 1. First attempt query by slug
       const { data: bySlug, error: slugErr } = await supabase
@@ -73,11 +98,17 @@ export async function getPublicPostDetail(idOrSlug) {
           // Numeric ID for legacy non-UUID tables
           const numId = Number(raw);
           const [scamRes, emergRes] = await Promise.all([
-            supabase.from('scam_alert').select('*').eq('id', numId).maybeSingle().catch(() => ({ data: null })),
-            supabase.from('emergency_post').select('*').eq('id', numId).maybeSingle().catch(() => ({ data: null })),
+            (async () => {
+              try { const res = await supabase.from('scam_alert').select('*').eq('id', numId).maybeSingle(); return res.data; }
+              catch { return null; }
+            })(),
+            (async () => {
+              try { const res = await supabase.from('emergency_post').select('*').eq('id', numId).maybeSingle(); return res.data; }
+              catch { return null; }
+            })(),
           ]);
-          if (!post && scamRes?.data?.status === 'active') post = formatScam(scamRes.data);
-          if (!post && emergRes?.data?.status === 'active') post = formatEmergency(emergRes.data);
+          if (!post && scamRes?.status === 'active') post = formatScam(scamRes);
+          if (!post && emergRes?.status === 'active') post = formatEmergency(emergRes);
         }
       }
     }

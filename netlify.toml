@@ -10,6 +10,18 @@
   SECRETS_SCAN_ENABLED = "false"
 
 [[redirects]]
+  from = "https://www.vizhitn.in/*"
+  to = "https://vizhitn.in/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.vizhitn.in/*"
+  to = "https://vizhitn.in/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/media/*"
   to = "https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:splat"
   status = 301

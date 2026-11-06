@@ -18,7 +18,7 @@ try {
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co';
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
-const siteUrl = process.env.SITE_URL || 'https://www.vizhitn.in';
+const siteUrl = process.env.SITE_URL || 'https://vizhitn.in';
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('[FATAL] Missing Supabase credentials.');

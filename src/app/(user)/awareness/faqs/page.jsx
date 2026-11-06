@@ -2,7 +2,7 @@ import AwarenessFaqs from '@/views/AwarenessFaqs';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { getAllFaqs } from '@/lib/awarenessServer';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const metadata = {
   title: 'Tamil Nadu Citizen FAQs: Civic Procedures & Government Answers | VizhiTN',

@@ -15,14 +15,14 @@ import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
 import { getAllArticles, getAllRights, getAllSchemes, getAllGuides, getAllPortals, getAllFaqs, getAllEmergencyContacts, GOVT_SCHEMES, SAFETY_GUIDES } from '@/lib/awarenessServer';
 import { slugifyArea, getAllPowerCutAreaStaticParams } from '@/lib/powerCutAreas';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export default async function sitemap() {
   const entries = [];
 
   // ── Level 1: Homepage ─────────────────────────────────────────────────────
   entries.push({
-    url: `${SITE_URL}/`,
+    url: `${SITE_URL}`,
     changeFrequency: 'hourly',
     priority: 1.0,
   });
@@ -64,8 +64,12 @@ export default async function sitemap() {
         bump(districtDates, p.district_slug, changedAt);
         if (CATEGORY_MAP[p.category_slug]) bump(issueDates, `${p.district_slug}:${p.category_slug}`, changedAt);
 
-        // Track active power cuts by district and area
-        if (p.category_slug === 'electricity') {
+        // Track active power cuts by district and area ONLY within last 48 hours
+        // to strictly match page indexing rules (prevents submitting noindex pages to sitemap)
+        const isRecentOutage = p.category_slug === 'electricity' &&
+          new Date(p.created_date || p.updated_date) >= new Date(Date.now() - 48 * 3600 * 1000);
+
+        if (isRecentOutage) {
           bump(powerCutDistrictDates, p.district_slug, changedAt);
           if (p.area_slug) {
             bump(powerCutAreaDates, `${p.district_slug}:${p.area_slug.toLowerCase()}`, changedAt);

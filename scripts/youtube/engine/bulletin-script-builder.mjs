@@ -142,7 +142,7 @@ function buildYouTubeDescription(pkg, segments) {
 
   desc += `\n──────────────────────────────\n`;
   desc += `📲 VizhiTN அதிகாரப்பூர்வ WhatsApp Channel: https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228\n`;
-  desc += `🌐 அதிகாரப்பூர்வ இணையதளம்: https://www.vizhitn.in\n`;
+  desc += `🌐 அதிகாரப்பூர்வ இணையதளம்: https://vizhitn.in\n`;
   desc += `🔔 தினசரி மக்கள் செய்திகளைப் பெற Subscribe செய்யுங்கள்!\n\n`;
   desc += `#TamilNaduNews #GovtSchemes #TamilNaduUpdates #CivicTamil #VizhiTN #Shorts`;
 

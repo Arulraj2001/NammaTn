@@ -32,7 +32,7 @@ runTest('Gate A: Truncated Slug Detection (e.g. "...2027-publi")', () => {
 • உதவிக்கு 📞 1930
 
 📍 சென்னை
-👉 முழு செய்தி: https://www.vizhitn.in/post/chennai-metro-phase-2-poonamallee-to-porur-trial-runs-advance-towards-2027-publi
+👉 முழு செய்தி: https://vizhitn.in/post/chennai-metro-phase-2-poonamallee-to-porur-trial-runs-advance-towards-2027-publi
 
 📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
 
@@ -53,7 +53,7 @@ runTest('Gate B: Transliteration & Spelling Error Detection ("எஸ்சிஎ
 • புகார் எண் 📞 1930
 
 📍 சென்னை
-👉 முழு செய்தி: https://www.vizhitn.in/post/fake-electricity-bill-sms-cyber-scam-warning-20261026
+👉 முழு செய்தி: https://vizhitn.in/post/fake-electricity-bill-sms-cyber-scam-warning-20261026
 
 📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
 
@@ -75,7 +75,7 @@ runTest('Gate C: Question Headline Without Answer Detection ("திறப்ப
 • மவுண்ட்-பூந்தமல்லி நெரிசல் குறையும்
 
 📍 சென்னை
-👉 முழு செய்தி: https://www.vizhitn.in/post/chennai-metro-phase-2-driverless-train-trial-poonamallee-porur
+👉 முழு செய்தி: https://vizhitn.in/post/chennai-metro-phase-2-driverless-train-trial-poonamallee-porur
 
 📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
 
@@ -96,7 +96,7 @@ runTest('Gate F: In-Channel Follow Link Prohibited in Normal Posts', () => {
 • உதவிக்கு 📞 1912
 
 📍 சென்னை
-👉 முழு செய்தி: https://www.vizhitn.in/post/chennai-power-cut-today-20261027
+👉 முழு செய்தி: https://vizhitn.in/post/chennai-power-cut-today-20261027
 
 👉 *இலவசமாக இணைய:* https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228
 
@@ -118,7 +118,7 @@ runTest('Gate D: Headline Length & Emoji Cap Checks', () => {
 • அவசர எண் 📞 1912
 
 📍 சென்னை
-👉 முழு செய்தி: https://www.vizhitn.in/post/chennai-power-cut-20261027
+👉 முழு செய்தி: https://vizhitn.in/post/chennai-power-cut-20261027
 
 📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
 
@@ -140,7 +140,7 @@ runTest('Valid Cyber Scam Post: Passes All 7 Gates', () => {
 • பணம் போயிடுச்சுன்னா உடனே 📞 1930
 
 📍 சென்னை
-👉 முழு செய்தி: https://www.vizhitn.in/post/fake-electricity-bill-sms-cyber-scam-warning-20261026
+👉 முழு செய்தி: https://vizhitn.in/post/fake-electricity-bill-sms-cyber-scam-warning-20261026
 
 📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
 
@@ -160,7 +160,7 @@ runTest('Valid Metro Post: Passes All 7 Gates (Answers Status Factual)', () => {
 • அதிகாரப்பூர்வ திறப்பு தேதி இன்னும் அறிவிக்கப்படவில்லை
 
 📍 சென்னை
-👉 முழு செய்தி: https://www.vizhitn.in/post/chennai-metro-phase-2-driverless-train-trial-poonamallee-porur
+👉 முழு செய்தி: https://vizhitn.in/post/chennai-metro-phase-2-driverless-train-trial-poonamallee-porur
 
 📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
 
@@ -180,7 +180,7 @@ runTest('Valid Power Cut Post: Passes All 7 Gates', () => {
 • மின் தடை புகார்களுக்கு 📞 1912
 
 📍 திருச்சி
-👉 முழு செய்தி: https://www.vizhitn.in/post/tiruchirappalli-power-cut-srirangam-20261027
+👉 முழு செய்தி: https://vizhitn.in/post/tiruchirappalli-power-cut-srirangam-20261027
 
 📤 உங்க குடும்ப குரூப்ல ஷேர் பண்ணுங்க`;
 

@@ -11,7 +11,7 @@ export const metadata = {
     description: 'Instant 1-tap call direct contacts for power failure, flood rescue, police, cyber crime, and municipal issues across all 38 districts.',
     url: '/helplines',
     type: 'website',
-    images: [{ url: 'https://www.vizhitn.in/images/evergreen/tn-helplines.jpg', width: 1200, height: 630, alt: 'Tamil Nadu Emergency Helplines' }]
+    images: [{ url: 'https://vizhitn.in/images/evergreen/tn-helplines.jpg', width: 1200, height: 630, alt: 'Tamil Nadu Emergency Helplines' }]
   },
 };
 

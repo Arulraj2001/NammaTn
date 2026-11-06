@@ -26,7 +26,7 @@ import { attachIncidentPhotosToPosts } from '@/lib/incidentPhotoMatcher';
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 const GEMINI_MODEL = 'gemini-3.1-flash-lite';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 

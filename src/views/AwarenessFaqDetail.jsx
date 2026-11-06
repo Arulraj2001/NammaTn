@@ -43,7 +43,7 @@ export default function AwarenessFaqDetail({ faq }) {
   };
 
   const handleWhatsAppShare = () => {
-    const url = typeof window !== "undefined" ? window.location.href : "https://www.vizhitn.in/awareness/faqs";
+    const url = typeof window !== "undefined" ? window.location.href : "https://vizhitn.in/awareness/faqs";
     const msg = `❓ *${question}*\n\n💡 *${T("Official Answer:", "விளக்கம்:")}*\n${answer}\n\n🔗 ${url}\n\n_Via VizhiTN Civic FAQ Directory_`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
   };

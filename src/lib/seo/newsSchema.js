@@ -35,7 +35,7 @@ export function generateNewsArticleSchema({
         }
       : {
           '@type': 'ImageObject',
-          url: 'https://www.vizhitn.in/og-image.png',
+          url: 'https://vizhitn.in/og-image.png',
           width: 1200,
           height: 630,
         },
@@ -44,22 +44,22 @@ export function generateNewsArticleSchema({
     author: author || {
       '@type': 'Person',
       name: authorName || 'Arulraj',
-      url: 'https://www.vizhitn.in/editorial-team',
+      url: 'https://vizhitn.in/editorial-team',
     },
     publisher: publisher || {
       '@type': 'Organization',
       name: 'VizhiTN',
-      url: 'https://www.vizhitn.in',
+      url: 'https://vizhitn.in',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://www.vizhitn.in/apple-touch-icon.png',
+        url: 'https://vizhitn.in/apple-touch-icon.png',
         width: 180,
         height: 180,
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': url || 'https://www.vizhitn.in',
+      '@id': url || 'https://vizhitn.in',
     },
     articleSection: section || 'Civic News',
     inLanguage: headlineTa ? ['en-IN', 'ta-IN'] : language,
@@ -115,7 +115,7 @@ export function generateSpecialAnnouncementSchema({
     '@type': 'SpecialAnnouncement',
     name: name?.slice(0, 110) || '',
     text: text || '',
-    url: url || 'https://www.vizhitn.in',
+    url: url || 'https://vizhitn.in',
     datePosted: datePosted || new Date().toISOString(),
     ...(expires ? { expires } : {}),
     category,
@@ -137,7 +137,7 @@ export function generateSpecialAnnouncementSchema({
       '@type': 'GovernmentOrganization',
       name: departmentName,
       ...(helpline ? { telephone: helpline } : {}),
-      url: 'https://www.vizhitn.in',
+      url: 'https://vizhitn.in',
     },
   };
 }

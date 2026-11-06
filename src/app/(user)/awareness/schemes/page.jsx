@@ -1,7 +1,7 @@
 import AwarenessSchemes from '@/views/AwarenessSchemes';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const metadata = {
   title: 'Tamil Nadu Government Schemes Directory 2026 | VizhiTN',

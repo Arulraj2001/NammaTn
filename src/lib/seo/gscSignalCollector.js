@@ -11,14 +11,14 @@
 // GSC API requires:
 //   GOOGLE_GSC_CLIENT_EMAIL  (service account email)
 //   GOOGLE_GSC_PRIVATE_KEY   (service account private key)
-//   NEXT_PUBLIC_SITE_URL     (verified property in GSC, e.g. https://www.vizhitn.in)
+//   NEXT_PUBLIC_SITE_URL     (verified property in GSC, e.g. https://vizhitn.in)
 //
 // ISR-safe: does NOT cache internally. Next.js ISR (revalidate=3600) owns cache.
 // No Math.random(). Server-only (never runs in browser).
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const GSC_API_BASE = 'https://searchconsole.googleapis.com/webmasters/v3';
-const SITE_URL     = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.vizhitn.in';
+const SITE_URL     = process.env.NEXT_PUBLIC_SITE_URL || 'https://vizhitn.in';
 
 // ── GSC metric thresholds for normalisation ────────────────────────────────────
 const NORM = {

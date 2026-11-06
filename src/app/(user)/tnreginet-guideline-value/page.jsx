@@ -16,9 +16,9 @@ export const metadata = {
   alternates: {
     canonical: "/tnreginet-guideline-value",
     languages: {
-      "ta-IN": "https://www.vizhitn.in/tnreginet-guideline-value?lang=ta",
-      "en-IN": "https://www.vizhitn.in/tnreginet-guideline-value?lang=en",
-      "x-default": "https://www.vizhitn.in/tnreginet-guideline-value",
+      "ta-IN": "https://vizhitn.in/tnreginet-guideline-value?lang=ta",
+      "en-IN": "https://vizhitn.in/tnreginet-guideline-value?lang=en",
+      "x-default": "https://vizhitn.in/tnreginet-guideline-value",
     },
   },
   keywords: [
@@ -45,7 +45,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.vizhitn.in/og-image.png",
+        url: "https://vizhitn.in/og-image.png",
         width: 1200,
         height: 630,
         alt: "TNREGINET Guideline Value Tamil Nadu",

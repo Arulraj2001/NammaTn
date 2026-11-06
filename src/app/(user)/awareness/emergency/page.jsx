@@ -1,7 +1,7 @@
 import AwarenessEmergency from '@/views/AwarenessEmergency';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
-const SITE_URL = 'https://www.vizhitn.in';
+const SITE_URL = 'https://vizhitn.in';
 
 export const metadata = {
   title: 'Tamil Nadu 24x7 Emergency Helplines & Golden Hour SOPs | VizhiTN',
