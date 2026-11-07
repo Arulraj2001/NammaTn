@@ -894,12 +894,6 @@ No conversational intro, no commentary outside the JSON array.
       console.warn(`[SCAM QUOTA REJECT] Cyber scam advisory already exists in recent 10-day history. Skipping: "${title_en}"`);
       continue;
     }
-    const sourceMarkup = sourceUrls
-      .map(url => `<li><a href="${url}" target="_blank" rel="noopener noreferrer">Official source</a></li>`)
-      .join('');
-    const refBadgeEn = officialRef ? `<p class="official-ref-badge" style="margin: 8px 0; font-size: 0.875rem;"><strong>Official Circular/Order Ref:</strong> ${officialRef}</p>` : '';
-    const refBadgeTa = officialRef ? `<p class="official-ref-badge" style="margin: 8px 0; font-size: 0.875rem;"><strong>அதிகாரப்பூர்வ ஆணை / குறிப்பு எண்:</strong> ${officialRef}</p>` : '';
-
     // Build Post Object (Plain text only - do NOT inject raw HTML tags into content fields)
     const normalizedPost = {
       title_en: title_en || title_ta,

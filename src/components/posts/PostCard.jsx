@@ -174,7 +174,12 @@ const PostCard = memo(function PostCard({ post }) {
   const TypeIcon = type.icon;
   const postUrl = getPostUrl(post);
   const title = T(post.title_en, post.title_ta) || post.title_en;
-  const content = T(post.content_en, post.content_ta) || post.content_en;
+  const rawContent = T(post.content_en, post.content_ta) || post.content_en;
+  const content = (rawContent || "")
+    .replace(/<h2>(?:Official sources|அதிகாரப்பூர்வ ஆதாரங்கள்)<\/h2>[\s\S]*$/gi, "")
+    .replace(/<p[^>]*class=["']official-ref-badge["'][^>]*>[\s\S]*?<\/p>/gi, "")
+    .replace(/<[^>]+>/g, "")
+    .trim();
   const badge = computeBadge(post);
   // isCivicPost is unchanged — still used for civic stats row, footer text, etc.
   const isCivic = isCivicPost(post);
