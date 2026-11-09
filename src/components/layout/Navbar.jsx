@@ -4,7 +4,7 @@ import { Link, useLocation } from "@/lib/router-compat";
 import {
   Search, Globe, Sun, Moon, Bookmark, ChevronDown, Zap, TrendingUp, MessageCircle,
   HelpCircle, AlertTriangle, Heart, LayoutGrid, Calculator, FileText, CreditCard,
-  MapPin, Map, Shield, ArrowRight, Plus, LayoutDashboard, Info, X
+  MapPin, Map, Shield, ArrowRight, Plus, LayoutDashboard, Info, X, Trophy
 } from "lucide-react";
 
 import { useLanguage } from "@/context/LanguageContext";
@@ -18,8 +18,9 @@ const MAIN_NAV = [
   { path: "/", en: "📍 Map", ta: "📍 வரைபடம்" },
   { path: "/explore", en: "⚡ Live Feed", ta: "⚡ நேரடி ஊட்டம்" },
   { path: "/tn-today", en: "📰 TN Today", ta: "📰 TN Today" },
-  { path: "/power-cuts-today-tamil-nadu", en: "⚡ Power Cuts", ta: "⚡ மின்தடை" },
-  { path: "/trending", en: "🔥 Trending", ta: "🔥 டிரெண்டிங்", hideOnLg: true },
+  { path: "/tnpsc", en: "🎯 TNPSC Quiz", ta: "🎯 TNPSC தேர்வு" },
+  { path: "/power-cuts-today-tamil-nadu", en: "⚡ Power Cuts", ta: "⚡ மின்தடை", hideBelow2xl: true },
+  { path: "/trending", en: "🔥 Trending", ta: "🔥 டிரெண்டிங்", hideBelow2xl: true },
 ];
 
 
@@ -28,6 +29,7 @@ const MEGA_COLUMNS = [
     en_title: "Alerts & Utilities",
     ta_title: "எச்சரிக்கைகள் & சேவைகள்",
     items: [
+      { path: "/track", icon: Shield, en: "Civic Receipt Tracker", ta: "புகார் கண்காணிப்பகம்", desc_en: "Track GCC & TANGEDCO complaints", desc_ta: "புகார் தீர்வு நிலவரம்" },
       { path: "/power-cuts-today-tamil-nadu", icon: Zap, en: "Power Cuts Today", ta: "இன்றைய மின்தடை", desc_en: "Live TANGEDCO power cuts", desc_ta: "நேரடி மின் தடை தகவல்கள்" },
       { path: "/tneb-bill-calculator", icon: Calculator, en: "TNEB Bill Calculator", ta: "மின் கட்டண கணக்கீடு", desc_en: "2026 tariff & 100 free units", desc_ta: "100 யூனிட் மானியக் கணக்கீடு" },
       { path: "/school-college-holiday-alerts", icon: AlertTriangle, en: "Holiday Alerts", ta: "பள்ளி விடுமுறை", desc_en: "Rain & Collector orders", desc_ta: "ஆட்சியர் விடுமுறை அறிவிப்புகள்" },
@@ -243,22 +245,24 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Main Nav */}
-            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 flex-1 min-w-0 ml-1 xl:ml-3">
-              {MAIN_NAV.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`px-1.5 py-1 xl:px-2.5 xl:py-1.5 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap ${
-                    link.hideOnLg ? "hidden xl:inline-flex" : ""
-                  } ${
-                    location.pathname === link.path
-                      ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100 font-bold border border-civic-200 dark:border-civic-700"
-                      : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
-                  }`}
-                >
-                  {T(link.en, link.ta)}
-                </Link>
-              ))}
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 flex-1 min-w-0 ml-1 xl:ml-2">
+              <div className="flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 overflow-hidden">
+                {MAIN_NAV.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`px-1.5 py-1 xl:px-2 xl:py-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg text-xs xl:text-xs 2xl:text-sm font-medium transition-colors whitespace-nowrap ${
+                      link.hideBelow2xl ? "hidden 2xl:inline-flex" : ""
+                    } ${
+                      location.pathname === link.path
+                        ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100 font-bold border border-civic-200 dark:border-civic-700"
+                        : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
+                    }`}
+                  >
+                    {T(link.en, link.ta)}
+                  </Link>
+                ))}
+              </div>
 
               {/* Directory dropdown */}
               <div
@@ -269,7 +273,7 @@ export default function Navbar() {
               >
                 <button
                   onClick={() => setMegaOpen(!megaOpen)}
-                  className={`flex items-center gap-1 px-1.5 py-1 xl:px-2.5 xl:py-1.5 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-1.5 py-1 xl:px-2 xl:py-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg text-xs xl:text-xs 2xl:text-sm font-medium transition-colors whitespace-nowrap ${
                     megaOpen ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100" : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
                   }`}
                   aria-expanded={megaOpen}
@@ -362,14 +366,14 @@ export default function Navbar() {
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0 z-10">
               <Link to="/search" aria-label="Search" className="hidden md:flex p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <Search className="w-4 h-4" />
               </Link>
 
               <button
                 onClick={() => setLang(lang === "en" ? "ta" : "en")}
-                className="flex items-center gap-1 px-1.5 sm:px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors whitespace-nowrap"
+                className="flex items-center gap-1 px-1.5 sm:px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors whitespace-nowrap flex-shrink-0"
                 title="Switch Language"
                 aria-label="Switch Language"
               >
@@ -380,13 +384,13 @@ export default function Navbar() {
 
               <button
                 onClick={toggleTheme}
-                className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0"
                 aria-label="Toggle Theme"
               >
                 {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
 
-              <Link to="/bookmarks" aria-label="Bookmarks" className="hidden xl:flex p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <Link to="/bookmarks" aria-label="Bookmarks" className="hidden 2xl:flex p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0">
                 <Bookmark className="w-4 h-4" />
               </Link>
 
@@ -394,8 +398,8 @@ export default function Navbar() {
               <Link to="/create" className="hidden lg:block ml-0.5 xl:ml-1 flex-shrink-0">
                 <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-xl transition-colors flex items-center gap-1 shadow-sm whitespace-nowrap">
                   <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                  <span className="hidden xl:inline">{T("Log Issue", "பதிவு செய்க")}</span>
-                  <span className="xl:hidden">{T("Post", "பதிவு")}</span>
+                  <span className="hidden 2xl:inline">{T("Log Issue", "பதிவு செய்க")}</span>
+                  <span className="2xl:hidden">{T("Post", "பதிவு")}</span>
                 </button>
               </Link>
 

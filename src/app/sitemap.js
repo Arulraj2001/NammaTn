@@ -355,6 +355,40 @@ export default async function sitemap() {
     });
   });
 
+  entries.push({
+    url: `${SITE_URL}/tnpsc`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.9,
+  });
+
+  // Dedicated TNPSC Subject Landing Pages for Googlebot Indexation
+  const TNPSC_SEO_SUBJECTS = [
+    'general-tamil',
+    'unit-8',
+    'polity',
+    'aptitude',
+    'current-affairs',
+    'geography',
+    'science',
+  ];
+
+  TNPSC_SEO_SUBJECTS.forEach((slug) => {
+    entries.push({
+      url: `${SITE_URL}/tnpsc/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.85,
+    });
+  });
+
+  entries.push({
+    url: `${SITE_URL}/track`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.8,
+  });
+
   [
     '/districts', '/areas', '/awareness', '/awareness/articles',
     '/awareness/emergency', '/awareness/faqs', '/awareness/guides', '/awareness/portals',

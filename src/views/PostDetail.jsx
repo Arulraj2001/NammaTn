@@ -146,10 +146,6 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
 
   const handleVote = async (reactionType) => {
     if (!post || votingLoading) return;
-    if (!isAuthenticated) {
-      requireAuth(() => handleVote(reactionType), T("Sign in to vote", "வாக்களிக்க உள்நுழையுங்கள்"));
-      return;
-    }
     setVotingLoading(true);
     const result = await toggleReaction(post.id, "post", reactionType, actorId, isAuthenticated, post);
     setVoted(result.reactionType); // null if toggled off, else the type
@@ -600,13 +596,16 @@ export default function PostDetail({ initialId, initialPost, initialComplaintTra
                       className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
                     >
                       <MessageSquare className="w-4 h-4" />
-                      {T("Join Discussion", "விவாதத்தில் சேரு")} ({post.comment_count || 0})
+                      {T("Join Discussion", "விவாதத்தில் சேரு")} {(post.comment_count || 0) > 0 ? `(${post.comment_count})` : ''}
                     </button>
                   ) : (
-                    <span className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 ml-2">
+                    <button
+                      onClick={() => document.querySelector("[data-comment-section]")?.scrollIntoView({ behavior: "smooth" })}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors ml-2"
+                    >
                       <MessageSquare className="w-4 h-4" />
-                      {post.comment_count || 0} {T("comments", "கருத்துகள்")}
-                    </span>
+                      {(post.comment_count || 0) > 0 ? `${post.comment_count} ${T("comments", "கருத்துகள்")}` : T("Add update / comment", "தகவல் / கருத்து இடுக")}
+                    </button>
                   )}
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-4 flex-wrap">

@@ -246,9 +246,10 @@ function generateQuestionSlideHtml({ quiz, brandLogoDataUri }) {
 /**
  * Slide 2 (Question Mode): High-Impact Challenge Card (NO ANSWER REVEALED!)
  */
-function generateChallengeSlideHtml({ quiz, brandLogoDataUri, explanationTimeText }) {
+function generateChallengeSlideHtml({ quiz, brandLogoDataUri, explanationTimeText, platform = 'youtube' }) {
   const targetCrayonUri = getStickmanAssetDataUri('target-crayon.png');
   const ideaNoteUri = getStickmanAssetDataUri('idea-note-crayon.png');
+  const isMeta = platform === 'meta';
 
   return `<!DOCTYPE html>
 <html lang="ta">
@@ -375,8 +376,8 @@ function generateChallengeSlideHtml({ quiz, brandLogoDataUri, explanationTimeTex
   </div>
 
   <div class="footer-bar">
-    <div class="footer-left">🔔 தினமும் 2 வினாடி-வினா பெற Subscribe செய்யுங்கள்!</div>
-    <div class="footer-right">Subscribe</div>
+    <div class="footer-left">🔔 ${isMeta ? 'தினமும் 2 மாதிரி வினா பெற Follow செய்யுங்கள்!' : 'தினமும் 2 வினாடி-வினா பெற Subscribe செய்யுங்கள்!'}</div>
+    <div class="footer-right">${isMeta ? 'Follow' : 'Subscribe'}</div>
   </div>
 </body>
 </html>`;
@@ -534,10 +535,11 @@ function generateAnswerRevealSlideHtml({ quiz, brandLogoDataUri }) {
 /**
  * Slide 2 (Explanation Mode): Deep Samacheer Masterclass (Who, When, Which Book, PYQ Reference)
  */
-function generateMasterclassNotesSlideHtml({ quiz, brandLogoDataUri }) {
+function generateMasterclassNotesSlideHtml({ quiz, brandLogoDataUri, platform = 'youtube' }) {
   const targetCrayonUri = getStickmanAssetDataUri('target-crayon.png');
   const bookCrayonUri = getStickmanAssetDataUri('book-study-crayon.png');
   const ideaBulbUri = getStickmanAssetDataUri('idea-bulb-crayon.png');
+  const isMeta = platform === 'meta';
 
   const vData = quiz.verifiedData || {
     who: 'வரலாற்றுத் தலைவர் & சமச்சீர் கல்வி',
@@ -714,8 +716,8 @@ function generateMasterclassNotesSlideHtml({ quiz, brandLogoDataUri }) {
   </div>
 
   <div class="footer-bar">
-    <div class="footer-left">🔔 அடுத்த One-Mark கேள்விக்கு சப்ஸ்கிரைப் பண்ணுங்க!</div>
-    <div class="footer-right">Subscribe</div>
+    <div class="footer-left">🔔 ${isMeta ? 'அடுத்த One-Mark கேள்விக்கு ஃபாலோ பண்ணுங்க!' : 'அடுத்த One-Mark கேள்விக்கு சப்ஸ்கிரைப் பண்ணுங்க!'}</div>
+    <div class="footer-right">${isMeta ? 'Follow' : 'Subscribe'}</div>
   </div>
 </body>
 </html>`;
@@ -757,6 +759,7 @@ async function main() {
   const explanationTimeText = isMorning ? 'காலை 10:30 மணிக்கு' : 'இரவு 9:00 மணிக்கு';
 
   let scenes = [];
+  let metaScenes = [];
   let videoTitle = '';
   let videoDescription = '';
   let videoTags = [];
@@ -778,19 +781,34 @@ async function main() {
     const s1Path = path.join(sessionDir, 'q_slide_1.png');
     renderHtmlToImage(s1Html, s1Path, { width: 1080, height: 1920 });
 
-    // Scene 2: Challenge Card & Call-To-Action (NO ANSWER REVEALED!)
-    const s2Spoken = `உங்க விடை என்ன? ஆப்ஷன் A, B, C அல்லது D-யா? உடனே கீழே கமெண்ட் பண்ணுங்க! இதற்கான சரியான விடை மற்றும் சமச்சீர் பாடப்புத்தக ஆதாரக் குறிப்புகள் ${explanationTimeText} நமது அடுத்த Shorts-ல் வெளியாகும்! அடுத்த கேள்வியை தவறவிடாமல் இருக்க VizhiTN-ஐ இப்போதே சப்ஸ்கிரைப் பண்ணுங்க!`;
-    const s2AudioPath = path.join(sessionDir, 'q_audio_2.mp3');
-    await synthesizeSpeech(s2Spoken, s2AudioPath);
-    const s2Dur = getAudioDuration(s2AudioPath);
+    // Scene 2 for YouTube: "சப்ஸ்கிரைப் பண்ணுங்க" + "Subscribe" badge
+    const s2SpokenYT = `உங்க விடை என்ன? ஆப்ஷன் A, B, C அல்லது D-யா? உடனே கீழே கமெண்ட் பண்ணுங்க! இதற்கான சரியான விடை மற்றும் சமச்சீர் பாடப்புத்தக ஆதாரக் குறிப்புகள் ${explanationTimeText} நமது அடுத்த Shorts-ல் வெளியாகும்! அடுத்த கேள்வியை தவறவிடாமல் இருக்க VizhiTN-ஐ இப்போதே சப்ஸ்கிரைப் பண்ணுங்க!`;
+    const s2AudioPathYT = path.join(sessionDir, 'q_audio_2_yt.mp3');
+    await synthesizeSpeech(s2SpokenYT, s2AudioPathYT);
+    const s2DurYT = getAudioDuration(s2AudioPathYT);
 
-    const s2Html = generateChallengeSlideHtml({ quiz, brandLogoDataUri, explanationTimeText });
-    const s2Path = path.join(sessionDir, 'q_slide_2.png');
-    renderHtmlToImage(s2Html, s2Path, { width: 1080, height: 1920 });
+    const s2HtmlYT = generateChallengeSlideHtml({ quiz, brandLogoDataUri, explanationTimeText, platform: 'youtube' });
+    const s2PathYT = path.join(sessionDir, 'q_slide_2_yt.png');
+    renderHtmlToImage(s2HtmlYT, s2PathYT, { width: 1080, height: 1920 });
+
+    // Scene 2 for Meta (Instagram & Facebook Reels): "ஃபாலோ பண்ணுங்க" + "Follow" badge
+    const s2SpokenMeta = `உங்க விடை என்ன? ஆப்ஷன் A, B, C அல்லது D-யா? உடனே கீழே கமெண்ட் பண்ணுங்க! இதற்கான சரியான விடை மற்றும் சமச்சீர் பாடப்புத்தக ஆதாரக் குறிப்புகள் ${explanationTimeText} நமது அடுத்த Shorts-ல் வெளியாகும்! அடுத்த கேள்வியை தவறவிடாமல் இருக்க VizhiTN-ஐ இப்போதே ஃபாலோ பண்ணுங்க!`;
+    const s2AudioPathMeta = path.join(sessionDir, 'q_audio_2_meta.mp3');
+    await synthesizeSpeech(s2SpokenMeta, s2AudioPathMeta);
+    const s2DurMeta = getAudioDuration(s2AudioPathMeta);
+
+    const s2HtmlMeta = generateChallengeSlideHtml({ quiz, brandLogoDataUri, explanationTimeText, platform: 'meta' });
+    const s2PathMeta = path.join(sessionDir, 'q_slide_2_meta.png');
+    renderHtmlToImage(s2HtmlMeta, s2PathMeta, { width: 1080, height: 1920 });
 
     scenes = [
       { imagePath: s1Path, slidePath: s1Path, audioPath: s1AudioPath, durationSec: Math.ceil(s1Dur) + 1 },
-      { imagePath: s2Path, slidePath: s2Path, audioPath: s2AudioPath, durationSec: Math.ceil(s2Dur) + 1 }
+      { imagePath: s2PathYT, slidePath: s2PathYT, audioPath: s2AudioPathYT, durationSec: Math.ceil(s2DurYT) + 1 }
+    ];
+
+    metaScenes = [
+      { imagePath: s1Path, slidePath: s1Path, audioPath: s1AudioPath, durationSec: Math.ceil(s1Dur) + 1 },
+      { imagePath: s2PathMeta, slidePath: s2PathMeta, audioPath: s2AudioPathMeta, durationSec: Math.ceil(s2DurMeta) + 1 }
     ];
 
     videoTitle = `TNPSC One-Mark Sure Shot: ${quiz.questionTa.slice(0, 42)}... | Group 4 & 2 #Shorts`;
@@ -816,19 +834,34 @@ async function main() {
     const s1Path = path.join(sessionDir, 'exp_slide_1.png');
     renderHtmlToImage(s1Html, s1Path, { width: 1080, height: 1920 });
 
-    // Scene 2: Deep 4-Pillar Masterclass Notes
-    const s2Spoken = `தேர்வுக்கான முக்கியக் குறிப்புகள்: யார்: ${vData.who}. காலம்: ${vData.when}. சமச்சீர் புத்தக ஆதாரம்: ${vData.whichBook}. முந்தைய தேர்வு: ${vData.pyqReference}. ${vData.examPointersTa[0]}. இந்தத் தகவல்களை உங்கள் குறிப்பேட்டில் குறித்து வைத்துக்கொள்ளுங்கள். அடுத்த One-Mark கேள்விக்கு இப்போதே VizhiTN-ஐ சப்ஸ்கிரைப் பண்ணுங்க!`;
-    const s2AudioPath = path.join(sessionDir, 'exp_audio_2.mp3');
-    await synthesizeSpeech(s2Spoken, s2AudioPath);
-    const s2Dur = getAudioDuration(s2AudioPath);
+    // Scene 2 for YouTube: "சப்ஸ்கிரைப் பண்ணுங்க" + "Subscribe" badge
+    const s2SpokenYT = `தேர்வுக்கான முக்கியக் குறிப்புகள்: யார்: ${vData.who}. காலம்: ${vData.when}. சமச்சீர் புத்தக ஆதாரம்: ${vData.whichBook}. முந்தைய தேர்வு: ${vData.pyqReference}. ${vData.examPointersTa[0]}. இந்தத் தகவல்களை உங்கள் குறிப்பேட்டில் குறித்து வைத்துக்கொள்ளுங்கள். அடுத்த One-Mark கேள்விக்கு இப்போதே VizhiTN-ஐ சப்ஸ்கிரைப் பண்ணுங்க!`;
+    const s2AudioPathYT = path.join(sessionDir, 'exp_audio_2_yt.mp3');
+    await synthesizeSpeech(s2SpokenYT, s2AudioPathYT);
+    const s2DurYT = getAudioDuration(s2AudioPathYT);
 
-    const s2Html = generateMasterclassNotesSlideHtml({ quiz, brandLogoDataUri });
-    const s2Path = path.join(sessionDir, 'exp_slide_2.png');
-    renderHtmlToImage(s2Html, s2Path, { width: 1080, height: 1920 });
+    const s2HtmlYT = generateMasterclassNotesSlideHtml({ quiz, brandLogoDataUri, platform: 'youtube' });
+    const s2PathYT = path.join(sessionDir, 'exp_slide_2_yt.png');
+    renderHtmlToImage(s2HtmlYT, s2PathYT, { width: 1080, height: 1920 });
+
+    // Scene 2 for Meta (Instagram & Facebook Reels): "ஃபாலோ பண்ணுங்க" + "Follow" badge
+    const s2SpokenMeta = `தேர்வுக்கான முக்கியக் குறிப்புகள்: யார்: ${vData.who}. காலம்: ${vData.when}. சமச்சீர் புத்தக ஆதாரம்: ${vData.whichBook}. முந்தைய தேர்வு: ${vData.pyqReference}. ${vData.examPointersTa[0]}. இந்தத் தகவல்களை உங்கள் குறிப்பேட்டில் குறித்து வைத்துக்கொள்ளுங்கள். அடுத்த One-Mark கேள்விக்கு இப்போதே VizhiTN-ஐ ஃபாலோ பண்ணுங்க!`;
+    const s2AudioPathMeta = path.join(sessionDir, 'exp_audio_2_meta.mp3');
+    await synthesizeSpeech(s2SpokenMeta, s2AudioPathMeta);
+    const s2DurMeta = getAudioDuration(s2AudioPathMeta);
+
+    const s2HtmlMeta = generateMasterclassNotesSlideHtml({ quiz, brandLogoDataUri, platform: 'meta' });
+    const s2PathMeta = path.join(sessionDir, 'exp_slide_2_meta.png');
+    renderHtmlToImage(s2HtmlMeta, s2PathMeta, { width: 1080, height: 1920 });
 
     scenes = [
       { imagePath: s1Path, slidePath: s1Path, audioPath: s1AudioPath, durationSec: Math.ceil(s1Dur) + 1 },
-      { imagePath: s2Path, slidePath: s2Path, audioPath: s2AudioPath, durationSec: Math.ceil(s2Dur) + 1 }
+      { imagePath: s2PathYT, slidePath: s2PathYT, audioPath: s2AudioPathYT, durationSec: Math.ceil(s2DurYT) + 1 }
+    ];
+
+    metaScenes = [
+      { imagePath: s1Path, slidePath: s1Path, audioPath: s1AudioPath, durationSec: Math.ceil(s1Dur) + 1 },
+      { imagePath: s2PathMeta, slidePath: s2PathMeta, audioPath: s2AudioPathMeta, durationSec: Math.ceil(s2DurMeta) + 1 }
     ];
 
     videoTitle = `TNPSC சமச்சீர் குறிப்புகள்: ${quiz.questionTa.slice(0, 40)}... | விடை & புத்தகம் #Shorts`;
@@ -838,9 +871,14 @@ async function main() {
   }
 
   const outputVideoPath = path.join(sessionDir, `TNPSC_${modeArg}_${quiz.id}.mp4`);
-  console.log('[COMPOSING SHORTS] Assembling Warm Light Studio Video...');
+  console.log('[COMPOSING SHORTS] Assembling YouTube Shorts Video...');
   assembleMultiSceneShortsVideo({ scenes, outputPath: outputVideoPath });
-  console.log(`[VIDEO OK] Rendered: ${outputVideoPath}`);
+  console.log(`[VIDEO OK] Rendered YouTube Short: ${outputVideoPath}`);
+
+  const metaOutputVideoPath = path.join(sessionDir, `TNPSC_${modeArg}_${quiz.id}_meta.mp4`);
+  console.log('[COMPOSING SHORTS] Assembling Meta (Instagram & Facebook Reels) Video with "Follow" Outro...');
+  assembleMultiSceneShortsVideo({ scenes: metaScenes, outputPath: metaOutputVideoPath });
+  console.log(`[VIDEO OK] Rendered Meta Reel: ${metaOutputVideoPath}`);
 
   if (isDryRun) {
     console.log('\n--- [DRY RUN PREVIEW] ---');
@@ -850,7 +888,7 @@ async function main() {
     console.log(`Video File: ${outputVideoPath}`);
     try {
       await crossPostVideoToMetaSocials({
-        videoFilePath: outputVideoPath,
+        videoFilePath: metaOutputVideoPath,
         thumbnailFilePath: scenes[0]?.slidePath,
         title: videoTitle,
         caption: videoDescription,
@@ -889,7 +927,7 @@ async function main() {
   try {
     console.log('\n[SOCIAL SYNC] Crossposting Quiz Short to Facebook & Instagram Reels...');
     await crossPostVideoToMetaSocials({
-      videoFilePath: outputVideoPath,
+      videoFilePath: metaOutputVideoPath,
       thumbnailFilePath: scenes[0]?.slidePath,
       title: videoTitle,
       caption: videoDescription,

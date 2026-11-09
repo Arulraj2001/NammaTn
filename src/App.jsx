@@ -74,6 +74,9 @@ const PrivacyPolicy  = lazy(() => import('@/views/PrivacyPolicy'));
 const About          = lazy(() => import('@/views/About'));
 const TermsOfService = lazy(() => import('@/views/TermsOfService'));
 const HowToUse       = lazy(() => import('@/views/HowToUse'));
+const TrackComplaint = lazy(() => import('@/views/TrackComplaint'));
+const TnpscPractice  = lazy(() => import('@/views/TnpscPractice'));
+const AdminTnpsc     = lazy(() => import('@/views/admin/AdminTnpsc'));
 
 // Under Maintenance screen
 function MaintenancePage({ logo, supportEmail }) {
@@ -217,6 +220,9 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="/about"          element={<About />} />
         <Route path="/terms"          element={<TermsOfService />} />
         <Route path="/how-to-use"     element={<HowToUse />} />
+        <Route path="/track"          element={<TrackComplaint />} />
+        <Route path="/tnpsc"          element={<TnpscPractice />} />
+        <Route path="/tnpsc/:subject" element={<TnpscPractice />} />
       </Route>
       {/* Admin Routes */}
       <Route path="/admin/login" element={
@@ -250,6 +256,7 @@ const AuthenticatedApp = ({ theme, toggleTheme }) => {
         <Route path="seo" element={<AdminSEO />} />
         <Route path="tn-today" element={<AdminTnToday />} />
         <Route path="youtube-studio" element={<AdminYouTubeStudio />} />
+        <Route path="tnpsc" element={<AdminTnpsc />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

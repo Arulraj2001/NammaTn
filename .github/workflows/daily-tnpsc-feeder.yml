@@ -1,0 +1,49 @@
+name: VizhiTN Autonomous TNPSC Practice Feeder
+
+on:
+  schedule:
+    # 00:30 UTC = 06:00 AM IST (Daily 70-Question Syllabus Feeder: 10 Qs × 7 Subjects)
+    - cron: '30 0 * * *'
+
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'Force generation batch regardless of schedule'
+        required: false
+        default: 'true'
+        type: string
+
+concurrency:
+  group: daily-tnpsc-feeder
+  cancel-in-progress: false
+
+jobs:
+  tnpsc-feeder:
+    name: Generate & Publish Daily 70 TNPSC Questions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Daily TNPSC Generator Engine
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.NEW_GEMINI_API_KEY || secrets.YOUTUBE_GEMINI_API_KEY }}
+          YOUTUBE_GEMINI_API_KEY: ${{ secrets.YOUTUBE_GEMINI_API_KEY || secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
+          SITE_URL: 'https://vizhitn.in'
+        run: node scripts/cron/daily-tnpsc-generator.mjs
+

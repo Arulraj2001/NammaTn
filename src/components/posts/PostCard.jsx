@@ -341,8 +341,20 @@ const PostCard = memo(function PostCard({ post }) {
           </div>
           {!isCivic && (
             <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-              <span className="flex items-center gap-1"><ThumbsUp className="w-3 h-3" />{post.upvotes || 0}</span>
-              <span className="flex items-center gap-1"><MessageSquare className="w-3 h-3" />{post.comment_count || 0}</span>
+              {(post.upvotes > 0 || post.comment_count > 0) ? (
+                <>
+                  {post.upvotes > 0 && <span className="flex items-center gap-1"><ThumbsUp className="w-3 h-3 text-blue-500" />{post.upvotes}</span>}
+                  {post.comment_count > 0 && <span className="flex items-center gap-1"><MessageSquare className="w-3 h-3 text-purple-500" />{post.comment_count}</span>}
+                </>
+              ) : (
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                  {isAlert ? (
+                    <span className="text-amber-600 dark:text-amber-400 font-bold">⚡ {T("Live Notice", "நேரலை தகவல்")}</span>
+                  ) : (
+                    <span>💬 {T("Verify / Update", "உறுதிப்படுத்து")}</span>
+                  )}
+                </span>
+              )}
             </div>
           )}
         </div>

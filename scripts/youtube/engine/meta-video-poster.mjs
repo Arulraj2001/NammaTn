@@ -36,7 +36,9 @@ function stripHtml(str = '') {
  * - Add Bio / YouTube call-to-action
  */
 export function formatSafeInstaCaption(rawCaption = '', title = '') {
-  let clean = stripHtml(rawCaption);
+  let clean = stripHtml(rawCaption)
+    .replace(/subscribe/gi, 'Follow')
+    .replace(/சப்ஸ்கிரைப்/g, 'ஃபாலோ');
 
   // Extract up to 6 hashtags
   const hashtags = (clean.match(/#[\w\u0B80-\u0BFF]+/g) || []).slice(0, 6);
@@ -162,15 +164,17 @@ export async function crossPostVideoToMetaSocials({
       }
     } catch (_) {}
 
+    const cleanFbCaption = stripHtml(caption)
+      .replace(/subscribe/gi, 'Follow')
+      .replace(/சப்ஸ்கிரைப்/g, 'ஃபாலோ');
+
     const fbPayload = {
       file_url: publicVideoUrl,
       title: title,
-      description: stripHtml(caption),
+      description: cleanFbCaption,
+      thumb_offset: 2000, // Pick 2.0s frame instead of black frame 0 as baseline
       access_token: activePageToken
     };
-    if (publicCoverUrl) {
-      fbPayload.thumb_url = publicCoverUrl;
-    }
 
     const fbRes = await fetch(`${GRAPH_VIDEO_API_BASE}/${pageId}/videos`, {
       method: 'POST',
@@ -186,20 +190,42 @@ export async function crossPostVideoToMetaSocials({
       console.log(`[META FB SUCCESS] Facebook Video Published! Video ID: ${fbData.id}`);
       results.facebook = fbData;
 
-      // Post YouTube subscription link in first comment to protect video organic reach from external link penalty
+      // Attach high-converting custom thumbnail cover to Facebook video
+      if (fbData.id && publicCoverUrl) {
+        try {
+          console.log(`[META FB] Setting preferred custom cover thumbnail on video ${fbData.id}...`);
+          const thumbRes = await fetch(`${GRAPH_API_BASE}/${fbData.id}/thumbnails`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              thumbnail_url: publicCoverUrl,
+              is_preferred: true,
+              access_token: activePageToken
+            })
+          });
+          const thumbData = await thumbRes.json();
+          if (thumbData.success || thumbData.id) {
+            console.log(`[META FB SUCCESS] Facebook custom thumbnail attached (Thumbnail ID: ${thumbData.id || 'OK'})`);
+          } else if (thumbData.error) {
+            console.warn(`[META FB THUMB WARN] ${thumbData.error.message}`);
+          }
+        } catch (thumbErr) {
+          console.warn(`[META FB THUMB ERROR] Could not attach custom thumbnail: ${thumbErr.message}`);
+        }
+      }
+
+      // Post high-converting TNPSC practice link in first comment to protect organic video reach
       if (fbData.id && activePageToken) {
-        const ytMatch = caption.match(/https?:\/\/(?:youtu\.be|www\.youtube\.com)\/\S+/i);
-        const ytLink = ytMatch ? ytMatch[0] : 'https://youtube.com/@VizhiTn';
         try {
           await fetch(`${GRAPH_API_BASE}/${fbData.id}/comments`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              message: `▶️ YouTube-ல் காண & சப்ஸ்கிரைப் செய்ய:\n🔗 ${ytLink}`,
+              message: `▶️ TNPSC மாதிரி தேர்வுகள் மற்றும் 1-Mark பயிற்சிக்கு VizhiTN-ஐ Follow செய்யுங்கள்:\n🔗 https://vizhitn.in/tnpsc`,
               access_token: activePageToken
             })
           });
-          console.log('[META FB FIRST COMMENT ✓] Added YouTube link in Facebook first comment.');
+          console.log('[META FB FIRST COMMENT ✓] Added TNPSC practice link in Facebook first comment.');
         } catch (_) {}
       }
     }

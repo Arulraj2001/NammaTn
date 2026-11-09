@@ -854,26 +854,11 @@ Return ONLY a valid JSON object matching this exact schema:
     console.log(`[OFFICIAL REF ✓] Attached Gazette reference: ${officialRef}`);
   }
 
-  // Attach high-impact 16:9 Cloudflare FLUX image (or clean category graphic card fallback)
-  try {
-    const { generateEditorialHeroImage } = await import('./lib/cloudflare-image.mjs');
-    console.log('[EDITORIAL HERO] Generating 16:9 cinematic editorial image via Cloudflare FLUX...');
-    const fluxImageUrl = await generateEditorialHeroImage({
-      title: articleObj.title,
-      category: articleObj.category,
-      district: articleObj.district_name || articleObj.district_slug,
-      slug: articleObj.slug
-    });
-    if (fluxImageUrl) {
-      articleObj.featured_image = fluxImageUrl;
-      articleObj.social_image = fluxImageUrl;
-      console.log(`[EDITORIAL HERO ✓] Attached Cloudflare FLUX image: ${fluxImageUrl}`);
-    } else {
-      console.log(`[EDITORIAL HERO] Using clean category graphic card fallback: ${articleObj.featured_image}`);
-    }
-  } catch (imgErr) {
-    console.warn(`[EDITORIAL HERO WARN] Cloudflare generation skipped (${imgErr.message}). Using graphic card fallback: ${articleObj.featured_image}`);
-  }
+  // Zero-Storage Editorial Card Mode: AI image generation is turned OFF to maintain zero Supabase storage and zero egress.
+  // The frontend dynamically renders the ultra-crisp, responsive B Tecky-style GraphicHeroCard component.
+  articleObj.featured_image = null;
+  articleObj.social_image = null;
+  console.log('[EDITORIAL HERO] Zero-Storage Mode: AI raster image generation is disabled. Frontend will render dynamic GraphicHeroCard.');
 
   console.log(`\n📄 [FLAGSHIP ARTICLE] ${articleObj.title}`);
   console.log(`   Tamil:    ${articleObj.title_ta}`);

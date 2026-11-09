@@ -202,45 +202,12 @@ export function formatInstagramCaption(post = {}) {
 }
 
 /**
- * Post to Facebook Page.
+ * Static photo posting to Facebook Page has been completely removed.
+ * Meta distribution is exclusively 9:16 vertical Reels via scripts/youtube/engine/meta-video-poster.mjs.
  */
-export async function postToFacebookPage({ imageUrl, caption, link }) {
-  const pageId = process.env.META_PAGE_ID;
-  const token = process.env.META_PAGE_ACCESS_TOKEN;
-
-  if (!pageId || !token) {
-    throw new Error('Missing META_PAGE_ID or META_PAGE_ACCESS_TOKEN');
-  }
-
-  // Get Page-specific access token (required by Facebook Page API)
-  let activePageToken = token;
-  try {
-    const pageTokenRes = await fetch(`${GRAPH_API_BASE}/${pageId}?fields=access_token&access_token=${token}`);
-    const pageTokenData = await pageTokenRes.json();
-    if (pageTokenData.access_token) {
-      activePageToken = pageTokenData.access_token;
-    }
-  } catch (_) {}
-
-  console.log(`[MetaPoster] Publishing to Facebook Page (${pageId})...`);
-
-  const res = await fetch(`${GRAPH_API_BASE}/${pageId}/photos`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      url: imageUrl,
-      caption: link ? `${caption}\n\nRead more: ${link}` : caption,
-      access_token: activePageToken
-    })
-  });
-
-  const data = await res.json();
-  if (data.error) {
-    throw new Error(`Facebook API Error: ${data.error.message}`);
-  }
-
-  console.log(`[MetaPoster] Facebook Post Success! Post ID: ${data.id || data.post_id}`);
-  return data;
+export async function postToFacebookPage() {
+  console.log('[MetaPoster] Static photo posting to Facebook is removed. Use crossPostVideoToMetaSocials() for Reels.');
+  return null;
 }
 
 /**

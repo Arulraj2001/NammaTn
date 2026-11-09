@@ -16,6 +16,7 @@ import { isImagePrompt } from "@/lib/tntodayPosterGenerator";
 import { mediaProvenanceLabel } from "@/lib/mediaProvenance";
 import NumberedPagination from "@/components/common/NumberedPagination";
 import { toCdnMediaUrl } from "@/lib/cdn";
+import GraphicHeroCard from "@/components/ui/GraphicHeroCard";
 
 const VALID_EDITORIAL_GRAPHICS = new Set([
   'agriculture', 'economy', 'education', 'environment', 'general',
@@ -73,71 +74,19 @@ function FeaturedCard({ article }) {
   const cat = CATEGORIES.find(c => c.value === article.category);
   const displayTitle = (lang === "ta" && article.title_ta) ? article.title_ta : article.title;
   const displaySubtitle = (lang === "ta" && article.subtitle_ta) ? article.subtitle_ta : article.subtitle;
-  const imgSrc = resolveEditorialImage(article);
   const categoryLabel = (lang === "ta" && cat?.label_ta) ? cat.label_ta : (cat?.label || "Special Report");
-  const illustrationLabel = mediaProvenanceLabel(imgSrc, lang);
 
   return (
     <Link to={`/tn-today/${article.slug}`}
-      className="block relative overflow-hidden rounded-2xl group shadow-lg hover:shadow-2xl transition-all border-2 border-slate-300 dark:border-slate-700 bg-slate-900">
-      <div className="w-full aspect-[16/9] max-h-[380px] sm:max-h-[440px] overflow-hidden relative">
-        <Image
-          src={imgSrc}
-          alt={displayTitle}
-          width={1200}
-          height={675}
-          unoptimized
-          onError={(e) => {
-            const fallback = `/images/tntoday/${(article.category || 'general').toLowerCase()}.webp`;
-            if (e.currentTarget.src !== fallback) {
-              e.currentTarget.src = fallback;
-            }
-          }}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
-        {illustrationLabel && (
-          <span className="absolute right-3 top-3 z-10 rounded bg-black/75 px-2 py-1 text-[10px] font-semibold text-white">
-            {illustrationLabel}
-          </span>
-        )}
-
-        {/* Top Floating Badge */}
-        <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-blue-600 text-white shadow-md flex items-center gap-1.5">
-            {cat?.emoji || '📰'} {categoryLabel}
-          </span>
-          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/60 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
-            ● {lang === 'ta' ? 'சிறப்புக் கள ஆய்வு' : 'SPECIAL REPORT'}
-          </span>
-        </div>
-
-        {/* Bottom Headline & Metadata Over Photo */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-7 z-10">
-          <h2 className="font-black text-white text-lg sm:text-2xl md:text-3xl leading-snug line-clamp-2 drop-shadow-md mb-2 group-hover:text-blue-300 transition-colors">
-            {displayTitle}
-          </h2>
-          {displaySubtitle && (
-            <p className="text-xs sm:text-sm text-slate-200 line-clamp-1 mb-3.5 font-medium drop-shadow-sm">
-              {displaySubtitle}
-            </p>
-          )}
-
-          <div className="flex items-center gap-3 text-white/90 text-xs font-bold pt-2 border-t border-white/15">
-            <span suppressHydrationWarning className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5 text-blue-300" />
-              {article.publish_date ? format(new Date(article.publish_date), "d MMM yyyy") : "Today"}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-amber-300" />
-              {article.reading_time || 5} min read
-            </span>
-            <span className="ml-auto flex items-center gap-1 text-white font-extrabold text-xs sm:text-sm group-hover:translate-x-1 transition-transform">
-              {lang === "ta" ? "முழுக் கதை வாசியுங்கள்" : "Read Full Story"} <ArrowRight className="w-4 h-4" />
-            </span>
-          </div>
-        </div>
-      </div>
+      className="block relative overflow-hidden rounded-3xl group shadow-lg hover:shadow-2xl transition-all border-2 border-slate-300 dark:border-slate-700 bg-slate-900">
+      <GraphicHeroCard
+        title={displayTitle}
+        subtitle={displaySubtitle}
+        category={article.category}
+        tag={`${cat?.emoji || '📰'} ${categoryLabel}`}
+        district={article.district_name || article.district_slug}
+        variant="hero"
+      />
     </Link>
   );
 }
@@ -148,36 +97,19 @@ function ArticleCard({ article }) {
   const cat = CATEGORIES.find(c => c.value === article.category);
   const displayTitle = (lang === "ta" && article.title_ta) ? article.title_ta : article.title;
   const displaySubtitle = (lang === "ta" && article.subtitle_ta) ? article.subtitle_ta : article.subtitle;
-  const imgSrc = resolveEditorialImage(article);
   const categoryLabel = (lang === "ta" && cat?.label_ta) ? cat.label_ta : (cat?.label || "General");
-  const illustrationLabel = mediaProvenanceLabel(imgSrc, lang);
 
   return (
     <Link to={`/tn-today/${article.slug}`}
       className="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl p-4 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all duration-300 group">
-      <div className="w-full sm:w-44 h-36 sm:h-28 rounded-xl overflow-hidden flex-shrink-0 relative bg-slate-950">
-        <Image
-          src={imgSrc}
-          alt={displayTitle}
-          width={400}
-          height={225}
-          unoptimized
-          onError={(e) => {
-            const fallback = `/images/tntoday/${(article.category || 'general').toLowerCase()}.webp`;
-            if (e.currentTarget.src !== fallback) {
-              e.currentTarget.src = fallback;
-            }
-          }}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      <div className="w-full sm:w-48 aspect-[16/9] sm:aspect-auto sm:h-28 rounded-xl overflow-hidden flex-shrink-0 relative">
+        <GraphicHeroCard
+          title={displayTitle}
+          category={article.category}
+          tag={categoryLabel}
+          variant="card"
+          className="h-full w-full"
         />
-        <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-black/70 text-white backdrop-blur-xs">
-          {cat?.emoji} {categoryLabel}
-        </span>
-        {illustrationLabel && (
-          <span className="absolute right-2 top-2 rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-semibold text-white">
-            {illustrationLabel}
-          </span>
-        )}
       </div>
       <div className="flex-1 min-w-0 flex flex-col justify-between">
         <div>

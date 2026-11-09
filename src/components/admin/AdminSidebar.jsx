@@ -3,7 +3,7 @@ import { Link, useLocation } from "@/lib/router-compat";
 import {
   LayoutDashboard, FileText, MessageSquare, Tag, MapPin,
   Image, Megaphone, Flag, Settings, LogOut, Menu, X, ChevronRight, Shield, Zap, Globe, Mail, UserCheck, BookOpen, SearchCheck, Newspaper,
-  Video
+  Video, GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ const NAV_SECTIONS = [
   {
     title: "Content & Editorial",
     items: [
+      { label: "TNPSC Exam Lab", icon: GraduationCap, path: "/admin/tnpsc", badge: "Daily" },
       { label: "TN Today", icon: Newspaper, path: "/admin/tn-today", badge: "CMS" },
       { label: "Posts", icon: FileText, path: "/admin/posts" },
       { label: "Comments", icon: MessageSquare, path: "/admin/comments" },

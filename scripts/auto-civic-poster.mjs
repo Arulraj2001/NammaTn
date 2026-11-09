@@ -939,37 +939,10 @@ No conversational intro, no commentary outside the JSON array.
 
   console.log(`[VALIDATION] ${validPosts.length} posts passed schema integrity verification.`);
 
-  // --- STEP 5.5: GENERATE CLOUDFLARE FLUX IMAGES FOR ALL CIVIC POSTS ---
-  try {
-    const { generateCivicHeroImage } = await import('./lib/cloudflare-image.mjs');
-    console.log(`[CIVIC IMAGES] Generating dynamic Cloudflare FLUX images for all ${validPosts.length} civic posts...`);
-
-    // Process all posts in parallel chunks of 3 for fast, non-blocking generation
-    const CHUNK_SIZE = 3;
-    for (let i = 0; i < validPosts.length; i += CHUNK_SIZE) {
-      const chunk = validPosts.slice(i, i + CHUNK_SIZE);
-      await Promise.all(
-        chunk.map(async (post) => {
-          try {
-            const fluxUrl = await generateCivicHeroImage({
-              title: post.title_en || post.title_ta,
-              category: post.category_slug,
-              district: post.district_slug,
-              slug: post.slug
-            });
-            if (fluxUrl) {
-              post.media_urls = [fluxUrl];
-              console.log(`[CIVIC IMAGE ✓] Attached Cloudflare FLUX image for: "${post.title_en.slice(0, 45)}..."`);
-            }
-          } catch (err) {
-            console.warn(`[CIVIC IMAGE WARN] Cloudflare generation skipped for "${post.title_en}": ${err.message}`);
-          }
-        })
-      );
-    }
-  } catch (modErr) {
-    console.warn(`[CIVIC IMAGES WARN] Cloudflare image module skipped (${modErr.message}). Using category graphic cards.`);
-  }
+  // --- STEP 5.5: ZERO-STORAGE CIVIC GRAPHIC CARDS ---
+  // AI raster image generation is turned OFF to maintain zero Supabase storage and zero egress.
+  // The frontend dynamically renders the ultra-crisp, responsive B Tecky-style GraphicHeroCard component.
+  console.log('[CIVIC IMAGES] Zero-Storage Mode: AI raster image generation is disabled. Frontend will render dynamic GraphicHeroCard.');
   // --- STEP 6: INSERT INTO SUPABASE ---
   if (isDryRun) {
     console.log('\n--- DRY RUN PREVIEW (NO DATABASE CHANGES) ---');
