@@ -52,12 +52,12 @@ async function synthesizeMindsetSpeech(text, outputPath, voice = 'ta-IN-Valluvar
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  // 1. Google Gemini Lifelike Neural Voice (Fenrir / Puck / karthik)
-  const geminiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  // 1. Google Gemini Lifelike Neural Voice (Dedicated NEW2_GEMINI_API_KEY for Mindset Bot)
+  const geminiKey = process.env.NEW2_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   if (geminiKey) {
     try {
       console.log(`[MINDSET TTS] Synthesizing via Google Gemini Voice (Fenrir)...`);
-      await synthesizeGeminiSpeech(cleanText, outputPath, { voice: 'Fenrir' });
+      await synthesizeGeminiSpeech(cleanText, outputPath, { voice: 'Fenrir', apiKey: geminiKey });
       if (fs.existsSync(outputPath) && fs.statSync(outputPath).size > 2000) {
         console.log(`[MINDSET TTS ✓] Lifelike Gemini audio generated: ${path.basename(outputPath)}`);
         return outputPath;

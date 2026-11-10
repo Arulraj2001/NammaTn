@@ -47,7 +47,7 @@ export const VOICE_PROFILES = {
  * @returns {Promise<string>} Path to generated audio file
  */
 export async function synthesizeGeminiSpeech(text, outputPath, options = {}) {
-  const apiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = options.apiKey || process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error('[GeminiTTS] No GEMINI API key configured in environment.');
   }

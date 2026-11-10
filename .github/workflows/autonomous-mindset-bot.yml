@@ -71,7 +71,7 @@ jobs:
         env:
           JAMENDO_CLIENT_ID: ${{ secrets.JAMENDO_CLIENT_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          NEW_GEMINI_API_KEY: ${{ secrets.NEW_GEMINI_API_KEY }}
+          NEW2_GEMINI_API_KEY: ${{ secrets.NEW2_GEMINI_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
