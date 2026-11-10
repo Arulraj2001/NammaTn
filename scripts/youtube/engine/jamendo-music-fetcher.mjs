@@ -72,7 +72,7 @@ export async function fetchJamendoMusicTrack(category = 'default') {
 
   try {
     console.log(`[JAMENDO] Searching instrumental tracks for tags: "${tags}"...`);
-    const apiUrl = `https://api.jamendo.com/v3.0/tracks/?client_id=${clientId}&format=json&tags=${tags}&vocal=none&limit=5&order=popularity_total`;
+    const apiUrl = `https://api.jamendo.com/v3.0/tracks/?client_id=${clientId}&format=json&tags=${tags}&limit=5&order=popularity_total`;
     const res = await fetch(apiUrl);
 
     if (res.ok) {
@@ -94,5 +94,13 @@ export async function fetchJamendoMusicTrack(category = 'default') {
     console.warn(`[JAMENDO WARN] Could not fetch track: ${err.message}`);
   }
 
+  // Fallback to default universal cinematic track
+  const defaultTrack = path.join(MUSIC_CACHE_DIR, 'jamendo_default_cinematic.mp3');
+  if (fs.existsSync(defaultTrack) && fs.statSync(defaultTrack).size > 100000) {
+    console.log(`[JAMENDO FALLBACK ✓] Using default cinematic score: ${path.basename(defaultTrack)}`);
+    return defaultTrack;
+  }
+
   return fs.existsSync(cachedFile) ? cachedFile : null;
 }
+

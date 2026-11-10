@@ -38,14 +38,16 @@ export function getFfmpegBinaryPath() {
     return process.env.FFMPEG_PATH;
   }
 
-  if (ffmpegInstaller && ffmpegInstaller.path && fs.existsSync(ffmpegInstaller.path)) {
-    return ffmpegInstaller.path;
-  }
-
+  // Check system PATH first for modern system ffmpeg installation
   try {
     const probe = execSync('ffmpeg -version', { stdio: 'pipe' });
     if (probe && probe.length > 0) return 'ffmpeg';
   } catch {}
+
+  // Fallback to npm @ffmpeg-installer static binary
+  if (ffmpegInstaller && ffmpegInstaller.path && fs.existsSync(ffmpegInstaller.path)) {
+    return ffmpegInstaller.path;
+  }
 
   const platform = os.platform();
   if (platform === 'linux') {
@@ -359,10 +361,12 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       ? musicBedPath
       : (sfxExists(SFX.bed) ? SFX.bed : null);
     const hasMusicBed = Boolean(activeMusicBed);
+    console.log(`[COMPOSER] Music bed overlay: ${hasMusicBed ? path.basename(activeMusicBed) : 'NONE'}`);
     let concatCmd = '';
     if (hasMusicBed) {
-      // Loop music bed smoothly under entire narration, ducked to 15% volume
-      concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -stream_loop -1 -i "${activeMusicBed}" -filter_complex "[0:a]volume=1.0[maina]; [1:a]volume=0.15[bga]; [maina][bga]amix=inputs=2:duration=first:dropout_transition=2[aout]" -map 0:v -map "[aout]" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
+      // Loop music bed smoothly under entire narration with -vn (ignore cover art)
+      // Uses 2.0x voice and 0.55x music so post-amix scaling maintains 100% voice clarity and 27.5% audible BGM across all FFmpeg versions
+      concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -stream_loop -1 -vn -i "${activeMusicBed}" -filter_complex "[0:a]volume=2.0[maina]; [1:a]volume=0.55[bga]; [maina][bga]amix=inputs=2:duration=first:dropout_transition=2[mixed]; [mixed]alimiter=limit=0.96[aout]" -map 0:v -map "[aout]" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
     } else {
       concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
     }
