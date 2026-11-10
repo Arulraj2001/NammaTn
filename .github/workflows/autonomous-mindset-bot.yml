@@ -61,6 +61,7 @@ jobs:
         with:
           path: |
             scripts/youtube/assets/broll_cache
+            scripts/youtube/assets/music_cache
             scripts/youtube/assets/sfx
           key: mindset-render-cache-${{ github.run_id }}
           restore-keys: |
@@ -68,6 +69,7 @@ jobs:
 
       - name: Execute Mindset Shorts Pipeline
         env:
+          JAMENDO_CLIENT_ID: ${{ secrets.JAMENDO_CLIENT_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NEW_GEMINI_API_KEY: ${{ secrets.NEW_GEMINI_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}

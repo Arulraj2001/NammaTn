@@ -25,6 +25,7 @@ import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube, postPinnedComment } from '../engine/youtube-client.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
+import { fetchJamendoMusicTrack } from '../engine/jamendo-music-fetcher.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -137,6 +138,13 @@ export async function runMindsetShortsPipeline({
     const bg2 = bgImages[1] || bgImages[0] || null;
     console.log(`[IMAGES READY] Scene 1: ${bg1 ? path.basename(bg1) : 'Default Gradient'}, Scene 2: ${bg2 ? path.basename(bg2) : 'Default Gradient'}`);
 
+    // 1B. Fetch Studio-Recorded Cinematic Background Score from Jamendo
+    console.log('\n[STEP 1B] Fetching studio-recorded cinematic background music from Jamendo...');
+    const musicBedPath = await fetchJamendoMusicTrack(topic.category);
+    if (musicBedPath) {
+      console.log(`[MUSIC READY ✓] Background score: ${path.basename(musicBedPath)}`);
+    }
+
     // 2. Synthesize Speech Audio (Scene 1: Hook, Scene 2: Insight & Action)
     console.log('\n[STEP 2] Synthesizing commanding Tamil speech with Edge-TTS (ta-IN-ValluvarNeural)...');
     
@@ -189,7 +197,7 @@ export async function runMindsetShortsPipeline({
     ];
 
     const outputVideoPath = path.join(sessionDir, `TNPSC_Mindset_${topic.id}.mp4`);
-    assembleMultiSceneShortsVideo({ scenes, outputPath: outputVideoPath });
+    assembleMultiSceneShortsVideo({ scenes, outputPath: outputVideoPath, musicBedPath });
     console.log(`[VIDEO ASSEMBLED ✓] Output: ${outputVideoPath} (${(fs.statSync(outputVideoPath).size / (1024*1024)).toFixed(2)} MB)`);
 
     // 5. Metadata Preparation

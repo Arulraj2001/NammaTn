@@ -207,7 +207,7 @@ export function mixAudioWithSoundDesign(voicePath, outputPath, options = {}) {
  * @param {string} options.outputPath
  * @param {string} [options.thumbnailPath] - Optional thumbnail image to prepend as Frame 0:00 (0.35s)
  */
-export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPath }) {
+export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPath, musicBedPath = null }) {
   const ffmpeg = getFfmpegBinaryPath();
   const outDir = path.dirname(outputPath);
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
@@ -355,11 +355,14 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
     const fileEntries = tempClips.map(c => `file '${c.replace(/\\/g, '/')}'`).join('\n');
     fs.writeFileSync(concatListPath, fileEntries, 'utf-8');
 
-    const hasMusicBed = sfxExists(SFX.bed);
+    const activeMusicBed = (musicBedPath && fs.existsSync(musicBedPath) && fs.statSync(musicBedPath).size > 10000)
+      ? musicBedPath
+      : (sfxExists(SFX.bed) ? SFX.bed : null);
+    const hasMusicBed = Boolean(activeMusicBed);
     let concatCmd = '';
     if (hasMusicBed) {
-      // Loop broadcast bed smoothly under entire narration, ducked to 16% volume
-      concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -stream_loop -1 -i "${SFX.bed}" -filter_complex "[0:a]volume=1.0[maina]; [1:a]volume=0.16[bga]; [maina][bga]amix=inputs=2:duration=first:dropout_transition=2[aout]" -map 0:v -map "[aout]" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
+      // Loop music bed smoothly under entire narration, ducked to 15% volume
+      concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -stream_loop -1 -i "${activeMusicBed}" -filter_complex "[0:a]volume=1.0[maina]; [1:a]volume=0.15[bga]; [maina][bga]amix=inputs=2:duration=first:dropout_transition=2[aout]" -map 0:v -map "[aout]" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
     } else {
       concatCmd = `"${ffmpeg}" -y -f concat -safe 0 -i "${concatListPath}" -c:v libx264 -preset ultrafast -crf 20 -r 30 -c:a aac -b:a 192k -ar 44100 -movflags +faststart "${outputPath}"`;
     }
