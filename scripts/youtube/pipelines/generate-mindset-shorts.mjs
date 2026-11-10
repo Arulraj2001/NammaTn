@@ -148,8 +148,11 @@ export async function runMindsetShortsPipeline({
     // 2. Synthesize Speech Audio (Scene 1: Hook, Scene 2: Insight & Action)
     console.log('\n[STEP 2] Synthesizing commanding Tamil speech with Edge-TTS (ta-IN-ValluvarNeural)...');
     
-    // Scene 1 Audio: Hook
-    const s1Text = `${topic.titleTa}. ${topic.hookTa}`;
+    // Scene 1 Audio: Hook (Punchy, direct, deduplicated)
+    const cleanHook = topic.hookTa.startsWith(topic.titleTa)
+      ? topic.hookTa
+      : `${topic.titleTa}. ${topic.hookTa}`;
+    const s1Text = cleanHook;
     const s1Audio = path.join(sessionDir, 's1_hook.mp3');
     await synthesizeMindsetSpeech(s1Text, s1Audio);
     const s1Duration = getAudioDuration(s1Audio) || 6;
@@ -179,20 +182,20 @@ export async function runMindsetShortsPipeline({
     renderHtmlToImage(s2Html, s2FramePath, { width: 1080, height: 1920 });
     console.log(`[FRAME 2 OK] Rendered: ${path.basename(s2FramePath)}`);
 
-    // 4. Assemble Multi-Scene Video via FFmpeg
+    // 4. Assemble Multi-Scene Video via FFmpeg (Tightly timed transition without artificial delay)
     console.log('\n[STEP 4] Assembling 9:16 vertical Short with FFmpeg & Ken Burns zoom...');
     const scenes = [
       {
         imagePath: s1FramePath,
         slidePath: s1FramePath,
         audioPath: s1Audio,
-        durationSec: Math.ceil(s1Duration) + 1
+        durationSec: Number(s1Duration.toFixed(2))
       },
       {
         imagePath: s2FramePath,
         slidePath: s2FramePath,
         audioPath: s2Audio,
-        durationSec: Math.ceil(s2Duration) + 1
+        durationSec: Number(s2Duration.toFixed(2))
       }
     ];
 

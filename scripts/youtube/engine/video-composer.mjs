@@ -98,13 +98,13 @@ export function getAudioDuration(audioFilePath) {
  */
 export function mixAudioWithSoundDesign(voicePath, outputPath, options = {}) {
   const ffmpeg = getFfmpegBinaryPath();
-  const { isLastScene = false, includeBed = true } = options;
+  const { isLastScene = false, includeBed = true, includeWhoosh = false } = options;
 
   try { ensureSfxAssetsExist(); } catch {}
 
   const hasBed = includeBed && sfxExists(SFX.bed);
   const hasHum = sfxExists(SFX.hum);
-  const hasWhoosh = sfxExists(SFX.whoosh);
+  const hasWhoosh = includeWhoosh && sfxExists(SFX.whoosh);
   const hasOutro = isLastScene && sfxExists(SFX.outro);
 
   if (!hasBed && !hasHum && !hasWhoosh && !hasOutro) {
@@ -256,10 +256,8 @@ export function assembleMultiSceneShortsVideo({ scenes, outputPath, thumbnailPat
       const sc = scenes[idx];
       const isLastScene = idx === scenes.length - 1;
 
-      // Mix audio with transition SFX (continuous music bed is overlaid across entire video at concatenation)
-      const mixedAudioPath = path.join(outDir, `_temp_short_audio_mix_${sessionId}_${idx}.mp3`);
-      tempAudioMixes.push(mixedAudioPath);
-      const finalAudioPath = mixAudioWithSoundDesign(sc.audioPath, mixedAudioPath, { isLastScene, includeBed: false });
+      // Clean narration audio without transition sounds between templates (music bed is overlaid across entire video at concatenation)
+      const finalAudioPath = sc.audioPath;
 
       const clipPath = path.join(outDir, `_temp_short_scene_${sessionId}_${idx}.mp4`);
       tempClips.push(clipPath);
