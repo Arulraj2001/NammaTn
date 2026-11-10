@@ -1,6 +1,7 @@
 import React from 'react';
 import TnpscPractice from '@/views/TnpscPractice';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
+import TnpscPortalLayout from '@/components/tnpsc/TnpscPortalLayout';
 
 export const metadata = {
   title: 'TNPSC Daily One-Mark & PYQ Practice 2026 | Samacheer Kalvi Notes | VizhiTN',
@@ -44,13 +45,13 @@ export default function Page() {
   };
 
   return (
-    <>
+    <TnpscPortalLayout activeTab="daily">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(hubSchema) }}
       />
       <Breadcrumbs items={[{ name: 'TNPSC Practice', href: '/tnpsc' }]} />
       <TnpscPractice />
-    </>
+    </TnpscPortalLayout>
   );
 }

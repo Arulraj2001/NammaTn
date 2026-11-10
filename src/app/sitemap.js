@@ -14,6 +14,7 @@ import { createServerSupabase } from '@/lib/serverSupabase';
 import { TN_TODAY_CATEGORY_MAP } from '@/lib/tnTodayCategories';
 import { getAllArticles, getAllRights, getAllSchemes, getAllGuides, getAllPortals, getAllFaqs, getAllEmergencyContacts, GOVT_SCHEMES, SAFETY_GUIDES } from '@/lib/awarenessServer';
 import { slugifyArea, getAllPowerCutAreaStaticParams } from '@/lib/powerCutAreas';
+import { TNPSC_EXAMS, TNPSC_TOPICS, TNPSC_PYQ_PAPERS } from '@/lib/tnpscData';
 
 const SITE_URL = 'https://vizhitn.in';
 
@@ -379,6 +380,43 @@ export default async function sitemap() {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.85,
+    });
+  });
+
+  // TNPSC Exam Hubs
+  TNPSC_EXAMS.forEach((ex) => {
+    entries.push({
+      url: `${SITE_URL}/tnpsc/exams/${ex.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    });
+  });
+
+  // TNPSC High-Yield Topic Summaries & Practice
+  TNPSC_TOPICS.forEach((t) => {
+    entries.push({
+      url: `${SITE_URL}/tnpsc/topics/${t.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    });
+  });
+
+  // TNPSC Solved PYQ Papers & Hub
+  entries.push({
+    url: `${SITE_URL}/tnpsc/pyq`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  });
+
+  TNPSC_PYQ_PAPERS.forEach((p) => {
+    entries.push({
+      url: `${SITE_URL}/tnpsc/pyq/${p.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
     });
   });
 

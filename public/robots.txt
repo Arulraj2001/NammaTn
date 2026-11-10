@@ -29,3 +29,4 @@ Allow: /
 
 Sitemap: https://vizhitn.in/sitemap.xml
 Sitemap: https://vizhitn.in/sitemap-news.xml
+Sitemap: https://vizhitn.in/sitemap-tnpsc.xml
