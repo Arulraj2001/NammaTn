@@ -94,3 +94,4 @@ export function imageToDataUri(filePath) {
     return null;
   }
 }
+

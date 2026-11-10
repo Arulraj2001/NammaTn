@@ -24,6 +24,7 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube, postPinnedComment } from '../engine/youtube-client.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
+import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -42,20 +43,37 @@ function getPythonBinary() {
 }
 
 /**
- * Synthesizes calm, commanding speech in spoken Tamil using Edge-TTS ta-IN-ValluvarNeural
+ * Synthesizes calm, commanding speech in spoken Tamil using Gemini Lifelike Voice
+ * with Edge-TTS (ta-IN-ValluvarNeural) as a high-fidelity fallback.
  */
 async function synthesizeMindsetSpeech(text, outputPath, voice = 'ta-IN-ValluvarNeural') {
   const cleanText = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
+  // 1. Google Gemini Lifelike Neural Voice (Fenrir / Puck / karthik)
+  const geminiKey = process.env.NEW_GEMINI_API_KEY || process.env.YOUTUBE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (geminiKey) {
+    try {
+      console.log(`[MINDSET TTS] Synthesizing via Google Gemini Voice (Fenrir)...`);
+      await synthesizeGeminiSpeech(cleanText, outputPath, { voice: 'Fenrir' });
+      if (fs.existsSync(outputPath) && fs.statSync(outputPath).size > 2000) {
+        console.log(`[MINDSET TTS ✓] Lifelike Gemini audio generated: ${path.basename(outputPath)}`);
+        return outputPath;
+      }
+    } catch (geminiErr) {
+      console.warn(`[MINDSET TTS WARN] Gemini TTS fallback to Edge-TTS: ${geminiErr.message}`);
+    }
+  }
+
+  // 2. Microsoft Edge-TTS with humanized prosody & dramatic pauses
   const python = getPythonBinary();
   const tempTextFile = path.join(dir, `tts-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.txt`);
   fs.writeFileSync(tempTextFile, cleanText, 'utf-8');
 
   try {
-    // Pitch -2Hz for deeper resonance, rate +3% for crisp delivery
-    const edgeCmd = `${python} -m edge_tts --voice "${voice}" --rate="+3%" --pitch="-2Hz" --file "${tempTextFile}" --write-media "${outputPath}"`;
+    // Natural rate +0% (not rushed), pitch -1Hz for grounded resonance
+    const edgeCmd = `${python} -m edge_tts --voice "${voice}" --rate="+0%" --pitch="-1Hz" --file "${tempTextFile}" --write-media "${outputPath}"`;
     execSync(edgeCmd, { stdio: 'pipe', timeout: 35000 });
     return outputPath;
   } finally {
@@ -273,3 +291,4 @@ if (isMain) {
       process.exit(1);
     });
 }
+

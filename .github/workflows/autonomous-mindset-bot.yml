@@ -94,3 +94,4 @@ jobs:
           
           echo "Executing Mindset Engine with: $SLOT_ARG $DRY_RUN_ARG $TOPIC_ARG"
           node scripts/youtube/pipelines/generate-mindset-shorts.mjs $SLOT_ARG $DRY_RUN_ARG $TOPIC_ARG
+
