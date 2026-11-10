@@ -158,10 +158,10 @@ export default function GraphicHeroCard({
     <div
       className={`relative w-full overflow-hidden select-none border-2 border-white/10 transition-all duration-300 ${
         isHero
-          ? 'h-[250px] sm:h-[300px] md:h-[340px] max-h-[360px] rounded-2xl sm:rounded-3xl p-5 sm:p-7 md:p-8'
+          ? 'h-[210px] sm:h-[240px] md:h-[270px] max-h-[290px] rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6'
           : isFeed
-          ? 'h-[180px] sm:h-[200px] rounded-2xl p-4 sm:p-5'
-          : 'aspect-[16/9] min-h-[140px] max-h-[180px] rounded-xl p-3 sm:p-3.5'
+          ? 'h-[170px] sm:h-[190px] rounded-2xl p-4 sm:p-5'
+          : 'aspect-[16/9] min-h-[130px] max-h-[170px] rounded-xl p-3 sm:p-3.5'
       } bg-gradient-to-br ${theme.gradient} ${className}`}
     >
       {/* 1. Subtle Vector Grid Pattern (Pure SVG, 0 KB external) */}
@@ -217,14 +217,14 @@ export default function GraphicHeroCard({
           </span>
         </div>
 
-        {/* Center: Main Bold Headline & Subtitle (Generous line spacing) */}
-        <div className="my-auto py-1 sm:py-2">
+        {/* Center: Main Bold Headline & Subtitle (Balanced line spacing & readable scale) */}
+        <div className="my-auto py-1">
           <h2
-            className={`font-black text-white tracking-tight leading-[1.25] sm:leading-[1.3] drop-shadow-md line-clamp-2 sm:line-clamp-3 ${
+            className={`font-black text-white tracking-tight leading-snug drop-shadow-md line-clamp-2 ${
               isHero
-                ? 'text-lg sm:text-2xl md:text-3xl max-w-4xl'
+                ? 'text-base sm:text-lg md:text-xl lg:text-2xl max-w-4xl'
                 : isFeed
-                ? 'text-base sm:text-lg md:text-xl'
+                ? 'text-sm sm:text-base md:text-lg'
                 : 'text-xs sm:text-sm font-extrabold line-clamp-2'
             }`}
           >
@@ -232,7 +232,7 @@ export default function GraphicHeroCard({
           </h2>
 
           {subtitle && isHero && (
-            <p className="mt-3.5 sm:mt-4 text-xs sm:text-sm md:text-base text-slate-200/90 font-normal leading-relaxed line-clamp-2 max-w-3xl drop-shadow-xs">
+            <p className="mt-2 sm:mt-2.5 text-xs sm:text-sm text-slate-200/90 font-normal leading-relaxed line-clamp-2 max-w-3xl drop-shadow-xs">
               {subtitle}
             </p>
           )}

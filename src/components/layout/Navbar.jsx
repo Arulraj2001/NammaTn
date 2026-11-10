@@ -15,12 +15,10 @@ import { getSettingsMap } from "@/services/admin/settings";
 import { useTheme } from "@/app/providers";
 
 const MAIN_NAV = [
-  { path: "/", en: "📍 Map", ta: "📍 வரைபடம்" },
+  { path: "/map", en: "📍 Map", ta: "📍 வரைபடம்" },
   { path: "/explore", en: "⚡ Live Feed", ta: "⚡ நேரடி ஊட்டம்" },
   { path: "/tn-today", en: "📰 TN Today", ta: "📰 TN Today" },
   { path: "/tnpsc", en: "🎯 TNPSC Quiz", ta: "🎯 TNPSC தேர்வு" },
-  { path: "/power-cuts-today-tamil-nadu", en: "⚡ Power Cuts", ta: "⚡ மின்தடை", hideBelow2xl: true },
-  { path: "/trending", en: "🔥 Trending", ta: "🔥 டிரெண்டிங்", hideBelow2xl: true },
 ];
 
 
@@ -245,15 +243,13 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Main Nav */}
-            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 flex-1 min-w-0 ml-1 xl:ml-2">
-              <div className="flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 overflow-hidden">
+            <nav className="hidden lg:flex items-center gap-1 xl:gap-2 flex-shrink-0 ml-1 xl:ml-3">
+              <div className="flex items-center gap-1 xl:gap-1.5">
                 {MAIN_NAV.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`px-1.5 py-1 xl:px-2 xl:py-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg text-xs xl:text-xs 2xl:text-sm font-medium transition-colors whitespace-nowrap ${
-                      link.hideBelow2xl ? "hidden 2xl:inline-flex" : ""
-                    } ${
+                    className={`px-2 py-1 xl:px-2.5 xl:py-1.5 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap ${
                       location.pathname === link.path
                         ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100 font-bold border border-civic-200 dark:border-civic-700"
                         : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
@@ -273,7 +269,7 @@ export default function Navbar() {
               >
                 <button
                   onClick={() => setMegaOpen(!megaOpen)}
-                  className={`flex items-center gap-1 px-1.5 py-1 xl:px-2 xl:py-1.5 2xl:px-2.5 2xl:py-1.5 rounded-lg text-xs xl:text-xs 2xl:text-sm font-medium transition-colors whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-2 py-1 xl:px-2.5 xl:py-1.5 rounded-lg text-xs xl:text-sm font-medium transition-colors whitespace-nowrap ${
                     megaOpen ? "bg-civic-50 dark:bg-civic-900/60 text-civic-900 dark:text-civic-100" : "text-slate-600 dark:text-slate-300 hover:bg-civic-50/70 dark:hover:bg-civic-900/30"
                   }`}
                   aria-expanded={megaOpen}
@@ -366,7 +362,7 @@ export default function Navbar() {
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0 z-10">
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 z-10 ml-auto">
               <Link to="/search" aria-label="Search" className="hidden md:flex p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <Search className="w-4 h-4" />
               </Link>
