@@ -2,9 +2,11 @@
 // Autonomous Daily TNPSC Syllabus & Practice Feeder (70 Questions/Day)
 // Runs daily at 6:00 AM IST via GitHub Actions or manual run.
 
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-dotenv.config();
+try {
+  if (typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile('.env.local');
+  }
+} catch (_) {}
 
 import { createClient } from '@supabase/supabase-js';
 import { GoogleGenAI } from '@google/genai';
