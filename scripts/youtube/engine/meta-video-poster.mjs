@@ -122,6 +122,7 @@ export async function crossPostVideoToMetaSocials({
   // 1. Host Video Buffer in Supabase Storage to get public HTTPS URL
   const videoBuffer = fs.readFileSync(videoFilePath);
   const videoFileName = `videos/${path.basename(videoFilePath)}`;
+  let thumbFileName = null;
   console.log(`[META] Uploading ${fileSizeMb} MB to Supabase CDN for Meta ingestion...`);
   const publicVideoUrl = await uploadCardToStorage(videoBuffer, videoFileName, 'video/mp4');
 
@@ -132,7 +133,7 @@ export async function crossPostVideoToMetaSocials({
       const thumbBuffer = fs.readFileSync(thumbnailFilePath);
       const thumbExt = path.extname(thumbnailFilePath).toLowerCase() || '.jpg';
       const contentType = thumbExt === '.png' ? 'image/png' : 'image/jpeg';
-      const thumbFileName = `thumbnails/${path.basename(thumbnailFilePath)}`;
+      thumbFileName = `thumbnails/${path.basename(thumbnailFilePath)}`;
       console.log(`[META] Uploading thumbnail cover to Supabase CDN...`);
       publicCoverUrl = await uploadCardToStorage(thumbBuffer, thumbFileName, contentType);
       console.log(`[META] Cover URL ready: ${publicCoverUrl}`);
