@@ -108,7 +108,7 @@ Return ONLY a valid JSON array with NO markdown code block wrapper, NO text befo
   }
 ]`;
 
-    const MODELS = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-3.5-flash'];
+    const MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-flash-latest'];
     let subQuestions = [];
 
     for (const model of MODELS) {
@@ -118,7 +118,8 @@ Return ONLY a valid JSON array with NO markdown code block wrapper, NO text befo
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           config: {
             temperature: 0.3,
-            maxOutputTokens: 4096,
+            maxOutputTokens: 8192,
+            responseMimeType: 'application/json',
           },
         });
 
