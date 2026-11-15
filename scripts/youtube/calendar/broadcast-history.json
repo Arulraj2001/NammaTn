@@ -33,5 +33,18 @@
       "ab_swapped": false
     },
     "created_at": "2026-10-21T02:56:38.701Z"
+  },
+  {
+    "broadcast_date": "2026-11-15",
+    "format": "test-format",
+    "time_ist": "14:45",
+    "title": "Test Broadcast Anti-Duplication",
+    "youtube_video_id": "TEST_ID_123",
+    "youtube_url": "https://youtube.com/shorts/TEST_ID_123",
+    "meta_video_id": null,
+    "meta_reel_id": null,
+    "status": "published",
+    "metadata": {},
+    "created_at": "2026-11-15T09:16:37.406Z"
   }
 ]

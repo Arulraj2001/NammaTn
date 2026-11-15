@@ -321,7 +321,9 @@ async function main() {
   let videoDesc = '';
 
   if (isElectricity) {
-    videoTitle = `⚡ இன்று தமிழ்நாட்டில் எங்கெல்லாம் மின்தடை? (TANGEDCO) | உங்கள் ஊர் இருக்கா? முழு பட்டியல் #Shorts`;
+    const districtArea = leadPost.area_name || leadPost.district_slug || 'சென்னை & முக்கிய பகுதிகள்';
+    const todayDateStr = new Intl.DateTimeFormat('ta-IN', { day: 'numeric', month: 'short' }).format(new Date());
+    videoTitle = `⚡ ${districtArea} மின்தடை இன்று (${todayDateStr})! பாதிக்கப்பட்ட தெருக்கள் பட்டியல் #Shorts`;
     s1Spoken = `மின்வாரிய அவசர அறிவிப்பு! இன்று தமிழ்நாட்டின் முக்கிய மாவட்டங்களில் துணை மின்நிலைய பராமரிப்பு பணி காரணமாக மின்தடை அறிவிக்கப்பட்டுள்ளது. உங்கள் ஊர் இதில் இருக்கான்னு உடனே தெரிஞ்சுக்கோங்க!`;
     s1Items = [
       { icon: '📍', label: 'முக்கிய மாவட்டங்கள்', value: `${leadPost.area_name || 'சென்னை, கோவை, மதுரை'} மற்றும் சுற்றியுள்ள பகுதிகள்` },
@@ -345,7 +347,9 @@ async function main() {
 
   } else {
     // School Holiday / Emergency Weather Alert
-    videoTitle = `🚨 இன்று பள்ளி கல்லூரிகளுக்கு விடுமுறை அறிவிக்கப்பட்ட மாவட்டங்கள்! | மாவட்ட ஆட்சியர் #Shorts`;
+    const todayDateStr = new Intl.DateTimeFormat('ta-IN', { day: 'numeric', month: 'short' }).format(new Date());
+    const holidayDistricts = leadPost.area_name || 'சென்னை & முக்கிய மாவட்டங்கள்';
+    videoTitle = `🚨 ${holidayDistricts} பள்ளி கல்லூரிகளுக்கு இன்று (${todayDateStr}) விடுமுறை! #Shorts`;
     s1Spoken = `அவசர எச்சரிக்கை! வானிலை ஆய்வு மைய அறிவிப்பு மற்றும் பலத்த மழை காரணமாக தமிழ்நாட்டில் பள்ளி கல்லூரிகளுக்கு விடுமுறை அறிவிக்கப்பட்டுள்ளது. எந்தெந்த மாவட்டங்கள் என்று பார்ப்போம்!`;
     s1Items = [
       { icon: '🏛️', label: 'அறிவிப்பு', value: 'பள்ளி மற்றும் கல்லூரிகளுக்கு விடுமுறை' },

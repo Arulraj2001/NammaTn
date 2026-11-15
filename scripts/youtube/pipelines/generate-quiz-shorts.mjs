@@ -771,8 +771,14 @@ async function main() {
     // ══════════════════════════════════════════════════════════
     console.log('[MODE: QUESTION] Building interactive question challenge...');
 
-    // Scene 1: Hook + Question + 5s Timer
-    const s1Spoken = `டி.என்.பி.எஸ்.சி தேர்வில் 90% பேர் தவறாக விடையளிக்கும் முக்கியமான ஒரு மதிப்பெண் கேள்வி இது! கேள்வி: ${quiz.questionTa}. ஆப்ஷன் A: ${quiz.options[0].text}, ஆப்ஷன் B: ${quiz.options[1].text}, ஆப்ஷன் C: ${quiz.options[2].text}, ஆப்ஷன் D: ${quiz.options[3].text}. உங்கள் நேரம் தொடங்குகிறது!`;
+    // Scene 1: High-Retention Hook + Question + Timer (Target: 12-14 seconds, NO robotic option reading)
+    const questionHooks = [
+      `டி.என்.பி.எஸ்.சி தேர்வில் 90% பேர் தவறாக விடையளிக்கும் கேள்வி இது! கேள்வி: ${quiz.questionTa}. யோசிக்க உங்களுக்கான 5 நொடிகள்!`,
+      `சமச்சீர் புத்தகத்தில் மறைந்துள்ள மிக முக்கியமான ஒரு மதிப்பெண் கேள்வி! கேள்வி: ${quiz.questionTa}. உங்கள் நேரம் தொடங்குகிறது!`,
+      `Group 4 & 2 தேர்வில் நிச்சயம் எதிர்பார்க்கப்படும் வினா! கேள்வி: ${quiz.questionTa}. சரியான விடை எது? நேரம் தொடக்கம்!`
+    ];
+    const hookIndex = Math.abs(quiz.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % questionHooks.length;
+    const s1Spoken = questionHooks[hookIndex];
     const s1AudioPath = path.join(sessionDir, 'q_audio_1.mp3');
     await synthesizeSpeech(s1Spoken, s1AudioPath);
     const s1Dur = getAudioDuration(s1AudioPath);
@@ -781,8 +787,8 @@ async function main() {
     const s1Path = path.join(sessionDir, 'q_slide_1.png');
     renderHtmlToImage(s1Html, s1Path, { width: 1080, height: 1920 });
 
-    // Scene 2 for YouTube: "சப்ஸ்கிரைப் பண்ணுங்க" + "Subscribe" badge
-    const s2SpokenYT = `உங்க விடை என்ன? ஆப்ஷன் A, B, C அல்லது D-யா? உடனே கீழே கமெண்ட் பண்ணுங்க! இதற்கான சரியான விடை மற்றும் சமச்சீர் பாடப்புத்தக ஆதாரக் குறிப்புகள் ${explanationTimeText} நமது அடுத்த Shorts-ல் வெளியாகும்! அடுத்த கேள்வியை தவறவிடாமல் இருக்க VizhiTN-ஐ இப்போதே சப்ஸ்கிரைப் பண்ணுங்க!`;
+    // Scene 2 for YouTube: Snappy 8-second Engagement & Loop CTA
+    const s2SpokenYT = `உங்கள் விடை என்ன? ஆப்ஷன் A, B, C அல்லது D? உடனே கமெண்ட் பண்ணுங்க! சரியான விடை மற்றும் சமச்சீர் குறிப்புகள் அடுத்த Shorts-ல் வெளியாகும்! VizhiTN-ஐ சப்ஸ்கிரைப் பண்ணுங்க!`;
     const s2AudioPathYT = path.join(sessionDir, 'q_audio_2_yt.mp3');
     await synthesizeSpeech(s2SpokenYT, s2AudioPathYT);
     const s2DurYT = getAudioDuration(s2AudioPathYT);
@@ -792,7 +798,7 @@ async function main() {
     renderHtmlToImage(s2HtmlYT, s2PathYT, { width: 1080, height: 1920 });
 
     // Scene 2 for Meta (Instagram & Facebook Reels): "ஃபாலோ பண்ணுங்க" + "Follow" badge
-    const s2SpokenMeta = `உங்க விடை என்ன? ஆப்ஷன் A, B, C அல்லது D-யா? உடனே கீழே கமெண்ட் பண்ணுங்க! இதற்கான சரியான விடை மற்றும் சமச்சீர் பாடப்புத்தக ஆதாரக் குறிப்புகள் ${explanationTimeText} நமது அடுத்த Shorts-ல் வெளியாகும்! அடுத்த கேள்வியை தவறவிடாமல் இருக்க VizhiTN-ஐ இப்போதே ஃபாலோ பண்ணுங்க!`;
+    const s2SpokenMeta = `உங்கள் விடை என்ன? ஆப்ஷன் A, B, C அல்லது D? உடனே கமெண்ட் பண்ணுங்க! சரியான விடை அடுத்த ரீல்ஸில் வெளியாகும்! அடுத்த கேள்விக்கு VizhiTN-ஐ இப்போதே ஃபாலோ பண்ணுங்க!`;
     const s2AudioPathMeta = path.join(sessionDir, 'q_audio_2_meta.mp3');
     await synthesizeSpeech(s2SpokenMeta, s2AudioPathMeta);
     const s2DurMeta = getAudioDuration(s2AudioPathMeta);
@@ -811,7 +817,13 @@ async function main() {
       { imagePath: s2PathMeta, slidePath: s2PathMeta, audioPath: s2AudioPathMeta, durationSec: Math.ceil(s2DurMeta) + 1 }
     ];
 
-    videoTitle = `TNPSC One-Mark Sure Shot: ${quiz.questionTa.slice(0, 42)}... | Group 4 & 2 #Shorts`;
+    // High-CTR, curiosity-driven YouTube Shorts Titles
+    const titleVariants = [
+      `90% மாணவர்கள் தவறு செய்யும் TNPSC கேள்வி! ❌ ${quiz.questionTa.slice(0, 36)}... #Shorts`,
+      `இந்த 1 கேள்விக்கு விடை தெரியுமா? 🧠 ${quiz.questionTa.slice(0, 38)}... #TNPSC #Shorts`,
+      `Group 4-ல் கேட்கப்படும் Sure-Shot வினா! 🎯 ${quiz.questionTa.slice(0, 36)}... #Shorts`
+    ];
+    videoTitle = titleVariants[hookIndex];
     videoDescription = `TNPSC One-Mark Sure Shot Series | சமச்சீர் கல்வி வினா-விடை\n\n🎯 கேள்வி:\n${quiz.questionTa}\n\n💡 உங்கள் விடை என்ன? ஆப்ஷன் A, B, C அல்லது D? உடனே கமெண்ட் செய்யுங்கள்! 👇\n\n📌 இந்த கேள்விக்கான சரியான விடை மற்றும் சமச்சீர் குறிப்புகள் ${explanationTimeText} நமது அடுத்த Shorts-ல் வெளியாகும்!\n\n#TNPSC #TNPSCGroup4 #TNPSCGroup2 #PoliceSI #SamacheerKalvi #TamilNaduGK #Shorts #ShortsFeed #VizhiTN`;
     videoTags = ['TNPSC Quiz', 'One Mark Sure Shot', 'TNPSC Group 4', 'Police SI Exam', 'Samacheer Kalvi', 'Shorts', 'Tamil Nadu GK'];
     pinnedCommentText = `💡 உங்கள் விடை என்ன? ஆப்ஷன் A, B, C அல்லது D? உடனே கீழே கமெண்ட் செய்யுங்கள்! 👇\n\n📌 சரியான விடை மற்றும் விரிவான சமச்சீர் புத்தகக் குறிப்புகள் ${explanationTimeText} நமது அடுத்த Shorts-ல் வெளியாகும்!\n🔔 தொடர்ந்து பயிற்சி பெற VizhiTN சேனலை Subscribe செய்யுங்கள்!`;
@@ -824,8 +836,8 @@ async function main() {
 
     const correctOption = quiz.options.find(o => o.key === quiz.correctKey);
 
-    // Scene 1: The Answer Reveal
-    const s1Spoken = `நமது முந்தைய கேள்விக்கான சரியான விடை: ஆப்ஷன் ${quiz.correctKey}, ${correctOption.text}! இப்போது தேர்வுக்கு அவசியமான சமச்சீர் பாடக்குறிப்புகளைப் பார்ப்போம்.`;
+    // Scene 1: The Answer Reveal (Snappy & engaging)
+    const s1Spoken = `சரியான விடை: ஆப்ஷன் ${quiz.correctKey}, ${correctOption.text}! இதற்கான தேர்வு சமச்சீர் பாடக்குறிப்புகளை இப்போது பார்ப்போம்.`;
     const s1AudioPath = path.join(sessionDir, 'exp_audio_1.mp3');
     await synthesizeSpeech(s1Spoken, s1AudioPath);
     const s1Dur = getAudioDuration(s1AudioPath);
@@ -834,8 +846,8 @@ async function main() {
     const s1Path = path.join(sessionDir, 'exp_slide_1.png');
     renderHtmlToImage(s1Html, s1Path, { width: 1080, height: 1920 });
 
-    // Scene 2 for YouTube: "சப்ஸ்கிரைப் பண்ணுங்க" + "Subscribe" badge
-    const s2SpokenYT = `தேர்வுக்கான முக்கியக் குறிப்புகள்: யார்: ${vData.who}. காலம்: ${vData.when}. சமச்சீர் புத்தக ஆதாரம்: ${vData.whichBook}. முந்தைய தேர்வு: ${vData.pyqReference}. ${vData.examPointersTa[0]}. இந்தத் தகவல்களை உங்கள் குறிப்பேட்டில் குறித்து வைத்துக்கொள்ளுங்கள். அடுத்த One-Mark கேள்விக்கு இப்போதே VizhiTN-ஐ சப்ஸ்கிரைப் பண்ணுங்க!`;
+    // Scene 2 for YouTube: Snappy revision points + Subscribe
+    const s2SpokenYT = `முக்கியக் குறிப்புகள்: ${vData.who}, சமச்சீர் புத்தகம்: ${vData.whichBook}. முந்தைய தேர்வு: ${vData.pyqReference}. ${vData.examPointersTa[0]}. இந்தத் தகவல்களை குறித்து வச்சுக்கோங்க! அடுத்த One-Mark கேள்விக்கு VizhiTN-ஐ சப்ஸ்கிரைப் பண்ணுங்க!`;
     const s2AudioPathYT = path.join(sessionDir, 'exp_audio_2_yt.mp3');
     await synthesizeSpeech(s2SpokenYT, s2AudioPathYT);
     const s2DurYT = getAudioDuration(s2AudioPathYT);
@@ -845,7 +857,7 @@ async function main() {
     renderHtmlToImage(s2HtmlYT, s2PathYT, { width: 1080, height: 1920 });
 
     // Scene 2 for Meta (Instagram & Facebook Reels): "ஃபாலோ பண்ணுங்க" + "Follow" badge
-    const s2SpokenMeta = `தேர்வுக்கான முக்கியக் குறிப்புகள்: யார்: ${vData.who}. காலம்: ${vData.when}. சமச்சீர் புத்தக ஆதாரம்: ${vData.whichBook}. முந்தைய தேர்வு: ${vData.pyqReference}. ${vData.examPointersTa[0]}. இந்தத் தகவல்களை உங்கள் குறிப்பேட்டில் குறித்து வைத்துக்கொள்ளுங்கள். அடுத்த One-Mark கேள்விக்கு இப்போதே VizhiTN-ஐ ஃபாலோ பண்ணுங்க!`;
+    const s2SpokenMeta = `முக்கியக் குறிப்புகள்: ${vData.who}, சமச்சீர் புத்தகம்: ${vData.whichBook}. முந்தைய தேர்வு: ${vData.pyqReference}. ${vData.examPointersTa[0]}. இந்தத் தகவல்களை குறித்து வச்சுக்கோங்க! அடுத்த One-Mark கேள்விக்கு VizhiTN-ஐ ஃபாலோ பண்ணுங்க!`;
     const s2AudioPathMeta = path.join(sessionDir, 'exp_audio_2_meta.mp3');
     await synthesizeSpeech(s2SpokenMeta, s2AudioPathMeta);
     const s2DurMeta = getAudioDuration(s2AudioPathMeta);
@@ -864,7 +876,7 @@ async function main() {
       { imagePath: s2PathMeta, slidePath: s2PathMeta, audioPath: s2AudioPathMeta, durationSec: Math.ceil(s2DurMeta) + 1 }
     ];
 
-    videoTitle = `TNPSC சமச்சீர் குறிப்புகள்: ${quiz.questionTa.slice(0, 40)}... | விடை & புத்தகம் #Shorts`;
+    videoTitle = `சரியான விடை இதோ! 🎯 ${quiz.questionTa.slice(0, 36)}... | Samacheer Masterclass #Shorts`;
     videoDescription = `TNPSC Samacheer Kalvi Masterclass Notes | 100% Verified Notes\n\n🎯 கேள்வி: ${quiz.questionTa}\n\n✅ சரியான விடை: ஆப்ஷன் ${quiz.correctKey} - ${correctOption.text}\n\n📚 தேர்வுக்கான முக்கியக் குறிப்புகள்:\n• யார்: ${vData.who}\n• காலம்: ${vData.when}\n• புத்தகம்: ${vData.whichBook}\n• முந்தைய தேர்வு (PYQ): ${vData.pyqReference}\n• முக்கிய குறிப்பு: ${vData.examPointersTa.join(' ')}\n\n🔔 அடுத்த One-Mark வினாடி-வினா பெற உடனே Subscribe செய்யுங்கள்!\n\n${(quiz.topTrendingTags || []).join(' ')}`;
     videoTags = quiz.topTrendingTags || ['TNPSC Notes', 'Samacheer Kalvi', 'TNPSC Group 4', 'Police SI', 'Tamil Nadu GK', 'Shorts'];
     pinnedCommentText = `📌 *TNPSC தேர்வுக்கான சமச்சீர் குறிப்புகள்:*\n\n✅ சரியான விடை: ஆப்ஷன் ${quiz.correctKey} - ${correctOption.text}\n• யார்: ${vData.who}\n• காலம்: ${vData.when}\n• புத்தகம்: ${vData.whichBook}\n• முந்தைய தேர்வு (PYQ): ${vData.pyqReference}\n\n👉 இதை உங்கள் நண்பர்களுடன் பகிர்ந்துகொள்ளுங்கள்! அடுத்த கேள்விக்கு Subscribe செய்யுங்கள்! 🔔`;

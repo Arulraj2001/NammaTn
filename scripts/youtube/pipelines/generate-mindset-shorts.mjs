@@ -203,8 +203,14 @@ export async function runMindsetShortsPipeline({
     assembleMultiSceneShortsVideo({ scenes, outputPath: outputVideoPath, musicBedPath });
     console.log(`[VIDEO ASSEMBLED ✓] Output: ${outputVideoPath} (${(fs.statSync(outputVideoPath).size / (1024*1024)).toFixed(2)} MB)`);
 
-    // 5. Metadata Preparation
-    const videoTitle = `TNPSC வெற்றி உத்தி: ${topic.titleTa} | Group 4 Mindset #Shorts`;
+    // 5. Metadata Preparation with High-CTR Curiosity Hooks
+    const mindsetTitleHooks = [
+      `${topic.titleTa}! ⚡ TNPSC தேர்வில் ஜெயிக்க இந்த 1 ரகசியம் #Shorts`,
+      `படிக்கும் போது இந்த தவறை மட்டும் செய்யாதீங்க! ❌ ${topic.titleTa} #Shorts`,
+      `99% மாணவர்கள் தோற்க காரணம் இதுதான்! 🎯 ${topic.titleTa} #Shorts`
+    ];
+    const mHookIndex = Math.abs((topic.id || '0').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)) % mindsetTitleHooks.length;
+    const videoTitle = mindsetTitleHooks[mHookIndex];
     const videoDescription = `${topic.titleTa} | TNPSC Group 4 & Competitive Exam Discipline\n\n🎯 ${topic.hookTa}\n\n🧠 உளவியல் உண்மை:\n${topic.scriptTa}\n\n⚡ செயல் திட்டம்:\n👉 ${topic.actionStepTa}\n\n🔔 அடுத்த சுய ஒழுக்க உத்தி பெற உடனே Subscribe செய்யுங்கள்!\n\n${(topic.tags || []).join(' ')}`;
     const videoTags = topic.tags?.map(t => t.replace('#', '')) || ['TNPSC', 'TNPSCGroup4', 'StudyDiscipline', 'TamilMotivation', 'Shorts'];
     const pinnedComment = `📌 *இன்றைய சுய ஒழுக்க சவால்:*\n\n👉 ${topic.actionStepTa}\n\nஇதை செய்து முடித்தவர்கள் "COMPLETED" என்று கமெண்ட் செய்யுங்கள்! 🔥 அடுத்த உத்திக்கு Subscribe செய்யுங்கள்! 🔔`;

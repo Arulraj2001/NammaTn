@@ -42,6 +42,8 @@ export function stripHtml(str = '') {
     .replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"')
     .replace(/&#39;/gi, "'")
+    .replace(/•?\s*SECTION\s*\d+[:\-]?/gi, '') // Strip robotic AI section artifacts
+    .replace(/Official source/gi, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -106,39 +108,29 @@ export function formatSocialCaption(post = {}) {
   const searchAnchor = `vizhi_tn ${emojiHeader} ${areaPrefix}${titleTa}`;
 
   // 2. High-converting CTAs
-  const saveShareHook = '📌 உங்கள் பகுதி உள்ளதா என்பதைச் சரிபார்க்க சேமித்து (Save) வைத்துக் கொள்ளுங்கள்! நண்பர்களுக்கும் குடும்பத்தினருக்கும் பகிருங்கள் (Share) ↗️';
+  const saveShareHook = '📌 உங்கள் பகுதி உள்ளதா என்பதைச் சரிபார்க்க சேமித்து (Save) வைத்துக் கொள்ளுங்கள்! நண்பர்களுக்கும் பகிருங்கள் ↗️';
   const discussionHook = '💬 உங்கள் பகுதியில் தற்போதைய நிலை என்ன? கமெண்டில் சொல்லுங்கள் 👇';
 
-  // 3. Multi-tier hashtags
-  const tier1ViralTags = [
-    '#VizhiTN', '#TamilNadu', '#TamilNaduNews', '#TNGovt',
-    '#TamilNews', '#BreakingNews', '#TamilTrending', '#TNNews'
-  ];
-  const tier2Tags = getCategoryHashtags(category);
+  // 3. Multi-tier hashtags (Clean, focused 5-8 tags to avoid algorithmic spam flag)
+  const tier1ViralTags = ['#VizhiTN', '#TamilNaduNews', '#TNGovt', '#TNNews'];
+  const tier2Tags = getCategoryHashtags(category).slice(0, 3);
   const districtTag = district ? `#${district.replace(/[^a-zA-Z0-9]/g, '')}` : '';
   const areaTag = area ? `#${area.replace(/[^a-zA-Z0-9]/g, '')}` : '';
-  const tier3Tags = [districtTag, areaTag, '#CivicAlert', '#PublicSafety'].filter(Boolean);
+  const tier3Tags = [districtTag, areaTag].filter(Boolean);
 
-  const allHashtags = Array.from(new Set([...tier1ViralTags, ...tier2Tags, ...tier3Tags])).slice(0, 15).join(' ');
+  const allHashtags = Array.from(new Set([...tier1ViralTags, ...tier2Tags, ...tier3Tags])).join(' ');
 
-  const targetUrl = `https://vizhitn.in/${post.slug ? `post/${post.slug}` : ''}`;
-
+  // Keep Facebook post body free of outbound links to maximize algorithmic organic reach
   const lines = [
     searchAnchor,
     '',
-    cleanContent,
-    '',
-    bullets.length > 0 ? 'முக்கிய விவரங்கள் 👇' : '',
-    ...bullets,
+    cleanContent.length > 350 ? cleanContent.slice(0, 340).trim() + '...' : cleanContent,
     '',
     helpline ? `📞 அவசர உதவி எண்: ${helpline}` : '',
     '',
-    '👉 தினசரி தமிழ்நாடு அரசு எச்சரிக்கைகள் & நேரடி மக்கள் செய்திகளுக்கு @VizhiTN பக்கத்தை Follow செய்யுங்கள்!',
     saveShareHook,
     discussionHook,
-    '',
-    'மேலும் முழு விவரங்களை அறிய 👇',
-    `🔗 ${targetUrl}`,
+    '🔗 முழு விவரங்கள் மற்றும் வரைபடம் முதல் கமெண்ட்டில் (First Comment) உள்ளது 👇',
     '',
     allHashtags
   ].filter((line, idx, arr) => line !== '' || (arr[idx - 1] !== '' && idx > 0));
