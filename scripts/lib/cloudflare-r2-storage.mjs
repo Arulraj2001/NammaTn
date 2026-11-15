@@ -4,7 +4,7 @@
  * S3-compatible, Zero-Egress Storage for Transit Videos & Social Assets
  */
 
-import { S3Client, PutObjectCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -100,5 +100,58 @@ export async function deleteFromR2(fileKeys) {
     console.log(`[R2 Storage ✓] Purged ${objects.length} transit file(s) from R2 (Zero Storage Accumulation).`);
   } catch (err) {
     console.warn(`[R2 Storage WARN] Failed to purge transit file(s): ${err.message}`);
+  }
+}
+
+/**
+ * Reads a JSON file from Cloudflare R2
+ * @param {string} fileName - Destination key in R2 (e.g. 'logs/broadcast-ledger.json')
+ * @returns {Promise<any|null>}
+ */
+export async function getJsonFromR2(fileName) {
+  const client = getR2Client();
+  if (!client) return null;
+
+  const cleanKey = fileName.replace(/^\/+/, '');
+  try {
+    const command = new GetObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: cleanKey,
+    });
+    const response = await client.send(command);
+    const str = await response.Body.transformToString();
+    return JSON.parse(str);
+  } catch (err) {
+    if (err.name === 'NoSuchKey' || err.code === 'NoSuchKey') {
+      return null;
+    }
+    return null;
+  }
+}
+
+/**
+ * Saves a JSON file to Cloudflare R2
+ * @param {string} fileName - Destination key in R2
+ * @param {any} data - Object or array to save
+ * @returns {Promise<boolean>}
+ */
+export async function saveJsonToR2(fileName, data) {
+  const client = getR2Client();
+  if (!client) return false;
+
+  const cleanKey = fileName.replace(/^\/+/, '');
+  try {
+    const buffer = Buffer.from(JSON.stringify(data, null, 2), 'utf-8');
+    const command = new PutObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: cleanKey,
+      Body: buffer,
+      ContentType: 'application/json',
+    });
+    await client.send(command);
+    return true;
+  } catch (err) {
+    console.warn(`[R2 Storage WARN] Failed to save JSON ${cleanKey}:`, err.message);
+    return false;
   }
 }

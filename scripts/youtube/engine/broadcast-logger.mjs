@@ -6,8 +6,10 @@ import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { getTodayIst } from './calendar-reader.mjs';
+import { isR2Configured, getJsonFromR2, saveJsonToR2 } from '../../lib/cloudflare-r2-storage.mjs';
 
 const LOCAL_HISTORY_PATH = path.resolve('scripts/youtube/calendar/broadcast-history.json');
+const R2_LEDGER_KEY = 'logs/broadcast-history.json';
 
 // Initialize Supabase Client
 let supabase = null;
@@ -25,29 +27,55 @@ if (supabaseUrl && supabaseKey) {
 }
 
 /**
- * Loads the local file-based broadcast history
+ * Loads the broadcast history across Cloudflare R2 and local disk
  */
-function loadLocalHistory() {
+async function loadHistory() {
+  // 1. Try Cloudflare R2 (Persistent across GitHub Actions runner instances)
+  if (isR2Configured()) {
+    try {
+      const r2Data = await getJsonFromR2(R2_LEDGER_KEY);
+      if (Array.isArray(r2Data)) return r2Data;
+    } catch (_) {}
+  }
+
+  // 2. Fallback to local file
   try {
     if (fs.existsSync(LOCAL_HISTORY_PATH)) {
       return JSON.parse(fs.readFileSync(LOCAL_HISTORY_PATH, 'utf-8'));
     }
   } catch (_) {}
+
   return [];
 }
 
 /**
- * Saves a record to the local file-based history
+ * Saves a record to both Cloudflare R2 and local disk
  */
-function saveLocalRecord(record) {
+async function saveRecord(record) {
+  let history = [];
   try {
-    const history = loadLocalHistory();
-    history.push(record);
+    history = await loadHistory();
+  } catch (_) {}
+
+  history.push(record);
+
+  // Save to local file
+  try {
     const dir = path.dirname(LOCAL_HISTORY_PATH);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(LOCAL_HISTORY_PATH, JSON.stringify(history, null, 2), 'utf-8');
   } catch (err) {
     console.warn('[LOGGER WARN] Could not save to local broadcast-history.json:', err.message);
+  }
+
+  // Save to Cloudflare R2
+  if (isR2Configured()) {
+    try {
+      await saveJsonToR2(R2_LEDGER_KEY, history);
+      console.log(`[LOGGER ✓] Anti-duplication ledger saved to Cloudflare R2 (${R2_LEDGER_KEY}).`);
+    } catch (err) {
+      console.warn('[LOGGER WARN] Could not save to R2 ledger:', err.message);
+    }
   }
 }
 
@@ -58,7 +86,14 @@ function saveLocalRecord(record) {
  * @returns {Promise<{ published: boolean, existingRecord?: object }>}
  */
 export async function isBroadcastCompletedToday(format, dateStr = getTodayIst()) {
-  // 1. Try querying Supabase
+  // 1. Try querying Cloudflare R2 Persistent Ledger (Fast & Independent of Supabase)
+  const history = await loadHistory();
+  const match = history.find(r => r.broadcast_date === dateStr && r.format === format);
+  if (match) {
+    return { published: true, existingRecord: match };
+  }
+
+  // 2. Try querying Supabase
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -73,15 +108,8 @@ export async function isBroadcastCompletedToday(format, dateStr = getTodayIst())
         return { published: true, existingRecord: data };
       }
     } catch (err) {
-      // Supabase query error, fallback to local file
+      // Supabase query error, fallback
     }
-  }
-
-  // 2. Fallback to local history file
-  const localHistory = loadLocalHistory();
-  const match = localHistory.find(r => r.broadcast_date === dateStr && r.format === format);
-  if (match) {
-    return { published: true, existingRecord: match };
   }
 
   return { published: false };
@@ -125,8 +153,8 @@ export async function recordBroadcastSuccess({
     created_at: new Date().toISOString()
   };
 
-  // Always save locally
-  saveLocalRecord(record);
+  // Always save locally & to Cloudflare R2
+  await saveRecord(record);
 
   // Save to Supabase if accessible
   if (supabase) {
