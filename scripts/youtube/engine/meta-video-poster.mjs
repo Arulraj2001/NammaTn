@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { uploadCardToStorage, deleteFromStorage } from '../../lib/supabase-storage.mjs';
+import { isR2Configured, uploadToR2, deleteFromR2 } from '../../lib/cloudflare-r2-storage.mjs';
 
 const GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
 const GRAPH_VIDEO_API_BASE = 'https://graph-video.facebook.com/v21.0';
@@ -119,12 +120,16 @@ export async function crossPostVideoToMetaSocials({
     };
   }
 
-  // 1. Host Video Buffer in Supabase Storage to get public HTTPS URL
+  // 1. Host Video Buffer in Cloudflare R2 (Unlimited $0 Egress) with Supabase Fallback
   const videoBuffer = fs.readFileSync(videoFilePath);
   const videoFileName = `videos/${path.basename(videoFilePath)}`;
   let thumbFileName = null;
-  console.log(`[META] Uploading ${fileSizeMb} MB to Supabase CDN for Meta ingestion...`);
-  const publicVideoUrl = await uploadCardToStorage(videoBuffer, videoFileName, 'video/mp4');
+  const useR2 = isR2Configured();
+  console.log(`[META] Uploading ${fileSizeMb} MB via ${useR2 ? 'Cloudflare R2 (Zero Egress)' : 'Supabase CDN'} for Meta ingestion...`);
+  
+  const publicVideoUrl = useR2
+    ? await uploadToR2(videoBuffer, videoFileName, 'video/mp4')
+    : await uploadCardToStorage(videoBuffer, videoFileName, 'video/mp4');
 
   // Optional: Upload High-CTR Thumbnail Cover for Instagram Reel & Facebook Poster
   let publicCoverUrl = null;
@@ -134,8 +139,10 @@ export async function crossPostVideoToMetaSocials({
       const thumbExt = path.extname(thumbnailFilePath).toLowerCase() || '.jpg';
       const contentType = thumbExt === '.png' ? 'image/png' : 'image/jpeg';
       thumbFileName = `thumbnails/${path.basename(thumbnailFilePath)}`;
-      console.log(`[META] Uploading thumbnail cover to Supabase CDN...`);
-      publicCoverUrl = await uploadCardToStorage(thumbBuffer, thumbFileName, contentType);
+      console.log(`[META] Uploading thumbnail cover via ${useR2 ? 'Cloudflare R2' : 'Supabase CDN'}...`);
+      publicCoverUrl = useR2
+        ? await uploadToR2(thumbBuffer, thumbFileName, contentType)
+        : await uploadCardToStorage(thumbBuffer, thumbFileName, contentType);
       console.log(`[META] Cover URL ready: ${publicCoverUrl}`);
     } catch (thumbErr) {
       console.warn(`[META THUMB WARN] Failed to upload cover image: ${thumbErr.message}`);
@@ -317,7 +324,11 @@ export async function crossPostVideoToMetaSocials({
     const transitFiles = [videoFileName, thumbFileName].filter(Boolean);
     if (transitFiles.length > 0) {
       console.log(`[META TRANSIT CLEANUP] Purging transit storage files: ${transitFiles.join(', ')}...`);
-      await deleteFromStorage(transitFiles);
+      if (useR2) {
+        await deleteFromR2(transitFiles);
+      } else {
+        await deleteFromStorage(transitFiles);
+      }
     }
   }
 

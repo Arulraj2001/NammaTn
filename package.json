@@ -47,6 +47,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1169.0",
     "@block65/webcrypto-web-push": "^2.0.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@google/genai": "^2.22.0",
@@ -82,7 +83,8 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@stripe/react-stripe-js": "^3.0.0",
     "@stripe/stripe-js": "^5.2.0",
-    "@supabase/supabase-js": "^2.108.2",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
     "@tanstack/react-query": "^5.84.1",
     "@whiskeysockets/baileys": "^7.0.0-rc14",
     "canvas-confetti": "^1.9.4",
@@ -102,6 +104,7 @@
     "msedge-tts": "^2.0.9",
     "next": "^14.2.35",
     "next-themes": "^0.4.4",
+    "pg": "^8.23.1",
     "pino": "^10.4.0",
     "puppeteer-core": "^25.16.0",
     "react": "^18.2.0",
