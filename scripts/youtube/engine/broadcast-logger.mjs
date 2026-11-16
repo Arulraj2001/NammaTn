@@ -29,7 +29,7 @@ if (supabaseUrl && supabaseKey) {
 /**
  * Loads the broadcast history across Cloudflare R2 and local disk
  */
-async function loadHistory() {
+export async function loadHistory() {
   // 1. Try Cloudflare R2 (Persistent across GitHub Actions runner instances)
   if (isR2Configured()) {
     try {
@@ -46,6 +46,43 @@ async function loadHistory() {
   } catch (_) {}
 
   return [];
+}
+
+/**
+ * Returns a Set of Question IDs that were already published within the past N days.
+ * Prevents question recycling/duplication across automated cycles.
+ */
+export async function getRecentlyUsedQuestionIds(days = 30) {
+  const history = await loadHistory();
+  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const used = new Set();
+
+  for (const item of history) {
+    if (item.broadcast_date >= cutoffDate) {
+      if (item.metadata?.questionId) used.add(item.metadata.questionId);
+      if (item.metadata?.question_id) used.add(item.metadata.question_id);
+    }
+  }
+
+  return used;
+}
+
+/**
+ * Returns a Set of Mindset Topic IDs published in the past N days.
+ */
+export async function getRecentlyUsedTopicIds(days = 30) {
+  const history = await loadHistory();
+  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const used = new Set();
+
+  for (const item of history) {
+    if (item.broadcast_date >= cutoffDate) {
+      if (item.metadata?.topicId) used.add(item.metadata.topicId);
+      if (item.metadata?.topic_id) used.add(item.metadata.topic_id);
+    }
+  }
+
+  return used;
 }
 
 /**

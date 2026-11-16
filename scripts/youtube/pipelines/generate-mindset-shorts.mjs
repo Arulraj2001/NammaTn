@@ -26,6 +26,8 @@ import { uploadToYouTube, postPinnedComment } from '../engine/youtube-client.mjs
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
 import { fetchJamendoMusicTrack } from '../engine/jamendo-music-fetcher.mjs';
+import { recordBroadcastSuccess, isBroadcastCompletedToday, getRecentlyUsedTopicIds } from '../engine/broadcast-logger.mjs';
+import { getTodayIst, getNowIst } from '../engine/calendar-reader.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -122,7 +124,21 @@ export async function runMindsetShortsPipeline({
   console.log('  VizhiTN Student Discipline & Psychological Shorts Engine     ');
   console.log('===============================================================\n');
 
-  const topic = getMindsetTopicForSlot(slot, topicIndex);
+  const mindsetFormat = `mindset-${slot || 'auto'}`;
+  const todayIst = getTodayIst();
+
+  // 1. Anti-Duplication Slot Guard: Check if mindset broadcast was already published today
+  if (!isDryRun) {
+    const slotStatus = await isBroadcastCompletedToday(mindsetFormat, todayIst);
+    if (slotStatus.published) {
+      console.log(`[MINDSET GUARD ✓] Format "${mindsetFormat}" has ALREADY been published today on ${todayIst} (${slotStatus.existingRecord?.youtube_video_id || 'logged'}). Exiting safely.`);
+      return { success: true, skipped: true };
+    }
+  }
+
+  // 2. Fetch recently used topics to avoid repeating within 30 days
+  const recentlyUsedTopics = await getRecentlyUsedTopicIds(30);
+  const topic = getMindsetTopicForSlot(slot, topicIndex, recentlyUsedTopics);
   console.log(`[TOPIC SELECTED] ID: ${topic.id}`);
   console.log(`Title: ${topic.titleTa}`);
   console.log(`Category: ${topic.category} | Target: ${topic.targetExam}`);
@@ -263,6 +279,31 @@ export async function runMindsetShortsPipeline({
         console.log('[META RESULT]', metaResult);
       } catch (metaErr) {
         console.warn(`[META ERROR] Failed: ${metaErr.message}`);
+      }
+
+      // 6C. Anti-Duplication Ledger Recording
+      if (!isDryRun && (ytResult?.id || metaResult?.facebook?.id || metaResult?.instagram?.id)) {
+        try {
+          const nowIst = getNowIst();
+          await recordBroadcastSuccess({
+            broadcastDate: nowIst.date,
+            format: mindsetFormat,
+            timeIst: nowIst.time,
+            title: videoTitle,
+            youtubeVideoId: ytResult?.id || null,
+            youtubeUrl: ytResult?.id ? `https://youtube.com/shorts/${ytResult.id}` : null,
+            metaVideoId: metaResult?.facebook?.id || null,
+            metaReelId: metaResult?.instagram?.id || null,
+            metadata: {
+              topicId: topic.id,
+              slot,
+              category: topic.category
+            }
+          });
+          console.log(`[LEDGER GUARD ✓] Mindset broadcast logged: "${mindsetFormat}" (${topic.id}) to Cloudflare R2.`);
+        } catch (ledgerErr) {
+          console.warn('[LEDGER WARN] Could not record mindset broadcast:', ledgerErr.message);
+        }
       }
     } else {
       console.log('[DISTRIBUTION SKIPPED] --skip-social or local preview mode');

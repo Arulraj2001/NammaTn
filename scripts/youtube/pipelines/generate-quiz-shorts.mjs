@@ -19,6 +19,8 @@ import { getBrandLogoDataUri, getStickmanAssetDataUri } from '../engine/brand-as
 import { uploadToYouTube, postPinnedComment } from '../engine/youtube-client.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
 import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
+import { recordBroadcastSuccess, isBroadcastCompletedToday, getRecentlyUsedQuestionIds } from '../engine/broadcast-logger.mjs';
+import { getTodayIst, getNowIst } from '../engine/calendar-reader.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -734,7 +736,19 @@ async function main() {
   const slotArg = process.argv.find(a => a.startsWith('--slot='))?.split('=')[1] || 'quiz-morning-q';
   const quizIdArg = process.argv.find(a => a.startsWith('--quiz='))?.split('=')[1];
 
-  const quiz = quizIdArg ? getQuizQuestionById(quizIdArg) : getQuizQuestionForSlot(slotArg);
+  // 1. Anti-Duplication Slot Guard: Check if this slot was already published today
+  if (!isDryRun) {
+    const todayIst = getTodayIst();
+    const slotStatus = await isBroadcastCompletedToday(slotArg, todayIst);
+    if (slotStatus.published) {
+      console.log(`[SLOT GUARD ✓] Slot "${slotArg}" has ALREADY been published today on ${todayIst} (${slotStatus.existingRecord?.youtube_video_id || 'logged'}). Exiting safely.`);
+      return;
+    }
+  }
+
+  // 2. Fetch recently published questions to prevent question recycling across 30 days
+  const recentlyUsed = await getRecentlyUsedQuestionIds(30);
+  const quiz = quizIdArg ? getQuizQuestionById(quizIdArg) : getQuizQuestionForSlot(slotArg, null, recentlyUsed);
   if (!quiz) {
     throw new Error(`Quiz question not found for slot "${slotArg}"`);
   }
@@ -936,9 +950,10 @@ async function main() {
   }
 
   // Auto-crosspost to Facebook & Instagram Reels
+  let metaResult = null;
   try {
     console.log('\n[SOCIAL SYNC] Crossposting Quiz Short to Facebook & Instagram Reels...');
-    await crossPostVideoToMetaSocials({
+    metaResult = await crossPostVideoToMetaSocials({
       videoFilePath: metaOutputVideoPath,
       thumbnailFilePath: scenes[0]?.slidePath,
       title: videoTitle,
@@ -949,6 +964,30 @@ async function main() {
     console.log('[SOCIAL SYNC ✓] Meta Reels crosspost complete!');
   } catch (metaErr) {
     console.warn('[SOCIAL SYNC WARN] Meta Reels crosspost failed:', metaErr.message);
+  }
+
+  // Record broadcast success to prevent duplicate uploads
+  try {
+    const nowIst = getNowIst();
+    await recordBroadcastSuccess({
+      broadcastDate: nowIst.date,
+      format: slotArg,
+      timeIst: nowIst.time,
+      title: videoTitle,
+      youtubeVideoId: res?.videoId || null,
+      youtubeUrl: res?.videoUrl || null,
+      metaVideoId: metaResult?.facebook?.id || null,
+      metaReelId: metaResult?.instagram?.id || null,
+      metadata: {
+        questionId: quiz.id,
+        mode: modeArg,
+        slot: slotArg,
+        subject: quiz.subject || 'tnpsc'
+      }
+    });
+    console.log(`[LEDGER GUARD ✓] Successfully logged "${slotArg}" (${quiz.id}) to Cloudflare R2 anti-duplication ledger.`);
+  } catch (ledgerErr) {
+    console.warn('[LEDGER WARN] Failed to log to broadcast ledger:', ledgerErr.message);
   }
 }
 

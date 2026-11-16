@@ -334,6 +334,276 @@ export const TNPSC_QUIZ_BANK = [
       ]
     },
     topTrendingTags: ['#Pichavaram', '#TNPSC', '#Geography', '#SamacheerKalvi', '#Shorts', '#ShortsFeed']
+  },
+  {
+    id: 'tnpsc-unit8-swadeshi-voc',
+    subject: 'tamil-history',
+    subjectLabel: 'கப்பலோட்டிய தமிழர் வ.உ.சி (Unit 8)',
+    subjectColor: '#EF4444',
+    syllabusUnit: 'Unit 8: Swadeshi Movement in Tamil Nadu & VOC',
+    questionTa: 'வ.உ.சிதம்பரனார் சுதேசி நீராவிக் கப்பல் நிறுவனத்தை (SSNCo) தொடங்கிய ஆண்டு எது?',
+    options: [
+      { key: 'A', text: '1905' },
+      { key: 'B', text: '1906' },
+      { key: 'C', text: '1908' },
+      { key: 'D', text: '1911' }
+    ],
+    correctKey: 'B',
+    explanationTa: '1906 அக்டோபர் 16-ல் தூத்துக்குடிக்கும் கொழும்புக்கும் இடையே சுதேசி கப்பல் நிறுவனத்தை வ.உ.சி நிறுவினார்.',
+    verifiedData: {
+      who: 'கப்பலோட்டிய தமிழர் வ.உ.சிதம்பரனார்',
+      when: '1906 அக்டோபர் 16',
+      whichBook: '10-ம் வகுப்பு சமச்சீர் வரலாறு, அலகு 9, பக்கம் 121',
+      pyqReference: 'TNPSC Group 4 (2019, 2022) மற்றும் Group 2 வினாத்தாளில் கேட்கப்பட்ட கேள்வி!',
+      examPointersTa: [
+        'எஸ்.எஸ். காலியா மற்றும் எஸ்.எஸ். லாவோ என்ற இரண்டு கப்பல்களை தூத்துக்குடி - கொழும்பு இடையே இயக்கினார்.',
+        'வ.உ.சிக்கு ஆங்கிலேய அரசு 40 ஆண்டுகள் இரட்டை ஆயுள் தண்டனை விதித்து கோவை மற்றும் கண்ணனூர் சிறையில் அடைத்தது.'
+      ]
+    },
+    topTrendingTags: ['#VOC', '#SwadeshiMovement', '#TNPSC', '#TNPSCGroup4', '#Unit8', '#Shorts']
+  },
+  {
+    id: 'tnpsc-unit8-justice-party',
+    subject: 'tamil-history',
+    subjectLabel: 'நீதிக்கட்சி & திராவிட இயக்கம் (Unit 8)',
+    subjectColor: '#EF4444',
+    syllabusUnit: 'Unit 8: Justice Party and Non-Brahmin Movement in Tamil Nadu',
+    questionTa: 'நீதிக்கட்சி உருவாவதற்கு வித்திட்ட தென்னிந்திய நல உரிமைச் சங்கம் நிறுவப்பட்ட ஆண்டு எது?',
+    options: [
+      { key: 'A', text: '1914' },
+      { key: 'B', text: '1916' },
+      { key: 'C', text: '1920' },
+      { key: 'D', text: '1925' }
+    ],
+    correctKey: 'B',
+    explanationTa: '1916 நவம்பர் 20-ல் டாக்டர் சி.நடேசனார், சர் பிட்டி தியாகராயர், டாக்டர் டி.எம்.நாயர் ஆகியோரால் நிறுவப்பட்டது.',
+    verifiedData: {
+      who: 'டாக்டர் சி.நடேசனார், சர் பிட்டி தியாகராயர் & டாக்டர் டி.எம்.நாயர்',
+      when: '1916 நவம்பர் 20 (சென்னை விக்டோரியா பொது அரங்கம்)',
+      whichBook: '10-ம் வகுப்பு சமச்சீர் வரலாறு, அலகு 10, பக்கம் 134',
+      pyqReference: 'TNPSC Group 4 & Group 2 தேர்வில் பலமுறை கேட்கப்பட்ட ரிப்பீட் கேள்வி!',
+      examPointersTa: [
+        '1916-ல் தொடங்கப்பட்ட தென்னிந்திய நல உரிமைச் சங்கம் வெளியிட்ட "ஜஸ்டிஸ்" ஆங்கில இதழின் பெயரால் நீதிக்கட்சி என அழைக்கப்பட்டது.',
+        '1920 முதல் பொதுத்தேர்தலில் வெற்றி பெற்று ஏ.சுப்பராயலு முதல் முதலமைச்சரானார்.'
+      ]
+    },
+    topTrendingTags: ['#JusticeParty', '#Unit8', '#DravidianMovement', '#TNPSCGroup4', '#Shorts']
+  },
+  {
+    id: 'tnpsc-unit8-vaikom-periyar',
+    subject: 'tamil-history',
+    subjectLabel: 'வைக்கம் போராட்டம் & தந்தை பெரியார் (Unit 8)',
+    subjectColor: '#EF4444',
+    syllabusUnit: 'Unit 8: Self-Respect Movement & Periyar EVR',
+    questionTa: 'தந்தை பெரியார் கேரளாவில் வரலாற்று சிறப்புமிக்க வைக்கம் சத்தியாகிரகத்தை தலைமையேற்று நடத்திய ஆண்டு எது?',
+    options: [
+      { key: 'A', text: '1920' },
+      { key: 'B', text: '1924' },
+      { key: 'C', text: '1925' },
+      { key: 'D', text: '1929' }
+    ],
+    correctKey: 'B',
+    explanationTa: '1924-ல் வைக்கம் கோவில் வீதிகளில் தாழ்த்தப்பட்டோர் நடக்க போராடி "வைக்கம் வீரர்" என்று பாராட்டப்பட்டார்.',
+    verifiedData: {
+      who: 'தந்தை பெரியார் ஈ.வெ.ரா',
+      when: '1924 ஆம் ஆண்டு',
+      whichBook: '10-ம் வகுப்பு சமச்சீர் வரலாறு, அலகு 10 & 11-ம் வகுப்பு அரசியல் அறிவியல்',
+      pyqReference: 'TNPSC Group 4 (2022) மற்றும் Group 1 (2020) வினாத்தாளில் இடம்பெற்றது!',
+      examPointersTa: [
+        'வைக்கம் போராட்டம் வெற்றி பெற்றதால் திரு.வி.கல்யாணசுந்தரனார் பெரியாருக்கு "வைக்கம் வீரர்" என்ற பட்டம் வழங்கினார்.',
+        '1925-ல் பெரியார் சுயமரியாதை இயக்கத்தைத் தொடங்கினார்; "குடியரசு" இதழை 1925-ல் வெளியிட்டார்.'
+      ]
+    },
+    topTrendingTags: ['#Periyar', '#VaikomSatyagraha', '#Unit8', '#TNPSCGroup4', '#Shorts']
+  },
+  {
+    id: 'tnpsc-polity-preamble-amendment',
+    subject: 'polity',
+    subjectLabel: 'இந்திய அரசியலமைப்பு முகவுரை',
+    subjectColor: '#8B5CF6',
+    syllabusUnit: 'Unit 5: Preamble & Constitutional Amendments',
+    questionTa: 'இந்திய அரசியலமைப்பு முகவுரையில் "சமதர்ம, மதச்சார்பற்ற, ஒருமைப்பாடு" ஆகிய சொற்கள் எந்த சட்டத்திருத்தத்தின் மூலம் சேர்க்கப்பட்டன?',
+    options: [
+      { key: 'A', text: '42-வது சட்டத்திருத்தம் (1976)' },
+      { key: 'B', text: '44-வது சட்டத்திருத்தம் (1978)' },
+      { key: 'C', text: '52-வது சட்டத்திருத்தம் (1985)' },
+      { key: 'D', text: '86-வது சட்டத்திருத்தம் (2002)' }
+    ],
+    correctKey: 'A',
+    explanationTa: '1976-ம் ஆண்டு 42-வது சட்டத்திருத்தத்தின் மூலம் முகவுரை ஒரே ஒரு முறை மட்டும் திருத்தப்பட்டது.',
+    verifiedData: {
+      who: 'இந்திய நாடாளுமன்றம் (இந்திரா காந்தி தலைமையிலான அரசு)',
+      when: '1976 ஆம் ஆண்டு (மினி அரசியலமைப்பு என்று அழைக்கப்படுகிறது)',
+      whichBook: '10-ம் வகுப்பு குடிமையியல், அலகு 1, பக்கம் 170',
+      pyqReference: 'TNPSC Group 4 (2018, 2024) தேர்வில் கேட்கப்பட்ட நேரடி கேள்வி!',
+      examPointersTa: [
+        'அரசியலமைப்பு முகவுரை இதுவரை ஒரே ஒரு முறை மட்டுமே திருத்தப்பட்டுள்ளது (42-வது சட்டத்திருத்தம் 1976).',
+        'முகவுரையை அரசியலமைப்பின் "ஜாதகம்" என்று கே.எம்.முன்ஷி வர்ணித்துள்ளார்.'
+      ]
+    },
+    topTrendingTags: ['#Preamble', '#Polity42ndAmendment', '#TNPSC', '#TNPSCGroup4', '#Shorts']
+  },
+  {
+    id: 'tnpsc-polity-fundamental-duties',
+    subject: 'polity',
+    subjectLabel: 'அடிப்படை கடமைகள் & அரசியலமைப்பு',
+    subjectColor: '#8B5CF6',
+    syllabusUnit: 'Unit 5: Fundamental Duties & Article 51A',
+    questionTa: 'அடிப்படை கடமைகளை இந்திய அரசியலமைப்பில் சேர்க்க பரிந்துரைத்த குழு எது?',
+    options: [
+      { key: 'A', text: 'சர்க்காரியா குழு' },
+      { key: 'B', text: 'சுவரண் சிங் குழு' },
+      { key: 'C', text: 'பல்வந்த் ராய் மேத்தா குழு' },
+      { key: 'D', text: 'அசோக் மேத்தா குழு' }
+    ],
+    correctKey: 'B',
+    explanationTa: 'சுவரண் சிங் கமிட்டியின் பரிந்துரையின்படி 1976-ல் 42-வது திருத்தத்தின் மூலம் பகுதி IV-A பிரிவு 51A சேர்க்கப்பட்டது.',
+    verifiedData: {
+      who: 'சுவரண் சிங் குழு (Sardar Swaran Singh Committee)',
+      when: '1976 ஆம் ஆண்டு',
+      whichBook: '10-ம் வகுப்பு குடிமையியல், அலகு 1 & 12-ம் வகுப்பு அரசியல் அறிவியல்',
+      pyqReference: 'TNPSC Group 2 (2022) மற்றும் Group 4 (2019) வினா!',
+      examPointersTa: [
+        'அடிப்படை கடமைகள் முன்னாள் சோவியத் யூனியன் (USSR) அரசியலமைப்பிலிருந்து பெறப்பட்டது.',
+        'தற்போது அரசியலமைப்பில் மொத்தம் 11 அடிப்படைக் கடமைகள் உள்ளன (11-வது கடமை 86-வது திருத்தம் 2002-ல் சேர்க்கப்பட்டது).'
+      ]
+    },
+    topTrendingTags: ['#FundamentalDuties', '#Article51A', '#TNPSC', '#Polity', '#Shorts']
+  },
+  {
+    id: 'tnpsc-geo-mettur-dam',
+    subject: 'geography',
+    subjectLabel: 'காவிரி நதி & மேட்டூர் அணை',
+    subjectColor: '#10B981',
+    syllabusUnit: 'Unit 3: Drainage System & Water Resources of Tamil Nadu',
+    questionTa: 'ஸ்டான்லி நீர்த்தேக்கம் (Stanley Reservoir) என்று அழைக்கப்படும் அணை எது?',
+    options: [
+      { key: 'A', text: 'பவானிசாகர் அணை' },
+      { key: 'B', text: 'மேட்டூர் அணை' },
+      { key: 'C', text: 'வைகை அணை' },
+      { key: 'D', text: 'முல்லைப் பெரியாறு அணை' }
+    ],
+    correctKey: 'B',
+    explanationTa: 'சேலம் மாவட்டம் மேட்டூரில் காவிரியின் குறுக்கே கட்டப்பட்ட அணை ஸ்டான்லி நீர்த்தேக்கம் என அழைக்கப்படுகிறது.',
+    verifiedData: {
+      who: 'தமிழ்நாடு பொதுப்பணித்துறை & பொறியாளர் எல்லிஸ்',
+      when: '1934 ஆம் ஆண்டு கட்டி முடிக்கப்பட்டது',
+      whichBook: '10-ம் வகுப்பு சமச்சீர் புவியியல், அலகு 6, பக்கம் 146',
+      pyqReference: 'TNPSC Group 4 (2018) மற்றும் Police SI (2020) நேரடி வினா!',
+      examPointersTa: [
+        '1934-ல் கட்டி முடிக்கப்பட்ட மேட்டூர் அணை தமிழ்நாட்டின் மிகப்பெரிய நீர்ப்பாசன அணையாகும்.',
+        'காவிரி ஆறு கர்நாடகாவில் குடகு மலையில் தலைக்காவிரியில் உற்பத்தியாகி ஒகேனக்கல் வழியாக தமிழகத்தில் நுழைகிறது.'
+      ]
+    },
+    topTrendingTags: ['#MetturDam', '#StanleyReservoir', '#Cauvery', '#TNPSC', '#Geography', '#Shorts']
+  },
+  {
+    id: 'tnpsc-unit9-highest-literacy',
+    subject: 'economy',
+    subjectLabel: 'தமிழக மக்கள் தொகை & எழுத்தறிவு (Unit 9)',
+    subjectColor: '#F59E0B',
+    syllabusUnit: 'Unit 9: Human Development Indicators & Census in Tamil Nadu',
+    questionTa: '2011 மக்கள் தொகை கணக்கெடுப்பின்படி தமிழ்நாட்டில் அதிக எழுத்தறிவு விகிதம் கொண்ட மாவட்டம் எது?',
+    options: [
+      { key: 'A', text: 'சென்னை' },
+      { key: 'B', text: 'கன்னியாகுமரி' },
+      { key: 'C', text: 'கோயம்புத்தூர்' },
+      { key: 'D', text: 'மதுரை' }
+    ],
+    correctKey: 'B',
+    explanationTa: 'கன்னியாகுமரி மாவட்டம் 91.75% எழுத்தறிவுடன் தமிழ்நாட்டில் முதலிடத்தில் உள்ளது.',
+    verifiedData: {
+      who: 'இந்திய மக்கள் தொகை கணக்கெடுப்பு துறை (Census 2011)',
+      when: '2011 மக்கள் தொகை கணக்கெடுப்பு',
+      whichBook: '10-ம் வகுப்பு புவியியல் & பொருளாதாரம், அலகு 7, பக்கம் 162',
+      pyqReference: 'TNPSC Group 4 (2019, 2022) தேர்வில் கேட்கப்பட்ட நேரடி வினா!',
+      examPointersTa: [
+        'கன்னியாகுமரி மாவட்டம் 91.75% எழுத்தறிவுடன் முதலிடத்திலும், தர்மபுரி (68.54%) மிகக் குறைந்த எழுத்தறிவு விகிதத்திலும் உள்ளது.',
+        'தமிழ்நாட்டின் சராசரி எழுத்தறிவு விகிதம் 80.09% (தேசிய சராசரியான 74.04%-ஐ விட அதிகம்).'
+      ]
+    },
+    topTrendingTags: ['#Kanyakumari', '#LiteracyRate', '#Unit9', '#TNPSCGroup4', '#Shorts']
+  },
+  {
+    id: 'tnpsc-tamil-thirukkural-parts',
+    subject: 'tamil-history',
+    subjectLabel: 'பொதுத்தமிழ் & திருக்குறள் கட்டமைப்பு',
+    subjectColor: '#EF4444',
+    syllabusUnit: 'General Tamil & Unit 8: Thirukkural Philosophy',
+    questionTa: 'திருக்குறளின் பொருட்பாலில் உள்ள அதிகாரங்களின் எண்ணிக்கை எத்தனை?',
+    options: [
+      { key: 'A', text: '38 அதிகாரங்கள்' },
+      { key: 'B', text: '70 அதிகாரங்கள்' },
+      { key: 'C', text: '25 அதிகாரங்கள்' },
+      { key: 'D', text: '133 அதிகாரங்கள்' }
+    ],
+    correctKey: 'B',
+    explanationTa: 'திருக்குறளில் அறத்துப்பால் 38, பொருட்பால் 70, காமத்துப்பால் 25 என மொத்தம் 133 அதிகாரங்கள் உள்ளன.',
+    verifiedData: {
+      who: 'தெய்வப்புலவர் திருவள்ளுவர்',
+      when: 'சங்க காலம் / சங்கம் மருவிய காலம்',
+      whichBook: '6-ம் முதல் 12-ம் வகுப்பு சமச்சீர் பொதுத்தமிழ்',
+      pyqReference: 'TNPSC Group 4 பொதுத்தமிழ் தாளில் அடிக்கடி கேட்கப்படும் வினா!',
+      examPointersTa: [
+        'பொருட்பாலில் அரசியல் (25), அங்கவியல் (32), ஒழிபியல் (13) என மொத்தம் 70 அதிகாரங்கள் உள்ளன.',
+        'திருக்குறளுக்கு உரை எழுதிய பதின்மரில் பரிமேலழகர் உரை சிறந்ததாகக் கருதப்படுகிறது.'
+      ]
+    },
+    topTrendingTags: ['#Thirukkural', '#PodhuTamil', '#TNPSCGroup4', '#Unit8', '#Shorts']
+  },
+  {
+    id: 'tnpsc-history-harappa-discovery',
+    subject: 'history',
+    subjectLabel: 'சிந்துவெளி நாகரிகம் & தொல்லியல்',
+    subjectColor: '#EF4444',
+    syllabusUnit: 'Unit 4: Indus Valley Civilization',
+    questionTa: '1921 ஆம் ஆண்டு சிந்துவெளி நாகரிகத்தின் ஹரப்பா பகுதியை முதன்முதலில் கண்டுபிடித்தவர் யார்?',
+    options: [
+      { key: 'A', text: 'ஆர்.டி. பானர்ஜி' },
+      { key: 'B', text: 'தயா ராம் சகானி' },
+      { key: 'C', text: 'சர் ஜான் மார்ஷல்' },
+      { key: 'D', text: 'மார்டிமர் வீலர்' }
+    ],
+    correctKey: 'B',
+    explanationTa: '1921-ல் தயா ராம் சகானி ஹரப்பாவையும், 1922-ல் ஆர்.டி. பானர்ஜி மொகஞ்சதாரோவையும் அகழாய்வு செய்தனர்.',
+    verifiedData: {
+      who: 'தயா ராம் சகானி & சர் ஜான் மார்ஷல் (ASI இயக்குநர்)',
+      when: '1921 ஆம் ஆண்டு',
+      whichBook: '6-ம் & 11-ம் வகுப்பு சமச்சீர் வரலாறு, சிந்துவெளி நாகரிகம் அலகு',
+      pyqReference: 'TNPSC Group 4 (2018, 2021) மற்றும் SI தேர்வு வினா!',
+      examPointersTa: [
+        '1924-ல் இந்திய தொல்பொருள் ஆய்வுத் துறையின் இயக்குநர் சர் ஜான் மார்ஷல் ஹரப்பாவிற்கும் மொகஞ்சதாரோவிற்கும் பொதுவான நாகரிகம் இருப்பதாக அறிவித்தார்.',
+        'ஹரப்பா நாகரிகத்தில் தானியக் களஞ்சியம் மற்றும் சிந்துவெளி மக்களின் எழுத்து முறை சித்திர எழுத்துக்கள் ஆகும்.'
+      ]
+    },
+    topTrendingTags: ['#Harappa', '#IndusValley', '#TNPSC', '#HistoryGK', '#Shorts']
+  },
+  {
+    id: 'tnpsc-economy-rbi-establishment',
+    subject: 'economy',
+    subjectLabel: 'இந்திய ரிசர்வ் வங்கி (RBI) & நிதித்துறை',
+    subjectColor: '#F59E0B',
+    syllabusUnit: 'Unit 6: Indian Economy & Banking System',
+    questionTa: 'இந்திய ரிசர்வ் வங்கி (RBI) எந்த குழுவின் பரிந்துரையின் பேரில் நிறுவப்பட்டது?',
+    options: [
+      { key: 'A', text: 'ஹில்டன் யங் ஆணையம்' },
+      { key: 'B', text: 'நரசிம்மம் குழு' },
+      { key: 'C', text: 'செல்லையா குழு' },
+      { key: 'D', text: 'ரங்கராஜன் குழு' }
+    ],
+    correctKey: 'A',
+    explanationTa: '1926-ல் ஹில்டன் யங் ராயல் கமிஷன் பரிந்துரையின்படி 1935 ஏப்ரல் 1-ல் ரிசர்வ் வங்கி நிறுவப்பட்டது.',
+    verifiedData: {
+      who: 'ஹில்டன் யங் ராயல் கமிஷன் & இந்திய ரிசர்வ் வங்கி சட்டம் 1934',
+      when: '1935 ஏப்ரல் 1 (1949 ஜனவரி 1-ல் நாட்டுடைமையாக்கப்பட்டது)',
+      whichBook: '12-ம் வகுப்பு பொருளியல், அலகு 5 (பணவியல் பொருளியல் & வங்கியியல்)',
+      pyqReference: 'TNPSC Group 1 & Group 2 பலமுறை கேட்கப்பட்ட கேள்வி!',
+      examPointersTa: [
+        '1935 ஏப்ரல் 1-ல் கொல்கத்தாவில் தொடங்கப்பட்டு 1937-ல் மும்பைக்கு மாற்றப்பட்டது.',
+        'இந்திய ரிசர்வ் வங்கியின் முதல் ஆளுநர் சர் ஆஸ்போர்ன் ஸ்மித்; முதல் இந்திய ஆளுநர் சி.டி.தேஷ்முக்.'
+      ]
+    },
+    topTrendingTags: ['#RBI', '#IndianEconomy', '#HiltonYoung', '#TNPSC', '#BankingGK', '#Shorts']
   }
 ];
 
@@ -345,25 +615,27 @@ export function getQuizQuestionById(id) {
  * Returns the exact quiz question for the designated broadcast slot.
  * Ensures Morning Question (07:30 AM) and Morning Explanation (10:30 AM) share the same question!
  * Ensures Evening Question (06:30 PM) and Evening Explanation (09:00 PM) share the same question!
- * Guarantees zero question collisions on the same day.
+ * Guarantees zero question collisions and filters out recently published questions!
+ *
+ * @param {string} slot - Broadcast slot name
+ * @param {string|null} [dateStr=null] - Date in YYYY-MM-DD
+ * @param {Set<string>} [recentlyUsed=new Set()] - Set of question IDs already published recently
  */
-export function getQuizQuestionForSlot(slot = 'quiz-morning-q', dateStr = null) {
+export function getQuizQuestionForSlot(slot = 'quiz-morning-q', dateStr = null, recentlyUsed = new Set()) {
   const d = dateStr ? new Date(dateStr) : new Date();
   const dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-  const total = TNPSC_QUIZ_BANK.length;
 
-  if (slot === 'quiz-morning-q' || slot === 'quiz-morning-a' || slot === 'quiz-morning') {
-    const index = (dayOfYear * 2) % total;
-    return TNPSC_QUIZ_BANK[index];
+  // Filter out any questions published in the past 30 days
+  let pool = TNPSC_QUIZ_BANK.filter(q => !recentlyUsed.has(q.id));
+  if (pool.length === 0) {
+    // If all questions were published in the window, reset pool to prevent runtime errors
+    pool = TNPSC_QUIZ_BANK;
   }
 
-  if (slot === 'quiz-evening-q' || slot === 'quiz-evening-a' || slot === 'quiz-evening') {
-    const index = (dayOfYear * 2 + 1) % total;
-    return TNPSC_QUIZ_BANK[index];
-  }
-
-  const index = dayOfYear % total;
-  return TNPSC_QUIZ_BANK[index];
+  const isMorning = slot.includes('morning');
+  const slotOffset = isMorning ? 0 : 1;
+  const index = (dayOfYear * 2 + slotOffset) % pool.length;
+  return pool[index];
 }
 
 export function getTodayQuizQuestion(dateStr = null) {

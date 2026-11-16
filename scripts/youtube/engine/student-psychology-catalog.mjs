@@ -115,12 +115,44 @@ export const STUDENT_PSYCHOLOGY_TOPICS = [
     targetExam: 'All Competitive Exams',
     pixabayQueries: ['peaceful night stars window', 'calm sleeping head rest', 'sunrise dawn morning fresh'],
     tags: ['#SleepScience', '#MemoryHacks', '#TNPSC', '#BrainHealth', '#StudyHabits', '#Shorts']
+  },
+  {
+    id: 'mindset-09-comparison-trap',
+    category: 'mental-resilience',
+    titleTa: 'அடுத்தவர்களோடு ஒப்பிட்டு நேரத்தை வீணடிக்காதீர்கள்!',
+    titleEn: 'Stop Comparing Your Chapter 1 to Someone Else Chapter 20',
+    hookTa: 'அவன் 10 மணி நேரம் படிக்கிறான்... நான் 4 மணி நேரம் தான் படிக்கிறேன்னு கவலைப்படுறீங்களா? ஒரு நிமிஷம் கேளுங்க!',
+    hookEn: 'Worried that your peer studies 10 hours while you manage 4? Listen to this for 1 minute.',
+    scriptTa: 'அடுத்தவர் எவ்வளவு நேரம் படிக்கிறார் என்பது உங்கள் ரிசல்ட்டை மாற்றாது! நீங்கள் செலவழிக்கும் ஒவ்வொரு 30 நிமிடமும் எவ்வளவு கூர்மையான கவனத்தோடு இருக்கிறது என்பது தான் முக்கியம். 10 மணி நேரம் புத்தகத்தை வெறித்துப் பார்ப்பதை விட... 3 மணி நேரம் மூளைக்கு முழு வேலை கொடுத்து படிப்பதே உண்மையான அதிகாரி செய்யும் செயல்! இன்று உங்கள் முன்னேற்றம் மட்டுமே உங்கள் இலக்கு!',
+    actionStepTa: 'இன்று வாட்ஸ்அப் ஸ்டேட்டஸ் பார்ப்பதை தவிர்த்து, உங்கள் பாடத்திட்டத்தில் 1 தலைப்பை முழுமையாக முடியுங்கள்.',
+    targetExam: 'TNPSC Group 4 & 2',
+    pixabayQueries: ['focused student desk lamp', 'hourglass sand timer close up', 'mountain path forward steps'],
+    tags: ['#Focus', '#StudyMotivation', '#StopComparing', '#TNPSC', '#TamilMotivation', '#Shorts']
+  },
+  {
+    id: 'mindset-10-mock-test-fear',
+    category: 'active-recall',
+    titleTa: 'மாதிரி தேர்வு எழுத பயப்படுகிறீர்களா?',
+    titleEn: 'Overcoming the Fear of Failing Mock Tests',
+    hookTa: 'மார்க் கம்மியா வந்துடுமோன்னு பயந்து... இன்னும் மாடல் டெஸ்ட் எழுதாம தள்ளிப் போடுறீங்களா?',
+    hookEn: 'Postponing full-length mock tests because you fear scoring low? That fear is costing you the rank.',
+    scriptTa: 'மாதிரித் தேர்வில் எடுக்கும் குறைவான மதிப்பெண் உங்கள் தோல்வி அல்ல... உண்மையான தேர்வில் நீங்கள் செய்யவிருந்த தவறுகளின் முன்கூட்டிய எச்சரிக்கை! வீட்டில் செய்யும் 100 தவறுகள், உங்களை தேர்வு மையத்தில் ஒரு அதிகாரியாக மாற்றும்! தவறுகளை கண்டு ஓடாதீர்கள்... அதை ஆராய்ந்து திருத்துங்கள்! இன்றே ஒரு OMR ஷீட்டை எடுத்து டெஸ்ட் எழுதுங்கள்!',
+    actionStepTa: 'இன்றே முந்தைய ஆண்டு வினாத்தாளில் இருந்து 25 கேள்விகளுக்கு OMR-ல் விடையளித்து தவறுகளை சரிபாருங்கள்.',
+    targetExam: 'TNPSC Group 4 / Police SI',
+    pixabayQueries: ['exam answer sheet pen', 'pencil ticking checklist paper', 'vintage stopwatch timer metal'],
+    tags: ['#MockTest', '#OMRSheet', '#TNPSCGroup4', '#ExamConfidence', '#TamilMotivation', '#Shorts']
   }
 ];
 
-export function getMindsetTopicForSlot(slot = 'auto', topicIndex = null) {
+export function getMindsetTopicForSlot(slot = 'auto', topicIndex = null, recentlyUsed = new Set()) {
   if (topicIndex !== null && topicIndex >= 0 && topicIndex < STUDENT_PSYCHOLOGY_TOPICS.length) {
     return STUDENT_PSYCHOLOGY_TOPICS[topicIndex];
+  }
+
+  // Filter out topics broadcast in the last 30 days
+  let pool = STUDENT_PSYCHOLOGY_TOPICS.filter(t => !recentlyUsed.has(t.id));
+  if (pool.length === 0) {
+    pool = STUDENT_PSYCHOLOGY_TOPICS;
   }
 
   const now = new Date();
@@ -134,6 +166,6 @@ export function getMindsetTopicForSlot(slot = 'auto', topicIndex = null) {
     offset = 4;
   }
 
-  const index = (dayOfYear + offset) % STUDENT_PSYCHOLOGY_TOPICS.length;
-  return STUDENT_PSYCHOLOGY_TOPICS[index];
+  const index = (dayOfYear + offset) % pool.length;
+  return pool[index];
 }

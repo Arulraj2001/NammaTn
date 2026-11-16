@@ -21,6 +21,8 @@ import { getBrandLogoDataUri, getStickmanAssetDataUri } from '../engine/brand-as
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
 import { shareYouTubeBroadcastToWhatsApp } from '../engine/whatsapp-youtube-sharer.mjs';
+import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
+import { getTodayIst, getNowIst } from '../engine/calendar-reader.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -289,6 +291,17 @@ async function main() {
   console.log('====================================================');
 
   const isDryRun = process.argv.includes('--dry-run');
+
+  // Anti-Duplication Slot Guard: Check if civic alert was already published today
+  if (!isDryRun) {
+    const todayIst = getTodayIst();
+    const slotStatus = await isBroadcastCompletedToday('civic-alert', todayIst);
+    if (slotStatus.published) {
+      console.log(`[CIVIC GUARD ✓] Format "civic-alert" has ALREADY been published today on ${todayIst} (${slotStatus.existingRecord?.youtube_video_id || 'logged'}). Exiting safely.`);
+      return;
+    }
+  }
+
   const leadPost = await getLeadCivicPost() || {
     title_ta: 'தாம்பரம் பகுதியில் இன்று மின்தடை அறிவிப்பு',
     area_name: 'தாம்பரம், பல்லாவரம்',
@@ -478,6 +491,27 @@ async function main() {
     console.log('[WHATSAPP DISPATCH ✓] Civic alert successfully delivered to WhatsApp Channel!');
   } catch (waErr) {
     console.warn('[WHATSAPP DISPATCH WARN] Could not post to WhatsApp Channel:', waErr.message);
+  }
+
+  // Anti-Duplication Ledger Recording
+  try {
+    const nowIst = getNowIst();
+    await recordBroadcastSuccess({
+      broadcastDate: nowIst.date,
+      format: 'civic-alert',
+      timeIst: nowIst.time,
+      title: videoTitle,
+      youtubeVideoId: res?.videoId || null,
+      youtubeUrl: res?.videoUrl || null,
+      metadata: {
+        district: leadPost.district_slug,
+        area: leadPost.area_name,
+        category: leadPost.category_slug
+      }
+    });
+    console.log(`[LEDGER GUARD ✓] Civic alert broadcast logged to Cloudflare R2.`);
+  } catch (ledgerErr) {
+    console.warn('[LEDGER WARN] Failed to log civic alert broadcast:', ledgerErr.message);
   }
 }
 
