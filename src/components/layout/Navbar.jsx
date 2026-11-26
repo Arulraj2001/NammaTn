@@ -18,7 +18,6 @@ const MAIN_NAV = [
   { path: "/map", en: "📍 Map", ta: "📍 வரைபடம்" },
   { path: "/explore", en: "⚡ Live Feed", ta: "⚡ நேரடி ஊட்டம்" },
   { path: "/tn-today", en: "📰 TN Today", ta: "📰 TN Today" },
-  { path: "/tnpsc", en: "🎯 TNPSC Quiz", ta: "🎯 TNPSC தேர்வு" },
 ];
 
 

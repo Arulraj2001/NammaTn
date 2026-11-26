@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import Link from 'next/link';
 import Home from '@/views/Home';
 import { HomeCityLinks, AllCategoryLinks } from '@/components/seo/InternalLinks';
+import { getHomePageInitialData } from '@/lib/publicHubServer';
 export const revalidate = 1800; // homepage — refresh every 30 min
 
 const orgSchema = {
@@ -76,12 +77,13 @@ function HomeSkeleton() {
   );
 }
 
-export default function Page() {
+export default async function Page() {
+  const initialData = await getHomePageInitialData();
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
       <Suspense fallback={<HomeSkeleton />}>
-        <Home />
+        <Home initialData={initialData} />
       </Suspense>
 
       <section className="border-t border-slate-200 bg-white py-10 dark:border-slate-800 dark:bg-slate-900">

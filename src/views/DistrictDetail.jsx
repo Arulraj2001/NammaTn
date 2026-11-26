@@ -45,7 +45,7 @@ const HELPLINES = [
 
 const POSTS_PER_PAGE = 9;
 
-export default function DistrictDetail({ initialSlug }) {
+export default function DistrictDetail({ initialSlug, initialPosts = [], initialAreas = [], initialTnToday = [] }) {
   const routeParams = useParams();
   const slug = initialSlug || routeParams?.city || routeParams?.slug;
   const { lang } = useLanguage();
@@ -118,25 +118,34 @@ export default function DistrictDetail({ initialSlug }) {
     injectFAQStructuredData(districtFaqs, slug);
   }, [district, slug, districtName]);
 
-  // Queries
+  // Queries (hydrated from ISR server cache when available to eliminate browser Supabase egress)
+  const hasInitialPosts = Array.isArray(initialPosts) && initialPosts.length > 0;
   const { data: posts = [], isLoading: postsLoading } = useQuery({
     queryKey: ["district-posts", slug],
-    queryFn: () => getDistrictPosts(slug, 120),
+    queryFn: () => getDistrictPosts(slug, 80),
     enabled: !!slug,
-    staleTime: 60_000,
+    initialData: hasInitialPosts ? initialPosts : undefined,
+    staleTime: 300_000,
+    refetchOnMount: !hasInitialPosts,
   });
 
+  const hasInitialAreas = Array.isArray(initialAreas) && initialAreas.length > 0;
   const { data: areas = [] } = useQuery({
     queryKey: ["district-areas", slug],
     queryFn: () => getAreasByDistrict(slug),
     enabled: !!slug,
-    staleTime: 120_000,
+    initialData: hasInitialAreas ? initialAreas : undefined,
+    staleTime: 600_000,
+    refetchOnMount: !hasInitialAreas,
   });
 
+  const hasInitialTnToday = Array.isArray(initialTnToday) && initialTnToday.length > 0;
   const { data: tnTodayArticles = [] } = useQuery({
     queryKey: ["district-tn-today-news", slug],
     queryFn: () => getPublishedTnToday({ limit: 4 }),
-    staleTime: 120_000,
+    initialData: hasInitialTnToday ? initialTnToday : undefined,
+    staleTime: 600_000,
+    refetchOnMount: !hasInitialTnToday,
   });
 
   // Segregated Content Pools

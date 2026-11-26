@@ -58,20 +58,25 @@ function resolveCoverImage(article) {
   return `/images/tntoday/${cat}.webp`;
 }
 
-export default function TnTodaySpotlight() {
+export default function TnTodaySpotlight({ initialFeatured = null, initialArticles = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" && ta ? ta : en);
 
+  const hasInitialArticles = Array.isArray(initialArticles) && initialArticles.length > 0;
   const { data: featured } = useQuery({
     queryKey: ["home-tntoday-featured"],
     queryFn: getFeaturedTnToday,
-    staleTime: 300_000,
+    initialData: initialFeatured || undefined,
+    staleTime: 600_000,
+    refetchOnMount: !initialFeatured && !hasInitialArticles,
   });
 
   const { data: recentArticles = [], isLoading } = useQuery({
     queryKey: ["home-tntoday-recent"],
     queryFn: () => getPublishedTnToday({ limit: 4 }),
-    staleTime: 300_000,
+    initialData: hasInitialArticles ? initialArticles : undefined,
+    staleTime: 600_000,
+    refetchOnMount: !hasInitialArticles,
   });
 
   // Pick lead story (featured if available, else first recent article)

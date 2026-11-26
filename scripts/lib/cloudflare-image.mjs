@@ -183,8 +183,14 @@ export async function generateEditorialHeroImage({ title = '', category = 'gener
     const cleanSlug = (slug || `editorial-${Date.now()}`).slice(0, 50).replace(/[^a-z0-9-]/gi, '-');
     const storageFileName = `editorial/${cleanSlug}-${Date.now().toString().slice(-4)}.webp`;
 
-    const { uploadCardToStorage } = await import('./supabase-storage.mjs');
-    const publicUrl = await uploadCardToStorage(webpBuffer, storageFileName, 'image/webp');
+    const { isR2Configured, uploadToR2 } = await import('./cloudflare-r2-storage.mjs');
+    let publicUrl = null;
+    if (isR2Configured()) {
+      publicUrl = await uploadToR2(webpBuffer, storageFileName, 'image/webp');
+    } else {
+      const { uploadCardToStorage } = await import('./supabase-storage.mjs');
+      publicUrl = await uploadCardToStorage(webpBuffer, storageFileName, 'image/webp');
+    }
     console.log(`[CloudflareAI ✓] Uploaded editorial hero image: ${publicUrl}`);
     return publicUrl;
   } catch (err) {
@@ -212,8 +218,14 @@ export async function generateCivicHeroImage({ title = '', category = 'general',
     const cleanSlug = (slug || `civic-${Date.now()}`).slice(0, 50).replace(/[^a-z0-9-]/gi, '-');
     const storageFileName = `civic/${cleanSlug}-${Date.now().toString().slice(-4)}.webp`;
 
-    const { uploadCardToStorage } = await import('./supabase-storage.mjs');
-    const publicUrl = await uploadCardToStorage(webpBuffer, storageFileName, 'image/webp');
+    const { isR2Configured, uploadToR2 } = await import('./cloudflare-r2-storage.mjs');
+    let publicUrl = null;
+    if (isR2Configured()) {
+      publicUrl = await uploadToR2(webpBuffer, storageFileName, 'image/webp');
+    } else {
+      const { uploadCardToStorage } = await import('./supabase-storage.mjs');
+      publicUrl = await uploadCardToStorage(webpBuffer, storageFileName, 'image/webp');
+    }
     console.log(`[CloudflareAI ✓] Uploaded civic alert image: ${publicUrl}`);
     return publicUrl;
   } catch (err) {

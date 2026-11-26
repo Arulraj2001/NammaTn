@@ -3,6 +3,25 @@ import { isPubliclyVisible } from "@/lib/visibility";
 import { notifySearchEngines } from "@/lib/seo/instantIndexing";
 import { buildPostSeo } from "@/lib/postSeo";
 
+const UNIFIED_FEED_COLUMNS = [
+  "id", "slug", "created_date", "updated_date", "title_en", "title_ta",
+  "content_en", "content_ta", "post_type", "district_slug", "district_name",
+  "area_slug", "area_name", "category_slug", "category_name", "is_anonymous",
+  "author_name", "upvotes", "downvotes", "comment_count", "status",
+  "civic_receipt_id", "civic_status", "verification_count", "duplicate_count",
+  "before_photos", "media_urls", "latitude", "longitude"
+].join(",");
+
+const POST_TABLE_FEED_COLUMNS = [
+  UNIFIED_FEED_COLUMNS,
+  "urgency_level", "assigned_department", "location_text",
+  "is_publicly_visible", "moderation_status", "still_not_fixed_count",
+  "citizen_fixed_count", "is_community_solved"
+].join(",");
+
+const selectFeedCols = (table) =>
+  table === "unified_explore_feed" ? UNIFIED_FEED_COLUMNS : POST_TABLE_FEED_COLUMNS;
+
 const normalizePostPageArgs = (limitOrOptions = 20, sort = "-created_date", cursor = null) => {
   if (typeof limitOrOptions === "object" && limitOrOptions !== null) {
     return {
@@ -42,10 +61,10 @@ const fetchVisiblePostPage = async ({ limit, cursor = null, filter = isPubliclyV
     let scans = 0;
     const scanLimit = Math.max(limit * 2, limit);
 
-    while (page.length < limit && !exhausted && scans < 5) {
+    while (page.length < limit && !exhausted && scans < 2) {
       let query = supabase
         .from(table)
-        .select("*")
+        .select(selectFeedCols(table))
         .order("created_date", { ascending: false })
         .limit(scanLimit);
 
@@ -163,7 +182,7 @@ export const getAllPosts = async (limitOrOptions = 20, sort = "-created_date", c
   const orderCol = pageCursor ? "created_date" : resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = pageCursor ? false : !resolvedSort.startsWith("-");
   return queryFeedWithFallback((t) => {
-    let q = supabase.from(t).select("*").order(orderCol, { ascending }).limit(limit);
+    let q = supabase.from(t).select(selectFeedCols(t)).order(orderCol, { ascending }).limit(limit);
     if (pageCursor) q = q.lt("created_date", pageCursor);
     return q;
   });
@@ -173,7 +192,7 @@ export const getPosts = async (limit = 20, sort = "-created_date") => {
   const orderCol = sort.startsWith("-") ? sort.substring(1) : sort;
   const ascending = !sort.startsWith("-");
   return queryFeedWithFallback((t) =>
-    supabase.from(t).select("*").order(orderCol, { ascending }).limit(limit)
+    supabase.from(t).select(selectFeedCols(t)).order(orderCol, { ascending }).limit(limit)
   );
 };
 
@@ -262,7 +281,7 @@ export const getActivePosts = async (limitOrOptions = 20, sort = "-created_date"
   const orderCol = resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = !resolvedSort.startsWith("-");
   const data = await queryFeedWithFallback((t) =>
-    supabase.from(t).select("*").eq("status", "active").order(orderCol, { ascending }).limit(limit * 2)
+    supabase.from(t).select(selectFeedCols(t)).eq("status", "active").order(orderCol, { ascending }).limit(limit * 2)
   );
   return data.filter(isPubliclyVisible).slice(0, limit);
 };
@@ -282,7 +301,7 @@ export const getActiveCivicPosts = async (limitOrOptions = 20, sort = "-created_
   const orderCol = resolvedSort.startsWith("-") ? resolvedSort.substring(1) : resolvedSort;
   const ascending = !resolvedSort.startsWith("-");
   const data = await queryFeedWithFallback((t) =>
-    supabase.from(t).select("*").eq("status", "active").order(orderCol, { ascending }).limit(limit * 2)
+    supabase.from(t).select(selectFeedCols(t)).eq("status", "active").order(orderCol, { ascending }).limit(limit * 2)
   );
   return data.filter((p) => p.civic_receipt_id && isPubliclyVisible(p)).slice(0, limit);
 };
@@ -290,7 +309,7 @@ export const getActiveCivicPosts = async (limitOrOptions = 20, sort = "-created_
 export const getDistrictPosts = async (districtSlug, limit = 30) => {
   const data = await queryFeedWithFallback((t) =>
     supabase.from(t)
-      .select("*")
+      .select(selectFeedCols(t))
       .eq("district_slug", districtSlug)
       .eq("status", "active")
       .order("created_date", { ascending: false })
@@ -302,7 +321,7 @@ export const getDistrictPosts = async (districtSlug, limit = 30) => {
 export const getDistrictCivicPosts = async (districtSlug, limit = 50) => {
   const data = await queryFeedWithFallback((t) =>
     supabase.from(t)
-      .select("*")
+      .select(selectFeedCols(t))
       .eq("district_slug", districtSlug)
       .eq("status", "active")
       .order("created_date", { ascending: false })
@@ -314,7 +333,7 @@ export const getDistrictCivicPosts = async (districtSlug, limit = 50) => {
 export const getAreaCivicPosts = async (areaSlug, limit = 50) => {
   const { data, error } = await supabase
     .from("post")
-    .select("*")
+    .select(POST_TABLE_FEED_COLUMNS)
     .eq("area_slug", areaSlug)
     .eq("status", "active")
     .eq("post_type", "complaint")
@@ -336,7 +355,7 @@ export const getCategoryPosts = async (categorySlug, limit = 20) => {
 
   const data = await queryFeedWithFallback((t) =>
     supabase.from(t)
-      .select("*")
+      .select(selectFeedCols(t))
       .in("category_slug", targetSlugs)
       .eq("status", "active")
       .order("created_date", { ascending: false })
@@ -348,7 +367,7 @@ export const getCategoryPosts = async (categorySlug, limit = 20) => {
 export const getPostsByType = async (postType, limit = 20) => {
   const { data, error } = await supabase
     .from("post")
-    .select("*")
+    .select(POST_TABLE_FEED_COLUMNS)
     .eq("post_type", postType)
     .eq("status", "active")
     .order("created_date", { ascending: false })

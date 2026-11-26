@@ -9,6 +9,7 @@ import { getDistrictMetaDescription } from '@/lib/metaDescription';
 import PageSchema from '@/components/seo/PageSchema';
 import { NearbyDistrictLinks, DistrictCategoryLinks } from '@/components/seo/InternalLinks';
 import { DISTRICT_CIVIC_DATA } from '@/lib/districtCivicData';
+import { getDistrictPageInitialData } from '@/lib/publicHubServer';
 
 export const revalidate = 3600;
 
@@ -94,6 +95,7 @@ export default async function Page({ params }) {
   }
 
   const civicInfo = DISTRICT_CIVIC_DATA[city] || {};
+  const districtInitialData = await getDistrictPageInitialData(city);
 
   return (
     <>
@@ -130,7 +132,12 @@ export default async function Page({ params }) {
       />
 
       {/* DistrictDetail: Unified interactive and responsive district hub */}
-      <DistrictDetail initialSlug={city} />
+      <DistrictDetail
+        initialSlug={city}
+        initialPosts={districtInitialData.posts}
+        initialAreas={districtInitialData.areas}
+        initialTnToday={districtInitialData.tnTodayArticles}
+      />
 
       {/* District Civic Governance & Redressal Guide */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-slate-200 dark:border-slate-800">

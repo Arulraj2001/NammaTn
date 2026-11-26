@@ -9,6 +9,7 @@
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
+import { isR2Configured, getJsonFromR2, saveJsonToR2 } from './cloudflare-r2-storage.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -18,6 +19,7 @@ try {
 
 const LEDGER_DIR = path.resolve('scripts/data');
 const LEDGER_FILE = path.join(LEDGER_DIR, 'broadcast-ledger.json');
+const R2_DISPATCH_LEDGER_KEY = 'logs/dispatch-ledger.json';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co';
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_VITE_SUPABASE_ANON_KEY;
@@ -60,9 +62,15 @@ function writeLocalLedger(entries) {
   }
 }
 
-// ── Top-Level Sync from Supabase site_settings ─────────────────────────────
+// ── Top-Level Sync: Cloudflare R2 Primary (Zero Supabase Egress), Supabase fallback ──
 try {
-  if (supabase) {
+  if (isR2Configured()) {
+    const r2Entries = await getJsonFromR2(R2_DISPATCH_LEDGER_KEY);
+    if (Array.isArray(r2Entries)) {
+      inMemoryEntries.push(...r2Entries);
+      console.log(`[LEDGER SYNC ✓] Loaded ${inMemoryEntries.length} historical dispatches from Cloudflare R2 ledger.`);
+    }
+  } else if (supabase) {
     const { data, error } = await supabase
       .from('site_settings')
       .select('key, value')
@@ -90,7 +98,7 @@ try {
     }
   }
 } catch (syncErr) {
-  console.warn('[LEDGER WARN] Supabase sync notice:', syncErr.message);
+  console.warn('[LEDGER WARN] Cloud ledger sync notice:', syncErr.message);
 }
 
 // Merge any local ledger entries
@@ -142,8 +150,14 @@ export async function recordDispatch(platform, slug, meta = {}) {
   inMemoryEntries.push(newEntry);
   writeLocalLedger(inMemoryEntries);
 
-  // Persist to Supabase site_settings for cross-runner persistence in GitHub Actions
-  if (supabase) {
+  // Persist to Cloudflare R2 (Primary — zero Supabase bloat/egress), fallback to Supabase only if R2 unconfigured
+  if (isR2Configured()) {
+    try {
+      await saveJsonToR2(R2_DISPATCH_LEDGER_KEY, inMemoryEntries.slice(-1500));
+    } catch (r2Err) {
+      console.warn(`[LEDGER WARN] Failed to persist dispatch to R2: ${r2Err.message}`);
+    }
+  } else if (supabase) {
     try {
       const dbKey = `${plat}:${cleanSlug}`;
       const { data: existing } = await supabase

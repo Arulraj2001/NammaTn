@@ -1,6 +1,25 @@
 import { createServerSupabase } from '@/lib/serverSupabase';
 import { isPubliclyVisible } from '@/lib/visibility';
 
+const UNIFIED_FEED_COLUMNS = [
+  'id', 'slug', 'created_date', 'updated_date', 'title_en', 'title_ta',
+  'content_en', 'content_ta', 'post_type', 'district_slug', 'district_name',
+  'area_slug', 'area_name', 'category_slug', 'category_name', 'is_anonymous',
+  'author_name', 'upvotes', 'downvotes', 'comment_count', 'status',
+  'civic_receipt_id', 'civic_status', 'verification_count', 'duplicate_count',
+  'before_photos', 'media_urls', 'latitude', 'longitude'
+].join(',');
+
+const POST_TABLE_FEED_COLUMNS = [
+  UNIFIED_FEED_COLUMNS,
+  'urgency_level', 'assigned_department', 'location_text',
+  'is_publicly_visible', 'moderation_status', 'still_not_fixed_count',
+  'citizen_fixed_count', 'is_community_solved'
+].join(',');
+
+const TN_TODAY_CARD_COLUMNS =
+  'id,title,title_ta,slug,subtitle,subtitle_ta,featured_image,category,author_name,publish_date,reading_time,summary,summary_ta,is_featured,view_count';
+
 const engagementScore = (post) => {
   const ageHours = (Date.now() - new Date(post.created_date).getTime()) / 3600000;
   const recency = Math.max(0, 1 - ageHours / 168);
@@ -248,7 +267,7 @@ export async function getExplorePosts(limit = 18) {
   try {
     const { data, error } = await supabase
       .from('unified_explore_feed')
-      .select('*')
+      .select(UNIFIED_FEED_COLUMNS)
       .eq('status', 'active')
       .order('created_date', { ascending: false })
       .limit(limit * 2);
@@ -257,6 +276,94 @@ export async function getExplorePosts(limit = 18) {
   } catch (error) {
     console.warn('[explore] Server feed fetch failed:', error.message);
     return [];
+  }
+}
+
+export async function getHomePageInitialData() {
+  const supabase = createServerSupabase();
+  const empty = { posts: [], civicPosts: [], featuredArticle: null, recentArticles: [] };
+  if (!supabase) return empty;
+
+  try {
+    const [postsRes, civicRes, featuredRes, recentTnRes] = await Promise.all([
+      supabase
+        .from('post')
+        .select(POST_TABLE_FEED_COLUMNS)
+        .eq('status', 'active')
+        .order('created_date', { ascending: false })
+        .limit(60),
+      supabase
+        .from('post')
+        .select(POST_TABLE_FEED_COLUMNS)
+        .eq('status', 'active')
+        .not('civic_receipt_id', 'is', null)
+        .order('created_date', { ascending: false })
+        .limit(20),
+      supabase
+        .from('tn_today')
+        .select(TN_TODAY_CARD_COLUMNS)
+        .eq('status', 'published')
+        .eq('is_featured', true)
+        .order('publish_date', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('tn_today')
+        .select(TN_TODAY_CARD_COLUMNS)
+        .eq('status', 'published')
+        .order('publish_date', { ascending: false })
+        .limit(4),
+    ]);
+
+    return {
+      posts: (postsRes?.data || []).filter(isPubliclyVisible),
+      civicPosts: (civicRes?.data || []).filter(p => p.civic_receipt_id && isPubliclyVisible(p)).slice(0, 12),
+      featuredArticle: featuredRes?.data || null,
+      recentArticles: recentTnRes?.data || [],
+    };
+  } catch (error) {
+    console.warn('[home] Server initial data fetch failed:', error.message);
+    return empty;
+  }
+}
+
+export async function getDistrictPageInitialData(districtSlug) {
+  const supabase = createServerSupabase();
+  const empty = { posts: [], areas: [], tnTodayArticles: [] };
+  if (!supabase || !districtSlug) return empty;
+
+  try {
+    const [postsRes, areasRes, tnRes] = await Promise.all([
+      supabase
+        .from('post')
+        .select(POST_TABLE_FEED_COLUMNS)
+        .eq('district_slug', districtSlug)
+        .eq('status', 'active')
+        .order('created_date', { ascending: false })
+        .limit(80),
+      supabase
+        .from('area')
+        .select('id,name_en,name_ta,slug,district_slug,active')
+        .eq('district_slug', districtSlug)
+        .eq('active', true)
+        .order('name_en', { ascending: true })
+        .limit(60),
+      supabase
+        .from('tn_today')
+        .select(TN_TODAY_CARD_COLUMNS)
+        .eq('status', 'published')
+        .order('publish_date', { ascending: false })
+        .limit(4),
+    ]);
+
+    return {
+      posts: (postsRes?.data || []).filter(isPubliclyVisible),
+      areas: areasRes?.data || [],
+      tnTodayArticles: tnRes?.data || [],
+    };
+  } catch (error) {
+    console.warn(`[district:${districtSlug}] Server initial data fetch failed:`, error.message);
+    return empty;
   }
 }
 

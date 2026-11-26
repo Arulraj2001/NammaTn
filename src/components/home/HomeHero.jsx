@@ -34,7 +34,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
-export default function HomeHero({ userLocation, setUserLocation }) {
+export default function HomeHero({ userLocation, setUserLocation, initialPosts = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
@@ -63,10 +63,13 @@ export default function HomeHero({ userLocation, setUserLocation }) {
   }, []);
 
   // Fetch active posts across all districts to populate statewide map activity
+  const hasInitial = Array.isArray(initialPosts) && initialPosts.length > 0;
   const { data: rawPosts = [] } = useQuery({
     queryKey: ["home-all-active-posts"],
-    queryFn: () => getActivePosts(100),
-    staleTime: 300_000,
+    queryFn: () => getActivePosts(60),
+    initialData: hasInitial ? initialPosts : undefined,
+    staleTime: 600_000,
+    refetchOnMount: !hasInitial,
   });
 
   const allMapItems = useMemo(() => [

@@ -7,14 +7,17 @@ import { useLanguage } from "@/context/LanguageContext";
 import { getActivePosts } from "@/services/posts";
 import { Zap, AlertTriangle, FileText, ArrowRight, ShieldCheck, Clock } from "lucide-react";
 
-export default function RecentDispatchesStrip() {
+export default function RecentDispatchesStrip({ initialPosts = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" ? ta : en);
 
+  const hasInitial = Array.isArray(initialPosts) && initialPosts.length > 0;
   const { data: posts = [] } = useQuery({
     queryKey: ["home-recent-mini-feed"],
     queryFn: () => getActivePosts(3),
-    staleTime: 60_000,
+    initialData: hasInitial ? initialPosts : undefined,
+    staleTime: 600_000,
+    refetchOnMount: !hasInitial,
   });
 
   if (!posts || posts.length === 0) return null;

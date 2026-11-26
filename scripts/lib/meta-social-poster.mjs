@@ -16,8 +16,16 @@ import path from 'path';
 import fs from 'fs';
 import { renderEditorialCard } from './card-renderer.mjs';
 import { uploadCardToStorage } from './supabase-storage.mjs';
+import { isR2Configured, uploadToR2 } from './cloudflare-r2-storage.mjs';
 import { generateSocialCarousel } from './carousel-generator.mjs';
 import { isAlreadyDispatched, recordDispatch } from './dispatch-ledger.mjs';
+
+async function uploadSocialAsset(buffer, fileName, contentType = 'image/webp') {
+  if (isR2Configured()) {
+    return await uploadToR2(buffer, `social-cards/${fileName}`, contentType);
+  }
+  return await uploadCardToStorage(buffer, fileName, contentType);
+}
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -371,10 +379,10 @@ export async function broadcastToSocials(post = {}, options = {}) {
     };
   }
 
-  // 3. Upload to Supabase Storage ('media' bucket) to get public URL for Meta
+  // 3. Upload to Cloudflare R2 (zero egress) with Supabase fallback if R2 unconfigured
   let publicImageUrl = post.direct_image_url;
   if (!publicImageUrl) {
-    publicImageUrl = await uploadCardToStorage(cardResult.buffer, cardFilename, 'image/webp');
+    publicImageUrl = await uploadSocialAsset(cardResult.buffer, cardFilename, 'image/webp');
   }
 
   const results = {
@@ -432,7 +440,7 @@ export async function broadcastToSocials(post = {}, options = {}) {
             const ext = (typeof slide === 'string' && slide.endsWith('.png')) ? 'png' : 'webp';
             const slideFilename = `carousel-${slug}-slide${slideIdx + 1}-${timestamp}.${ext}`;
             const mimeType = ext === 'png' ? 'image/png' : 'image/webp';
-            const slideUrl = await uploadCardToStorage(slideBuffer, slideFilename, mimeType);
+            const slideUrl = await uploadSocialAsset(slideBuffer, slideFilename, mimeType);
             if (slideUrl) carouselUrls.push(slideUrl);
           }
         }

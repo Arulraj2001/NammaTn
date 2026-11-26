@@ -22,6 +22,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'hzgrzcablefquddisqkf.supabase.co' },
+      { protocol: 'https', hostname: '*.r2.dev' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'vizhitn.in' },
       { protocol: 'https', hostname: 'www.vizhitn.in' },
@@ -155,7 +156,7 @@ const nextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://*.adtrafficquality.google https://adtrafficquality.google https://*.googleadservices.com https://static.cloudflareinsights.com https://news.google.com https://*.clarity.ms",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://news.google.com",
               "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://*.googleadservices.com https://hzgrzcablefquddisqkf.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://vizhitn.in https://www.vizhitn.in https://*.vizhitn.in https://*.bing.com https://*.bing.net https://*.clarity.ms https://c.bing.com https://unpkg.com https://*.tile.openstreetmap.org https://*.tn.gov.in https://*.gov.in https://image.pollinations.ai https://news.google.com https://api.producthunt.com https://*.producthunt.com https://*.thgim.com https://th-i.thgim.com https://*.thehindu.com https://*.newindianexpress.com https://*.dtnext.in",
+              "img-src 'self' data: blob: https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google.com https://*.google.co.in https://*.doubleclick.net https://*.googleadservices.com https://hzgrzcablefquddisqkf.supabase.co https://*.r2.dev https://images.unsplash.com https://lh3.googleusercontent.com https://vizhitn.in https://www.vizhitn.in https://*.vizhitn.in https://*.bing.com https://*.bing.net https://*.clarity.ms https://c.bing.com https://unpkg.com https://*.tile.openstreetmap.org https://*.tn.gov.in https://*.gov.in https://image.pollinations.ai https://news.google.com https://api.producthunt.com https://*.producthunt.com https://*.thgim.com https://th-i.thgim.com https://*.thehindu.com https://*.newindianexpress.com https://*.dtnext.in",
               "connect-src 'self' https://vizhitn.in https://www.vizhitn.in https://*.vizhitn.in https://hzgrzcablefquddisqkf.supabase.co wss://hzgrzcablefquddisqkf.supabase.co https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.doubleclick.net https://*.adtrafficquality.google https://*.googleadservices.com https://news.google.com https://*.clarity.ms https://c.bing.com https://translate.googleapis.com https://api.mymemory.translated.net https://api.indexnow.org https://www.google.com https://*.google.com https://*.google.co.in https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.cloudflareinsights.com",
               "frame-src 'self' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://googleads.g.doubleclick.net https://*.doubleclick.net https://*.google.com https://www.googletagmanager.com https://news.google.com",
               "object-src 'none'",
@@ -184,6 +185,16 @@ const nextConfig = {
     ];
   },
 
+
+  // ── Proxy /media/:path* to Supabase Storage so Cloudflare Edge caches media (Zero Egress) ──
+  async rewrites() {
+    return [
+      {
+        source: '/media/:path*',
+        destination: 'https://hzgrzcablefquddisqkf.supabase.co/storage/v1/object/public/media/:path*',
+      },
+    ];
+  },
 
   // ── Redirects for SEO (old URLs → new) ────────────────────────────────────
   async redirects() {

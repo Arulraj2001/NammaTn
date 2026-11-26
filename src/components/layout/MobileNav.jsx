@@ -3,7 +3,7 @@ import { Link, useLocation } from "@/lib/router-compat";
 import {
   PlusCircle, Zap, X, FileText, TrendingUp, MessageCircle, AlertTriangle, Shield,
   LayoutGrid, Map, MapPin,
-  HelpCircle, ArrowRight, BarChart2, User, Newspaper, GraduationCap
+  HelpCircle, ArrowRight, BarChart2, User, Newspaper
 } from "lucide-react";
 
 import { useLanguage } from "@/context/LanguageContext";
@@ -58,7 +58,6 @@ const MOBILE_MENU_GROUPS = [
     en_title: "Civic Proof & Alerts",
     ta_title: "குடிமை & எச்சரிக்கைகள்",
     items: [
-      { path: "/tnpsc", icon: GraduationCap, en: "TNPSC Practice Lab", ta: "TNPSC மாதிரி வினா", desc_en: "Daily 1-Mark & Samacheer notes", desc_ta: "தினசரி மாதிரி வினாக்கள்" },
       { path: "/track", icon: FileText, en: "Complaint Tracker", ta: "புகார் கண்காணிப்பு", desc_en: "Track GCC & TANGEDCO status", desc_ta: "புகார் தீர்வு நிலை" },
       { path: "/power-cuts-today-tamil-nadu", icon: Zap, en: "Power Cuts Today", ta: "இன்றைய மின்தடை", desc_en: "Live TANGEDCO power shutdowns", desc_ta: "நேரடி மின்தடை விவரங்கள்" },
       { path: "/school-college-holiday-alerts", icon: AlertTriangle, en: "Holiday Alerts", ta: "பள்ளி விடுமுறை", desc_en: "Collector holiday announcements", desc_ta: "மாவட்ட ஆட்சியர் விடுமுறை" },

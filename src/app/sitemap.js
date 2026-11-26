@@ -16,6 +16,7 @@ import { getAllArticles, getAllRights, getAllSchemes, getAllGuides, getAllPortal
 import { slugifyArea, getAllPowerCutAreaStaticParams } from '@/lib/powerCutAreas';
 
 const SITE_URL = 'https://vizhitn.in';
+export const revalidate = 3600; // Cache sitemap for 1 hour to prevent crawler DB scans
 
 export default async function sitemap() {
   const entries = [];
@@ -48,7 +49,9 @@ export default async function sitemap() {
         .select('district_slug, category_slug, area_slug, area_name, location_text, created_date, updated_date, post_type')
         .eq('status', 'active')
         .not('district_slug', 'is', null)
-        .not('category_slug', 'is', null);
+        .not('category_slug', 'is', null)
+        .order('created_date', { ascending: false })
+        .limit(1000);
 
       if (error) throw error;
 
@@ -351,33 +354,6 @@ export default async function sitemap() {
       url: `${SITE_URL}/power-cuts-today-tamil-nadu/${district}/${area}`,
       ...(lastModified ? { lastModified: new Date(lastModified) } : { lastModified: new Date() }),
       changeFrequency: 'hourly',
-      priority: 0.85,
-    });
-  });
-
-  entries.push({
-    url: `${SITE_URL}/tnpsc`,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: 0.9,
-  });
-
-  // Dedicated TNPSC Subject Landing Pages for Googlebot Indexation
-  const TNPSC_SEO_SUBJECTS = [
-    'general-tamil',
-    'unit-8',
-    'polity',
-    'aptitude',
-    'current-affairs',
-    'geography',
-    'science',
-  ];
-
-  TNPSC_SEO_SUBJECTS.forEach((slug) => {
-    entries.push({
-      url: `${SITE_URL}/tnpsc/${slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
       priority: 0.85,
     });
   });

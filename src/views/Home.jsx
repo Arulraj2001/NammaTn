@@ -11,11 +11,12 @@ import DistrictGateway from "@/components/home/DistrictGateway";
 import CustomAdBanner from "@/components/ads/CustomAdBanner";
 import CtaBanner from "@/components/home/CtaBanner";
 
-export default function Home() {
+export default function Home({ initialData = {} }) {
+  const { posts = [], civicPosts = [], featuredArticle = null, recentArticles = [] } = initialData || {};
   return (
     <div className="min-h-screen bg-civic-50/50 dark:bg-[#071E3D] flex flex-col">
       {/* Zone 1: Hero with Clean Interactive Live Map, Live Stats Bar & Balanced CTAs */}
-      <HomeTopSection />
+      <HomeTopSection initialPosts={posts} />
 
       {/* Zone 2A: 38-District Horizontal Quick Access Strip */}
       <div id="district-strip">
@@ -23,16 +24,16 @@ export default function Home() {
       </div>
 
       {/* Zone 2B: Happening Right Now (3 Freshest Live Verified Dispatches) */}
-      <RecentDispatchesStrip />
+      <RecentDispatchesStrip initialPosts={posts.slice(0, 3)} />
 
       {/* Zone 2C: Quick Civic Actions Bar */}
       <QuickActions />
 
       {/* Zone 3: Flagship Editorial Newsroom Spotlight (TN Today) */}
-      <TnTodaySpotlight />
+      <TnTodaySpotlight initialFeatured={featuredArticle} initialArticles={recentArticles} />
 
       {/* Zone 4: Real Citizen Proof & Verified Receipts */}
-      <CivicProofSection />
+      <CivicProofSection initialPosts={civicPosts} />
 
       {/* Zone 5: 38-District Hyperlocal Gateway */}
       <DistrictGateway />

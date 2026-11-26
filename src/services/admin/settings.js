@@ -1,11 +1,16 @@
 import { supabase } from "@/api/supabaseClient";
 
+const EXCLUDED_SETTING_CATEGORIES = '("dispatch_ledger","tnpsc_questions","tnpsc_automation")';
+let publicSettingsCache = null;
+let publicSettingsPromise = null;
+
 export const getAllSettings = async () => {
   const { data, error } = await supabase
     .from("site_settings")
     .select("*")
+    .not("category", "in", EXCLUDED_SETTING_CATEGORIES)
     .order("key", { ascending: true })
-    .limit(200);
+    .limit(100);
   if (error) throw error;
   return data;
 };
@@ -43,8 +48,24 @@ export const upsertSetting = async (key, value, category = "general") => {
 };
 
 export const getSettingsMap = async () => {
+  // Public browser pages read from the CDN-cached Next.js endpoint (/api/public-settings)
+  // to eliminate per-pageview Supabase egress across all visitors and crawlers.
+  if (typeof window !== "undefined" && !window.location.pathname.startsWith("/admin")) {
+    if (publicSettingsCache) return publicSettingsCache;
+    if (!publicSettingsPromise) {
+      publicSettingsPromise = fetch("/api/public-settings")
+        .then((res) => (res.ok ? res.json() : {}))
+        .then((map) => {
+          publicSettingsCache = map || {};
+          return publicSettingsCache;
+        })
+        .catch(() => ({}));
+    }
+    return publicSettingsPromise;
+  }
+
   const all = await getAllSettings();
-  return all.reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {});
+  return (all || []).reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {});
 };
 
 export const saveSettingsGroup = async (settings, category = "general") => {

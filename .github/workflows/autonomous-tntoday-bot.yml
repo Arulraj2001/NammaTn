@@ -46,6 +46,11 @@ jobs:
           SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          YOUTUBE_CLOUDFLARE_ACCOUNT_ID: ${{ secrets.YOUTUBE_CLOUDFLARE_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_PUBLIC_DOMAIN: ${{ secrets.R2_PUBLIC_DOMAIN }}
           CLOUDFLARE_IMAGE_MODEL: ${{ vars.CLOUDFLARE_IMAGE_MODEL || '@cf/black-forest-labs/flux-1-schnell' }}
           WHATSAPP_SESSION: ${{ secrets.WHATSAPP_SESSION }}
           META_PAGE_ID: ${{ secrets.META_PAGE_ID }}

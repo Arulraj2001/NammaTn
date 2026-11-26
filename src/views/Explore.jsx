@@ -80,6 +80,7 @@ export default function Explore({ initialPosts = [] }) {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const hasInitialPosts = Array.isArray(initialPosts) && initialPosts.length > 0;
   const {
     data: posts = [],
     isLoading,
@@ -87,10 +88,10 @@ export default function Explore({ initialPosts = [] }) {
     refetch,
   } = useQuery({
     queryKey: ["posts", "explore-feed"],
-    queryFn: () => getActivePosts(180),
-    initialData: initialPosts && initialPosts.length > 0 ? initialPosts : undefined,
-    staleTime: 30_000,
-    refetchOnMount: true,
+    queryFn: () => getActivePosts(60),
+    initialData: hasInitialPosts ? initialPosts : undefined,
+    staleTime: 300_000,
+    refetchOnMount: !hasInitialPosts,
   });
 
   const filtered = useMemo(() => {

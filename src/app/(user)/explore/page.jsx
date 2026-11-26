@@ -15,7 +15,7 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const initialPosts = await getExplorePosts(18);
+  const initialPosts = await getExplorePosts(45);
   return (
     <>
       <Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Explore', href: '/explore' }]} />

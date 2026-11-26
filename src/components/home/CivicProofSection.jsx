@@ -45,15 +45,18 @@ const CIVIC_STATUS_MAP = {
   },
 };
 
-export default function CivicProofSection() {
+export default function CivicProofSection({ initialPosts = [] }) {
   const { lang } = useLanguage();
   const T = (en, ta) => (lang === "ta" && ta ? ta : en);
   const [activeCategory, setActiveCategory] = useState("all");
 
+  const hasInitial = Array.isArray(initialPosts) && initialPosts.length > 0;
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["home-civic-proof-posts"],
-    queryFn: () => getActiveCivicPosts(30),
-    staleTime: 120_000,
+    queryFn: () => getActiveCivicPosts(15),
+    initialData: hasInitial ? initialPosts : undefined,
+    staleTime: 600_000,
+    refetchOnMount: !hasInitial,
   });
 
   const filtered = posts.filter((p) => {
