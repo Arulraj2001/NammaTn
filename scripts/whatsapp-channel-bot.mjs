@@ -1,9 +1,16 @@
 // scripts/whatsapp-channel-bot.mjs
 /**
- * VizhiTN Autonomous Scheduled WhatsApp Channel Dispatcher
- * Strictly adheres to 4 scheduled windows (Morning, Midday, Poll, Evening).
- * 100% Anti-Duplication: Every broadcast is checked against dispatch-ledger.mjs.
- * Zero-Fallback Policy: If no fresh unbroadcasted event exists for the slot, safely exits without spamming.
+ * VizhiTN Autonomous WhatsApp Channel Growth Dispatcher
+ *
+ * Strictly enforces 4 clean, high-value native slots (Zero YouTube link spam):
+ * 1. Morning (07:30 AM IST): "Top 5 Headlines in 60s" Capsule + Statewide Consolidated Power Cut / Holiday Card
+ * 2. Midday  (12:00 PM IST): Live Verified TN Govt & Fresher Job Radar Card (or Welfare Scheme fallback)
+ * 3. Poll    (03:00 PM IST): Native 1-Tap WhatsApp Poll (Exam 1-Mark Quiz / Civic Pulse)
+ * 4. Evening (07:00 PM IST): Tomorrow Advance Power Cut Card + Verified Civic/Cyber Safety Alert (1930)
+ *
+ * Strict Rules:
+ * - Zero-Hallucination Policy: If no real verified data exists for a slot, cleanly exits without uploading.
+ * - 100% Anti-Duplication: Every broadcast is checked against Cloudflare R2 dispatch-ledger.mjs.
  */
 
 import fs from 'fs';
@@ -15,6 +22,14 @@ import pino from 'pino';
 import { generateVerifiedWhatsAppPost } from './whatsapp/engine/whatsapp-formatter.mjs';
 import { isAlreadyDispatched, recordDispatch, isEventStale } from './lib/dispatch-ledger.mjs';
 import { VIZHITN_CHANNEL_JID } from '../src/lib/whatsappChannel.js';
+import {
+  getIstClock,
+  fetchMorningTop5Headlines,
+  fetchConsolidatedPowerCuts,
+  fetchVerifiedJobRadar,
+  fetchInteractiveDailyPoll,
+} from './whatsapp/engine/whatsapp-growth-fetcher.mjs';
+import { renderPowerCutDigestCard, renderJobRadarCard } from './whatsapp/engine/whatsapp-card-renderer.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -30,69 +45,22 @@ export async function generateWhatsAppBulletin(post, options = {}) {
   return result.message;
 }
 
-// ── Daily Engagement Polls (Scheduled for 02:00 PM IST) ─────────────────────
-const DAILY_COMMUNITY_POLLS = [
-  {
-    dayOfWeek: 1, // Monday
-    question: "⚡ இன்று உங்கள் பகுதியில் மின்தடை அல்லது மின் விநியோக குறைபாடு ஏற்பட்டதா?",
-    callout: "👇 உங்கள் நிலவரத்தை கீழே ரியாக்ட் செய்யவும்: \n👍 = ஆம், மின்தடை இருந்தது \n❌ = இல்லை, தடையின்றி வந்தது"
-  },
-  {
-    dayOfWeek: 2, // Tuesday
-    question: "💧 உங்கள் வார்டு / பகுதியில் குடிநீர் விநியோகம் சரியான அழுத்தத்தில் வருகிறதா?",
-    callout: "👇 உங்கள் நிலவரத்தை கீழே ரியாக்ட் செய்யவும்: \n👍 = ஆம், சீராக வருகிறது \n❌ = இல்லை, தட்டுப்பாடு உள்ளது"
-  },
-  {
-    dayOfWeek: 3, // Wednesday
-    question: "⚠️ இந்த வாரம் உங்கள் மொபைலுக்கு சந்தேகத்திற்கிடமான மின் கட்டண அல்லது வங்கி SMS வந்ததா?",
-    callout: "👇 கீழே ரியாக்ட் செய்யவும்: \n🚨 = ஆம், போலி SMS வந்தது (1930 புகார்) \n✅ = இல்லை, வரவில்லை"
-  },
-  {
-    dayOfWeek: 4, // Thursday
-    question: "🚌 உங்கள் பகுதியில் அரசு நகரப் பேருந்துகள் (MTC / TNSTC) குறிப்பிட்ட நேரத்திற்கு வருகிறதா?",
-    callout: "👇 கீழே ரியாக்ட் செய்யவும்: \n👍 = குறிப்பிட்ட நேரத்தில் வருகிறது \n❌ = தாமதமாக வருகிறது"
-  },
-  {
-    dayOfWeek: 5, // Friday
-    question: "🌾 இந்த மாதம் ரேஷன் கடையில் உங்கள் குடும்ப அட்டைக்கான முழு பொருட்கள் தடையின்றி கிடைத்ததா?",
-    callout: "👇 கீழே ரியாக்ட் செய்யவும்: \n👍 = முழுமையாக கிடைத்தது \n❌ = சில பொருட்கள் கிடைக்கவில்லை"
-  },
-  {
-    dayOfWeek: 6, // Saturday
-    question: "🚧 உங்கள் ஏரியா முக்கிய சாலையில் மழைநீர் வடிகால் அல்லது தார் சாலை சீரமைப்பு பணிகள் நடந்துள்ளதா?",
-    callout: "👇 கீழே ரியாக்ட் செய்யவும்: \n👍 = சீரமைக்கப்பட்டுள்ளது \n❌ = இன்னும் குண்டும் குழியுமாக உள்ளது"
-  },
-  {
-    dayOfWeek: 0, // Sunday
-    question: "📋 மகளிர் உரிமைத் தொகை அல்லது அரசு நலத்திட்டங்கள் பெறுவதில் ஏதேனும் சிக்கல் உள்ளதா?",
-    callout: "👇 கீழே ரியாக்ட் செய்யவும்: \n👍 = பிரச்சனை ஏதுமில்லை \n❌ = உதவி மையம் நாட வேண்டியுள்ளது"
-  }
-];
-
-function getNowIst() {
-  const now = new Date();
-  const ist = new Date(now.getTime() + 5.5 * 3600 * 1000);
-  return {
-    date: ist.toISOString().slice(0, 10),
-    hours: ist.getUTCHours(),
-    minutes: ist.getUTCMinutes(),
-    dayOfWeek: ist.getUTCDay()
-  };
-}
-
 function resolveActiveSlot(cliSlot) {
   if (cliSlot && cliSlot !== 'auto') return cliSlot;
-  const now = getNowIst();
+  const now = getIstClock();
   if (now.hours >= 6 && now.hours < 11) return 'morning';
   if (now.hours >= 11 && now.hours < 14) return 'midday';
-  if (now.hours >= 14 && now.hours < 17) return 'poll';
+  if (now.hours >= 14 && now.hours < 18) return 'poll';
   return 'evening';
 }
 
 /**
- * Dispatches a single formatted text message to WhatsApp Channel via Baileys.
+ * Opens one Baileys session, dispatches one or more payloads (text, image+caption, or native poll),
+ * with automatic text fallback if newsletter media/poll upload fails.
  */
-async function sendToChannelDirectly(messageText) {
+async function sendPayloadsToChannel(payloads = []) {
+  if (!Array.isArray(payloads) || payloads.length === 0) return [];
+
   const authDir = path.resolve('scripts/baileys_auth');
   if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true });
 
@@ -105,8 +73,8 @@ async function sendToChannelDirectly(messageText) {
   }
 
   if (!fs.existsSync(credsPath)) {
-    console.warn('[WhatsAppChannel] No Baileys credentials found (creds.json / WHATSAPP_SESSION). Exiting cleanly.');
-    return null;
+    console.warn('[WhatsAppChannel] No Baileys credentials found (creds.json / WHATSAPP_SESSION). Skipping live send.');
+    return [];
   }
 
   return new Promise(async (resolve) => {
@@ -119,189 +87,281 @@ async function sendToChannelDirectly(messageText) {
         auth: state,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: false,
-        browser: ['Chrome (Linux)', 'Chrome', '128.0.0.0']
+        browser: ['Chrome (Linux)', 'Chrome', '128.0.0.0'],
       });
 
       sock.ev.on('creds.update', saveCreds);
 
       const timeout = setTimeout(() => {
         try { sock.end(); } catch (_) {}
-        resolve(null);
-      }, 25000);
+        resolve([]);
+      }, 45000);
 
       sock.ev.on('connection.update', async (update) => {
         const { connection } = update;
         if (connection === 'open') {
+          const sentResults = [];
           try {
-            console.log(`[WhatsAppChannel] Connected! Broadcasting to ${VIZHITN_CHANNEL_JID}...`);
-            const sent = await sock.sendMessage(VIZHITN_CHANNEL_JID, { text: messageText });
-            console.log(`[WhatsAppChannel ✓] Message successfully delivered! ID: ${sent?.key?.id}`);
+            console.log(`[WhatsAppChannel] Connected! Sending ${payloads.length} message(s) to ${VIZHITN_CHANNEL_JID}...`);
+            for (const item of payloads) {
+              try {
+                const sent = await sock.sendMessage(VIZHITN_CHANNEL_JID, item.primary);
+                console.log(`[WhatsAppChannel ✓] Sent "${item.label}" ID: ${sent?.key?.id}`);
+                sentResults.push({ label: item.label, slug: item.slug, meta: item.meta, sent });
+              } catch (sendErr) {
+                console.warn(`[WhatsAppChannel WARN] Primary send failed for "${item.label}" (${sendErr.message}).`);
+                if (item.fallbackText) {
+                  try {
+                    const fallbackSent = await sock.sendMessage(VIZHITN_CHANNEL_JID, { text: item.fallbackText });
+                    console.log(`[WhatsAppChannel ✓] Fallback text delivered for "${item.label}" ID: ${fallbackSent?.key?.id}`);
+                    sentResults.push({ label: item.label, slug: item.slug, meta: item.meta, sent: fallbackSent });
+                  } catch (fbErr) {
+                    console.error(`[WhatsAppChannel ❌] Fallback failed for "${item.label}": ${fbErr.message}`);
+                  }
+                }
+              }
+              await new Promise(r => setTimeout(r, 1500));
+            }
+          } finally {
             clearTimeout(timeout);
             setTimeout(() => {
               try { sock.end(); } catch (_) {}
-              resolve(sent);
-            }, 1000);
-          } catch (err) {
-            console.error('[WhatsAppChannel ❌] Send failed:', err.message);
-            clearTimeout(timeout);
-            try { sock.end(); } catch (_) {}
-            resolve(null);
+              resolve(sentResults);
+            }, 1200);
           }
         }
       });
     } catch (err) {
       console.error('[WhatsAppChannel ❌] Socket error:', err.message);
-      resolve(null);
+      resolve([]);
     }
   });
+}
+
+function buildTop5Message(top5) {
+  const bullets = top5.headlines.map((h, i) => `${i + 1}️⃣ ${h.emoji} ${h.textTa}`).join('\n\n');
+  return `📰 *விழி தமிழ்நாடு — இன்றைய டாப் 5 முக்கிய செய்திகள்*\n📅 ${top5.tamilDate} | ⏱️ 60 வினாடிச் சுருக்கம்\n\n${bullets}\n\n🔁 *தினசரி காலை சுருக்கத்தை உங்கள் நண்பர்கள் & குடும்ப குரூப்பில் பகிரவும்!*\n📲 https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228`;
+}
+
+function buildPowerCutCaption(digest) {
+  const listText = digest.items
+    .map(i => `📍 *${i.districtTa}:* ${i.areasTa} *(⏰ ${i.timingTa})*`)
+    .join('\n');
+
+  return `${digest.headlineTa} (${digest.tamilDate})\n\n${listText}\n\n📞 அவசர உதவி எண்: *${digest.helpline || '1912'}*\n🔁 உங்கள் ஏரியா நண்பர்களுக்கு மறக்காமல் பகிருங்கள்!\n📲 https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228`;
+}
+
+function buildJobRadarCaption(job) {
+  const badge = job.isGovt ? '🚨 *TN அரசு வேலைவாய்ப்பு அறிவிப்பு*' : '💼 *தமிழ்நாடு வேலைவாய்ப்பு அறிவிப்பு*';
+  return `${badge}\n\n📌 *பதவி:* ${job.roleTa}\n🏢 *நிறுவனம்:* ${job.orgTa}\n🎓 *கல்வித் தகுதி:* ${job.qualificationTa}\n💰 *ஊதியம்:* ${job.salaryTa}\n👥 *பணியிடங்கள்:* ${job.vacanciesTa || 'அதிகாரப்பூர்வ அறிவிப்புப்படி'}\n⏳ *கடைசி தேதி:* ${job.lastDateTa}\n\n🔗 *நேரடியாக விண்ணப்பிக்க:*\n${job.applyUrl}\n\n👉 *வேலை தேடும் உங்கள் நண்பர்கள் & கல்லூரி குரூப்பில் உடனே பகிரவும்!*\n📲 https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228`;
+}
+
+async function fetchFallbackSupabasePost(categories, nowDate, prioritizeMidday = false) {
+  if (!supabaseUrl || !supabaseKey) return null;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const sinceTime = new Date(Date.now() - 36 * 3600 * 1000).toISOString();
+
+  const { data: candidates, error } = await supabase
+    .from('post')
+    .select('id,slug,title_ta,title_en,content_ta,content_en,district_slug,area_name,location_text,category_slug,post_type,urgency_level,canonical_url,created_date')
+    .eq('status', 'active')
+    .in('category_slug', categories)
+    .gte('created_date', sinceTime)
+    .order('created_date', { ascending: false })
+    .limit(20);
+
+  if (error || !candidates || candidates.length === 0) return null;
+
+  const eligible = candidates.filter(p => {
+    if (!p.slug || isAlreadyDispatched('whatsapp', p.slug)) return false;
+    if (p.post_type === 'alert' && isEventStale(p.created_date)) {
+      const fullText = `${p.title_en || ''} ${p.title_ta || ''} ${p.content_en || ''}`;
+      if (!fullText.includes('Tomorrow') && !fullText.includes('நாளை') && !fullText.includes(nowDate)) return false;
+    }
+    return true;
+  });
+
+  if (eligible.length === 0) return null;
+
+  eligible.sort((a, b) => {
+    const rank = { critical: 4, high: 3, medium: 2, low: 1 };
+    if (prioritizeMidday) {
+      const scoreA = (a.category_slug === 'government-schemes' ? 5 : 0) + (rank[a.urgency_level] || 1);
+      const scoreB = (b.category_slug === 'government-schemes' ? 5 : 0) + (rank[b.urgency_level] || 1);
+      return scoreB - scoreA;
+    }
+    return (rank[b.urgency_level] || 1) - (rank[a.urgency_level] || 1);
+  });
+
+  return eligible[0];
 }
 
 async function main() {
   const isDryRun = process.argv.includes('--dry-run');
   const slotArg = process.argv.find(a => a.startsWith('--slot='))?.split('=')[1];
   const activeSlot = resolveActiveSlot(slotArg);
-  const now = getNowIst();
+  const now = getIstClock();
+  const tempFiles = [];
+  const payloads = [];
 
   console.log('====================================================');
-  console.log('VizhiTN Scheduled WhatsApp Channel Dispatcher');
-  console.log(`Current IST: ${now.date} ${now.hours.toString().padStart(2, '0')}:${now.minutes.toString().padStart(2, '0')}`);
+  console.log('VizhiTN WhatsApp Channel Growth Dispatcher');
+  console.log(`Current IST: ${now.date} ${String(now.hours).padStart(2, '0')}:${String(now.minutes).padStart(2, '0')}`);
   console.log(`Active Slot: ${activeSlot.toUpperCase()} ${isDryRun ? '(DRY RUN)' : ''}`);
   console.log('====================================================');
 
-  // --- SLOT: POLL (02:00 PM IST) ---
-  if (activeSlot === 'poll') {
-    const pollToday = DAILY_COMMUNITY_POLLS.find(p => p.dayOfWeek === now.dayOfWeek) || DAILY_COMMUNITY_POLLS[0];
-    const pollSlug = `poll-engagement-${now.date}`;
-
-    if (isAlreadyDispatched('whatsapp', pollSlug)) {
-      console.log(`[ANTI-DUP ✓] Today's interactive community poll was already broadcasted. Safe clean exit.`);
-      return;
-    }
-
-    const pollMessage = `📊 *விழி தமிழ்நாடு — இன்றைய மக்கள் கருத்துக்கணிப்பு* \n(${now.date})\n\n` +
-      `❓ *${pollToday.question}*\n\n` +
-      `${pollToday.callout}\n\n` +
-      `──────────────────────────────\n` +
-      `📲 *VizhiTN உடனடி எச்சரிக்கைகள் & உண்மை செய்திகளுக்கு:* \n` +
-      `👉 https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228`;
-
-    console.log('\n--- [SCHEDULED POLL BROADCAST] ---');
-    console.log(pollMessage);
-
-    if (!isDryRun) {
-      const res = await sendToChannelDirectly(pollMessage);
-      if (res) {
-        await recordDispatch('whatsapp', pollSlug, { title: pollToday.question, category: 'poll' });
+  // ── SLOT 1: MORNING (Top 5 Headlines + Statewide Power Cut Card) ────────
+  if (activeSlot === 'morning' || activeSlot === 'morning-top5') {
+    const top5Slug = `top5-headlines-${now.date}`;
+    if (!isAlreadyDispatched('whatsapp', top5Slug)) {
+      const top5 = await fetchMorningTop5Headlines();
+      if (top5) {
+        const text = buildTop5Message(top5);
+        payloads.push({
+          label: 'Morning Top 5 Headlines',
+          slug: top5Slug,
+          meta: { title: 'Top 5 Headlines', category: 'top5' },
+          primary: { text },
+        });
       }
     }
-    return;
-  }
 
-  // --- SLOTS: MORNING / MIDDAY / EVENING ---
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  // Determine query parameters based on scheduled window
-  let catFilter = [];
-  let urgencyOrder = true;
-
-  if (activeSlot === 'morning') {
-    // High-priority utility & shutdown alerts
-    catFilter = ['electricity', 'water-sanitation', 'environment', 'road-infrastructure'];
-  } else if (activeSlot === 'midday') {
-    // Government schemes, public safety, transit progress
-    catFilter = ['government-schemes', 'public-safety', 'transport', 'healthcare', 'education'];
-  } else {
-    // Evening: tomorrow's advance notices, transport line blocks
-    catFilter = ['electricity', 'transport', 'road-infrastructure', 'government-schemes'];
-  }
-
-  // Fetch candidate posts from last 36 hours (status = 'active')
-  const sinceTime = new Date(Date.now() - 36 * 3600 * 1000).toISOString();
-  const { data: candidates, error: fetchErr } = await supabase
-    .from('post')
-    .select('*')
-    .eq('status', 'active')
-    .in('category_slug', catFilter)
-    .gte('created_date', sinceTime)
-    .order('created_date', { ascending: false })
-    .limit(30);
-
-  if (fetchErr || !candidates || candidates.length === 0) {
-    console.log(`[INFO] No active posts found in Supabase for slot "${activeSlot}". Safe clean exit.`);
-    return;
-  }
-
-  // Filter out any post already broadcasted or stale
-  const eligiblePosts = candidates.filter(p => {
-    if (!p.slug) return false;
-    // Check if already dispatched to WhatsApp
-    if (isAlreadyDispatched('whatsapp', p.slug)) {
-      return false;
-    }
-    // Check if event is stale (for time-sensitive alerts with past dates)
-    if (p.post_type === 'alert' && isEventStale(p.created_date)) {
-      const fullText = `${p.title_en || ''} ${p.title_ta || ''} ${p.content_en || ''}`;
-      const isAdvanceNotice = fullText.includes('Tomorrow') || fullText.includes('நாளை') || fullText.includes(now.date);
-      if (!isAdvanceNotice) {
-        return false;
+    const pwrSlug = `power-digest-today-${now.date}`;
+    if (!isAlreadyDispatched('whatsapp', pwrSlug)) {
+      const digest = await fetchConsolidatedPowerCuts({ mode: 'today' });
+      if (digest) {
+        const caption = buildPowerCutCaption(digest);
+        const cardPath = path.resolve(`scripts/youtube/assets/wa_power_${Date.now()}.png`);
+        renderPowerCutDigestCard(digest, cardPath);
+        tempFiles.push(cardPath);
+        payloads.push({
+          label: 'Statewide Power Cut / Holiday Card',
+          slug: pwrSlug,
+          meta: { title: digest.headlineTa, category: 'power_digest' },
+          primary: { image: fs.readFileSync(cardPath), caption },
+          fallbackText: caption,
+        });
       }
     }
-    return true;
-  });
+  }
 
-  if (eligiblePosts.length === 0) {
-    console.log(`[ANTI-DUP ✓] All ${candidates.length} candidate posts have already been broadcasted to WhatsApp. Safe clean exit — zero duplicates.`);
+  // ── SLOT 2: MIDDAY (Verified TN Govt & Fresher Job Radar Card) ──────────
+  else if (activeSlot === 'midday' || activeSlot === 'job-radar') {
+    const job = await fetchVerifiedJobRadar();
+    if (job) {
+      const caption = buildJobRadarCaption(job);
+      const cardPath = path.resolve(`scripts/youtube/assets/wa_job_${Date.now()}.png`);
+      renderJobRadarCard(job, cardPath);
+      tempFiles.push(cardPath);
+      payloads.push({
+        label: 'Verified Job Radar Card',
+        slug: job.slug,
+        meta: { title: job.roleTa, category: 'job_radar' },
+        primary: { image: fs.readFileSync(cardPath), caption },
+        fallbackText: caption,
+      });
+    } else {
+      // Fallback ONLY to verified unbroadcasted scheme/education DB post
+      const post = await fetchFallbackSupabasePost(['government-schemes', 'education', 'healthcare'], now.date, true);
+      if (post) {
+        const formatted = await generateVerifiedWhatsAppPost({ post, isForwardVariant: false });
+        payloads.push({
+          label: 'Midday Scheme / Education Bulletin',
+          slug: post.slug,
+          meta: { title: post.title_ta || post.title_en, category: post.category_slug },
+          primary: { text: formatted.message },
+        });
+      }
+    }
+  }
+
+  // ── SLOT 3: AFTERNOON NATIVE POLL (Exam 1-Mark / Civic Pulse) ───────────
+  else if (activeSlot === 'poll') {
+    const poll = await fetchInteractiveDailyPoll();
+    if (!isAlreadyDispatched('whatsapp', poll.id)) {
+      const fallbackText =
+        `📊 *விழி தமிழ்நாடு — இன்றைய மக்கள் கருத்துக்கணிப்பு*\n\n❓ *${poll.question}*\n\n` +
+        poll.options.map((opt, idx) => `${idx + 1}️⃣ ${opt}`).join('\n') +
+        `\n\n👇 உங்கள் கருத்தை ரியாக்ட் / கமெண்ட் செய்யுங்கள்!\n📲 https://whatsapp.com/channel/0029VbDod36IiRoyGK7qD228`;
+
+      payloads.push({
+        label: `Native Poll (${poll.kind})`,
+        slug: poll.id,
+        meta: { title: poll.question, category: 'poll' },
+        primary: {
+          poll: {
+            name: poll.question,
+            values: poll.options,
+            selectableCount: 1,
+          },
+        },
+        fallbackText,
+      });
+    }
+  }
+
+  // ── SLOT 4: EVENING (Tomorrow Advance Power Cut Card / Cyber Alert) ─────
+  else {
+    const tmrSlug = `power-digest-tomorrow-${now.date}`;
+    if (!isAlreadyDispatched('whatsapp', tmrSlug)) {
+      const tmrDigest = await fetchConsolidatedPowerCuts({ mode: 'tomorrow' });
+      if (tmrDigest) {
+        const caption = buildPowerCutCaption(tmrDigest);
+        const cardPath = path.resolve(`scripts/youtube/assets/wa_tmr_${Date.now()}.png`);
+        renderPowerCutDigestCard(tmrDigest, cardPath);
+        tempFiles.push(cardPath);
+        payloads.push({
+          label: 'Tomorrow Advance Power Cut Card',
+          slug: tmrSlug,
+          meta: { title: tmrDigest.headlineTa, category: 'power_advance' },
+          primary: { image: fs.readFileSync(cardPath), caption },
+          fallbackText: caption,
+        });
+      }
+    }
+
+    if (payloads.length === 0) {
+      const post = await fetchFallbackSupabasePost(['public-safety', 'electricity', 'transport', 'road-infrastructure'], now.date);
+      if (post) {
+        const formatted = await generateVerifiedWhatsAppPost({ post, isForwardVariant: false });
+        payloads.push({
+          label: 'Evening Verified Civic/Scam Alert',
+          slug: post.slug,
+          meta: { title: post.title_ta || post.title_en, category: post.category_slug },
+          primary: { text: formatted.message },
+        });
+      }
+    }
+  }
+
+  if (payloads.length === 0) {
+    console.log(`[SKIP ✓] No real unbroadcasted verified content available for slot "${activeSlot}". Exiting cleanly — zero spam.`);
     return;
   }
 
-  // Priority ranking per slot
-  if (activeSlot === 'midday') {
-    // Prioritize Welfare Schemes, Job Alerts, and Education
-    eligiblePosts.sort((a, b) => {
-      const getPriorityScore = (p) => {
-        const text = `${p.title_en || ''} ${p.title_ta || ''} ${p.content_en || ''}`.toLowerCase();
-        let score = 0;
-        if (p.category_slug === 'government-schemes') score += 10;
-        if (p.category_slug === 'education') score += 8;
-        if (text.includes('scheme') || text.includes('உரிமை') || text.includes('kmut') || text.includes('மகளிர்')) score += 5;
-        if (text.includes('job') || text.includes('recruitment') || text.includes('வேலை') || text.includes('பணியிடம்') || text.includes('தேர்வு')) score += 5;
-        return score;
-      };
-      const scoreDiff = getPriorityScore(b) - getPriorityScore(a);
-      if (scoreDiff !== 0) return scoreDiff;
-      const rank = { critical: 4, high: 3, medium: 2, low: 1 };
-      return (rank[b.urgency_level] || 1) - (rank[a.urgency_level] || 1);
-    });
+  console.log(`\n[QUEUE READY] ${payloads.length} verified broadcast(s) prepared:`);
+  for (const p of payloads) {
+    console.log(`\n--- [${p.label}] (${p.slug}) ---`);
+    if (p.primary.poll) {
+      console.log('NATIVE POLL:', p.primary.poll.name, 'Options:', p.primary.poll.values);
+    } else if (p.primary.image) {
+      console.log('IMAGE CARD + CAPTION:\n' + p.primary.caption);
+    } else {
+      console.log(p.primary.text);
+    }
+  }
+
+  if (!isDryRun) {
+    const delivered = await sendPayloadsToChannel(payloads);
+    for (const d of delivered) {
+      await recordDispatch('whatsapp', d.slug, d.meta);
+    }
   } else {
-    // Sort by urgency: critical > high > medium > low
-    eligiblePosts.sort((a, b) => {
-      const rank = { critical: 4, high: 3, medium: 2, low: 1 };
-      return (rank[b.urgency_level] || 1) - (rank[a.urgency_level] || 1);
-    });
+    console.log('\n[DRY RUN ✓] Skipped live WhatsApp socket broadcast.');
   }
 
-  const selectedPost = eligiblePosts[0];
-  console.log(`[SLOT SELECTION] Selected fresh unbroadcasted post: "${selectedPost.title_ta || selectedPost.title_en}"`);
-  console.log(`District: ${selectedPost.district_slug} | Category: ${selectedPost.category_slug} | Urgency: ${selectedPost.urgency_level}`);
-
-  const formatted = await generateVerifiedWhatsAppPost({ post: selectedPost, isForwardVariant: false });
-  console.log('\n--- [VERIFIED WHATSAPP BULLETIN] ---');
-  console.log(formatted.message);
-
-  if (isDryRun) {
-    console.log('\n[DRY RUN] Skipping live WhatsApp channel dispatch.');
-    return;
-  }
-
-  // Live broadcast
-  const sendResult = await sendToChannelDirectly(formatted.message);
-  if (sendResult) {
-    await recordDispatch('whatsapp', selectedPost.slug, {
-      title: selectedPost.title_ta || selectedPost.title_en,
-      district: selectedPost.district_slug,
-      category: selectedPost.category_slug
-    });
-    console.log(`[DISPATCH COMPLETE ✓] Successfully posted to WhatsApp Channel!`);
+  for (const f of tempFiles) {
+    try { if (fs.existsSync(f)) fs.unlinkSync(f); } catch {}
   }
 }
 

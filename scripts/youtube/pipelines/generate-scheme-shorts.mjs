@@ -15,6 +15,15 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { getBrandLogoDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
+import {
+  isBroadcastCompletedToday,
+  getRecentlyUsedTopicIds,
+  recordBroadcastSuccess,
+} from '../engine/broadcast-logger.mjs';
+import { getTodayIst } from '../engine/calendar-reader.mjs';
+import { fetchVerifiedJobRadar } from '../../whatsapp/engine/whatsapp-growth-fetcher.mjs';
+import { recordDispatch } from '../../lib/dispatch-ledger.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -214,19 +223,72 @@ function generateSchemeSlideHtml({
 }
 
 async function main() {
-  console.log('====================================================');
-  console.log('VizhiTN Tamil Nadu Government Welfare Scheme Guide');
-  console.log('====================================================');
-
   const isDryRun = process.argv.includes('--dry-run');
+  const metaOnly = process.argv.includes('--meta-only');
+  const skipUpload = isDryRun || process.argv.includes('--skip-upload');
+  const modeArg = process.argv.find(a => a.startsWith('--mode='))?.split('=')[1] || 'scheme';
   const schemeArg = process.argv.find(a => a.startsWith('--scheme='))?.split('=')[1];
+  const isLiveJobMode = modeArg === 'live-job';
+  const formatKey = isLiveJobMode ? 'live-job-shorts' : 'scheme-shorts';
+  const todayIst = getTodayIst();
+  const timeIst = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
 
-  const scheme = schemeArg ? getSchemeById(schemeArg) : getTodayScheme();
+  console.log('====================================================');
+  console.log(`VizhiTN Pillar D: ${isLiveJobMode ? 'Live Verified TN Govt & Job Alert Reel' : 'Tamil Nadu Govt Welfare Scheme Reel'}`);
+  console.log(`Execution Mode: ${isDryRun ? 'DRY RUN' : (metaOnly ? 'META ONLY (IG+FB)' : 'FULL (YT + META)')}`);
+  console.log('====================================================');
+
+  if (!isDryRun) {
+    const check = await isBroadcastCompletedToday(formatKey, todayIst);
+    if (check.published) {
+      console.log(`[SKIP ✓] Format "${formatKey}" already published today (${todayIst}).`);
+      return;
+    }
+  }
+
+  let scheme = null;
+  if (isLiveJobMode) {
+    const liveJob = await fetchVerifiedJobRadar({ dedupeChannel: 'live-job-reels' });
+    if (!liveJob) {
+      console.log('[JOB REEL SKIP ✓] No currently open, verified TN Govt/Fresher job notification found today. Clean skip.');
+      return;
+    }
+    scheme = {
+      id: liveJob.slug,
+      category: liveJob.isGovt ? 'govt-job' : 'fresher-job',
+      categoryLabel: liveJob.isGovt ? 'அரசு வேலைவாய்ப்பு' : 'Fresher Job Alert',
+      categoryColor: liveJob.isGovt ? '#059669' : '#2563eb',
+      titleTa: `${liveJob.roleTa} — வேலைவாய்ப்பு அறிவிப்பு!`,
+      benefitBadge: `${liveJob.salaryTa} | ${liveJob.vacanciesTa || 'புதிய பணியிடங்கள்'}`,
+      officialDepartment: liveJob.orgTa || liveJob.sourceName || 'Verified Recruitment',
+      officialPortal: liveJob.applyUrl.replace(/^https?:\/\//, '').slice(0, 60),
+      helpline: '1100 / அதிகாரப்பூர்வ தளம்',
+      hookTa: `${liveJob.orgTa} நிறுவனத்தில் ${liveJob.roleTa} பணிக்கு விண்ணப்பங்கள் வரவேற்கப்படுகின்றன! கடைசி தேதி: ${liveJob.lastDateTa}.`,
+      eligibilityTa: `கல்வித்தகுதி: ${liveJob.qualificationTa}. சம்பளம்: ${liveJob.salaryTa}.`,
+      documentsTa: 'ஆதார் அட்டை, கல்விச் சான்றிதழ்கள், பாஸ்போர்ட் அளவு புகைப்படம் மற்றும் சாதி/வருமான சான்றிதழ் (பொருந்தினால்).',
+      applicationStepsTa: `${liveJob.officialPortal || liveJob.applyUrl} என்ற அதிகாரப்பூர்வ இணையதளம் வழியாக ${liveJob.lastDateTa}-க்குள் ஆன்லைனில் விண்ணப்பிக்கவும்.`,
+      avoidMiddlemenWarning: `நம்பகமான அதிகாரப்பூர்வ இணையதளத்தில் மட்டுமே விண்ணப்பிக்கவும் (${liveJob.sourceName || 'Verified'}). போலி இணைப்புகளை நம்பாதீர்கள்!`,
+      rawApplyUrl: liveJob.applyUrl,
+      lastDateTa: liveJob.lastDateTa,
+    };
+  } else if (schemeArg) {
+    scheme = getSchemeById(schemeArg);
+  } else {
+    const recentlyUsedIds = await getRecentlyUsedTopicIds(30);
+    const freshSchemes = TN_SCHEMES_CATALOG.filter(s => !recentlyUsedIds.has(s.id));
+    if (freshSchemes.length > 0) {
+      const idx = Math.floor(Date.now() / (24 * 3600 * 1000)) % freshSchemes.length;
+      scheme = freshSchemes[idx];
+    } else {
+      scheme = getTodayScheme();
+    }
+  }
+
   if (!scheme) {
     throw new Error(`Scheme not found for key: ${schemeArg}`);
   }
 
-  console.log(`[SCHEME] Selected: "${scheme.titleTa}" (${scheme.id})`);
+  console.log(`[SELECTED] "${scheme.titleTa}" (${scheme.id})`);
   console.log(`[BENEFIT] ${scheme.benefitBadge} | Dept: ${scheme.officialDepartment}`);
 
   const sessionDir = path.resolve(`scripts/youtube/assets/scheme_${Date.now()}`);
@@ -321,29 +383,65 @@ async function main() {
   assembleMultiSceneShortsVideo({ scenes, outputPath: outputVideoPath });
   console.log(`[SCHEME VIDEO OK] Rendered: ${outputVideoPath}`);
 
-  const videoTitle = `${scheme.titleTa} | TN Govt Schemes #Shorts`;
-  const videoDescription = `${scheme.titleTa} - தமிழ்நாடு அரசு நலத்திட்ட வழிகாட்டி.\n\nபலன்: ${scheme.benefitBadge}\nஅதிகாரப்பூர்வ தளம்: ${scheme.officialPortal}\nஉதவி எண்: ${scheme.helpline}\n\n#TamilNaduSchemes #TNGovtSchemes #VizhiTN #Shorts #CitizenRights`;
+  const videoTitle = isLiveJobMode
+    ? `${scheme.titleTa} | கடைசி தேதி: ${scheme.lastDateTa} #Shorts`
+    : `${scheme.titleTa} | TN Govt Schemes #Shorts`;
+  const videoDescription = isLiveJobMode
+    ? `🚨 ${scheme.titleTa}\n\n🏢 நிறுவனம்: ${scheme.officialDepartment}\n🎓 தகுதி & சம்பளம்: ${scheme.benefitBadge}\n⏳ கடைசி தேதி: ${scheme.lastDateTa}\n🔗 விண்ணப்பிக்க: ${scheme.rawApplyUrl}\n\n👉 வேலை தேடும் நண்பர்களுக்கு உடனே Share பண்ணுங்க!\n\n#TNJobs #TamilNaduJobs #TNPSC #JobAlertTamil #VizhiTN #Shorts`
+    : `${scheme.titleTa} - தமிழ்நாடு அரசு நலத்திட்ட வழிகாட்டி.\n\nபலன்: ${scheme.benefitBadge}\nஅதிகாரப்பூர்வ தளம்: ${scheme.officialPortal}\nஉதவி எண்: ${scheme.helpline}\n\n📌 நண்பர்கள் மற்றும் குடும்பத்தினருக்கு Share பண்ணுங்க!\n\n#TamilNaduSchemes #TNGovtSchemes #VizhiTN #Shorts #CitizenRights`;
 
-  if (isDryRun) {
+  if (skipUpload) {
     console.log('\n--- [DRY RUN PREVIEW] ---');
     console.log(`Title: ${videoTitle}`);
     console.log(`Video File: ${outputVideoPath}`);
-    console.log('[SUCCESS ✓] Scheme Explainer pipeline verified successfully.');
+    console.log('[SUCCESS ✓] Scheme / Job pipeline verified successfully.');
     return;
   }
 
-  console.log('[YOUTUBE] Uploading Scheme Short...');
-  const res = await uploadToYouTube({
+  let ytRes = { videoId: null, videoUrl: null };
+  if (!metaOnly) {
+    console.log('[YOUTUBE] Uploading Short...');
+    ytRes = await uploadToYouTube({
+      videoFilePath: outputVideoPath,
+      title: videoTitle,
+      description: videoDescription,
+      tags: isLiveJobMode
+        ? ['Tamil Nadu Jobs', 'TN Govt Jobs 2026', 'TNPSC Notification', 'Fresher Jobs Chennai', 'Shorts']
+        : ['Tamil Nadu Government Schemes', 'TN Schemes 2026', 'Magalir Urimai', 'TN Citizen Guide', 'Shorts'],
+      categoryId: '27',
+      privacyStatus: 'public',
+      isShort: true,
+      autoShareToWhatsApp: false,
+    });
+    console.log(`[SHORT PUBLISHED ✓] Live: ${ytRes.videoUrl}`);
+  } else {
+    console.log('[META-ONLY] Skipped YouTube upload to stay strictly inside daily YouTube Shorts quota.');
+  }
+
+  const metaRes = await crossPostVideoToMetaSocials({
     videoFilePath: outputVideoPath,
+    thumbnailFilePath: s1Path,
     title: videoTitle,
-    description: videoDescription,
-    tags: ['Tamil Nadu Government Schemes', 'TN Schemes 2026', 'Magalir Urimai', 'TN Citizen Guide', 'Shorts'],
-    categoryId: '27',
-    privacyStatus: 'public',
-    isShort: true
+    caption: videoDescription,
+    isReel: true,
+    isDryRun: false,
   });
 
-  console.log(`[SCHEME SHORT PUBLISHED ✓] Live: ${res.videoUrl}`);
+  if (isLiveJobMode) {
+    await recordDispatch('live-job-reels', scheme.id, { title: scheme.titleTa, category: scheme.category });
+  }
+
+  await recordBroadcastSuccess({
+    broadcastDate: todayIst,
+    format: formatKey,
+    timeIst,
+    title: videoTitle,
+    youtubeVideoId: ytRes.videoId,
+    youtubeUrl: ytRes.videoUrl,
+    metaVideoId: metaRes?.fbVideoId || null,
+    metaReelId: metaRes?.igReelId || null,
+    metadata: { topicId: scheme.id, pillar: isLiveJobMode ? 'live-job' : 'welfare-scheme', metaOnly },
+  });
 }
 
 main().catch(err => {

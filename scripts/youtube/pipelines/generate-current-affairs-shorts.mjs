@@ -14,6 +14,9 @@ import { renderHtmlToImage } from '../engine/frame-renderer.mjs';
 import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video-composer.mjs';
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
+import { isBroadcastCompletedToday, recordBroadcastSuccess } from '../engine/broadcast-logger.mjs';
+import { getTodayIst } from '../engine/calendar-reader.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
@@ -185,14 +188,38 @@ function buildShortSlideHtml(event, index, total, tamilDate) {
 
 async function main() {
   const isDryRun = process.argv.includes('--dry-run');
+  const metaOnly = process.argv.includes('--meta-only');
   const skipUpload = isDryRun || process.argv.includes('--skip-upload');
+  const formatKey = 'ca-shorts';
+  const todayIst = getTodayIst();
+  const timeIst = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
 
   console.log('====================================================');
-  console.log('VizhiTN Daily Civic & Development Shorts Engine');
-  console.log(`Execution Mode: ${isDryRun ? 'DRY RUN' : 'PRODUCTION'}`);
+  console.log('VizhiTN Pillar A: Daily 3-Fact TN Current Affairs Shorts');
+  console.log(`Execution Mode: ${isDryRun ? 'DRY RUN' : (metaOnly ? 'META ONLY (IG+FB)' : 'FULL (YT + META)')}`);
   console.log('====================================================');
 
-  const pkg = await getDailyCurrentAffairsPackage();
+  if (!isDryRun) {
+    const check = await isBroadcastCompletedToday(formatKey, todayIst);
+    if (check.published) {
+      console.log(`[CA SHORTS SKIP ✓] Already published today (${todayIst}).`);
+      return;
+    }
+  }
+
+  let pkg = null;
+  try {
+    pkg = await getDailyCurrentAffairsPackage();
+  } catch (err) {
+    console.log(`[CA SHORTS SKIP ✓] Live RSS/verification unavailable (${err.message}). Zero fake content uploaded.`);
+    return;
+  }
+
+  if (!pkg || !Array.isArray(pkg.events) || pkg.events.length < 3) {
+    console.log(`[CA SHORTS SKIP ✓] Fewer than 3 verified live TN current affairs events today (${pkg?.events?.length || 0}). Skipping slot.`);
+    return;
+  }
+
   const shortsData = buildShortsScript(pkg);
 
   console.log(`[SHORTS SCRIPT OK] Title: ${shortsData.title}`);
@@ -239,18 +266,47 @@ async function main() {
     return;
   }
 
-  console.log('[YOUTUBE] Uploading Short...');
-  const res = await uploadToYouTube({
+  const captionText = `📰 இன்றைய முக்கிய 3 TNPSC & தமிழ்நாடு செய்திகள் (${shortsData.tamilDate}).\n\n📌 Daily Current Affairs ரிவிஷனுக்கு உடனே Save பண்ணி வச்சுக்கோங்க!\n\n#Shorts #TamilNaduNews #CurrentAffairsTamil #TNPSCGroup4 #TamilUpdates #VizhiTN`;
+  const firstSlidePath = scenes[0]?.slidePath || null;
+
+  let ytRes = { videoId: null, videoUrl: null };
+  if (!metaOnly) {
+    console.log('[YOUTUBE] Uploading Short...');
+    ytRes = await uploadToYouTube({
+      videoFilePath: outputVideoPath,
+      title: shortsData.title,
+      description: captionText,
+      tags: ['Tamil Nadu News', 'Current Affairs Tamil', 'TNPSC Group 4', 'Tamil Nadu Shorts', 'Shorts'],
+      categoryId: '25',
+      privacyStatus: 'public',
+      isShort: true,
+      autoShareToWhatsApp: false,
+    });
+    console.log(`[SHORTS PUBLISHED ✓] Live: ${ytRes.videoUrl}`);
+  } else {
+    console.log('[META-ONLY] Skipped YouTube upload to stay strictly inside safe YouTube daily volume.');
+  }
+
+  const metaRes = await crossPostVideoToMetaSocials({
     videoFilePath: outputVideoPath,
+    thumbnailFilePath: firstSlidePath,
     title: shortsData.title,
-    description: `இன்றைய டாப் 3 மக்கள் செய்திகள் (${shortsData.tamilDate}). தமிழ்நாடு அரசு அறிவிப்புகள் & மக்கள் வழிகாட்டல்.\n\n#Shorts #TamilNaduNews #GovtSchemes #TamilUpdates #VizhiTN`,
-    tags: ['Tamil Nadu News', 'Tamil Nadu Shorts', 'Civic Tamil', 'Daily News Tamil', 'Shorts'],
-    categoryId: '25',
-    privacyStatus: 'public',
-    isShort: true
+    caption: captionText,
+    isReel: true,
+    isDryRun: false,
   });
 
-  console.log(`[SHORTS PUBLISHED ✓] Live: ${res.videoUrl}`);
+  await recordBroadcastSuccess({
+    broadcastDate: todayIst,
+    format: formatKey,
+    timeIst,
+    title: shortsData.title,
+    youtubeVideoId: ytRes.videoId,
+    youtubeUrl: ytRes.videoUrl,
+    metaVideoId: metaRes?.fbVideoId || null,
+    metaReelId: metaRes?.igReelId || null,
+    metadata: { topicId: `ca-${todayIst}`, pillar: 'current-affairs', eventCount: topEvents.length, metaOnly },
+  });
 }
 
 main().catch(err => {

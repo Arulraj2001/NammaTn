@@ -60,7 +60,7 @@ export async function uploadToYouTube({
   categoryId = '25',
   privacyStatus = 'public',
   isShort = false,
-  autoShareToWhatsApp = true
+  autoShareToWhatsApp = false
 }) {
   if (!fs.existsSync(videoFilePath)) {
     throw new Error(`Video file does not exist: ${videoFilePath}`);

@@ -20,7 +20,6 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { getBrandLogoDataUri, getStickmanAssetDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
-import { shareYouTubeBroadcastToWhatsApp } from '../engine/whatsapp-youtube-sharer.mjs';
 import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
 import { getTodayIst, getNowIst } from '../engine/calendar-reader.mjs';
 
@@ -449,16 +448,6 @@ async function main() {
     console.log('\n--- [DRY RUN PREVIEW] ---');
     console.log(`Title: ${videoTitle}`);
     console.log(`Video File: ${outputVideoPath}`);
-    console.log('[WHATSAPP AUTO-SHARE MOCK] Testing WhatsApp broadcast...');
-    await shareYouTubeBroadcastToWhatsApp({
-      videoId: 'DRY_RUN_MOCK_ID',
-      videoUrl: 'https://youtube.com/shorts/DRY_RUN_MOCK_ID',
-      title: videoTitle,
-      description: videoDesc,
-      isShort: true,
-      category: 'civic-alert',
-      dryRun: true
-    });
     console.log('[SUCCESS ✓] Civic Alert pipeline dry run completed successfully.');
     return;
   }
@@ -471,27 +460,11 @@ async function main() {
     tags: ['Tamil Nadu News', 'TANGEDCO Power Cut', 'School Holiday Alert', 'Chennai Rains', 'Shorts', 'VizhiTN'],
     categoryId: '25', // News & Politics
     privacyStatus: 'public',
-    isShort: true
+    isShort: true,
+    autoShareToWhatsApp: false
   });
 
   console.log(`[CIVIC SHORT PUBLISHED ✓] Live: ${res.videoUrl}`);
-
-  // Automated WhatsApp Channel Broadcast
-  try {
-    console.log('[WHATSAPP DISPATCH] Broadcasting civic short to WhatsApp Channel...');
-    await shareYouTubeBroadcastToWhatsApp({
-      videoId: res.videoId,
-      videoUrl: res.videoUrl,
-      title: videoTitle,
-      description: videoDesc,
-      isShort: true,
-      category: 'civic-alert',
-      dryRun: false
-    });
-    console.log('[WHATSAPP DISPATCH ✓] Civic alert successfully delivered to WhatsApp Channel!');
-  } catch (waErr) {
-    console.warn('[WHATSAPP DISPATCH WARN] Could not post to WhatsApp Channel:', waErr.message);
-  }
 
   // Anti-Duplication Ledger Recording
   try {

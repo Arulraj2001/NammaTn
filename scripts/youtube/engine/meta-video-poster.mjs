@@ -229,7 +229,7 @@ export async function crossPostVideoToMetaSocials({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              message: `▶️ TNPSC மாதிரி தேர்வுகள் மற்றும் 1-Mark பயிற்சிக்கு VizhiTN-ஐ Follow செய்யுங்கள்:\n🔗 https://vizhitn.in/tnpsc`,
+              message: `▶️ தமிழ்நாடு மக்கள் செய்திகள் மற்றும் அரசு வழிகாட்டல்களுக்கு VizhiTN-ஐ Follow செய்யுங்கள்:\n🔗 https://vizhitn.in/explore`,
               access_token: activePageToken
             })
           });

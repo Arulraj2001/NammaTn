@@ -1,0 +1,159 @@
+name: VizhiTN Autonomous Growth Reels & Shorts Bot
+
+on:
+  schedule:
+    # 07:00 UTC = 12:30 PM IST (Pillar A: Live Verified 3-Fact TN Current Affairs)
+    - cron: '0 7 * * *'
+    # 10:30 UTC = 04:00 PM IST (Pillar D1: Live Verified TN Govt & Fresher Job Alert)
+    - cron: '30 10 * * *'
+    # 11:15 UTC = 04:45 PM IST (Pillar B: 5-Second TNPSC Maths Shortcut Trick)
+    - cron: '15 11 * * *'
+    # 11:45 UTC = 05:15 PM IST (Pillar C: Podhu Tamil Literature & Grammar Code)
+    - cron: '45 11 * * *'
+    # 12:15 UTC = 05:45 PM IST Tue/Thu/Sat (Pillar D2: TN Govt Welfare Scheme Guide)
+    - cron: '15 12 * * 2,4,6'
+
+  workflow_dispatch:
+    inputs:
+      pillar:
+        description: 'Growth Reel Pillar to run'
+        type: choice
+        options:
+          - current-affairs
+          - live-job
+          - maths-shortcut
+          - tamil-shortcut
+          - scheme-guide
+        default: 'current-affairs'
+      meta_only:
+        description: 'Skip YouTube and post to Instagram + Facebook Reels only'
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Dry run (render MP4 only, no uploads)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: autonomous-growth-reels-bot
+  cancel-in-progress: false
+
+jobs:
+  growth-reels-publish:
+    name: Produce & Publish Growth Reels
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install System Dependencies (FFmpeg, Tamil Fonts & Edge-TTS)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto-core fonts-noto-ui-core fonts-noto-hinted fonts-taml fontconfig python3 python3-pip
+          fc-cache -fv
+          pip3 install --quiet --upgrade "edge-tts>=7.3.1" --break-system-packages
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Run Growth Pillar Pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NEW_GEMINI_API_KEY: ${{ secrets.NEW_GEMINI_API_KEY }}
+          NEW2_GEMINI_API_KEY: ${{ secrets.NEW2_GEMINI_API_KEY }}
+          YOUTUBE_GEMINI_API_KEY: ${{ secrets.YOUTUBE_GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          NEXT_PUBLIC_VITE_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_VITE_SUPABASE_URL || secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CLOUDFLARE_ACCOUNT_ID: ${{ secrets.YOUTUBE_CLOUDFLARE_ACCOUNT_ID }}
+          YOUTUBE_CLOUDFLARE_API_TOKEN: ${{ secrets.YOUTUBE_CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_INSTA_ACCOUNT_ID: ${{ secrets.META_INSTA_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_PUBLIC_DOMAIN: ${{ secrets.R2_PUBLIC_DOMAIN }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://www.vizhitn.in' }}
+          CHROME_BIN: '/usr/bin/google-chrome'
+        run: |
+          SCHEDULE="${{ github.event.schedule }}"
+          MANUAL_PILLAR="${{ github.event.inputs.pillar }}"
+          DRY_FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          # Day of week in IST (1=Mon .. 7=Sun) to rotate extra YouTube Shorts (max +1..2/day on YouTube, daily on IG+FB)
+          DOW_IST=$(TZ='Asia/Kolkata' date +%u)
+
+          TARGET_PILLAR="$MANUAL_PILLAR"
+          YT_MODE="--meta-only"
+
+          if [ -n "$SCHEDULE" ]; then
+            if [ "$SCHEDULE" = "0 7 * * *" ]; then
+              TARGET_PILLAR="current-affairs"
+              if [ "$DOW_IST" = "1" ] || [ "$DOW_IST" = "3" ] || [ "$DOW_IST" = "5" ] || [ "$DOW_IST" = "7" ]; then
+                YT_MODE=""
+              fi
+            elif [ "$SCHEDULE" = "30 10 * * *" ]; then
+              TARGET_PILLAR="live-job"
+              if [ "$DOW_IST" = "1" ] || [ "$DOW_IST" = "3" ] || [ "$DOW_IST" = "5" ]; then
+                YT_MODE=""
+              fi
+            elif [ "$SCHEDULE" = "15 11 * * *" ]; then
+              TARGET_PILLAR="maths-shortcut"
+              if [ "$DOW_IST" = "2" ] || [ "$DOW_IST" = "6" ]; then
+                YT_MODE=""
+              fi
+            elif [ "$SCHEDULE" = "45 11 * * *" ]; then
+              TARGET_PILLAR="tamil-shortcut"
+              if [ "$DOW_IST" = "4" ] || [ "$DOW_IST" = "7" ]; then
+                YT_MODE=""
+              fi
+            elif [ "$SCHEDULE" = "15 12 * * 2,4,6" ]; then
+              TARGET_PILLAR="scheme-guide"
+              if [ "$DOW_IST" = "2" ] || [ "$DOW_IST" = "4" ]; then
+                YT_MODE=""
+              fi
+            fi
+          elif [ "${{ github.event.inputs.meta_only }}" != "true" ]; then
+            YT_MODE=""
+          fi
+
+          echo "[GROWTH BOT] Pillar=$TARGET_PILLAR | Flags=$YT_MODE $DRY_FLAG | DOW_IST=$DOW_IST"
+
+          case "$TARGET_PILLAR" in
+            current-affairs)
+              node scripts/youtube/pipelines/generate-current-affairs-shorts.mjs $YT_MODE $DRY_FLAG
+              ;;
+            live-job)
+              node scripts/youtube/pipelines/generate-scheme-shorts.mjs --mode=live-job $YT_MODE $DRY_FLAG
+              ;;
+            maths-shortcut)
+              node scripts/youtube/pipelines/generate-maths-shortcut-shorts.mjs $YT_MODE $DRY_FLAG
+              ;;
+            tamil-shortcut)
+              node scripts/youtube/pipelines/generate-tamil-shortcut-shorts.mjs $YT_MODE $DRY_FLAG
+              ;;
+            scheme-guide)
+              node scripts/youtube/pipelines/generate-scheme-shorts.mjs $YT_MODE $DRY_FLAG
+              ;;
+            *)
+              echo "Unknown pillar: $TARGET_PILLAR"
+              exit 1
+              ;;
+          esac
