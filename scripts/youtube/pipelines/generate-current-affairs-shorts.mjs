@@ -22,14 +22,14 @@ try {
   if (typeof process.loadEnvFile === 'function') {
     process.loadEnvFile('.env.local');
   }
-} catch (_) {}
+} catch (_) { }
 
 function getPythonBinary() {
   for (const bin of ['python', 'python3']) {
     try {
       const ver = execSync(`${bin} --version`, { stdio: 'pipe', timeout: 5000 }).toString().trim();
       if (ver.startsWith('Python')) return bin;
-    } catch {}
+    } catch { }
   }
   return 'python';
 }
@@ -64,7 +64,7 @@ async function synthesizeSpeech(text, outputPath, voice = 'ta-IN-PallaviNeural')
     execFileSync(python, args, { stdio: 'pipe', timeout: 45000, windowsHide: true });
     console.log(`[SHORTS TTS ✓] Edge-TTS speech generated: ${path.basename(outputPath)}`);
   } finally {
-    try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch (_) {}
+    try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch (_) { }
   }
 
   if (!fs.existsSync(outputPath) || fs.statSync(outputPath).size === 0) {
@@ -192,7 +192,7 @@ async function main() {
   const skipUpload = isDryRun || process.argv.includes('--skip-upload');
   const formatKey = 'ca-shorts';
   const todayIst = getTodayIst();
-  const timeIst = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
+  const timeIst = getNowIst().split(' ')[1] || '12:30';
 
   console.log('====================================================');
   console.log('VizhiTN Pillar A: Daily 3-Fact TN Current Affairs Shorts');
@@ -303,8 +303,8 @@ async function main() {
     title: shortsData.title,
     youtubeVideoId: ytRes.videoId,
     youtubeUrl: ytRes.videoUrl,
-    metaVideoId: metaRes?.fbVideoId || null,
-    metaReelId: metaRes?.igReelId || null,
+    metaVideoId: metaRes?.facebook?.id || null,
+    metaReelId: metaRes?.instagram?.id || null,
     metadata: { topicId: `ca-${todayIst}`, pillar: 'current-affairs', eventCount: topEvents.length, metaOnly },
   });
 }

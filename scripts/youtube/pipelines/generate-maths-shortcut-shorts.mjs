@@ -292,8 +292,8 @@ async function main() {
     title,
     youtubeVideoId: ytRes.videoId,
     youtubeUrl: ytRes.videoUrl,
-    metaVideoId: metaRes?.fbVideoId || null,
-    metaReelId: metaRes?.igReelId || null,
+    metaVideoId: metaRes?.facebook?.id || null,
+    metaReelId: metaRes?.instagram?.id || null,
     metadata: { topicId: item.id, pillar: 'maths-shortcut', metaOnly },
   });
 }

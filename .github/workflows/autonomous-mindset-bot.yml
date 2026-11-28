@@ -4,8 +4,8 @@ on:
   schedule:
     # Slot 1: Morning Focus Priming — 00:45 UTC = 06:15 AM IST (Primes students before morning study block)
     - cron: '45 0 * * *'
-    # Slot 2: Afternoon Slump Destroyer — 09:00 UTC = 02:30 PM IST (Breaks post-lunch phone scrolling trance)
-    - cron: '0 9 * * *'
+    # Slot 2: Afternoon Slump Destroyer — 09:03 UTC = 02:33 PM IST (offset off :00 congestion)
+    - cron: '3 9 * * *'
 
   workflow_dispatch:
     inputs:
@@ -92,7 +92,19 @@ jobs:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_PUBLIC_DOMAIN: ${{ secrets.R2_PUBLIC_DOMAIN }}
         run: |
-          SLOT_ARG="--slot=${{ github.event.inputs.slot || 'auto' }}"
+          INPUT_SLOT="${{ github.event.inputs.slot }}"
+          SCHEDULE="${{ github.event.schedule }}"
+          if [ -n "$INPUT_SLOT" ] && [ "$INPUT_SLOT" != "auto" ]; then
+            TARGET_SLOT="$INPUT_SLOT"
+          elif [ "$SCHEDULE" = "45 0 * * *" ]; then
+            TARGET_SLOT="morning"
+          elif [ "$SCHEDULE" = "3 9 * * *" ]; then
+            TARGET_SLOT="afternoon"
+          else
+            TARGET_SLOT="auto"
+          fi
+
+          SLOT_ARG="--slot=$TARGET_SLOT"
           DRY_RUN_ARG="${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}"
           TOPIC_ARG=""
           if [ -n "${{ github.event.inputs.topic_index }}" ]; then

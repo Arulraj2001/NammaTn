@@ -2,16 +2,17 @@ name: VizhiTN Autonomous YouTube Video Bot
 
 on:
   schedule:
-    # 1. Daily 01:30 UTC = 07:00 AM IST (Statewide Civic Lifeline Alert: Power Cuts & School Holidays + WhatsApp Channel Sync)
-    - cron: '30 1 * * *'
-    # 2. Daily 02:00 UTC = 07:30 AM IST (TNPSC One-Mark Sure Shot Set 1: Morning Question Challenge - Unanswered, 5s Timer)
-    - cron: '0 2 * * *'
-    # 3. Daily 05:00 UTC = 10:30 AM IST (TNPSC Samacheer Masterclass Set 1: Morning Deep Explanation Notes)
-    - cron: '0 5 * * *'
-    # 4. Daily 13:00 UTC = 06:30 PM IST (TNPSC One-Mark Sure Shot Set 2: Evening Question Challenge - Unanswered, 5s Timer)
-    - cron: '0 13 * * *'
-    # 5. Daily 15:30 UTC = 09:00 PM IST (TNPSC Samacheer Masterclass Set 2: Evening Deep Explanation Notes)
-    - cron: '30 15 * * *'
+    # Crons offset off :00/:30 to reduce GitHub scheduler queue congestion
+    # 1. Daily 01:33 UTC = 07:03 AM IST (Statewide Civic Lifeline Alert + IG/FB Reels)
+    - cron: '33 1 * * *'
+    # 2. Daily 02:04 UTC = 07:34 AM IST (TNPSC One-Mark Sure Shot Set 1: Morning Question Challenge)
+    - cron: '4 2 * * *'
+    # 3. Daily 05:04 UTC = 10:34 AM IST (TNPSC Samacheer Masterclass Set 1: Morning Explanation)
+    - cron: '4 5 * * *'
+    # 4. Daily 13:04 UTC = 06:34 PM IST (TNPSC One-Mark Sure Shot Set 2: Evening Question Challenge)
+    - cron: '4 13 * * *'
+    # 5. Daily 15:34 UTC = 09:04 PM IST (TNPSC Samacheer Masterclass Set 2: Evening Explanation)
+    - cron: '34 15 * * *'
 
   workflow_dispatch:
     inputs:
@@ -113,15 +114,15 @@ jobs:
 
           SLOT_ARG="--slot=$PIPELINE"
           if [ -z "$PIPELINE" ] || [ "$PIPELINE" = "auto" ]; then
-            if [ "$SCHEDULE" = "30 1 * * *" ]; then
+            if [ "$SCHEDULE" = "33 1 * * *" ]; then
               SLOT_ARG="--slot=civic-alert"
-            elif [ "$SCHEDULE" = "0 2 * * *" ]; then
+            elif [ "$SCHEDULE" = "4 2 * * *" ]; then
               SLOT_ARG="--slot=quiz-morning-q"
-            elif [ "$SCHEDULE" = "0 5 * * *" ]; then
+            elif [ "$SCHEDULE" = "4 5 * * *" ]; then
               SLOT_ARG="--slot=quiz-morning-a"
-            elif [ "$SCHEDULE" = "0 13 * * *" ]; then
+            elif [ "$SCHEDULE" = "4 13 * * *" ]; then
               SLOT_ARG="--slot=quiz-evening-q"
-            elif [ "$SCHEDULE" = "30 15 * * *" ]; then
+            elif [ "$SCHEDULE" = "34 15 * * *" ]; then
               SLOT_ARG="--slot=quiz-evening-a"
             else
               SLOT_ARG="--slot=auto"

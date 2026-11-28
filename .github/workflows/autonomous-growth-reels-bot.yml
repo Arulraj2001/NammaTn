@@ -2,10 +2,10 @@ name: VizhiTN Autonomous Growth Reels & Shorts Bot
 
 on:
   schedule:
-    # 07:00 UTC = 12:30 PM IST (Pillar A: Live Verified 3-Fact TN Current Affairs)
-    - cron: '0 7 * * *'
-    # 10:30 UTC = 04:00 PM IST (Pillar D1: Live Verified TN Govt & Fresher Job Alert)
-    - cron: '30 10 * * *'
+    # 07:06 UTC = 12:36 PM IST (Pillar A: Live Verified 3-Fact TN Current Affairs; offset off :00)
+    - cron: '6 7 * * *'
+    # 10:36 UTC = 04:06 PM IST (Pillar D1: Live Verified TN Govt & Fresher Job Alert; offset off :30)
+    - cron: '36 10 * * *'
     # 11:15 UTC = 04:45 PM IST (Pillar B: 5-Second TNPSC Maths Shortcut Trick)
     - cron: '15 11 * * *'
     # 11:45 UTC = 05:15 PM IST (Pillar C: Podhu Tamil Literature & Grammar Code)
@@ -104,12 +104,12 @@ jobs:
           YT_MODE="--meta-only"
 
           if [ -n "$SCHEDULE" ]; then
-            if [ "$SCHEDULE" = "0 7 * * *" ]; then
+            if [ "$SCHEDULE" = "6 7 * * *" ]; then
               TARGET_PILLAR="current-affairs"
               if [ "$DOW_IST" = "1" ] || [ "$DOW_IST" = "3" ] || [ "$DOW_IST" = "5" ] || [ "$DOW_IST" = "7" ]; then
                 YT_MODE=""
               fi
-            elif [ "$SCHEDULE" = "30 10 * * *" ]; then
+            elif [ "$SCHEDULE" = "36 10 * * *" ]; then
               TARGET_PILLAR="live-job"
               if [ "$DOW_IST" = "1" ] || [ "$DOW_IST" = "3" ] || [ "$DOW_IST" = "5" ]; then
                 YT_MODE=""

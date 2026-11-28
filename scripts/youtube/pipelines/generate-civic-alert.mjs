@@ -20,6 +20,7 @@ import { assembleMultiSceneShortsVideo, getAudioDuration } from '../engine/video
 import { getBrandLogoDataUri, getStickmanAssetDataUri } from '../engine/brand-assets.mjs';
 import { uploadToYouTube } from '../engine/youtube-client.mjs';
 import { synthesizeGeminiSpeech } from '../engine/gemini-tts.mjs';
+import { crossPostVideoToMetaSocials } from '../engine/meta-video-poster.mjs';
 import { recordBroadcastSuccess, isBroadcastCompletedToday } from '../engine/broadcast-logger.mjs';
 import { getTodayIst, getNowIst } from '../engine/calendar-reader.mjs';
 
@@ -466,16 +467,33 @@ async function main() {
 
   console.log(`[CIVIC SHORT PUBLISHED ✓] Live: ${res.videoUrl}`);
 
+  let metaRes = null;
+  try {
+    metaRes = await crossPostVideoToMetaSocials({
+      videoFilePath: outputVideoPath,
+      thumbnailFilePath: s1Path,
+      title: videoTitle,
+      caption: videoDesc,
+      isReel: true,
+      isDryRun: false
+    });
+  } catch (metaErr) {
+    console.warn(`[CIVIC META WARN] Cross-post failed: ${metaErr.message}`);
+  }
+
   // Anti-Duplication Ledger Recording
   try {
     const nowIst = getNowIst();
+    const timeIst = `${String(nowIst.hours).padStart(2, '0')}:${String(nowIst.minutes).padStart(2, '0')}`;
     await recordBroadcastSuccess({
       broadcastDate: nowIst.date,
       format: 'civic-alert',
-      timeIst: nowIst.time,
+      timeIst,
       title: videoTitle,
       youtubeVideoId: res?.videoId || null,
       youtubeUrl: res?.videoUrl || null,
+      metaVideoId: metaRes?.facebook?.id || null,
+      metaReelId: metaRes?.instagram?.id || null,
       metadata: {
         district: leadPost.district_slug,
         area: leadPost.area_name,

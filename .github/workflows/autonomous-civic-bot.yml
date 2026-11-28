@@ -2,14 +2,15 @@ name: VizhiTN Autonomous Civic Bot
 
 on:
   schedule:
-    # 02:00 UTC = 07:30 AM IST (Slot 1: Morning Civic Batch + WhatsApp Top 5 & Power Cut Card)
-    - cron: '0 2 * * *'
-    # 06:30 UTC = 12:00 PM IST (Slot 2: Midday Schemes Batch + WhatsApp Verified Job Radar Card)
-    - cron: '30 6 * * *'
-    # 09:30 UTC = 03:00 PM IST (Slot 3: Native 1-Tap WhatsApp Community / Exam Poll)
-    - cron: '30 9 * * *'
-    # 13:30 UTC = 07:00 PM IST (Slot 4: Evening Advisory + Tomorrow Advance Power Cut Card)
-    - cron: '30 13 * * *'
+    # Backup GitHub crons offset off :00/:30 (Primary exact-time triggers fire via Cloudflare Worker workflow_dispatch)
+    # 02:07 UTC = 07:37 AM IST (Slot 1: Morning Utility & WhatsApp Top 5 + Power Card)
+    - cron: '7 2 * * *'
+    # 06:37 UTC = 12:07 PM IST (Slot 2: Midday Schemes & WhatsApp Verified Job Radar Card)
+    - cron: '37 6 * * *'
+    # 09:37 UTC = 03:07 PM IST (Slot 3: Native 1-Tap WhatsApp Community / Exam Poll)
+    - cron: '37 9 * * *'
+    # 13:37 UTC = 07:07 PM IST (Slot 4: Evening Advisory + Tomorrow Advance Power Cut Card)
+    - cron: '37 13 * * *'
 
   workflow_dispatch:
     inputs:
@@ -59,7 +60,7 @@ jobs:
           fc-cache -fv
 
       - name: Broadcast Dedicated Afternoon Poll to WhatsApp Channel
-        if: github.event.schedule == '30 9 * * *' || github.event.inputs.pulse == 'poll'
+        if: github.event.schedule == '37 9 * * *' || github.event.inputs.pulse == 'poll'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NEW_GEMINI_API_KEY: ${{ secrets.NEW_GEMINI_API_KEY }}
@@ -80,7 +81,7 @@ jobs:
           node scripts/whatsapp-channel-bot.mjs --slot=poll
 
       - name: Run Autonomous Civic Poster
-        if: github.event.schedule != '30 9 * * *' && github.event.inputs.pulse != 'poll'
+        if: github.event.schedule != '37 9 * * *' && github.event.inputs.pulse != 'poll'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NEW_GEMINI_API_KEY: ${{ secrets.NEW_GEMINI_API_KEY }}
@@ -103,16 +104,22 @@ jobs:
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
         run: |
           INPUT_PULSE="${{ github.event.inputs.pulse }}"
+          SCHEDULE="${{ github.event.schedule }}"
+          TARGET_PULSE="auto"
           if [ -n "$INPUT_PULSE" ] && [ "$INPUT_PULSE" != "auto" ]; then
-            echo "Executing manually requested pulse: $INPUT_PULSE"
-            node scripts/auto-civic-poster.mjs --pulse="$INPUT_PULSE"
-          else
-            echo "Executing auto-detected pulse based on IST schedule"
-            node scripts/auto-civic-poster.mjs
+            TARGET_PULSE="$INPUT_PULSE"
+          elif [ "$SCHEDULE" = "7 2 * * *" ]; then
+            TARGET_PULSE="morning"
+          elif [ "$SCHEDULE" = "37 6 * * *" ]; then
+            TARGET_PULSE="midday"
+          elif [ "$SCHEDULE" = "37 13 * * *" ]; then
+            TARGET_PULSE="evening"
           fi
+          echo "Executing explicit pulse: $TARGET_PULSE (WhatsApp handled in dedicated single step)"
+          node scripts/auto-civic-poster.mjs --pulse="$TARGET_PULSE" --skip-whatsapp
 
       - name: Broadcast Native Growth Slot to WhatsApp Channel
-        if: always() && github.event.schedule != '30 9 * * *' && github.event.inputs.pulse != 'poll'
+        if: always() && github.event.schedule != '37 9 * * *' && github.event.inputs.pulse != 'poll'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NEW_GEMINI_API_KEY: ${{ secrets.NEW_GEMINI_API_KEY }}
@@ -130,14 +137,22 @@ jobs:
           CHROME_BIN: '/usr/bin/google-chrome'
         run: |
           INPUT_PULSE="${{ github.event.inputs.pulse }}"
+          SCHEDULE="${{ github.event.schedule }}"
+          TARGET_SLOT="auto"
           if [ -n "$INPUT_PULSE" ] && [ "$INPUT_PULSE" != "auto" ]; then
-            node scripts/whatsapp-channel-bot.mjs --slot="$INPUT_PULSE"
-          else
-            node scripts/whatsapp-channel-bot.mjs --slot=auto
+            TARGET_SLOT="$INPUT_PULSE"
+          elif [ "$SCHEDULE" = "7 2 * * *" ]; then
+            TARGET_SLOT="morning"
+          elif [ "$SCHEDULE" = "37 6 * * *" ]; then
+            TARGET_SLOT="midday"
+          elif [ "$SCHEDULE" = "37 13 * * *" ]; then
+            TARGET_SLOT="evening"
           fi
+          echo "Executing single WhatsApp Growth Slot: $TARGET_SLOT"
+          node scripts/whatsapp-channel-bot.mjs --slot="$TARGET_SLOT"
 
       - name: Ping Search Engines via IndexNow
-        if: success() && github.event.schedule != '30 9 * * *' && github.event.inputs.pulse != 'poll'
+        if: success() && github.event.schedule != '37 9 * * *' && github.event.inputs.pulse != 'poll'
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://hzgrzcablefquddisqkf.supabase.co' }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

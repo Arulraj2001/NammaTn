@@ -36,6 +36,7 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
+import { isBroadcastCompletedToday, recordBroadcastSuccess } from './youtube/engine/broadcast-logger.mjs';
 
 // Load .env.local if present locally
 try {
@@ -399,6 +400,16 @@ async function main() {
   const now = new Date();
   const istDate = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
   const todayStr = istDate.toISOString().slice(0, 10);
+  const forceRun = process.argv.includes('--force');
+
+  if (!isDryRun && !forceRun) {
+    const already = await isBroadcastCompletedToday('tntoday-daily', todayStr);
+    if (already.published) {
+      console.log(`[TN TODAY GUARD ✓] Daily flagship edition already published today (${todayStr}). Exiting cleanly.`);
+      return;
+    }
+  }
+
   const spec = getDailyFlagshipSpec(todayStr, pulseArg);
 
   console.log(`[INFO] Flagship Edition: ${spec.name}`);
@@ -945,6 +956,19 @@ Return ONLY a valid JSON object matching this exact schema:
     console.log('[GOOGLE PING ✓] Google News sitemap ping dispatched.');
   } catch (pingErr) {
     console.warn(`[GOOGLE PING WARN] ${pingErr.message}`);
+  }
+
+  if (!isDryRun) {
+    const timeIst = `${String(istDate.getUTCHours()).padStart(2, '0')}:${String(istDate.getUTCMinutes()).padStart(2, '0')}`;
+    await recordBroadcastSuccess({
+      broadcastDate: todayStr,
+      format: 'tntoday-daily',
+      timeIst,
+      title: articleObj.title || articleObj.title_ta,
+      youtubeVideoId: null,
+      youtubeUrl: null,
+      metadata: { slug: articleObj.slug, beat: spec.pulse }
+    }).catch(() => {});
   }
 
   console.log('\n====================================================');

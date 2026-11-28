@@ -21,22 +21,22 @@ import {
   getRecentlyUsedTopicIds,
   recordBroadcastSuccess,
 } from '../engine/broadcast-logger.mjs';
-import { getTodayIst } from '../engine/calendar-reader.mjs';
+import { getTodayIst, getNowIst } from '../engine/calendar-reader.mjs';
 import { fetchVerifiedJobRadar } from '../../whatsapp/engine/whatsapp-growth-fetcher.mjs';
-import { recordDispatch } from '../../lib/dispatch-ledger.mjs';
+import { recordDispatch, syncDispatchLedger } from '../../lib/dispatch-ledger.mjs';
 
 try {
   if (typeof process.loadEnvFile === 'function') {
     process.loadEnvFile('.env.local');
   }
-} catch (_) {}
+} catch (_) { }
 
 function getPythonBinary() {
   for (const bin of ['python', 'python3']) {
     try {
       const ver = execSync(`${bin} --version`, { stdio: 'pipe', timeout: 5000 }).toString().trim();
       if (ver.startsWith('Python')) return bin;
-    } catch {}
+    } catch { }
   }
   return 'python';
 }
@@ -71,7 +71,7 @@ async function synthesizeSpeech(text, outputPath, voice = 'ta-IN-PallaviNeural')
     execFileSync(python, args, { stdio: 'pipe', timeout: 45000, windowsHide: true });
     console.log(`[SCHEME TTS ✓] Edge-TTS speech generated: ${path.basename(outputPath)}`);
   } finally {
-    try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch (_) {}
+    try { if (fs.existsSync(tempTextFile)) fs.unlinkSync(tempTextFile); } catch (_) { }
   }
 
   if (!fs.existsSync(outputPath) || fs.statSync(outputPath).size === 0) {
@@ -231,7 +231,7 @@ async function main() {
   const isLiveJobMode = modeArg === 'live-job';
   const formatKey = isLiveJobMode ? 'live-job-shorts' : 'scheme-shorts';
   const todayIst = getTodayIst();
-  const timeIst = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
+  const timeIst = getNowIst().split(' ')[1] || '16:00';
 
   console.log('====================================================');
   console.log(`VizhiTN Pillar D: ${isLiveJobMode ? 'Live Verified TN Govt & Job Alert Reel' : 'Tamil Nadu Govt Welfare Scheme Reel'}`);
@@ -248,6 +248,7 @@ async function main() {
 
   let scheme = null;
   if (isLiveJobMode) {
+    await syncDispatchLedger().catch(() => { });
     const liveJob = await fetchVerifiedJobRadar({ dedupeChannel: 'live-job-reels' });
     if (!liveJob) {
       console.log('[JOB REEL SKIP ✓] No currently open, verified TN Govt/Fresher job notification found today. Clean skip.');
@@ -438,8 +439,8 @@ async function main() {
     title: videoTitle,
     youtubeVideoId: ytRes.videoId,
     youtubeUrl: ytRes.videoUrl,
-    metaVideoId: metaRes?.fbVideoId || null,
-    metaReelId: metaRes?.igReelId || null,
+    metaVideoId: metaRes?.facebook?.id || null,
+    metaReelId: metaRes?.instagram?.id || null,
     metadata: { topicId: scheme.id, pillar: isLiveJobMode ? 'live-job' : 'welfare-scheme', metaOnly },
   });
 }

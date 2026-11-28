@@ -16,6 +16,7 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
+import { isBroadcastCompletedToday, recordBroadcastSuccess } from './youtube/engine/broadcast-logger.mjs';
 
 // Helper to load .env.local if present locally
 try {
@@ -430,6 +431,8 @@ async function main() {
 
   const pulse = determinePulse();
   const isDryRun = pulse === 'dry-run' || process.argv.includes('--dry-run');
+  const skipWhatsApp = process.argv.includes('--skip-whatsapp');
+  const forceRun = process.argv.includes('--force');
 
   const DEFAULT_SUPABASE_URL = 'https://hzgrzcablefquddisqkf.supabase.co';
   const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6Z3J6Y2FibGVmcXVkZGlzcWtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDY4MTUsImV4cCI6MjA5NzEyMjgxNX0.Q2bjuJNvR-bk4RK0X87G5Zz-zJgXrfPwdiOClpSpYWQ';
@@ -452,6 +455,15 @@ async function main() {
   const now = new Date();
   const istDate = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
   const todayStr = istDate.toISOString().slice(0, 10);
+
+  if (!isDryRun && !forceRun && pulse !== 'poll') {
+    const civicFormat = `civic-${pulse}`;
+    const already = await isBroadcastCompletedToday(civicFormat, todayStr);
+    if (already.published) {
+      console.log(`[CIVIC GUARD ✓] Pulse "${civicFormat}" already completed today (${todayStr}). Exiting cleanly (no duplicate batch).`);
+      return;
+    }
+  }
 
   // Dedicated handling for Afternoon Interactive Community Poll slot
   if (pulse === 'poll') {
@@ -1159,7 +1171,7 @@ No conversational intro, no commentary outside the JSON array.
     // --- STEP 12: AUTONOMOUS WHATSAPP CHANNEL BROADCAST ---
     // Broadcasts the top priority civic alert to the official VizhiTN WhatsApp Channel
     try {
-      if (validPosts.length > 0) {
+      if (!skipWhatsApp && validPosts.length > 0) {
         const hasWaSession = Boolean(process.env.WHATSAPP_SESSION || fs.existsSync('scripts/baileys_auth/creds.json'));
         if (hasWaSession || isDryRun) {
           console.log(`[WHATSAPP BROADCAST] 📲 Schedulng verified civic alert dispatch to WhatsApp Channel...`);
@@ -1176,6 +1188,19 @@ No conversational intro, no commentary outside the JSON array.
       }
     } catch (waErr) {
       console.warn(`[WHATSAPP WARN] WhatsApp broadcast warning: ${waErr.message}`);
+    }
+
+    if (!isDryRun && validPosts.length > 0) {
+      const timeIst = `${String(istDate.getUTCHours()).padStart(2, '0')}:${String(istDate.getUTCMinutes()).padStart(2, '0')}`;
+      await recordBroadcastSuccess({
+        broadcastDate: todayStr,
+        format: `civic-${pulse}`,
+        timeIst,
+        title: `${spec.name} (${validPosts.length} posts)`,
+        youtubeVideoId: null,
+        youtubeUrl: null,
+        metadata: { pulse, count: validPosts.length }
+      }).catch(() => {});
     }
   }
 }

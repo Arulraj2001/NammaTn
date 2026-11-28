@@ -302,7 +302,10 @@ async function main() {
 
   // ── SLOT 4: EVENING (Tomorrow Advance Power Cut Card / Cyber Alert) ─────
   else {
-    const tmrSlug = `power-digest-tomorrow-${now.date}`;
+    const effectiveEveningDate = now.hours < 6
+      ? new Date(Date.now() + (5.5 - 24) * 3600 * 1000).toISOString().slice(0, 10)
+      : now.date;
+    const tmrSlug = `power-digest-tomorrow-${effectiveEveningDate}`;
     if (!isAlreadyDispatched('whatsapp', tmrSlug)) {
       const tmrDigest = await fetchConsolidatedPowerCuts({ mode: 'tomorrow' });
       if (tmrDigest) {

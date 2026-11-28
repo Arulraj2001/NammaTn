@@ -116,16 +116,44 @@ async function saveRecord(record) {
   }
 }
 
+const NIGHT_ROLLOVER_FORMATS = new Set([
+  'quiz-evening-q',
+  'quiz-evening-a',
+  'mindset-afternoon',
+  'maths-shortcut',
+  'tamil-shortcut',
+  'scheme-shorts',
+  'live-job-shorts',
+  'ca-shorts',
+]);
+
+/**
+ * Resolves the intended IST broadcast date. If a delayed afternoon/evening job starts
+ * between 00:00 and 05:59 AM IST, attributes it to yesterday's IST date so it never
+ * steals today's daytime deduplication lock.
+ */
+export function resolveEffectiveBroadcastDate(format, explicitDateStr = null) {
+  const istNow = new Date(Date.now() + 5.5 * 3600 * 1000);
+  const todayIst = istNow.toISOString().slice(0, 10);
+  const istHours = istNow.getUTCHours();
+
+  if (istHours < 6 && NIGHT_ROLLOVER_FORMATS.has(format) && (!explicitDateStr || explicitDateStr === todayIst)) {
+    return new Date(istNow.getTime() - 24 * 3600 * 1000).toISOString().slice(0, 10);
+  }
+  return explicitDateStr || todayIst;
+}
+
 /**
  * Checks if a specific broadcast format has ALREADY been published today
  * @param {'long-form' | 'podcast' | 'civic-shorts'} format
- * @param {string} [dateStr=today] - YYYY-MM-DD
+ * @param {string} [dateStr] - YYYY-MM-DD
  * @returns {Promise<{ published: boolean, existingRecord?: object }>}
  */
-export async function isBroadcastCompletedToday(format, dateStr = getTodayIst()) {
+export async function isBroadcastCompletedToday(format, dateStr = null) {
+  const effectiveDate = resolveEffectiveBroadcastDate(format, dateStr);
   // 1. Try querying Cloudflare R2 Persistent Ledger (Fast & Independent of Supabase)
   const history = await loadHistory();
-  const match = history.find(r => r.broadcast_date === dateStr && r.format === format);
+  const match = history.find(r => r.broadcast_date === effectiveDate && r.format === format);
   if (match) {
     return { published: true, existingRecord: match };
   }
@@ -136,7 +164,7 @@ export async function isBroadcastCompletedToday(format, dateStr = getTodayIst())
       const { data, error } = await supabase
         .from('youtube_broadcast_log')
         .select('*')
-        .eq('broadcast_date', dateStr)
+        .eq('broadcast_date', effectiveDate)
         .eq('format', format)
         .eq('status', 'published')
         .maybeSingle();
@@ -153,20 +181,10 @@ export async function isBroadcastCompletedToday(format, dateStr = getTodayIst())
 }
 
 /**
- * Records a successful YouTube broadcast
- * @param {object} params
- * @param {string} [params.broadcastDate] - YYYY-MM-DD
- * @param {'long-form' | 'podcast' | 'civic-shorts'} params.format
- * @param {string} params.timeIst
- * @param {string} params.title
- * @param {string} params.youtubeVideoId
- * @param {string} params.youtubeUrl
- * @param {string} [params.metaVideoId]
- * @param {string} [params.metaReelId]
- * @param {object} [params.metadata]
+ * Records a successful YouTube/Meta broadcast
  */
 export async function recordBroadcastSuccess({
-  broadcastDate = getTodayIst(),
+  broadcastDate = null,
   format,
   timeIst,
   title,
@@ -176,8 +194,9 @@ export async function recordBroadcastSuccess({
   metaReelId = null,
   metadata = {}
 }) {
+  const effectiveDate = resolveEffectiveBroadcastDate(format, broadcastDate);
   const record = {
-    broadcast_date: broadcastDate,
+    broadcast_date: effectiveDate,
     format,
     time_ist: timeIst,
     title,
@@ -193,8 +212,8 @@ export async function recordBroadcastSuccess({
   // Always save locally & to Cloudflare R2
   await saveRecord(record);
 
-  // Save to Supabase if accessible
-  if (supabase) {
+  // Save to Supabase only when youtube_video_id is populated (table column is NOT NULL)
+  if (supabase && youtubeVideoId) {
     try {
       const { error } = await supabase
         .from('youtube_broadcast_log')
@@ -210,6 +229,6 @@ export async function recordBroadcastSuccess({
     }
   }
 
-  console.log(`[BROADCAST LOGGED] "${title}" logged as published for ${broadcastDate} (${format})`);
+  console.log(`[BROADCAST LOGGED] "${title}" logged as published for ${effectiveDate} (${format})`);
   return record;
 }
